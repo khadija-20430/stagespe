@@ -1,16 +1,19 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
-import Badge, { statutTone } from '../components/ui/Badge.jsx';
+import Badge from '../components/ui/Badge.jsx';
 import FilterChip from '../components/ui/FilterChip.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { formatDate } from '../lib/utils.js';
 import { getProjets } from '../services/api.js';
+import { PROJECT_STATUS, projectStatusTone } from '../lib/enums.js';
 
 export default function Projets() {
+  const { t } = useTranslation();
   const [projets, setProjets] = useState(null);
   const [programme, setProgramme] = useState('Tous');
-  const [statut, setStatut] = useState('Tous');
+  const [statut, setStatut] = useState('tous');
 
   useEffect(() => {
     getProjets().then(setProjets);
@@ -20,43 +23,42 @@ export default function Projets() {
     () => ['Tous', ...new Set((projets ?? []).map((p) => p.programme))],
     [projets]
   );
-  const statuts = ['Tous', 'En cours', 'Terminé'];
 
   const filtres = useMemo(() => {
     if (!projets) return [];
     return projets.filter(
       (p) =>
         (programme === 'Tous' || p.programme === programme) &&
-        (statut === 'Tous' || p.statut === statut)
+        (statut === 'tous' || p.statut === statut)
     );
   }, [projets, programme, statut]);
 
   return (
     <div>
       <PageHeader
-        eyebrow="Recherche"
-        title="Projets de recherche"
-        description="Découvrez les projets de recherche internationaux portés ou co-portés par l'école."
+        eyebrow={t('projets.eyebrow')}
+        title={t('projets.title')}
+        description={t('projets.description')}
       />
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="space-y-4">
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Programme</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('projets.filters.programme')}</p>
             <div className="flex flex-wrap gap-2">
               {programmes.map((p) => (
                 <FilterChip key={p} active={programme === p} onClick={() => setProgramme(p)}>
-                  {p}
+                  {p === 'Tous' ? t('common.all') : p}
                 </FilterChip>
               ))}
             </div>
           </div>
           <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">Statut</p>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{t('projets.filters.status')}</p>
             <div className="flex flex-wrap gap-2">
-              {statuts.map((s) => (
-                <FilterChip key={s} active={statut === s} onClick={() => setStatut(s)}>
-                  {s}
+              {['tous', ...PROJECT_STATUS].map((code) => (
+                <FilterChip key={code} active={statut === code} onClick={() => setStatut(code)}>
+                  {code === 'tous' ? t('common.all') : t(`enums.projectStatus.${code}`)}
                 </FilterChip>
               ))}
             </div>
@@ -66,23 +68,26 @@ export default function Projets() {
         {projets === null ? (
           <Loader />
         ) : filtres.length === 0 ? (
-          <p className="py-16 text-center text-slate-500">Aucun projet ne correspond aux filtres.</p>
+          <p className="py-16 text-center text-slate-500">{t('projets.empty')}</p>
         ) : (
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
             {filtres.map((p) => (
               <Card key={p.id} hover className="flex flex-col p-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone="cobalt">{p.programme}</Badge>
-                  <Badge tone={statutTone(p.statut)}>{p.statut}</Badge>
+                  <Badge tone={projectStatusTone(p.statut)}>{t(`enums.projectStatus.${p.statut}`)}</Badge>
+                  {p.isFeatured ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
                 </div>
                 <h3 className="mt-4 text-xl font-bold text-navy">{p.titre}</h3>
                 <p className="mt-2 flex-1 text-sm text-slate-600">{p.resume}</p>
                 <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-slate-100 pt-4 text-sm">
-                  <dt className="text-slate-400">Coordinateur</dt>
+                  <dt className="text-slate-400">{t('projets.fields.coordinator')}</dt>
                   <dd className="text-right font-medium text-slate-700">{p.coordinateur}</dd>
-                  <dt className="text-slate-400">Budget</dt>
-                  <dd className="text-right font-medium text-slate-700">{p.budget}</dd>
-                  <dt className="text-slate-400">Période</dt>
+                  <dt className="text-slate-400">{t('projets.fields.budget')}</dt>
+                  <dd className="text-right font-medium text-slate-700">
+                    {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(p.budget)}
+                  </dd>
+                  <dt className="text-slate-400">{t('projets.fields.period')}</dt>
                   <dd className="text-right font-medium text-slate-700">
                     {formatDate(p.debut)} — {formatDate(p.fin)}
                   </dd>

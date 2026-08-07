@@ -1,22 +1,24 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
-
-const links = [
-  { to: '/admin', label: 'Tableau de bord', end: true, icon: '📊' },
-  { to: '/admin/partenaires', label: 'Partenaires', icon: '🤝' },
-  { to: '/admin/projets', label: 'Projets', icon: '🔬' },
-  { to: '/admin/appels', label: 'Appels à projets', icon: '📢' },
-  { to: '/admin/mobilites', label: 'Mobilités', icon: '✈️' },
-  { to: '/admin/documents', label: 'Documents', icon: '📄' },
-];
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
 export default function AdminLayout() {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+
+  const links = [
+    { to: '/admin', label: t('admin.nav.dashboard'), end: true, icon: '📊' },
+    { to: '/admin/partenaires', label: t('admin.nav.partners'), icon: '🤝' },
+    { to: '/admin/projets', label: t('admin.nav.projects'), icon: '🔬' },
+    { to: '/admin/appels', label: t('admin.nav.calls'), icon: '📢' },
+    { to: '/admin/mobilites', label: t('admin.nav.mobility'), icon: '✈️' },
+    { to: '/admin/documents', label: t('admin.nav.documents'), icon: '📄' },
+  ];
 
   const handleLogout = () => {
     logout();
@@ -58,7 +60,7 @@ export default function AdminLayout() {
           >
             ESI
           </span>
-          <span className="text-sm font-bold text-white">Administration</span>
+          <span className="text-sm font-bold text-white">{t('admin.title')}</span>
         </Link>
         <Nav />
         <div className="mt-auto border-t border-white/10 pt-4">
@@ -67,7 +69,7 @@ export default function AdminLayout() {
             onClick={handleLogout}
             className="mt-2 w-full rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-300 hover:bg-white/5 hover:text-white"
           >
-            Se déconnecter
+            {t('admin.logout')}
           </button>
         </div>
       </aside>
@@ -78,14 +80,16 @@ export default function AdminLayout() {
           <button
             onClick={() => setOpen((v) => !v)}
             className="flex h-10 w-10 items-center justify-center rounded-lg text-navy"
-            aria-label="Menu"
+            aria-label={t('admin.menuAria')}
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="font-bold text-navy">Administration</span>
-          <button onClick={handleLogout} className="text-sm font-medium text-cobalt">Quitter</button>
+          <span className="font-bold text-navy">{t('admin.title')}</span>
+          <button onClick={handleLogout} className="text-sm font-medium text-cobalt">
+            {t('admin.exit')}
+          </button>
         </header>
 
         {open ? (

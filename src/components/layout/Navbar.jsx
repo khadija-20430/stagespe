@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
-const consultation = [
-  { to: '/cooperation', label: 'Coopération internationale' },
-  { to: '/projets', label: 'Projets' },
-  { to: '/appels', label: 'Appels à projets' },
-  { to: '/mobilites', label: 'Mobilités' },
-];
-
-const ressources = [
-  { to: '/actualites', label: 'Actualités & événements' },
-  { to: '/documents', label: 'Bibliothèque de documents' },
-];
-
 function Logo() {
+  const { t } = useTranslation();
   return (
-    <Link to="/" className="flex items-center gap-2.5" aria-label="Accueil ESI">
+    <Link to="/" className="flex items-center gap-2.5" aria-label={t('navbar.homeAria')}>
       <span
         translate="no"
         className="flex h-9 w-9 items-center justify-center rounded-lg bg-cobalt text-sm font-extrabold text-white"
@@ -25,10 +15,29 @@ function Logo() {
         ESI
       </span>
       <span className="hidden flex-col leading-tight sm:flex">
-        <span className="text-sm font-bold text-navy">Coopération</span>
-        <span className="text-xs font-medium text-slate-500">Internationale</span>
+        <span className="text-sm font-bold text-navy">{t('navbar.brandLine1')}</span>
+        <span className="text-xs font-medium text-slate-500">{t('navbar.brandLine2')}</span>
       </span>
     </Link>
+  );
+}
+
+function LanguageSwitcher({ className = '' }) {
+  const { i18n } = useTranslation();
+  return (
+    <select
+      value={i18n.language}
+      onChange={(e) => i18n.changeLanguage(e.target.value)}
+      className={cn(
+        'h-11 rounded-lg border border-slate-300 bg-white px-2 text-sm font-medium text-navy',
+        className
+      )}
+      aria-label="Language"
+    >
+      <option value="fr">FR</option>
+      <option value="en">EN</option>
+      <option value="ar">AR</option>
+    </select>
   );
 }
 
@@ -87,8 +96,22 @@ function Dropdown({ label, items, pathname }) {
 }
 
 export default function Navbar() {
+  const { t } = useTranslation();
   const { pathname } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const consultation = [
+    { to: '/cooperation', label: t('navbar.cooperation') },
+    { to: '/projets', label: t('navbar.projets') },
+    { to: '/appels', label: t('navbar.appels') },
+    { to: '/mobilites', label: t('navbar.mobilites') },
+  ];
+
+  const ressources = [
+    { to: '/actualites', label: t('navbar.actualites') },
+    { to: '/documents', label: t('navbar.documents') },
+  ];
+
   const allLinks = [...consultation, ...ressources];
 
   return (
@@ -107,36 +130,40 @@ export default function Navbar() {
               )
             }
           >
-            Accueil
+            {t('navbar.home')}
           </NavLink>
-          <Dropdown label="Consultation" items={consultation} pathname={pathname} />
-          <Dropdown label="Ressources" items={ressources} pathname={pathname} />
+          <Dropdown label={t('navbar.consultationGroup')} items={consultation} pathname={pathname} />
+          <Dropdown label={t('navbar.resourcesGroup')} items={ressources} pathname={pathname} />
         </div>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-3 lg:flex">
+          <LanguageSwitcher />
           <Link
             to="/admin"
             className="inline-flex min-h-[44px] items-center rounded-lg border border-slate-300 px-4 text-sm font-semibold text-navy transition-colors hover:border-cobalt hover:text-cobalt"
           >
-            Espace admin
+            {t('navbar.admin')}
           </Link>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setMobileOpen((v) => !v)}
-          className="flex h-11 w-11 items-center justify-center rounded-lg text-navy lg:hidden"
-          aria-label="Menu"
-          aria-expanded={mobileOpen}
-        >
-          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            {mobileOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        <div className="flex items-center gap-2 lg:hidden">
+          <LanguageSwitcher className="h-9" />
+          <button
+            type="button"
+            onClick={() => setMobileOpen((v) => !v)}
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-navy"
+            aria-label="Menu"
+            aria-expanded={mobileOpen}
+          >
+            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              {mobileOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {mobileOpen ? (
@@ -147,7 +174,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="block rounded-lg px-3 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Accueil
+            {t('navbar.home')}
           </NavLink>
           {allLinks.map((item) => (
             <NavLink
@@ -169,7 +196,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="mt-2 block rounded-lg bg-navy px-3 py-3 text-center text-sm font-semibold text-white"
           >
-            Espace admin
+            {t('navbar.admin')}
           </Link>
         </div>
       ) : null}

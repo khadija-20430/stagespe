@@ -1,0 +1,280 @@
+{
+  "navbar": {
+    "homeAria": "ESI Home",
+    "brandLine1": "International",
+    "brandLine2": "Cooperation",
+    "home": "Home",
+    "consultationGroup": "Browse",
+    "resourcesGroup": "Resources",
+    "cooperation": "International Cooperation",
+    "projets": "Projects",
+    "appels": "Calls for Projects",
+    "mobilites": "Mobility",
+    "actualites": "News & Events",
+    "documents": "Document Library",
+    "admin": "Admin Area"
+  },
+  "footer": {
+    "brandName": "International Cooperation",
+    "description": "Institutional portal of the École Supérieure en Informatique dedicated to international cooperation: projects, mobility, calls for proposals, and academic partnerships.",
+    "columns": {
+      "consultation": {
+        "title": "Browse",
+        "cooperation": "International Cooperation",
+        "projets": "Projects",
+        "appels": "Calls for Projects",
+        "mobilites": "Mobility"
+      },
+      "resources": {
+        "title": "Resources",
+        "actualites": "News & Events",
+        "documents": "Document Library",
+        "admin": "Admin Area"
+      }
+    },
+    "copyright": "École Supérieure en Informatique — All rights reserved.",
+    "department": "Directorate of International Relations"
+  },
+  "common": { "all": "All", "allFem": "All" },
+  "appels": {
+    "eyebrow": "Funding",
+    "title": "Calls for Projects",
+    "description": "Filter calls for projects by program, country, and status to find the opportunities that fit you.",
+    "filters": { "programme": "Program", "country": "Country / region", "status": "Status" },
+    "statuts": { "tous": "All", "ouvert": "Open", "bientot": "Coming soon", "ferme": "Closed" },
+    "empty": "No calls match the selected filters.",
+    "deadline": "Deadline",
+    "budget": "Funding",
+    "apply": "Apply"
+  },
+  "cooperation": {
+    "eyebrow": "About",
+    "title": "International Cooperation",
+    "description": "The École Supérieure en Informatique pursues an active cooperation policy with research and teaching institutions worldwide.",
+    "axesSection": { "eyebrow": "Our focus areas", "title": "Cooperation Areas", "description": "Four major directions shape our international engagement." },
+    "axes": {
+      "research": { "title": "Collaborative Research", "text": "Joint projects, co-supervised theses, and shared labs with our international academic partners." },
+      "mobility": { "title": "Academic Mobility", "text": "Exchange programs for students, PhD candidates, and researchers, under Erasmus+ and bilateral agreements." },
+      "degrees": { "title": "Double Degrees", "text": "Joint curricula leading to degrees recognized by several partner institutions." },
+      "networks": { "title": "Networks & Consortia", "text": "Participation in European and international consortia addressing major digital challenges." }
+    },
+    "partnersSection": { "eyebrow": "Network", "title": "Partner Institutions", "description": "Universities and research institutes linked to the school through formal agreements." },
+    "partnerFields": { "type": "Type", "agreement": "Agreement", "since": "Since" }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "École Supérieure en Informatique",
+      "title": "International Cooperation Portal",
+      "description": "Discover and centralize all of the school's international activities: research projects, calls for projects, mobility opportunities, and academic partnerships worldwide.",
+      "ctaCalls": "View calls for projects",
+      "ctaMobility": "Explore mobility"
+    },
+    "stats": { "partners": "International partners", "projects": "Active research projects", "mobility": "Mobility placements per year", "countries": "Partner countries" },
+    "calls": { "eyebrow": "Opportunities", "title": "Open Calls for Projects", "description": "Funding and programs currently open to researchers and students.", "seeAll": "All calls" },
+    "mobility": { "eyebrow": "Mobility", "title": "Mobility Opportunities", "description": "Student exchanges, doctoral placements, and international teaching assignments.", "seeAll": "All mobility opportunities", "spots": "{{count}} spots available" },
+    "news": { "eyebrow": "Right now", "title": "News & Events", "description": "The latest news on the school's international cooperation.", "seeAll": "All news" },
+    "partners": { "eyebrow": "Network", "title": "Our International Partners", "description": "A network of leading universities and research institutes." }
+  },
+  "projets": {
+    "eyebrow": "Research",
+    "title": "Research Projects",
+    "description": "Discover the international research projects led or co-led by the school.",
+    "filters": { "programme": "Program", "status": "Status" },
+    "statuts": { "tous": "All", "en_cours": "Ongoing", "termine": "Completed" },
+    "empty": "No projects match the selected filters.",
+    "fields": { "coordinator": "Coordinator", "budget": "Budget", "period": "Period" },
+    "featured": "Featured"
+  },
+  "actualites": {
+    "eyebrow": "News",
+    "title": "News & Events",
+    "description": "Follow the latest news on international cooperation: partnerships, projects, events, and opportunities.",
+    "readMore": "Read more",
+    "empty": "No items match this filter."
+  },
+  "actualiteDetail": {
+    "notFoundTitle": "News item not found",
+    "notFoundText": "This news item doesn't exist or has been removed.",
+    "backToList": "All news"
+  },
+  "documents": {
+    "eyebrow": "Resources",
+    "title": "Document Library",
+    "description": "Guides, forms, agreements, and reports related to international cooperation.",
+    "table": { "name": "Document", "category": "Category", "format": "Format", "size": "Size", "updated": "Updated", "action": "Action" },
+    "download": "Download"
+  },
+  "mobilites": {
+    "eyebrow": "Mobility",
+    "title": "Mobility Opportunities",
+    "description": "Student exchanges, doctoral placements, and teaching assignments with our international partners.",
+    "filters": { "type": "Mobility type" },
+    "spots": "{{count}} spots",
+    "fields": { "duration": "Duration", "level": "Level", "programme": "Program" },
+    "apply": "Apply"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "text": "The page you're looking for doesn't exist or has been moved.",
+    "backHome": "Back to home"
+  },
+  "admin": {
+    "title": "Administration",
+    "nav": {
+      "dashboard": "Dashboard",
+      "partners": "Partners",
+      "projects": "Projects",
+      "calls": "Calls for Projects",
+      "mobility": "Mobility",
+      "documents": "Documents"
+    },
+    "logout": "Log out",
+    "menuAria": "Menu",
+    "exit": "Exit",
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Overview and content management for the portal (mock data).",
+      "about": {
+        "title": "About this interface",
+        "text": "This admin interface simulates CRUD operations (create, read, update, delete) in memory. Changes are not persisted: they disappear on page reload. The services layer (<code>/src/services</code>) is ready to connect to an external REST API."
+      }
+    },
+    "login": {
+      "brand": "Admin area",
+      "title": "Sign in",
+      "subtitle": "Simulated authentication — use any credentials.",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Sign in",
+      "errorRequired": "Please fill in all fields."
+    },
+    "crud": {
+      "actions": "Actions",
+      "loading": "Loading…",
+      "empty": "No items.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "+ Add",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDelete": "Delete this item?",
+      "mockNotice": "in-memory management (mock)",
+      "modalEdit": "Edit",
+      "modalAdd": "Add",
+      "listPlaceholder": "Comma-separated",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} items"
+    },
+    "appels": {
+      "columns": {
+        "titre": "Title",
+        "programme": "Program",
+        "pays": "Country",
+        "statut": "Status",
+        "dateLimite": "Deadline"
+      },
+      "fields": {
+        "titre": "Title",
+        "programme": "Program",
+        "pays": "Country / region",
+        "statut": "Status",
+        "dateLimite": "Deadline",
+        "budget": "Funding",
+        "resume": "Summary"
+      }
+    },
+    "documents": {
+      "columns": {
+        "nom": "Name",
+        "categorie": "Category",
+        "format": "Format",
+        "taille": "Size",
+        "date": "Date"
+      },
+      "fields": {
+        "nom": "Document name",
+        "categorie": "Category",
+        "format": "Format",
+        "taille": "Size",
+        "date": "Date",
+        "lien": "Link"
+      }
+    },
+    "mobilites": {
+      "columns": {
+        "destination": "Destination",
+        "pays": "Country",
+        "type": "Type",
+        "niveau": "Level",
+        "places": "Spots"
+      },
+      "fields": {
+        "destination": "Destination",
+        "pays": "Country",
+        "type": "Type",
+        "niveau": "Level",
+        "duree": "Duration",
+        "places": "Spots",
+        "programme": "Program",
+        "description": "Description"
+      }
+    },
+    "partenaires": {
+      "columns": {
+        "nom": "Name",
+        "pays": "Country",
+        "type": "Type",
+        "accord": "Agreement",
+        "depuis": "Since"
+      },
+      "fields": {
+        "nom": "Name",
+        "pays": "Country",
+        "ville": "City",
+        "type": "Type",
+        "accord": "Agreement type",
+        "depuis": "Partner since",
+        "domaines": "Fields",
+        "logo": "Emoji / logo"
+      }
+    },
+    "projets": {
+      "columns": {
+        "titre": "Title",
+        "programme": "Program",
+        "statut": "Status",
+        "budget": "Budget",
+        "coordinateur": "Coordinator"
+      },
+      "fields": {
+        "titre": "Title",
+        "programme": "Program",
+        "statut": "Status",
+        "coordinateur": "Coordinator",
+        "budget": "Budget",
+        "debut": "Start date",
+        "fin": "End date",
+        "pays": "Countries",
+        "partenaires": "Partners",
+        "resume": "Summary"
+      }
+    }
+  },
+  "enums": {
+    "projectStatus": { "proposed": "Proposed", "ongoing": "Ongoing", "completed": "Completed", "suspended": "Suspended" },
+    "callStatus": { "open": "Open", "closed": "Closed", "upcoming": "Coming soon", "closing_soon": "Closing soon" },
+    "mobilityType": {
+      "student_outgoing": "Student (outgoing)", "student_incoming": "Student (incoming)",
+      "teaching": "Teaching", "research": "Research / PhD", "staff": "Administrative staff",
+      "internship": "Internship", "summer_school": "Summer school"
+    },
+    "newsType": { "news": "News", "event": "Event", "workshop": "Workshop", "meeting": "Meeting", "testimonial": "Testimonial" },
+    "currentFile": "Current file",
+    "documentCategory": {
+      "institutionnel": "Institutional", "template_projet": "Project template", "formulaire_financier": "Financial form",
+      "erasmus_mobilite": "Erasmus+ mobility", "horizon_msca": "Horizon Europe / MSCA", "national": "National program",
+      "guide_faq": "Guide / FAQ", "rapport": "Report", "brochure": "Brochure", "convention": "Agreement"
+    }
+  }
+}

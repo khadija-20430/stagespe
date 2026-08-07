@@ -1,0 +1,310 @@
+{
+  "navbar": {
+    "homeAria": "الرئيسية ESI",
+    "brandLine1": "التعاون",
+    "brandLine2": "الدولي",
+    "home": "الرئيسية",
+    "consultationGroup": "تصفح",
+    "resourcesGroup": "الموارد",
+    "cooperation": "التعاون الدولي",
+    "projets": "المشاريع",
+    "appels": "دعوات المشاريع",
+    "mobilites": "التنقل",
+    "actualites": "الأخبار والفعاليات",
+    "documents": "مكتبة الوثائق",
+    "admin": "فضاء الإدارة"
+  },
+  "footer": {
+    "brandName": "التعاون الدولي",
+    "description": "البوابة المؤسسية للمدرسة العليا للإعلام الآلي المخصصة للتعاون الدولي: المشاريع، التنقل، الدعوات والشراكات الأكاديمية.",
+    "columns": {
+      "consultation": {
+        "title": "تصفح",
+        "cooperation": "التعاون الدولي",
+        "projets": "المشاريع",
+        "appels": "دعوات المشاريع",
+        "mobilites": "التنقل"
+      },
+      "resources": {
+        "title": "الموارد",
+        "actualites": "الأخبار والفعاليات",
+        "documents": "مكتبة الوثائق",
+        "admin": "فضاء الإدارة"
+      }
+    },
+    "copyright": "المدرسة العليا للإعلام الآلي — جميع الحقوق محفوظة.",
+    "department": "مديرية العلاقات الدولية"
+  },
+  "common": { "all": "الكل", "allFem": "الكل" },
+  "appels": {
+    "eyebrow": "التمويل",
+    "title": "دعوات المشاريع",
+    "description": "قم بتصفية دعوات المشاريع حسب البرنامج والبلد والحالة لإيجاد الفرص المناسبة.",
+    "filters": { "programme": "البرنامج", "country": "البلد / المنطقة", "status": "الحالة" },
+    "statuts": { "tous": "الكل", "ouvert": "مفتوح", "bientot": "قريبًا", "ferme": "مغلق" },
+    "empty": "لا توجد دعوات مطابقة للمرشحات المحددة.",
+    "deadline": "الموعد النهائي",
+    "budget": "التمويل",
+    "apply": "تقديم طلب"
+  },
+  "cooperation": {
+    "eyebrow": "حول",
+    "title": "التعاون الدولي",
+    "description": "تطوّر المدرسة العليا للإعلام الآلي سياسة تعاون نشطة مع مؤسسات البحث والتعليم في جميع أنحاء العالم.",
+    "axesSection": { "eyebrow": "محاورنا", "title": "محاور التعاون", "description": "أربعة توجهات رئيسية تشكل التزامنا الدولي." },
+    "axes": {
+      "research": { "title": "البحث التعاوني", "text": "مشاريع مشتركة، إشراف مشترك على الأطروحات ومخابر مشتركة مع شركائنا الأكاديميين الدوليين." },
+      "mobility": { "title": "التنقل الأكاديمي", "text": "برامج تبادل للطلبة وطلبة الدكتوراه والأساتذة الباحثين، في إطار Erasmus+ والاتفاقيات الثنائية." },
+      "degrees": { "title": "الشهادات المزدوجة", "text": "مناهج مشتركة تتيح الحصول على شهادات معترف بها من قبل عدة مؤسسات شريكة." },
+      "networks": { "title": "الشبكات والاتحادات", "text": "المشاركة في اتحادات أوروبية ودولية حول التحديات الرقمية الكبرى." }
+    },
+    "partnersSection": { "eyebrow": "الشبكة", "title": "المؤسسات الشريكة", "description": "جامعات ومعاهد بحث مرتبطة بالمدرسة عبر اتفاقيات رسمية." },
+    "partnerFields": { "type": "النوع", "agreement": "الاتفاقية", "since": "منذ" }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "المدرسة العليا للإعلام الآلي",
+      "title": "بوابة التعاون الدولي",
+      "description": "اكتشف واطّلع على جميع الأنشطة الدولية للمدرسة: مشاريع البحث، دعوات المشاريع، فرص التنقل والشراكات الأكاديمية حول العالم.",
+      "ctaCalls": "عرض دعوات المشاريع",
+      "ctaMobility": "استكشاف فرص التنقل"
+    },
+    "stats": { "partners": "الشركاء الدوليون", "projects": "مشاريع البحث النشطة", "mobility": "عمليات التنقل سنويًا", "countries": "البلدان الشريكة" },
+    "calls": { "eyebrow": "الفرص", "title": "دعوات المشاريع المفتوحة", "description": "التمويلات والبرامج المتاحة حاليًا للباحثين والطلبة.", "seeAll": "جميع الدعوات" },
+    "mobility": { "eyebrow": "التنقل", "title": "فرص التنقل", "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس دولية.", "seeAll": "جميع فرص التنقل", "spots": "{{count}} مكان متاح" },
+    "news": { "eyebrow": "في الوقت الحالي", "title": "الأخبار والفعاليات", "description": "آخر أخبار التعاون الدولي للمدرسة.", "seeAll": "جميع الأخبار" },
+    "partners": { "eyebrow": "الشبكة", "title": "شركاؤنا الدوليون", "description": "شبكة من الجامعات ومعاهد البحث الرائدة." }
+  },
+  "projets": {
+    "eyebrow": "البحث",
+    "title": "مشاريع البحث",
+    "description": "اكتشف مشاريع البحث الدولية التي تقودها أو تشارك في قيادتها المدرسة.",
+    "filters": { "programme": "البرنامج", "status": "الحالة" },
+    "statuts": { "tous": "الكل", "en_cours": "قيد الإنجاز", "termine": "منتهٍ" },
+    "empty": "لا توجد مشاريع مطابقة للمرشحات المحددة.",
+    "fields": { "coordinator": "المنسق", "budget": "الميزانية", "period": "الفترة" },
+    "featured": "مُبرز"
+  },
+  "actualites": {
+    "eyebrow": "الأخبار",
+    "title": "الأخبار والفعاليات",
+    "description": "تابع أخبار التعاون الدولي: الشراكات، المشاريع، الفعاليات والفرص.",
+    "readMore": "قراءة المزيد",
+    "empty": "لا يوجد خبر يطابق هذا الفلتر."
+  },
+  "actualiteDetail": {
+    "notFoundTitle": "الخبر غير موجود",
+    "notFoundText": "هذا الخبر غير موجود أو تم حذفه.",
+    "backToList": "جميع الأخبار"
+  },
+  "documents": {
+    "eyebrow": "الموارد",
+    "title": "مكتبة الوثائق",
+    "description": "أدلة، استمارات، اتفاقيات وتقارير متعلقة بالتعاون الدولي.",
+    "table": { "name": "الوثيقة", "category": "الفئة", "format": "الصيغة", "size": "الحجم", "updated": "آخر تحديث", "action": "إجراء" },
+    "download": "تحميل"
+  },
+  "mobilites": {
+    "eyebrow": "التنقل",
+    "title": "فرص التنقل",
+    "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس لدى شركائنا الدوليين.",
+    "filters": { "type": "نوع التنقل" },
+    "spots": "{{count}} مكان",
+    "fields": { "duration": "المدة", "level": "المستوى", "programme": "البرنامج" },
+    "apply": "تقديم طلب"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "text": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة إلى الرئيسية"
+  },
+  "admin": {
+    "title": "الإدارة",
+    "nav": {
+      "dashboard": "لوحة التحكم",
+      "partners": "الشركاء",
+      "projects": "المشاريع",
+      "calls": "دعوات المشاريع",
+      "mobility": "التنقل",
+      "documents": "المستندات"
+    },
+    "logout": "تسجيل الخروج",
+    "menuAria": "القائمة",
+    "exit": "خروج",
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "description": "نظرة عامة وإدارة محتوى البوابة (بيانات تجريبية).",
+      "about": {
+        "title": "حول هذه الواجهة",
+        "text": "تحاكي واجهة الإدارة هذه عمليات CRUD (إنشاء، قراءة، تعديل، حذف) في الذاكرة. لا يتم حفظ التغييرات بشكل دائم: تختفي عند إعادة تحميل الصفحة. طبقة الخدمات (<code>/src/services</code>) جاهزة للاتصال بواجهة برمجة REST خارجية."
+      }
+    },
+    "login": {
+      "brand": "فضاء الإدارة",
+      "title": "تسجيل الدخول",
+      "subtitle": "مصادقة تجريبية — استخدم أي بيانات اعتماد.",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "errorRequired": "يرجى تعبئة جميع الحقول."
+    },
+    "crud": {
+      "actions": "إجراءات",
+      "loading": "جارٍ التحميل…",
+      "empty": "لا توجد عناصر.",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "add": "+ إضافة",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "confirmDelete": "هل تريد حذف هذا العنصر؟",
+      "mockNotice": "إدارة في الذاكرة (تجريبي)",
+      "modalEdit": "تعديل",
+      "modalAdd": "إضافة",
+      "listPlaceholder": "مفصولة بفواصل",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "عنصر واحد",
+      "itemsCount_two": "عنصران",
+      "itemsCount_few": "{{count}} عناصر",
+      "itemsCount_many": "{{count}} عنصرًا",
+      "itemsCount_other": "{{count}} عنصر"
+    },
+    "appels": {
+      "columns": {
+        "titre": "العنوان",
+        "programme": "البرنامج",
+        "pays": "البلد",
+        "statut": "الحالة",
+        "dateLimite": "الموعد النهائي"
+      },
+      "fields": {
+        "titre": "العنوان",
+        "programme": "البرنامج",
+        "pays": "البلد / المنطقة",
+        "statut": "الحالة",
+        "dateLimite": "تاريخ الإغلاق",
+        "budget": "التمويل",
+        "resume": "ملخص"
+      }
+    },
+    "documents": {
+      "columns": {
+        "nom": "الاسم",
+        "categorie": "الفئة",
+        "format": "الصيغة",
+        "taille": "الحجم",
+        "date": "التاريخ"
+      },
+      "fields": {
+        "nom": "اسم المستند",
+        "categorie": "الفئة",
+        "format": "الصيغة",
+        "taille": "الحجم",
+        "date": "التاريخ",
+        "lien": "الرابط"
+      }
+    },
+    "mobilites": {
+      "columns": {
+        "destination": "الوجهة",
+        "pays": "البلد",
+        "type": "النوع",
+        "niveau": "المستوى",
+        "places": "الأماكن"
+      },
+      "fields": {
+        "destination": "الوجهة",
+        "pays": "البلد",
+        "type": "النوع",
+        "niveau": "المستوى",
+        "duree": "المدة",
+        "places": "الأماكن",
+        "programme": "البرنامج",
+        "description": "الوصف"
+      }
+    },
+    "partenaires": {
+      "columns": {
+        "nom": "الاسم",
+        "pays": "البلد",
+        "type": "النوع",
+        "accord": "الاتفاقية",
+        "depuis": "منذ"
+      },
+      "fields": {
+        "nom": "الاسم",
+        "pays": "البلد",
+        "ville": "المدينة",
+        "type": "النوع",
+        "accord": "نوع الاتفاقية",
+        "depuis": "شريك منذ",
+        "domaines": "المجالات",
+        "logo": "رمز تعبيري / شعار"
+      }
+    },
+    "projets": {
+      "columns": {
+        "titre": "العنوان",
+        "programme": "البرنامج",
+        "statut": "الحالة",
+        "budget": "الميزانية",
+        "coordinateur": "المنسق"
+      },
+      "fields": {
+        "titre": "العنوان",
+        "programme": "البرنامج",
+        "statut": "الحالة",
+        "coordinateur": "المنسق",
+        "budget": "الميزانية",
+        "debut": "تاريخ البدء",
+        "fin": "تاريخ الانتهاء",
+        "pays": "البلدان",
+        "partenaires": "الشركاء",
+        "resume": "ملخص"
+      }
+    }
+  },
+  "enums": {
+    "projectStatus": {
+      "proposed": "مقترح",
+      "ongoing": "قيد الإنجاز",
+      "completed": "منتهٍ",
+      "suspended": "معلّق"
+    },
+    "callStatus": {
+      "open": "مفتوح",
+      "closed": "مغلق",
+      "upcoming": "قريبًا",
+      "closing_soon": "الإغلاق قريب"
+    },
+    "mobilityType": {
+      "student_outgoing": "طلابي (صادر)",
+      "student_incoming": "طلابي (وارد)",
+      "teaching": "تدريس",
+      "research": "بحث / دكتوراه",
+      "staff": "موظف إداري",
+      "internship": "تدريب",
+      "summer_school": "مدرسة صيفية"
+    },
+    "currentFile": "الملف الحالي",
+    "newsType": {
+      "news": "خبر",
+      "event": "فعالية",
+      "workshop": "ورشة عمل",
+      "meeting": "لقاء",
+      "testimonial": "شهادة"
+    },
+    "documentCategory": {
+      "institutionnel": "مؤسساتي",
+      "template_projet": "نموذج مشروع",
+      "formulaire_financier": "استمارة مالية",
+      "erasmus_mobilite": "تنقل Erasmus+",
+      "horizon_msca": "Horizon Europe / MSCA",
+      "national": "برنامج وطني",
+      "guide_faq": "دليل / أسئلة شائعة",
+      "rapport": "تقرير",
+      "brochure": "كتيب",
+      "convention": "اتفاقية"
+    }
+  }
+}

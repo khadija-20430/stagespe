@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import Card from '../../components/ui/Card.jsx';
 import {
   getAppels,
@@ -8,16 +9,17 @@ import {
   getProjets,
 } from '../../services/api.js';
 
-const config = [
-  { key: 'partenaires', label: 'Partenaires', fetch: getPartenaires, icon: '🤝' },
-  { key: 'projets', label: 'Projets', fetch: getProjets, icon: '🔬' },
-  { key: 'appels', label: 'Appels à projets', fetch: getAppels, icon: '📢' },
-  { key: 'mobilites', label: 'Mobilités', fetch: getMobilites, icon: '✈️' },
-  { key: 'documents', label: 'Documents', fetch: getDocuments, icon: '📄' },
-];
-
 export default function Dashboard() {
+  const { t } = useTranslation();
   const [counts, setCounts] = useState({});
+
+  const config = [
+    { key: 'partenaires', label: t('admin.nav.partners'), fetch: getPartenaires, icon: '🤝' },
+    { key: 'projets', label: t('admin.nav.projects'), fetch: getProjets, icon: '🔬' },
+    { key: 'appels', label: t('admin.nav.calls'), fetch: getAppels, icon: '📢' },
+    { key: 'mobilites', label: t('admin.nav.mobility'), fetch: getMobilites, icon: '✈️' },
+    { key: 'documents', label: t('admin.nav.documents'), fetch: getDocuments, icon: '📄' },
+  ];
 
   useEffect(() => {
     config.forEach((c) => {
@@ -27,10 +29,8 @@ export default function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy">Tableau de bord</h1>
-      <p className="mt-1 text-slate-600">
-        Vue d'ensemble et gestion des contenus du portail (données mockées).
-      </p>
+      <h1 className="text-2xl font-bold text-navy">{t('admin.dashboard.title')}</h1>
+      <p className="mt-1 text-slate-600">{t('admin.dashboard.description')}</p>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {config.map((c) => (
@@ -49,13 +49,12 @@ export default function Dashboard() {
       </div>
 
       <Card className="mt-8 p-6">
-        <h2 className="font-bold text-navy">À propos de cette interface</h2>
+        <h2 className="font-bold text-navy">{t('admin.dashboard.about.title')}</h2>
         <p className="mt-2 text-sm leading-relaxed text-slate-600">
-          Cette interface d'administration simule les opérations CRUD (créer,
-          lire, modifier, supprimer) en mémoire. Les modifications ne sont pas
-          persistées : elles disparaissent au rechargement de la page. La couche
-          de services (<code className="rounded bg-slate-100 px-1 py-0.5">/src/services</code>)
-          est prête à être connectée à une API REST externe.
+          <Trans
+            i18nKey="admin.dashboard.about.text"
+            components={{ code: <code className="rounded bg-slate-100 px-1 py-0.5" /> }}
+          />
         </p>
       </Card>
     </div>

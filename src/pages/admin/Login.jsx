@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 
 export default function Login() {
+  const { t } = useTranslation();
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('admin@esi.dz');
@@ -16,7 +18,7 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      setError('Veuillez renseigner tous les champs.');
+      setError(t('admin.login.errorRequired'));
       return;
     }
     login(email.trim());
@@ -33,17 +35,15 @@ export default function Login() {
           >
             ESI
           </span>
-          <span className="text-base font-bold text-navy">Espace administrateur</span>
+          <span className="text-base font-bold text-navy">{t('admin.login.brand')}</span>
         </div>
-        <h1 className="mt-6 text-2xl font-bold text-navy">Connexion</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          Authentification simulée — utilisez n'importe quel identifiant.
-        </p>
+        <h1 className="mt-6 text-2xl font-bold text-navy">{t('admin.login.title')}</h1>
+        <p className="mt-1 text-sm text-slate-500">{t('admin.login.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="email">
-              Adresse e-mail
+              {t('admin.login.email')}
             </label>
             <input
               id="email"
@@ -55,7 +55,7 @@ export default function Login() {
           </div>
           <div>
             <label className="mb-1.5 block text-sm font-medium text-slate-700" htmlFor="password">
-              Mot de passe
+              {t('admin.login.password')}
             </label>
             <input
               id="password"
@@ -66,7 +66,7 @@ export default function Login() {
             />
           </div>
           {error ? <p className="text-sm text-red-600">{error}</p> : null}
-          <Button type="submit" className="w-full">Se connecter</Button>
+          <Button type="submit" className="w-full">{t('admin.login.submit')}</Button>
         </form>
       </Card>
     </div>

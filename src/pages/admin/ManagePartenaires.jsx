@@ -1,29 +1,42 @@
+import { useTranslation } from 'react-i18next';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import { getPartenaires } from '../../services/api.js';
 
+// L'admin travaille sur des champs plats ; on déplie/replie l'objet `accord`
+// (résumé de la table `agreements`) uniquement pour cette page.
+const fetchPartenairesFlat = () =>
+  getPartenaires().then((list) =>
+    list.map((p) => ({
+      ...p,
+      accordTitre: p.accord?.titre ?? '',
+      accordDepuis: p.accord?.depuis ?? '',
+    }))
+  );
+
 export default function ManagePartenaires() {
+  const { t } = useTranslation();
   return (
     <CrudManager
-      title="Partenaires"
+      title={t('admin.nav.partners')}
       idPrefix="part"
-      fetcher={getPartenaires}
+      fetcher={fetchPartenairesFlat}
       columns={[
-        { key: 'nom', label: 'Nom' },
-        { key: 'pays', label: 'Pays' },
-        { key: 'type', label: 'Type' },
-        { key: 'accord', label: 'Accord', render: (i) => <Badge tone="cobalt">{i.accord}</Badge> },
-        { key: 'depuis', label: 'Depuis' },
+        { key: 'nom', label: t('admin.partenaires.columns.nom') },
+        { key: 'pays', label: t('admin.partenaires.columns.pays') },
+        { key: 'type', label: t('admin.partenaires.columns.type') },
+        { key: 'accordTitre', label: t('admin.partenaires.columns.accord'), render: (i) => <Badge tone="cobalt">{i.accordTitre}</Badge> },
+        { key: 'accordDepuis', label: t('admin.partenaires.columns.depuis') },
       ]}
       fields={[
-        { name: 'nom', label: 'Nom', type: 'text' },
-        { name: 'pays', label: 'Pays', type: 'text' },
-        { name: 'ville', label: 'Ville', type: 'text' },
-        { name: 'type', label: 'Type', type: 'select', options: ['Université', 'Institut de recherche', 'Entreprise'] },
-        { name: 'accord', label: 'Type d\u2019accord', type: 'text' },
-        { name: 'depuis', label: 'Partenaire depuis', type: 'text' },
-        { name: 'domaines', label: 'Domaines', type: 'list' },
-        { name: 'logo', label: 'Emoji / logo', type: 'text' },
+        { name: 'nom', label: t('admin.partenaires.fields.nom'), type: 'text' },
+        { name: 'pays', label: t('admin.partenaires.fields.pays'), type: 'text' },
+        { name: 'ville', label: t('admin.partenaires.fields.ville'), type: 'text' },
+        { name: 'type', label: t('admin.partenaires.fields.type'), type: 'select', options: ['Université', 'Institut de recherche', 'Entreprise'] },
+        { name: 'accordTitre', label: t('admin.partenaires.fields.accord'), type: 'text' },
+        { name: 'accordDepuis', label: t('admin.partenaires.fields.depuis'), type: 'number' },
+        { name: 'domaines', label: t('admin.partenaires.fields.domaines'), type: 'list' },
+        { name: 'logo', label: t('admin.partenaires.fields.logo'), type: 'text' },
       ]}
     />
   );

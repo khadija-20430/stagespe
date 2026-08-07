@@ -1,28 +1,23 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
-// Génère un id local pour les nouveaux éléments (mock).
 let seq = 0;
 const nextId = (prefix) => `${prefix}-new-${Date.now()}-${seq++}`;
 
 function emptyItem(fields) {
   const obj = {};
   fields.forEach((f) => {
-    obj[f.name] = f.type === 'list' ? '' : '';
+    obj[f.name] = f.type === 'number' ? 0 : '';
   });
   return obj;
 }
 
-// Composant CRUD réutilisable pour toutes les entités admin.
-// props:
-//  - title, idPrefix
-//  - fetcher() -> Promise<array>
-//  - columns: [{ key, label, render? }]
-//  - fields: [{ name, label, type: 'text'|'textarea'|'select'|'list', options? }]
 export default function CrudManager({ title, idPrefix, fetcher, columns, fields }) {
+  const { t } = useTranslation();
   const [items, setItems] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [draft, setDraft] = useState(null);
@@ -39,7 +34,6 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
   };
 
   const openEdit = (item) => {
-    // convertit les champs 'list' (tableaux) en chaîne pour l'édition
     const d = { ...item };
     fields.forEach((f) => {
       if (f.type === 'list' && Array.isArray(d[f.name])) {
@@ -52,7 +46,7 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
   };
 
   const remove = (id) => {
-    if (window.confirm('Supprimer cet élément ?')) {
+    if (window.confirm(t('admin.crud.confirmDelete'))) {
       setItems((prev) => prev.filter((i) => i.id !== id));
     }
   };
@@ -67,6 +61,9 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
           .map((s) => s.trim())
           .filter(Boolean);
       }
+      if (f.type === 'number') {
+        payload[f.name] = Number(payload[f.name]) || 0;
+      }
     });
 
     if (editingId) {
@@ -77,7 +74,14 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
     setModalOpen(false);
   };
 
-  const setField = (name, value) => setDraft((d) => ({ ...d, [name]: value }));
+  // Supporte une valeur directe OU une fonction (prevValue, draft) => newValue,
+  // nécessaire pour le type 'file' qui peut pré-remplir un autre champ (ex: nom)
+  // sans écraser ce que l'admin a déjà saisi.
+  const setField = (name, value) =>
+    setDraft((d) => ({
+      ...d,
+      [name]: typeof value === 'function' ? value(d[name], d) : value,
+    }));
 
   return (
     <div>
@@ -85,10 +89,12 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
         <div>
           <h1 className="text-2xl font-bold text-navy">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">
-            {items === null ? '…' : `${items.length} élément(s)`} · gestion en mémoire (mock)
+            {items === null ? '…' : t('admin.crud.itemsCount', { count: items.length })}
+            {' · '}
+            {t('admin.crud.mockNotice')}
           </p>
         </div>
-        <Button onClick={openCreate}>+ Ajouter</Button>
+        <Button onClick={openCreate}>{t('admin.crud.add')}</Button>
       </div>
 
       <Card className="mt-6 overflow-hidden">
@@ -99,20 +105,20 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
                 {columns.map((c) => (
                   <th key={c.key} className="px-5 py-3.5 font-semibold">{c.label}</th>
                 ))}
-                <th className="px-5 py-3.5 text-right font-semibold">Actions</th>
+                <th className="px-5 py-3.5 text-right font-semibold">{t('admin.crud.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {items === null ? (
                 <tr>
                   <td colSpan={columns.length + 1} className="px-5 py-10 text-center text-slate-400">
-                    Chargement…
+                    {t('admin.crud.loading')}
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length + 1} className="px-5 py-10 text-center text-slate-400">
-                    Aucun élément.
+                    {t('admin.crud.empty')}
                   </td>
                 </tr>
               ) : (
@@ -126,10 +132,10 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
                     <td className="px-5 py-4 text-right">
                       <div className="flex justify-end gap-2">
                         <Button size="sm" variant="secondary" onClick={() => openEdit(item)}>
-                          Modifier
+                          {t('admin.crud.edit')}
                         </Button>
                         <Button size="sm" variant="danger" onClick={() => remove(item.id)}>
-                          Supprimer
+                          {t('admin.crud.delete')}
                         </Button>
                       </div>
                     </td>
@@ -148,7 +154,7 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-lg font-bold text-navy">
-              {editingId ? 'Modifier' : 'Ajouter'} — {title}
+              {editingId ? t('admin.crud.modalEdit') : t('admin.crud.modalAdd')} — {title}
             </h2>
             <form onSubmit={save} className="mt-5 space-y-4">
               {fields.map((f) => (
@@ -167,17 +173,45 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
                       onChange={(e) => setField(f.name, e.target.value)}
                       className="min-h-[44px] w-full rounded-lg border border-slate-300 px-3 text-base focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
                     >
-                      <option value="">—</option>
-                      {f.options.map((o) => (
-                        <option key={o} value={o}>{o}</option>
-                      ))}
+                      <option value="">{t('admin.crud.selectPlaceholder')}</option>
+                      {f.options.map((o) => {
+                        const value = typeof o === 'object' ? o.value : o;
+                        const label = typeof o === 'object' ? o.label : o;
+                        return <option key={value} value={value}>{label}</option>;
+                      })}
                     </select>
+                  ) : f.type === 'number' ? (
+                    <input
+                      type="number"
+                      value={draft[f.name] ?? 0}
+                      onChange={(e) => setField(f.name, e.target.value)}
+                      className="min-h-[44px] w-full rounded-lg border border-slate-300 px-3 text-base focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                    />
+                  ) : f.type === 'file' ? (
+                    <div>
+                      {draft[f.name] ? (
+                        <p className="mb-2 truncate text-sm text-slate-500">
+                          {t('admin.crud.currentFile')} :{' '}
+                          <span className="font-medium text-slate-700">{draft[f.name]}</span>
+                        </p>
+                      ) : null}
+                      <input
+                        type="file"
+                        accept={f.accept}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          if (f.onFile) f.onFile(file, setField);
+                        }}
+                        className="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-cobalt file:px-3 file:py-2 file:text-sm file:font-medium file:text-white file:cursor-pointer hover:file:bg-cobalt/90"
+                      />
+                    </div>
                   ) : (
                     <input
                       type="text"
                       value={draft[f.name] ?? ''}
                       onChange={(e) => setField(f.name, e.target.value)}
-                      placeholder={f.type === 'list' ? 'Séparés par des virgules' : ''}
+                      placeholder={f.type === 'list' ? t('admin.crud.listPlaceholder') : ''}
                       className="min-h-[44px] w-full rounded-lg border border-slate-300 px-3 text-base focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
                     />
                   )}
@@ -185,9 +219,9 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
               ))}
               <div className={cn('flex justify-end gap-3 pt-2')}>
                 <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
-                  Annuler
+                  {t('admin.crud.cancel')}
                 </Button>
-                <Button type="submit">Enregistrer</Button>
+                <Button type="submit">{t('admin.crud.save')}</Button>
               </div>
             </form>
           </div>

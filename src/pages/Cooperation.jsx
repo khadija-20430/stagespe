@@ -1,61 +1,43 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { getPartenaires } from '../services/api.js';
 
-const axes = [
-  {
-    titre: 'Recherche collaborative',
-    texte:
-      'Projets conjoints, co-encadrement de thèses et laboratoires communs avec nos partenaires académiques internationaux.',
-    icone: '🔬',
-  },
-  {
-    titre: 'Mobilité académique',
-    texte:
-      "Programmes d'échange pour étudiants, doctorants et enseignants-chercheurs, dans le cadre d'Erasmus+ et d'accords bilatéraux.",
-    icone: '✈️',
-  },
-  {
-    titre: 'Doubles diplômes',
-    texte:
-      'Cursus conjoints permettant l\u2019obtention de diplômes reconnus par plusieurs établissements partenaires.',
-    icone: '🎓',
-  },
-  {
-    titre: 'Réseaux & consortiums',
-    texte:
-      "Participation à des consortiums européens et internationaux autour des grands défis numériques.",
-    icone: '🌐',
-  },
-];
-
 export default function Cooperation() {
+  const { t } = useTranslation();
   const [partenaires, setPartenaires] = useState(null);
 
   useEffect(() => {
     getPartenaires().then(setPartenaires);
   }, []);
 
+  const axes = ['research', 'mobility', 'degrees', 'networks'].map((key) => ({
+    key,
+    titre: t(`cooperation.axes.${key}.title`),
+    texte: t(`cooperation.axes.${key}.text`),
+    icone: { research: '🔬', mobility: '✈️', degrees: '🎓', networks: '🌐' }[key],
+  }));
+
   return (
     <div>
       <PageHeader
-        eyebrow="À propos"
-        title="Coopération internationale"
-        description="L'École Supérieure en Informatique développe une politique active de coopération avec des institutions de recherche et d'enseignement du monde entier."
+        eyebrow={t('cooperation.eyebrow')}
+        title={t('cooperation.title')}
+        description={t('cooperation.description')}
       />
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <SectionHeading
-          eyebrow="Nos axes"
-          title="Axes de coopération"
-          description="Quatre grandes orientations structurent notre engagement international."
+          eyebrow={t('cooperation.axesSection.eyebrow')}
+          title={t('cooperation.axesSection.title')}
+          description={t('cooperation.axesSection.description')}
         />
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {axes.map((a) => (
-            <Card key={a.titre} className="flex gap-4 p-6">
+            <Card key={a.key} className="flex gap-4 p-6">
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-2xl">
                 {a.icone}
               </div>
@@ -71,9 +53,9 @@ export default function Cooperation() {
       <section className="bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <SectionHeading
-            eyebrow="Réseau"
-            title="Établissements partenaires"
-            description="Universités et instituts de recherche liés à l'école par des accords formels."
+            eyebrow={t('cooperation.partnersSection.eyebrow')}
+            title={t('cooperation.partnersSection.title')}
+            description={t('cooperation.partnersSection.description')}
           />
           {partenaires === null ? (
             <Loader />
@@ -90,16 +72,16 @@ export default function Cooperation() {
                   </div>
                   <dl className="mt-4 space-y-1.5 text-sm">
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">Type</dt>
+                      <dt className="text-slate-400">{t('cooperation.partnerFields.type')}</dt>
                       <dd className="text-right font-medium text-slate-700">{p.type}</dd>
                     </div>
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">Accord</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.accord}</dd>
+                      <dt className="text-slate-400">{t('cooperation.partnerFields.agreement')}</dt>
+                      <dd className="text-right font-medium text-slate-700">{p.accord.titre}</dd>
                     </div>
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">Depuis</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.depuis}</dd>
+                      <dt className="text-slate-400">{t('cooperation.partnerFields.since')}</dt>
+                      <dd className="text-right font-medium text-slate-700">{p.accord.depuis}</dd>
                     </div>
                   </dl>
                   <div className="mt-4 flex flex-wrap gap-1.5">
