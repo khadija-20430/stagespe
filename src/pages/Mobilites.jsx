@@ -4,7 +4,6 @@ import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import FilterChip from '../components/ui/FilterChip.jsx';
-import Button from '../components/ui/Button.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { getMobilites } from '../services/api.js';
 import { MOBILITY_TYPE } from '../lib/enums.js';
@@ -58,14 +57,16 @@ export default function Mobilites() {
                   <Badge tone="navy">{t(`enums.mobilityType.${m.type}`)}</Badge>
                   <span className="text-sm font-semibold text-cobalt">{t('mobilites.spots', { count: m.places })}</span>
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-navy">{m.destination}</h3>
-                <p className="text-sm text-slate-500">{m.pays}</p>
+                {/* host_institution + host_city remplacent l'ancien champ libre "destination" */}
+                <h3 className="mt-4 text-lg font-bold text-navy">{m.institutionAccueil}</h3>
+                <p className="text-sm text-slate-500">{m.paysDestination} · {m.villeAccueil}</p>
                 <p className="mt-2 flex-1 text-sm text-slate-600">{m.description}</p>
                 <dl className="mt-4 grid grid-cols-2 gap-y-2 border-t border-slate-100 pt-4 text-sm">
                   <dt className="text-slate-400">{t('mobilites.fields.duration')}</dt>
                   <dd className="text-right font-medium text-slate-700">{m.duree}</dd>
-                  <dt className="text-slate-400">{t('mobilites.fields.level')}</dt>
-                  <dd className="text-right font-medium text-slate-700">{m.niveau}</dd>
+                  {/* "niveau" n'existe pas en BDD : on affiche le public visé (target_audience) à la place */}
+                  <dt className="text-slate-400">{t('mobilites.fields.audience')}</dt>
+                  <dd className="text-right font-medium text-slate-700">{m.publicCible}</dd>
                   <dt className="text-slate-400">{t('mobilites.fields.programme')}</dt>
                   <dd className="text-right font-medium text-slate-700">{m.programme}</dd>
                 </dl>

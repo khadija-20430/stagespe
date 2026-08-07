@@ -4,7 +4,6 @@ import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import FilterChip from '../components/ui/FilterChip.jsx';
-import Button from '../components/ui/Button.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { formatDate } from '../lib/utils.js';
 import { getAppels } from '../services/api.js';
@@ -25,8 +24,10 @@ export default function Appels() {
     () => ['Tous', ...new Set((appels ?? []).map((a) => a.programme))],
     [appels]
   );
+  // paysEligibles = eligible_countries, un appel peut viser plusieurs pays :
+  // on aplatit toutes les listes pour construire les options du filtre.
   const listePays = useMemo(
-    () => ['Tous', ...new Set((appels ?? []).map((a) => a.pays))],
+    () => ['Tous', ...new Set((appels ?? []).flatMap((a) => a.paysEligibles ?? []))],
     [appels]
   );
 
@@ -35,7 +36,7 @@ export default function Appels() {
     return appels.filter(
       (a) =>
         (programme === 'Tous' || a.programme === programme) &&
-        (pays === 'Tous' || a.pays === pays) &&
+        (pays === 'Tous' || (a.paysEligibles ?? []).includes(pays)) &&
         (statut === 'tous' || a.statut === statut)
     );
   }, [appels, programme, pays, statut]);
@@ -83,19 +84,20 @@ export default function Appels() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone="cobalt">{a.programme}</Badge>
                     <Badge tone={callStatusTone(a.statut)}>{t(`enums.callStatus.${a.statut}`)}</Badge>
-                    <span className="text-xs text-slate-400">{a.pays}</span>
+                    <span className="text-xs text-slate-400">{(a.paysEligibles ?? []).join(', ')}</span>
                   </div>
                   <h3 className="mt-3 text-lg font-bold text-navy">{a.titre}</h3>
                   <p className="mt-1.5 text-sm text-slate-600">{a.resume}</p>
                   <p className="mt-3 text-sm text-slate-500">
                     <span className="font-medium text-slate-700">{t('appels.deadline')} :</span> {formatDate(a.dateLimite)}
                     <span className="mx-2 text-slate-300">•</span>
-                    <span className="font-medium text-slate-700">{t('appels.budget')} :</span> {a.budgetLabel}
+                    <span className="font-medium text-slate-700">{t('appels.budget')} :</span>{' '}
+                    {a.budgetDisponible
+                      ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(a.budgetDisponible)
+                      : '—'}
                   </p>
                 </div>
-                <div className="shrink-0">
-                  
-                </div>
+                <div className="shrink-0"></div>
               </Card>
             ))}
           </div>

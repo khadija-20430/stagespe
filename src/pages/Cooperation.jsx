@@ -73,19 +73,25 @@ export default function Cooperation() {
                   <dl className="mt-4 space-y-1.5 text-sm">
                     <div className="flex justify-between gap-2">
                       <dt className="text-slate-400">{t('cooperation.partnerFields.type')}</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.type}</dd>
+                      <dd className="text-right font-medium text-slate-700">{p.typeEtablissement}</dd>
                     </div>
-                    <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">{t('cooperation.partnerFields.agreement')}</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.accord.titre}</dd>
-                    </div>
-                    <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">{t('cooperation.partnerFields.since')}</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.accord.depuis}</dd>
-                    </div>
+                    {/* accord : issu de la table agreements liée (1 partenaire → N conventions),
+                        agrégé côté API, pas un champ de partners lui-même. */}
+                    {p.accord ? (
+                      <>
+                        <div className="flex justify-between gap-2">
+                          <dt className="text-slate-400">{t('cooperation.partnerFields.agreement')}</dt>
+                          <dd className="text-right font-medium text-slate-700">{p.accord.titre}</dd>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                          <dt className="text-slate-400">{t('cooperation.partnerFields.since')}</dt>
+                          <dd className="text-right font-medium text-slate-700">{p.accord.depuis}</dd>
+                        </div>
+                      </>
+                    ) : null}
                   </dl>
                   <div className="mt-4 flex flex-wrap gap-1.5">
-                    {p.domaines.map((d) => (
+                    {(p.domaines ?? []).map((d) => (
                       <span key={d} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
                         {d}
                       </span>

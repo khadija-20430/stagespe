@@ -10,6 +10,19 @@ import { formatDate } from '../lib/utils.js';
 import { getDocuments } from '../services/api.js';
 import { DOCUMENT_CATEGORIES } from '../lib/enums.js';
 
+// file_size est stocké en octets (BIGINT) côté BDD : jamais affiché brut.
+const formatBytes = (bytes) => {
+  if (!bytes) return '—';
+  const units = ['o', 'Ko', 'Mo', 'Go'];
+  let i = 0;
+  let n = bytes;
+  while (n >= 1024 && i < units.length - 1) {
+    n /= 1024;
+    i += 1;
+  }
+  return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
+};
+
 export default function Documents() {
   const { t } = useTranslation();
   const [documents, setDocuments] = useState(null);
@@ -65,13 +78,13 @@ export default function Documents() {
                 <tbody>
                   {filtres.map((d) => (
                     <tr key={d.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                      <td className="px-6 py-4 font-medium text-navy">{d.nom}</td>
+                      <td className="px-6 py-4 font-medium text-navy">{d.titre}</td>
                       <td className="px-6 py-4"><Badge>{t(`enums.documentCategory.${d.categorie}`)}</Badge></td>
-                      <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">{d.format}</td>
-                      <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">{d.taille}</td>
-                      <td className="hidden px-6 py-4 text-slate-600 md:table-cell">{formatDate(d.date)}</td>
+                      <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">{d.fileFormat}</td>
+                      <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">{formatBytes(d.fileSize)}</td>
+                      <td className="hidden px-6 py-4 text-slate-600 md:table-cell">{formatDate(d.dateUpload)}</td>
                       <td className="px-6 py-4 text-right">
-                        <Button as="a" href={d.lien} size="sm" variant="secondary">{t('documents.download')}</Button>
+                        <Button as="a" href={d.fichier} size="sm" variant="secondary">{t('documents.download')}</Button>
                       </td>
                     </tr>
                   ))}

@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Button from '../components/ui/Button.jsx';
 import Card from '../components/ui/Card.jsx';
-import Badge, { statutTone } from '../components/ui/Badge.jsx';
+import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
 import { getActualites, getAppels, getMobilites, getPartenaires } from '../services/api.js';
+import { callStatusTone } from '../lib/enums.js';
 
 function Hero() {
   const { t } = useTranslation();
@@ -51,7 +52,8 @@ export default function Home() {
 
   useEffect(() => {
     getActualites().then((d) => setActualites(d.slice(0, 3)));
-    getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'Ouvert').slice(0, 3)));
+    // status (CHECK sur calls) : 'open' | 'closed' | 'upcoming' | 'closing_soon'
+    getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
     getMobilites().then((d) => setMobilites(d.slice(0, 3)));
     getPartenaires().then(setPartenaires);
   }, []);
@@ -94,7 +96,7 @@ export default function Home() {
             <Card key={a.id} hover className="flex flex-col p-6">
               <div className="flex items-center justify-between">
                 <Badge tone="cobalt">{a.programme}</Badge>
-                <Badge tone={statutTone(a.statut)}>{a.statut}</Badge>
+                <Badge tone={callStatusTone(a.statut)}>{t(`enums.callStatus.${a.statut}`)}</Badge>
               </div>
               <h3 className="mt-4 text-lg font-bold text-navy">{a.titre}</h3>
               <p className="mt-2 flex-1 text-sm text-slate-600">{a.resume}</p>
@@ -121,9 +123,10 @@ export default function Home() {
           <div className="mt-8 grid gap-6 md:grid-cols-3">
             {mobilites.map((m) => (
               <Card key={m.id} hover className="flex flex-col p-6">
-                <Badge tone="navy">{m.type}</Badge>
-                <h3 className="mt-4 text-lg font-bold text-navy">{m.destination}</h3>
-                <p className="text-sm text-slate-500">{m.pays} · {m.duree}</p>
+                <Badge tone="navy">{t(`enums.mobilityType.${m.type}`)}</Badge>
+                {/* destination_partner / host_institution + host_city, remplace l'ancien champ libre "destination" */}
+                <h3 className="mt-4 text-lg font-bold text-navy">{m.institutionAccueil}</h3>
+                <p className="text-sm text-slate-500">{m.paysDestination} · {m.villeAccueil}</p>
                 <p className="mt-2 flex-1 text-sm text-slate-600">{m.description}</p>
                 <p className="mt-4 text-sm font-semibold text-cobalt">
                   {t('home.mobility.spots', { count: m.places })}
@@ -146,16 +149,17 @@ export default function Home() {
           </Button>
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {/* news_events : titre/type/résumé/date_évènement/image_url (pas de colonne "catégorie" ni "extrait") */}
           {actualites.map((n) => (
             <Card key={n.id} hover className="flex flex-col overflow-hidden">
-              <img src={n.image} alt="" className="h-44 w-full object-cover" />
+              <img src={n.imageUrl} alt="" className="h-44 w-full object-cover" />
               <div className="flex flex-1 flex-col p-6">
                 <div className="flex items-center justify-between text-xs">
-                  <Badge tone="cobalt">{n.categorie}</Badge>
-                  <span className="text-slate-400">{formatDate(n.date)}</span>
+                  <Badge tone="cobalt">{t(`enums.newsType.${n.type}`)}</Badge>
+                  <span className="text-slate-400">{formatDate(n.eventDate)}</span>
                 </div>
                 <h3 className="mt-3 text-lg font-bold text-navy">{n.titre}</h3>
-                <p className="mt-2 flex-1 text-sm text-slate-600">{n.extrait}</p>
+                <p className="mt-2 flex-1 text-sm text-slate-600">{n.resume}</p>
                 <Link to={`/actualites/${n.id}`} className="mt-4 text-sm font-semibold text-cobalt hover:underline">
                   {t('actualites.readMore')} →
                 </Link>

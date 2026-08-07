@@ -76,13 +76,13 @@ export default function Projets() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone="cobalt">{p.programme}</Badge>
                   <Badge tone={projectStatusTone(p.statut)}>{t(`enums.projectStatus.${p.statut}`)}</Badge>
-                  {p.isFeatured ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
+                  {p.misEnAvant ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
                 </div>
                 <h3 className="mt-4 text-xl font-bold text-navy">{p.titre}</h3>
                 <p className="mt-2 flex-1 text-sm text-slate-600">{p.resume}</p>
                 <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-slate-100 pt-4 text-sm">
                   <dt className="text-slate-400">{t('projets.fields.coordinator')}</dt>
-                  <dd className="text-right font-medium text-slate-700">{p.coordinateur}</dd>
+                  <dd className="text-right font-medium text-slate-700">{p.coordinateurPartenaire}</dd>
                   <dt className="text-slate-400">{t('projets.fields.budget')}</dt>
                   <dd className="text-right font-medium text-slate-700">
                     {new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(p.budget)}
@@ -92,8 +92,10 @@ export default function Projets() {
                     {formatDate(p.debut)} — {formatDate(p.fin)}
                   </dd>
                 </dl>
+                {/* pays : dérivé côté API des pays des partenaires liés (project_partners → partners.country_id),
+                    pas une colonne éditable de projects. */}
                 <div className="mt-4 flex flex-wrap gap-1.5">
-                  {p.pays.map((c) => (
+                  {(p.pays ?? []).map((c) => (
                     <span key={c} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
                       {c}
                     </span>
