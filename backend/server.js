@@ -6,6 +6,7 @@ require('dotenv').config();
 
 const { globalLimiter, loginLimiter } = require('./middleware/rateLimiter');
 const sanitizeBody = require('./middleware/sanitize');
+const ensureSuperAdmin = require('./lib/bootstrapAdmin');
 
 const app = express();
 
@@ -51,6 +52,12 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Serveur backend lancé sur le port ${PORT}`);
+
+// On crée/vérifie le compte super_admin AVANT d'ouvrir le serveur aux requêtes,
+// pour être sûr que le compte est prêt dès le premier appel. Idempotent :
+// ne recrée jamais un compte déjà existant (vérifié par email).
+ensureSuperAdmin().finally(() => {
+  app.listen(PORT, () => {
+    console.log(`Serveur backend lancé sur le port ${PORT}`);
+  });
 });

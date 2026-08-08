@@ -636,16 +636,6 @@ INSERT INTO themes (name) VALUES
   ('Bio-informatique')
 ON CONFLICT (name) DO NOTHING;
 
-INSERT INTO users (full_name, email, password_hash, role, is_active)
-VALUES (
-  'Super Administrateur',
-  'admin@esi.dz',
-  '$2y$10$placeholder_hash_here',
-  'super_admin',
-  TRUE
-)
-ON CONFLICT (email) DO NOTHING;
-
 CREATE INDEX IF NOT EXISTS idx_partners_country ON partners(country_id);
 CREATE INDEX IF NOT EXISTS idx_partners_statut_pub ON partners(statut_publication);
 CREATE INDEX IF NOT EXISTS idx_partner_contacts_partner ON partner_contacts(partner_id);
