@@ -6,7 +6,7 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getActualites, getAppels, getMobilites, getPartenaires } from '../services/api.js';
+import { getActualites, getAppels, getMobilites, getPartenaires, getStats } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
 
 function Hero() {
@@ -51,19 +51,26 @@ export default function Home() {
   const [partenaires, setPartenaires] = useState([]);
 
   useEffect(() => {
-    getActualites().then((d) => setActualites(d.slice(0, 3)));
-    // status (CHECK sur calls) : 'open' | 'closed' | 'upcoming' | 'closing_soon'
-    getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
-    getMobilites().then((d) => setMobilites(d.slice(0, 3)));
-    getPartenaires().then(setPartenaires);
-  }, []);
+  getActualites().then((d) => setActualites(d.slice(0, 3)));
+  getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
+  getMobilites().then((d) => setMobilites(d.slice(0, 3)));
+  getPartenaires().then(setPartenaires);
+  getStats().then((s) =>
+    setStats([
+      { key: 'partners', value: String(s.partners) },
+      { key: 'projects', value: String(s.projects) },
+      { key: 'mobility', value: String(s.openMobility) },
+      { key: 'countries', value: String(s.countries) },
+    ])
+  );
+}, []);
 
-  const stats = [
-    { key: 'partners', value: '32' },
-    { key: 'projects', value: '18' },
-    { key: 'mobility', value: '120+' },
-    { key: 'countries', value: '14' },
-  ];
+  const [stats, setStats] = useState([
+  { key: 'partners', value: '—' },
+  { key: 'projects', value: '—' },
+  { key: 'mobility', value: '—' },
+  { key: 'countries', value: '—' },
+]);
 
   return (
     <div>
