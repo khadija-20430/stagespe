@@ -23,6 +23,11 @@ app.use('/api/languages', require('./routes/languagesRoutes'));
 app.use('/api/countries', require('./routes/countriesRoutes'));
 app.use('/api/programmes', require('./routes/programmesRoutes'));
 app.use('/api/themes', require('./routes/themesRoutes'));
+app.use('/api/partnership-types', require('./routes/partnershipTypesRoutes'));
+app.use('/api/establishment-types', require('./routes/establishmentTypesRoutes'));
+app.use('/api/action-types', require('./routes/actionTypesRoutes'));
+app.use('/api/cities', require('./routes/citiesRoutes'));
+app.use('/api/institutions', require('./routes/institutionsRoutes'));
 
 app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth', require('./routes/authRoutes'));
@@ -43,12 +48,12 @@ app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 
 app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'API Portail International ESI' });
+    res.json({ status: 'ok', message: 'API Portail International ESI' });
 });
 
 app.use((err, req, res, next) => {
-  console.error('[ERREUR NON GÉRÉE]', err);
-  res.status(500).json({ error: 'Une erreur interne est survenue' });
+    console.error('[ERREUR NON GÉRÉE]', err);
+    res.status(500).json({ error: 'Une erreur interne est survenue' });
 });
 
 const PORT = process.env.PORT || 5000;
@@ -57,7 +62,7 @@ const PORT = process.env.PORT || 5000;
 // pour être sûr que le compte est prêt dès le premier appel. Idempotent :
 // ne recrée jamais un compte déjà existant (vérifié par email).
 ensureSuperAdmin().finally(() => {
-  app.listen(PORT, () => {
-    console.log(`Serveur backend lancé sur le port ${PORT}`);
-  });
+    app.listen(PORT, () => {
+        console.log(`Serveur backend lancé sur le port ${PORT}`);
+    });
 });

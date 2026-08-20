@@ -101,3 +101,81 @@ export const getStats = async () => {
   const data = await request('/stats');
   return mapStats(data);
 };
+const TOKEN_KEY = 'esi_admin_token';
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
+export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+
+/**
+ * Wrapper pour les requêtes authentifiées (POST/PUT/DELETE + GET protégés).
+ */
+const authRequest = async (path, { method = 'GET', body } = {}) => {
+  const headers = { 'Content-Type': 'application/json' };
+  const token = getToken();
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+  });
+
+  if (!res.ok) {
+    let message = `Erreur API (${res.status}) sur ${path}`;
+    try {
+      const data = await res.json();
+      if (data.error) message = data.error;
+    } catch {}
+    throw new Error(message);
+  }
+  if (res.status === 204) return null;
+  return res.json();
+};
+
+/* -------------------------------- Auth -------------------------------- */
+export const login = async (email, password) => {
+  const data = await authRequest('/auth/login', { method: 'POST', body: { email, password } });
+  setToken(data.token);
+  return data.user;
+};
+
+export const logout = async () => {
+  try { await authRequest('/auth/logout', { method: 'POST' }); } catch {}
+  clearToken();
+};
+
+export const getMe = () => authRequest('/auth/me');
+
+/* ---------------------------- Données de référence ---------------------------- */
+export const getCountries = () => request('/countries');
+export const getProgrammes = () => request('/programmes');
+export const getEstablishmentTypes = () => request('/establishment-types');
+export const getPartnershipTypes = () => request('/partnership-types');
+export const getActionTypes = () => request('/action-types');
+export const getThemes = () => request('/themes');
+export const getDocumentCategories = () => request('/document-categories');
+
+/* ------------------------------ Partenaires (CRUD) --------------------------------- */
+export const createPartenaire = (payload) => authRequest('/partners', { method: 'POST', body: payload });
+export const updatePartenaire = (id, payload) => authRequest(`/partners/${id}`, { method: 'PUT', body: payload });
+export const deletePartenaire = (id) => authRequest(`/partners/${id}`, { method: 'DELETE' });
+
+/* -------------------------------- Projets (CRUD) -------------------------------- */
+export const createProjet = (payload) => authRequest('/projects', { method: 'POST', body: payload });
+export const updateProjet = (id, payload) => authRequest(`/projects/${id}`, { method: 'PUT', body: payload });
+export const deleteProjet = (id) => authRequest(`/projects/${id}`, { method: 'DELETE' });
+
+/* --------------------------- Appels à projets (CRUD) ----------------------------- */
+export const createAppel = (payload) => authRequest('/calls', { method: 'POST', body: payload });
+export const updateAppel = (id, payload) => authRequest(`/calls/${id}`, { method: 'PUT', body: payload });
+export const deleteAppel = (id) => authRequest(`/calls/${id}`, { method: 'DELETE' });
+
+/* ------------------------------- Mobilités (CRUD) -------------------------------- */
+export const createMobilite = (payload) => authRequest('/mobility', { method: 'POST', body: payload });
+export const updateMobilite = (id, payload) => authRequest(`/mobility/${id}`, { method: 'PUT', body: payload });
+export const deleteMobilite = (id) => authRequest(`/mobility/${id}`, { method: 'DELETE' });
+
+/* ------------------------------- Documents (CRUD) --------------------------------- */
+export const createDocument = (payload) => authRequest('/documents', { method: 'POST', body: payload });
+export const updateDocument = (id, payload) => authRequest(`/documents/${id}`, { method: 'PUT', body: payload });
+export const deleteDocument = (id) => authRequest(`/documents/${id}`, { method: 'DELETE' });

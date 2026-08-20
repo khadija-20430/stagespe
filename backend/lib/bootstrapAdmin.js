@@ -33,8 +33,7 @@ async function ensureSuperAdmin() {
     );
     console.log('[BOOTSTRAP ADMIN] ✅ Compte super_admin créé avec succès :', result.rows[0]);
   } catch (err) {
-    console.error('[BOOTSTRAP ADMIN] ❌ Erreur lors de la création automatique :', err.message);
-  }
+console.error('[BOOTSTRAP ADMIN] ❌ Erreur complète :', err);  }
 }
 
 module.exports = ensureSuperAdmin;

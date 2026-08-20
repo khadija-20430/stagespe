@@ -9,17 +9,26 @@ const { translateList, translateOne, upsertTranslations, getAllTranslations, del
 
 const router = express.Router();
 
+const PARTNER_JOIN = `
+  FROM partners
+  LEFT JOIN countries ON partners.country_id = countries.id
+  LEFT JOIN establishment_types ON partners.establishment_type_id = establishment_types.id
+  LEFT JOIN partnership_types ON partners.partnership_type_id = partnership_types.id
+`;
+const PARTNER_SELECT = `
+  SELECT partners.*, countries.name AS country_name,
+         establishment_types.label AS establishment_type,
+         partnership_types.label AS partnership_type
+`;
+
 router.get('/', async (req, res) => {
   try {
-    const { country_id, establishment_type, partnership_type, partnership_status, search } = req.query;
-    let query = `
-      SELECT partners.*, countries.name AS country_name
-      FROM partners LEFT JOIN countries ON partners.country_id = countries.id
-      WHERE partners.statut_publication = 'published'`;
+    const { country_id, establishment_type_id, partnership_type_id, partnership_status, search } = req.query;
+    let query = `${PARTNER_SELECT} ${PARTNER_JOIN} WHERE partners.statut_publication = 'published'`;
     const params = [];
     if (country_id) { params.push(country_id); query += ` AND partners.country_id = $${params.length}`; }
-    if (establishment_type) { params.push(establishment_type); query += ` AND partners.establishment_type = $${params.length}`; }
-    if (partnership_type) { params.push(partnership_type); query += ` AND partners.partnership_type = $${params.length}`; }
+    if (establishment_type_id) { params.push(establishment_type_id); query += ` AND partners.establishment_type_id = $${params.length}`; }
+    if (partnership_type_id) { params.push(partnership_type_id); query += ` AND partners.partnership_type_id = $${params.length}`; }
     if (partnership_status) { params.push(partnership_status); query += ` AND partners.partnership_status = $${params.length}`; }
     if (search) { params.push(`%${search}%`); query += ` AND partners.name ILIKE $${params.length}`; }
     query += ' ORDER BY partners.id DESC';
@@ -40,23 +49,14 @@ router.get('/map', async (req, res) => {
 
 router.get('/admin/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT partners.*, countries.name AS country_name
-       FROM partners LEFT JOIN countries ON partners.country_id = countries.id
-       ORDER BY partners.id DESC`
-    );
+    const result = await pool.query(`${PARTNER_SELECT} ${PARTNER_JOIN} ORDER BY partners.id DESC`);
     res.json(result.rows);
   } catch (err) { sendError(res, err); }
 });
 
 router.get('/:id', async (req, res) => {
   try {
-    const partner = await pool.query(
-      `SELECT partners.*, countries.name AS country_name
-       FROM partners LEFT JOIN countries ON partners.country_id = countries.id
-       WHERE partners.id = $1`,
-      [req.params.id]
-    );
+    const partner = await pool.query(`${PARTNER_SELECT} ${PARTNER_JOIN} WHERE partners.id = $1`, [req.params.id]);
     if (partner.rows.length === 0) return res.status(404).json({ error: 'Partenaire non trouvé' });
 
     const agreements = await pool.query('SELECT * FROM agreements WHERE partner_id = $1 ORDER BY start_date DESC', [req.params.id]);
@@ -89,16 +89,16 @@ router.get('/:id/translations', verifyToken, checkRole('super_admin', 'admin'), 
 router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const {
-      name, official_name, country_id, city, establishment_type, partnership_type, partnership_status,
+      name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
       website, cooperation_areas, description, logo_url, latitude, longitude
     } = req.body;
 
     const result = await pool.query(
       `INSERT INTO partners
-       (name, official_name, country_id, city, establishment_type, partnership_type, partnership_status,
+       (name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
         website, cooperation_areas, description, logo_url, latitude, longitude, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
-      [name, official_name, country_id, city, establishment_type, partnership_type, partnership_status || 'active',
+      [name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status || 'active',
        website, cooperation_areas, description, logo_url, latitude, longitude, req.user.id]
     );
     await logAction(req.user.id, 'create', 'partner', result.rows[0].id, null, req);
@@ -110,17 +110,17 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
 router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const {
-      name, official_name, country_id, city, establishment_type, partnership_type, partnership_status,
+      name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
       website, cooperation_areas, description, logo_url, latitude, longitude
     } = req.body;
 
     const row = await withAuditContext(req.user.id, req.ip, async (client) => {
       const result = await client.query(
-        `UPDATE partners SET name=$1, official_name=$2, country_id=$3, city=$4, establishment_type=$5,
-         partnership_type=$6, partnership_status=$7, website=$8, cooperation_areas=$9, description=$10,
+        `UPDATE partners SET name=$1, official_name=$2, country_id=$3, city=$4, establishment_type_id=$5,
+         partnership_type_id=$6, partnership_status=$7, website=$8, cooperation_areas=$9, description=$10,
          logo_url=$11, latitude=$12, longitude=$13
          WHERE id=$14 RETURNING *`,
-        [name, official_name, country_id, city, establishment_type, partnership_type, partnership_status,
+        [name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
          website, cooperation_areas, description, logo_url, latitude, longitude, req.params.id]
       );
       return result.rows[0];
@@ -154,9 +154,9 @@ router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), as
   try {
     const result = await pool.query(
       `INSERT INTO partners
-       (name, official_name, country_id, city, establishment_type, partnership_type, partnership_status,
+       (name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
         website, cooperation_areas, description, logo_url, latitude, longitude, statut_publication, created_by)
-       SELECT name || ' (copie)', official_name, country_id, city, establishment_type, partnership_type,
+       SELECT name || ' (copie)', official_name, country_id, city, establishment_type_id, partnership_type_id,
               partnership_status, website, cooperation_areas, description, logo_url, latitude, longitude,
               'draft', $2
        FROM partners WHERE id = $1 RETURNING *`,
@@ -168,7 +168,7 @@ router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), as
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM partners WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Partenaire non trouvé' });

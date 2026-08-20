@@ -86,9 +86,9 @@ export const mapAppel = (row) => ({
 export const mapMobilite = (row) => ({
   id: row.id,
   type: row.type,
-  institutionAccueil: row.partner_name || row.host_institution,
+  institutionAccueil: row.institution_name || row.partner_name,
   paysDestination: row.country_name,
-  villeAccueil: row.host_city,
+  villeAccueil: row.city_name,
   duree: row.duration,
   niveau: row.target_audience,
   publicCible: row.target_audience,
@@ -145,4 +145,95 @@ export const mapStats = (row) => ({
   activeAgreements: Number(row.active_agreements) || 0,
   expiredAgreements: Number(row.expired_agreements) || 0,
   expiringSoon: Number(row.expiring_soon) || 0,
+});
+/* ----------------------- Formulaire → payload SQL ----------------------- */
+export const toPartnerPayload = (draft) => ({
+  name: draft.nom,
+  official_name: draft.nomOfficiel,
+  country_id: draft.paysId || null,
+  city: draft.ville,
+  establishment_type_id: draft.typeEtablissementId || null,
+  partnership_type_id: draft.typePartenariatId || null,
+  partnership_status: draft.statutPartenariat || 'active',
+  website: draft.siteWeb,
+  cooperation_areas: Array.isArray(draft.domaines) ? draft.domaines.join(', ') : draft.domaines,
+  description: draft.description,
+  logo_url: draft.logo,
+  latitude: draft.latitude || null,
+  longitude: draft.longitude || null,
+});
+
+export const toProjetPayload = (draft) => ({
+  title: draft.titre,
+  acronym: draft.acronyme,
+  reference_code: draft.codeReference,
+  description: draft.resume,
+  objectives: draft.objectifs,
+  target_groups: draft.groupesCibles,
+  official_website: draft.siteWeb,
+  status: draft.statut || 'proposed',
+  programme_id: draft.programmeId || null,
+  coordinator_partner_id: draft.coordinateurPartenaireId || null,
+  budget: draft.budget || null,
+  start_date: draft.debut || null,
+  end_date: draft.fin || null,
+  is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
+  deliverables: typeof draft.livrables === 'string'
+    ? draft.livrables.split(',').map((s) => s.trim()).filter(Boolean)
+    : draft.livrables,
+  results: typeof draft.resultats === 'string'
+    ? draft.resultats.split(',').map((s) => s.trim()).filter(Boolean)
+    : draft.resultats,
+});
+
+export const toAppelPayload = (draft) => ({
+  title: draft.titre,
+  programme_id: draft.programmeId || null,
+  funding_body: draft.organismeFinanceur,
+  description: draft.resume,
+  action_type_id: draft.typeActionId || null,
+  budget_available: draft.budgetDisponible || null,
+  funding_rate: draft.tauxFinancement || null,
+  target_audience: draft.publicCible,
+  publication_date: draft.datePublication || null,
+  deadline: draft.dateLimite || null,
+  official_link: draft.lienOfficiel,
+  contact_person: draft.personneContact,
+  status: draft.statut || 'open',
+  country_ids: draft.paysEligiblesIds || [],
+  theme_ids: draft.themeIds || [],
+});
+
+export const toMobilitePayload = (draft) => ({
+  title: draft.titre,
+  type: draft.type,
+  programme_id: draft.programmeId || null,
+  destination_country_id: draft.paysDestinationId || null,
+  destination_partner_id: draft.institutionAccueilId || null,
+  target_audience: draft.publicCible,
+  description: draft.description,
+  conditions: draft.conditions,
+  places_count: draft.places || null,
+  duration: draft.duree,
+  period: draft.periode,
+  funding_details: draft.financement,
+  application_link: draft.lienCandidature,
+  contact_person: draft.personneContact,
+  contact_email: draft.emailContact,
+  deadline: draft.dateLimite || null,
+  status: draft.statut || 'open',
+});
+
+export const toDocumentPayload = (draft) => ({
+  titre: draft.titre,
+  description: draft.description,
+  fichier_url: draft.fichier_url,
+  categorie_id: draft.categorieId || null,
+  langage: draft.langage || 'fr',
+  version: draft.version || '1.0',
+  file_size: draft.fileSize || null,
+  file_format: draft.fileFormat || null,
+  visibilite: draft.visibilite || 'public',
+  is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
+  date_expiration: draft.dateExpiration || null,
 });

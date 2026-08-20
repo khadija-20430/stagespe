@@ -1,7 +1,7 @@
 const pool = require('../db');
 
 const TRANSLATION_CONFIG = {
-  project: { table: 'project_translations', fk: 'project_id', fields: ['title', 'description', 'objectives', 'target_groups', 'results', 'deliverables'] },
+  project: { table: 'project_translations', fk: 'project_id', fields: ['title', 'description', 'objectives', 'target_groups'] },
   partner: { table: 'partner_translations', fk: 'partner_id', fields: ['name', 'official_name', 'description', 'cooperation_areas'] },
   call: { table: 'call_translations', fk: 'call_id', fields: ['title', 'description', 'objectives', 'eligibility', 'beneficiaries'] },
   mobility: { table: 'mobility_translations', fk: 'mobility_id', fields: ['title', 'description', 'conditions', 'target_audience', 'application_procedure', 'selection_criteria'] },

@@ -1,16 +1,13 @@
 import { createContext, useContext, useMemo, useState } from 'react';
+import * as api from '../services/api.js';
 
-// Authentification SIMULÉE côté frontend uniquement.
-// Aucune vérification serveur : à remplacer par un vrai flux d'auth
-// (JWT / session) une fois le backend disponible.
 const AuthContext = createContext(null);
-
-const STORAGE_KEY = 'esi_admin_session';
+const USER_KEY = 'esi_admin_user';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(USER_KEY);
       return raw ? JSON.parse(raw) : null;
     } catch {
       return null;
@@ -20,17 +17,17 @@ export function AuthProvider({ children }) {
   const value = useMemo(
     () => ({
       user,
-      isAuthenticated: Boolean(user),
-      // Connexion factice : accepte tout identifiant non vide.
-      login: (email) => {
-        const session = { email, name: 'Administrateur' };
-        setUser(session);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-        return true;
+      isAuthenticated: Boolean(user) && Boolean(api.getToken()),
+      login: async (email, password) => {
+        const loggedInUser = await api.login(email, password); // lève une erreur si échec
+        setUser(loggedInUser);
+        localStorage.setItem(USER_KEY, JSON.stringify(loggedInUser));
+        return loggedInUser;
       },
-      logout: () => {
+      logout: async () => {
+        await api.logout();
         setUser(null);
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(USER_KEY);
       },
     }),
     [user]

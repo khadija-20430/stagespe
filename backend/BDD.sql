@@ -68,14 +68,44 @@ CREATE TABLE themes (
   name VARCHAR(150) NOT NULL UNIQUE
 );
 
+CREATE TABLE partnership_types (
+  id SERIAL PRIMARY KEY,
+  label VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE establishment_types (
+  id SERIAL PRIMARY KEY,
+  label VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE action_types (
+  id SERIAL PRIMARY KEY,
+  label VARCHAR(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE cities (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(150) NOT NULL,
+  country_id INTEGER REFERENCES countries(id) ON DELETE CASCADE,
+  UNIQUE(name, country_id)
+);
+
+CREATE TABLE institutions (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  city_id INTEGER REFERENCES cities(id) ON DELETE SET NULL,
+  partner_id INTEGER REFERENCES partners(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE partners (
   id SERIAL PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   official_name VARCHAR(255),
   country_id INTEGER REFERENCES countries(id) ON DELETE SET NULL,
   city VARCHAR(150),
-  establishment_type VARCHAR(100),
-  partnership_type VARCHAR(100),
+  establishment_type_id INTEGER REFERENCES establishment_types(id) ON DELETE SET NULL,
+  partnership_type_id INTEGER REFERENCES partnership_types(id) ON DELETE SET NULL,
   partnership_status VARCHAR(50) NOT NULL DEFAULT 'active' CHECK (partnership_status IN ('active', 'pending', 'ended')),
   website VARCHAR(255),
   cooperation_areas TEXT,
@@ -136,8 +166,6 @@ CREATE TABLE projects (
   description TEXT,
   objectives TEXT,
   target_groups TEXT,
-  results TEXT,
-  deliverables TEXT,
   official_website VARCHAR(255),
   status VARCHAR(50) NOT NULL DEFAULT 'proposed' CHECK (status IN ('proposed', 'ongoing', 'completed', 'suspended')),
   programme_id INTEGER REFERENCES programmes(id) ON DELETE SET NULL,
@@ -159,6 +187,20 @@ CREATE TABLE projects (
 
 CREATE INDEX idx_projects_featured ON projects(is_featured) WHERE is_featured = TRUE;
 
+CREATE TABLE project_deliverables (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE project_results (
+  id SERIAL PRIMARY KEY,
+  project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE project_partners (
   id SERIAL PRIMARY KEY,
   project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
@@ -177,8 +219,7 @@ CREATE TABLE calls (
   objectives TEXT,
   eligibility TEXT,
   beneficiaries TEXT,
-  eligible_countries TEXT,
-  action_type VARCHAR(100),
+  action_type_id INTEGER REFERENCES action_types(id) ON DELETE SET NULL,
   budget_available DECIMAL(12,2),
   funding_rate DECIMAL(5,2),
   target_audience VARCHAR(150),
@@ -224,15 +265,13 @@ CREATE TABLE mobility (
   agreement_id INTEGER REFERENCES agreements(id) ON DELETE SET NULL,
   destination_country_id INTEGER REFERENCES countries(id) ON DELETE SET NULL,
   destination_partner_id INTEGER REFERENCES partners(id) ON DELETE SET NULL,
-  host_institution VARCHAR(255),
-  host_city VARCHAR(150),
+  institution_id INTEGER REFERENCES institutions(id) ON DELETE SET NULL,
   target_audience TEXT,
   description TEXT,
   conditions TEXT,
   places_count INTEGER,
   duration VARCHAR(100),
   period VARCHAR(100),
-  language_requirements TEXT,
   funding_details TEXT,
   application_procedure TEXT,
   selection_criteria TEXT,
@@ -250,6 +289,14 @@ CREATE TABLE mobility (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   CHECK (places_count IS NULL OR places_count >= 0)
+);
+
+CREATE TABLE mobility_language_requirements (
+  id SERIAL PRIMARY KEY,
+  mobility_id INTEGER NOT NULL REFERENCES mobility(id) ON DELETE CASCADE,
+  language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+  min_level VARCHAR(10),
+  UNIQUE(mobility_id, language_id)
 );
 
 CREATE TABLE news_events (
@@ -415,11 +462,25 @@ CREATE TABLE project_translations (
   description TEXT,
   objectives TEXT,
   target_groups TEXT,
-  results TEXT,
-  deliverables TEXT,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   UNIQUE(project_id, language_id)
+);
+
+CREATE TABLE project_deliverable_translations (
+  id SERIAL PRIMARY KEY,
+  deliverable_id INTEGER NOT NULL REFERENCES project_deliverables(id) ON DELETE CASCADE,
+  language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  UNIQUE(deliverable_id, language_id)
+);
+
+CREATE TABLE project_result_translations (
+  id SERIAL PRIMARY KEY,
+  result_id INTEGER NOT NULL REFERENCES project_results(id) ON DELETE CASCADE,
+  language_id INTEGER NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+  description TEXT NOT NULL,
+  UNIQUE(result_id, language_id)
 );
 
 CREATE TABLE partner_translations (
@@ -635,6 +696,39 @@ INSERT INTO themes (name) VALUES
   ('Robotique'),
   ('Bio-informatique')
 ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO partnership_types (label) VALUES
+  ('Académique'),
+  ('Recherche'),
+  ('Industriel'),
+  ('Institutionnel')
+ON CONFLICT (label) DO NOTHING;
+
+INSERT INTO establishment_types (label) VALUES
+  ('Université'),
+  ('École d''ingénieurs'),
+  ('Centre de recherche'),
+  ('Entreprise'),
+  ('Organisme public')
+ON CONFLICT (label) DO NOTHING;
+
+INSERT INTO action_types (label) VALUES
+  ('Mobilité individuelle'),
+  ('Projet collaboratif'),
+  ('Partenariat stratégique'),
+  ('Bourse de recherche'),
+  ('Cotutelle de thèse')
+ON CONFLICT (label) DO NOTHING;
+
+INSERT INTO users (full_name, email, password_hash, role, is_active)
+VALUES (
+  'Super Administrateur',
+  'admin@esi.dz',
+  '$2y$10$placeholder_hash_here',
+  'super_admin',
+  TRUE
+)
+ON CONFLICT (email) DO NOTHING;
 
 CREATE INDEX IF NOT EXISTS idx_partners_country ON partners(country_id);
 CREATE INDEX IF NOT EXISTS idx_partners_statut_pub ON partners(statut_publication);

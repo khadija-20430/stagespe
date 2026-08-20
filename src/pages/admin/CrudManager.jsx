@@ -5,9 +5,6 @@ import Card from '../../components/ui/Card.jsx';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
-let seq = 0;
-const nextId = (prefix) => `${prefix}-new-${Date.now()}-${seq++}`;
-
 function emptyItem(fields) {
   const obj = {};
   fields.forEach((f) => {
@@ -16,20 +13,25 @@ function emptyItem(fields) {
   return obj;
 }
 
-export default function CrudManager({ title, idPrefix, fetcher, columns, fields }) {
+export default function CrudManager({ title, idPrefix, fetcher, columns, fields, toPayload, onCreate, onUpdate, onDelete }) {
   const { t } = useTranslation();
   const [items, setItems] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [draft, setDraft] = useState(null);
   const [editingId, setEditingId] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
+
+  const reload = () => fetcher().then(setItems);
 
   useEffect(() => {
-    fetcher().then(setItems);
+    reload();
   }, [fetcher]);
 
   const openCreate = () => {
     setDraft(emptyItem(fields));
     setEditingId(null);
+    setError('');
     setModalOpen(true);
   };
 
@@ -42,41 +44,54 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
     });
     setDraft(d);
     setEditingId(item.id);
+    setError('');
     setModalOpen(true);
   };
 
-  const remove = (id) => {
-    if (window.confirm(t('admin.crud.confirmDelete'))) {
-      setItems((prev) => prev.filter((i) => i.id !== id));
+  const remove = async (id) => {
+    if (!window.confirm(t('admin.crud.confirmDelete'))) return;
+    try {
+      await onDelete(id);
+      await reload();
+    } catch (err) {
+      alert(err.message || 'Erreur lors de la suppression');
     }
   };
 
-  const save = (e) => {
+  const save = async (e) => {
     e.preventDefault();
-    const payload = { ...draft };
-    fields.forEach((f) => {
-      if (f.type === 'list') {
-        payload[f.name] = String(payload[f.name] || '')
-          .split(',')
-          .map((s) => s.trim())
-          .filter(Boolean);
-      }
-      if (f.type === 'number') {
-        payload[f.name] = Number(payload[f.name]) || 0;
-      }
-    });
+    setSaving(true);
+    setError('');
+    try {
+      const cleanDraft = { ...draft };
+      fields.forEach((f) => {
+        if (f.type === 'list' && !Array.isArray(cleanDraft[f.name])) {
+          cleanDraft[f.name] = String(cleanDraft[f.name] || '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+        if (f.type === 'number') {
+          cleanDraft[f.name] = Number(cleanDraft[f.name]) || 0;
+        }
+      });
 
-    if (editingId) {
-      setItems((prev) => prev.map((i) => (i.id === editingId ? { ...i, ...payload } : i)));
-    } else {
-      setItems((prev) => [{ ...payload, id: nextId(idPrefix) }, ...prev]);
+      const payload = toPayload ? toPayload(cleanDraft) : cleanDraft;
+
+      if (editingId) {
+        await onUpdate(editingId, payload);
+      } else {
+        await onCreate(payload);
+      }
+      await reload();
+      setModalOpen(false);
+    } catch (err) {
+      setError(err.message || "Erreur lors de l'enregistrement");
+    } finally {
+      setSaving(false);
     }
-    setModalOpen(false);
   };
 
-  // Supporte une valeur directe OU une fonction (prevValue, draft) => newValue,
-  // nécessaire pour le type 'file' qui peut pré-remplir un autre champ (ex: nom)
-  // sans écraser ce que l'admin a déjà saisi.
   const setField = (name, value) =>
     setDraft((d) => ({
       ...d,
@@ -90,8 +105,6 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
           <h1 className="text-2xl font-bold text-navy">{title}</h1>
           <p className="mt-1 text-sm text-slate-500">
             {items === null ? '…' : t('admin.crud.itemsCount', { count: items.length })}
-            {' · '}
-            {t('admin.crud.mockNotice')}
           </p>
         </div>
         <Button onClick={openCreate}>{t('admin.crud.add')}</Button>
@@ -217,11 +230,14 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields 
                   )}
                 </div>
               ))}
+              {error ? <p className="text-sm text-red-600">{error}</p> : null}
               <div className={cn('flex justify-end gap-3 pt-2')}>
-                <Button type="button" variant="secondary" onClick={() => setModalOpen(false)}>
+                <Button type="button" variant="secondary" onClick={() => setModalOpen(false)} disabled={saving}>
                   {t('admin.crud.cancel')}
                 </Button>
-                <Button type="submit">{t('admin.crud.save')}</Button>
+                <Button type="submit" disabled={saving}>
+                  {saving ? '...' : t('admin.crud.save')}
+                </Button>
               </div>
             </form>
           </div>

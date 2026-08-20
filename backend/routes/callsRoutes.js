@@ -10,10 +10,14 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const { programme_id, status, country_id, theme_id, action_type } = req.query;
+    const { programme_id, status, country_id, theme_id, action_type_id } = req.query;
     let query = `
-      SELECT DISTINCT calls.*, programmes.name AS programme_name
-      FROM calls LEFT JOIN programmes ON calls.programme_id = programmes.id`;
+      SELECT DISTINCT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label,
+      (SELECT string_agg(co.name, ', ') FROM call_countries cc 
+     JOIN countries co ON co.id = cc.country_id WHERE cc.call_id = calls.id) AS eligible_countries
+      FROM calls
+      LEFT JOIN programmes ON calls.programme_id = programmes.id
+      LEFT JOIN action_types ON calls.action_type_id = action_types.id`;
     if (country_id) query += ' JOIN call_countries ON call_countries.call_id = calls.id';
     if (theme_id) query += ' JOIN call_themes ON call_themes.call_id = calls.id';
     query += " WHERE calls.statut_publication = 'published'";
@@ -22,7 +26,7 @@ router.get('/', async (req, res) => {
     if (status) { params.push(status); query += ` AND calls.status = $${params.length}`; }
     if (country_id) { params.push(country_id); query += ` AND call_countries.country_id = $${params.length}`; }
     if (theme_id) { params.push(theme_id); query += ` AND call_themes.theme_id = $${params.length}`; }
-    if (action_type) { params.push(action_type); query += ` AND calls.action_type = $${params.length}`; }
+    if (action_type_id) { params.push(action_type_id); query += ` AND calls.action_type_id = $${params.length}`; }
     query += ' ORDER BY calls.deadline ASC';
     const result = await pool.query(query, params);
     res.json(await translateList('call', result.rows, req.query.lang));
@@ -32,8 +36,11 @@ router.get('/', async (req, res) => {
 router.get('/admin/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT calls.*, programmes.name AS programme_name FROM calls
-       LEFT JOIN programmes ON calls.programme_id = programmes.id ORDER BY calls.deadline ASC`
+      `SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label
+       FROM calls
+       LEFT JOIN programmes ON calls.programme_id = programmes.id
+       LEFT JOIN action_types ON calls.action_type_id = action_types.id
+       ORDER BY calls.deadline ASC`
     );
     res.json(result.rows);
   } catch (err) { sendError(res, err); }
@@ -49,8 +56,11 @@ router.get('/closing-soon', verifyToken, checkRole('super_admin', 'admin'), asyn
 router.get('/:id', async (req, res) => {
   try {
     const call = await pool.query(
-      `SELECT calls.*, programmes.name AS programme_name FROM calls
-       LEFT JOIN programmes ON calls.programme_id = programmes.id WHERE calls.id = $1`,
+      `SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label
+       FROM calls
+       LEFT JOIN programmes ON calls.programme_id = programmes.id
+       LEFT JOIN action_types ON calls.action_type_id = action_types.id
+       WHERE calls.id = $1`,
       [req.params.id]
     );
     if (call.rows.length === 0) return res.status(404).json({ error: 'Appel non trouvé' });
@@ -84,7 +94,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   try {
     const {
       title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-      eligible_countries, action_type, budget_available, funding_rate, target_audience,
+      action_type_id, budget_available, funding_rate, target_audience,
       publication_date, deadline, official_link, contact_person, status, theme_ids, country_ids
     } = req.body;
 
@@ -96,11 +106,11 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
     const result = await client.query(
       `INSERT INTO calls
        (title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-        eligible_countries, action_type, budget_available, funding_rate, target_audience,
+        action_type_id, budget_available, funding_rate, target_audience,
         publication_date, deadline, official_link, contact_person, status, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *`,
       [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-       eligible_countries, action_type, budget_available, funding_rate, target_audience,
+       action_type_id, budget_available, funding_rate, target_audience,
        publication_date, deadline, official_link, contact_person, status || 'open', req.user.id]
     );
     const call = result.rows[0];
@@ -131,7 +141,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   try {
     const {
       title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-      eligible_countries, action_type, budget_available, funding_rate, target_audience,
+      action_type_id, budget_available, funding_rate, target_audience,
       publication_date, deadline, official_link, contact_person, status, theme_ids, country_ids
     } = req.body;
 
@@ -147,11 +157,11 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
 
     const result = await client.query(
       `UPDATE calls SET title=$1, programme_id=$2, funding_body=$3, description=$4, objectives=$5,
-       eligibility=$6, beneficiaries=$7, eligible_countries=$8, action_type=$9, budget_available=$10,
-       funding_rate=$11, target_audience=$12, publication_date=$13, deadline=$14, official_link=$15,
-       contact_person=$16, status=$17, updated_at=NOW() WHERE id=$18 RETURNING *`,
+       eligibility=$6, beneficiaries=$7, action_type_id=$8, budget_available=$9,
+       funding_rate=$10, target_audience=$11, publication_date=$12, deadline=$13, official_link=$14,
+       contact_person=$15, status=$16, updated_at=NOW() WHERE id=$17 RETURNING *`,
       [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-       eligible_countries, action_type, budget_available, funding_rate, target_audience,
+       action_type_id, budget_available, funding_rate, target_audience,
        publication_date, deadline, official_link, contact_person, status, req.params.id]
     );
     if (result.rows.length === 0) {
@@ -203,7 +213,7 @@ router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM calls WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Appel non trouvé' });

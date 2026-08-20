@@ -1,108 +1,96 @@
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
-import { getDocuments } from '../../services/api.js';
-
-// Correspond aux lignes seedées dans document_categories (bdd.sql).
-// À terme : remplacer par un getDocumentCategories().
-const DOCUMENT_CATEGORIES = [
-  { value: 'institutionnel', label: 'Institutionnel et coopération' },
-  { value: 'template_projet', label: 'Template de proposition de projet' },
-  { value: 'formulaire_financier', label: 'Formulaire financier et administratif' },
-  { value: 'erasmus_mobilite', label: 'Document mobilité Erasmus+' },
-  { value: 'horizon_msca', label: 'Template Horizon Europe / MSCA' },
-  { value: 'national', label: 'Programme national' },
-  { value: 'guide_faq', label: 'Guide, procédure, FAQ' },
-  { value: 'rapport', label: 'Rapport de projet' },
-  { value: 'brochure', label: 'Brochure institutionnelle' },
-  { value: 'convention', label: 'Convention signée' },
-];
+import {
+  getDocuments, createDocument, updateDocument, deleteDocument,
+  getDocumentCategories, getToken,
+} from '../../services/api.js';
+import { toDocumentPayload } from '../../services/mappers.js';
 
 const LANGUAGES = [
   { value: 'fr', label: 'Français' },
   { value: 'en', label: 'English' },
   { value: 'ar', label: 'العربية' },
 ];
-
-// visibilite (CHECK constraint sur documents)
 const VISIBILITY = ['public', 'staff', 'admin'];
 const visibilityTone = (v) => (v === 'public' ? 'green' : v === 'staff' ? 'amber' : 'slate');
-
-const categoryLabel = (code) => DOCUMENT_CATEGORIES.find((c) => c.value === code)?.label ?? code;
 
 const formatBytes = (bytes) => {
   if (!bytes) return '—';
   const units = ['o', 'Ko', 'Mo', 'Go'];
-  let i = 0;
-  let n = bytes;
-  while (n >= 1024 && i < units.length - 1) {
-    n /= 1024;
-    i += 1;
-  }
+  let i = 0; let n = bytes;
+  while (n >= 1024 && i < units.length - 1) { n /= 1024; i += 1; }
   return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
+};
+
+const API = import.meta.env.VITE_API_URL;
+
+// Upload physique du fichier — renvoie fichier_url, file_size, file_format
+const uploadFile = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(`${API}/documents/upload`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${getToken()}` },
+    body: formData,
+  });
+  if (!res.ok) throw new Error('Échec de l\'upload du fichier');
+  return res.json();
 };
 
 export default function ManageDocuments() {
   const { t } = useTranslation();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    getDocumentCategories().then(setCategories);
+  }, []);
+
   return (
     <CrudManager
       title={t('admin.nav.documents')}
       idPrefix="doc"
       fetcher={getDocuments}
+      toPayload={toDocumentPayload}
+      onCreate={createDocument}
+      onUpdate={updateDocument}
+      onDelete={deleteDocument}
       columns={[
-        { key: 'titre', label: t('admin.documents.columns.titre') },
-        {
-          key: 'categorie',
-          label: t('admin.documents.columns.categorie'),
-          render: (i) => <Badge tone="cobalt">{categoryLabel(i.categorie)}</Badge>,
-        },
-        { key: 'fileFormat', label: t('admin.documents.columns.format') },
-        // file_size est stocké en octets (BIGINT) ; on ne l'affiche jamais
-        // brut, toujours formaté en Ko/Mo pour l'admin.
-        { key: 'fileSize', label: t('admin.documents.columns.taille'), render: (i) => formatBytes(i.fileSize) },
-        { key: 'dateUpload', label: t('admin.documents.columns.date') },
-        {
-          key: 'visibilite',
-          label: t('admin.documents.columns.visibilite'),
-          render: (i) => <Badge tone={visibilityTone(i.visibilite)}>{t(`enums.documentVisibility.${i.visibilite}`)}</Badge>,
-        },
+        { key: 'nom', label: t('admin.documents.columns.titre') },
+        { key: 'categorieLabel', label: t('admin.documents.columns.categorie'),
+          render: (i) => <Badge tone="cobalt">{i.categorieLabel}</Badge> },
+        { key: 'format', label: t('admin.documents.columns.format') },
+        { key: 'taille', label: t('admin.documents.columns.taille') },
+        { key: 'date', label: t('admin.documents.columns.date') },
       ]}
       fields={[
         { name: 'titre', label: t('admin.documents.fields.titre'), type: 'text' },
         { name: 'description', label: t('admin.documents.fields.description'), type: 'textarea' },
         {
-          name: 'fichier',
+          name: 'fichier_url',
           label: t('admin.documents.fields.fichier'),
           type: 'file',
-          // format et taille ne se saisissent jamais à la main : ils sont
-          // déduits automatiquement du fichier réellement uploadé.
-          onFile: (file, setField) => {
-            setField('fichier', file.name);
-            setField('fileFormat', (file.name.split('.').pop() || '').toUpperCase());
-            setField('fileSize', file.size);
+          onFile: async (file, setField) => {
+            try {
+              const uploaded = await uploadFile(file);
+              setField('fichier_url', uploaded.fichier_url);
+              setField('fileFormat', uploaded.file_format?.toUpperCase());
+              setField('fileSize', uploaded.file_size);
+            } catch (err) {
+              alert(err.message);
+            }
           },
         },
-        { name: 'categorie', label: t('admin.documents.fields.categorie'), type: 'select', options: DOCUMENT_CATEGORIES },
+        { name: 'categorieId', label: t('admin.documents.fields.categorie'), type: 'select',
+          options: categories.map((c) => ({ value: c.id, label: c.label })) },
         { name: 'langage', label: t('admin.documents.fields.langage'), type: 'select', options: LANGUAGES },
         { name: 'version', label: t('admin.documents.fields.version'), type: 'text' },
-        {
-          name: 'visibilite',
-          label: t('admin.documents.fields.visibilite'),
-          type: 'select',
-          options: VISIBILITY.map((code) => ({ value: code, label: t(`enums.documentVisibility.${code}`) })),
-        },
-        {
-          name: 'misEnAvant',
-          label: t('admin.documents.fields.misEnAvant'),
-          type: 'select',
-          options: [{ value: 'true', label: t('admin.common.yes') }, { value: 'false', label: t('admin.common.no') }],
-        },
+        { name: 'visibilite', label: t('admin.documents.fields.visibilite'), type: 'select',
+          options: VISIBILITY.map((code) => ({ value: code, label: t(`enums.documentVisibility.${code}`) })) },
+        { name: 'misEnAvant', label: t('admin.documents.fields.misEnAvant'), type: 'select',
+          options: [{ value: 'true', label: t('admin.common.yes') }, { value: 'false', label: t('admin.common.no') }] },
         { name: 'dateExpiration', label: t('admin.documents.fields.dateExpiration'), type: 'text' },
-        // fileFormat / fileSize restent modifiables ici en secours (import de
-        // données de démo) mais ne devraient plus l'être une fois branché
-        // sur un vrai upload de fichier.
-        { name: 'fileFormat', label: t('admin.documents.fields.format'), type: 'text' },
-        { name: 'fileSize', label: t('admin.documents.fields.taille'), type: 'number' },
       ]}
     />
   );

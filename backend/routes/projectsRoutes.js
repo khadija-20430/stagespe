@@ -9,6 +9,18 @@ const { translateList, translateOne, upsertTranslations, getAllTranslations, del
 
 const router = express.Router();
 
+// Remplace tous les livrables/résultats d'un projet par la nouvelle liste envoyée
+// (tableau de strings). Si le tableau n'est pas fourni, on ne touche à rien.
+async function replaceItems(client, table, projectId, items) {
+  if (!Array.isArray(items)) return;
+  await client.query(`DELETE FROM ${table} WHERE project_id = $1`, [projectId]);
+  for (const description of items) {
+    if (description && description.trim() !== '') {
+      await client.query(`INSERT INTO ${table} (project_id, description) VALUES ($1,$2)`, [projectId, description]);
+    }
+  }
+}
+
 router.get('/', async (req, res) => {
   try {
     const { status, programme_id, is_featured } = req.query;
@@ -55,6 +67,8 @@ router.get('/:id', async (req, res) => {
        JOIN partners ON project_partners.partner_id = partners.id WHERE project_id = $1`,
       [req.params.id]
     );
+    const deliverables = await pool.query('SELECT id, description FROM project_deliverables WHERE project_id = $1 ORDER BY id', [req.params.id]);
+    const results = await pool.query('SELECT id, description FROM project_results WHERE project_id = $1 ORDER BY id', [req.params.id]);
     const news = await pool.query(
       "SELECT id, title, type, event_date, image_url FROM news_events WHERE project_id = $1 AND statut = 'published'",
       [req.params.id]
@@ -69,6 +83,8 @@ router.get('/:id', async (req, res) => {
     res.json({
       ...(await translateOne('project', project.rows[0], req.query.lang)),
       partners: partners.rows,
+      deliverables: deliverables.rows,
+      results: results.rows,
       news: news.rows,
       documents: documents.rows,
     });
@@ -82,62 +98,91 @@ router.get('/:id/translations', verifyToken, checkRole('super_admin', 'admin'), 
 });
 
 router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+  const client = await pool.connect();
   try {
     const {
       title, acronym, reference_code, logo_url, description, objectives, target_groups,
-      results, deliverables, official_website, status, programme_id,
-      coordinator_partner_id, budget, start_date, end_date, is_featured
+      official_website, status, programme_id, coordinator_partner_id, budget, start_date, end_date,
+      is_featured, deliverables, results
     } = req.body;
 
     if (start_date && end_date && new Date(end_date) < new Date(start_date)) {
       return res.status(400).json({ error: 'La date de fin ne peut pas être antérieure à la date de début' });
     }
 
-    const result = await pool.query(
+    await client.query('BEGIN');
+    const result = await client.query(
       `INSERT INTO projects
        (title, acronym, reference_code, logo_url, description, objectives, target_groups,
-        results, deliverables, official_website, status, programme_id, coordinator_partner_id,
+        official_website, status, programme_id, coordinator_partner_id,
         coordinator_user_id, budget, start_date, end_date, is_featured, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *`,
       [title, acronym, reference_code, logo_url, description, objectives, target_groups,
-       results, deliverables, official_website, status || 'proposed', programme_id,
-       coordinator_partner_id, req.user.id, budget, start_date, end_date, is_featured || false, req.user.id]
+       official_website, status || 'proposed', programme_id, coordinator_partner_id,
+       req.user.id, budget, start_date, end_date, is_featured || false, req.user.id]
     );
-    await logAction(req.user.id, 'create', 'project', result.rows[0].id, null, req);
-    await upsertTranslations('project', result.rows[0].id, req.body.translations);
-    res.status(201).json(result.rows[0]);
-  } catch (err) { sendError(res, err); }
+    const project = result.rows[0];
+
+    await replaceItems(client, 'project_deliverables', project.id, deliverables);
+    await replaceItems(client, 'project_results', project.id, results);
+
+    await client.query('COMMIT');
+    await logAction(req.user.id, 'create', 'project', project.id, null, req);
+    await upsertTranslations('project', project.id, req.body.translations);
+    res.status(201).json(project);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    sendError(res, err);
+  } finally {
+    client.release();
+  }
 });
 
 router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+  const client = await pool.connect();
   try {
     const {
       title, acronym, reference_code, logo_url, description, objectives, target_groups,
-      results, deliverables, official_website, status, programme_id,
-      coordinator_partner_id, budget, start_date, end_date, is_featured
+      official_website, status, programme_id, coordinator_partner_id, budget, start_date, end_date,
+      is_featured, deliverables, results
     } = req.body;
 
     if (start_date && end_date && new Date(end_date) < new Date(start_date)) {
       return res.status(400).json({ error: 'La date de fin ne peut pas être antérieure à la date de début' });
     }
 
-    const row = await withAuditContext(req.user.id, req.ip, async (client) => {
-      const result = await client.query(
-        `UPDATE projects SET title=$1, acronym=$2, reference_code=$3, logo_url=$4, description=$5,
-         objectives=$6, target_groups=$7, results=$8, deliverables=$9, official_website=$10,
-         status=$11, programme_id=$12, coordinator_partner_id=$13, budget=$14, start_date=$15,
-         end_date=$16, is_featured=$17 WHERE id=$18 RETURNING *`,
-        [title, acronym, reference_code, logo_url, description, objectives, target_groups,
-         results, deliverables, official_website, status, programme_id, coordinator_partner_id,
-         budget, start_date, end_date, is_featured, req.params.id]
-      );
-      return result.rows[0];
-    });
+    await client.query('BEGIN');
+    await client.query(
+      `SELECT set_config('app.current_user_id', $1, true), set_config('app.client_ip', $2, true)`,
+      [String(req.user.id), req.ip || '']
+    );
 
-    if (!row) return res.status(404).json({ error: 'Projet non trouvé' });
+    const result = await client.query(
+      `UPDATE projects SET title=$1, acronym=$2, reference_code=$3, logo_url=$4, description=$5,
+       objectives=$6, target_groups=$7, official_website=$8, status=$9, programme_id=$10,
+       coordinator_partner_id=$11, budget=$12, start_date=$13, end_date=$14, is_featured=$15
+       WHERE id=$16 RETURNING *`,
+      [title, acronym, reference_code, logo_url, description, objectives, target_groups,
+       official_website, status, programme_id, coordinator_partner_id, budget, start_date, end_date,
+       is_featured, req.params.id]
+    );
+    if (result.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Projet non trouvé' });
+    }
+
+    await replaceItems(client, 'project_deliverables', req.params.id, deliverables);
+    await replaceItems(client, 'project_results', req.params.id, results);
+
+    await client.query('COMMIT');
     await upsertTranslations('project', req.params.id, req.body.translations);
-    res.json(row);
-  } catch (err) { sendError(res, err); }
+    res.json(result.rows[0]);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    sendError(res, err);
+  } finally {
+    client.release();
+  }
 });
 
 router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
@@ -159,25 +204,47 @@ router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async
 });
 
 router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+  const client = await pool.connect();
   try {
-    const result = await pool.query(
+    await client.query('BEGIN');
+    const result = await client.query(
       `INSERT INTO projects
        (title, acronym, reference_code, logo_url, description, objectives, target_groups,
-        results, deliverables, official_website, status, programme_id, coordinator_partner_id,
+        official_website, status, programme_id, coordinator_partner_id,
         budget, start_date, end_date, statut_publication, created_by)
        SELECT title || ' (copie)', acronym, reference_code, logo_url, description, objectives,
-              target_groups, results, deliverables, official_website, status, programme_id,
+              target_groups, official_website, status, programme_id,
               coordinator_partner_id, budget, start_date, end_date, 'draft', $2
        FROM projects WHERE id = $1 RETURNING *`,
       [req.params.id, req.user.id]
     );
-    if (result.rows.length === 0) return res.status(404).json({ error: 'Projet non trouvé' });
-    await logAction(req.user.id, 'duplicate', 'project', result.rows[0].id, { source_id: req.params.id }, req);
-    res.status(201).json(result.rows[0]);
-  } catch (err) { sendError(res, err); }
+    if (result.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Projet non trouvé' });
+    }
+    const newProject = result.rows[0];
+
+    await client.query(
+      `INSERT INTO project_deliverables (project_id, description) SELECT $1, description FROM project_deliverables WHERE project_id = $2`,
+      [newProject.id, req.params.id]
+    );
+    await client.query(
+      `INSERT INTO project_results (project_id, description) SELECT $1, description FROM project_results WHERE project_id = $2`,
+      [newProject.id, req.params.id]
+    );
+
+    await client.query('COMMIT');
+    await logAction(req.user.id, 'duplicate', 'project', newProject.id, { source_id: req.params.id }, req);
+    res.status(201).json(newProject);
+  } catch (err) {
+    await client.query('ROLLBACK');
+    sendError(res, err);
+  } finally {
+    client.release();
+  }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM projects WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Projet non trouvé' });
