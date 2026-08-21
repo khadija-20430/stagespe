@@ -18,6 +18,9 @@ export default function AdminLayout() {
     { to: '/admin/appels', label: t('admin.nav.calls'), icon: '📢' },
     { to: '/admin/mobilites', label: t('admin.nav.mobility'), icon: '✈️' },
     { to: '/admin/documents', label: t('admin.nav.documents'), icon: '📄' },
+    { to: '/admin/roles', label: 'Rôles & permissions', icon: '🔐' },
+    { to: '/admin/test-acces', label: 'Tester RBAC', icon: '🧪' },
+    { to: '/admin/journal', label: "Journal d'audit", icon: '📜' },
   ];
 
   const handleLogout = () => {

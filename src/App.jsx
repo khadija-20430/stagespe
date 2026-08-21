@@ -22,6 +22,9 @@ import ManageProjets from './pages/admin/ManageProjets.jsx';
 import ManageAppels from './pages/admin/ManageAppels.jsx';
 import ManageMobilites from './pages/admin/ManageMobilites.jsx';
 import ManageDocuments from './pages/admin/ManageDocuments.jsx';
+import ManageRoles from './pages/admin/ManageRoles.jsx';
+import TestAccess from './pages/admin/TestAccess.jsx';
+import JournalAudit from './pages/admin/JournalAudit.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -62,6 +65,9 @@ export default function App() {
           <Route path="appels" element={<ManageAppels />} />
           <Route path="mobilites" element={<ManageMobilites />} />
           <Route path="documents" element={<ManageDocuments />} />
+          <Route path="roles" element={<ManageRoles />} />
+          <Route path="test-acces" element={<TestAccess />} />
+          <Route path="journal" element={<JournalAudit />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

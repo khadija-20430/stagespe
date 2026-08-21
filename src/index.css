@@ -1,40 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  color-scheme: light;
+ :root {
+    color-scheme: light;
 }
 
 html {
-  scroll-behavior: smooth;
+    scroll-behavior: smooth;
 }
 
 body {
-  margin: 0;
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
-  color: #1e293b;
-  background-color: #f8fafc;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #1e293b;
+    background-color: #f8fafc;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
+
 /* Minimum accessible tap target for interactive controls */
+
 button,
 a,
 input,
 select,
 textarea {
-  font-family: inherit;
+    font-family: inherit;
 }
 
-::selection {
-  background: #2563eb;
-  color: #ffffff;
+ ::selection {
+    background: #2563eb;
+    color: #ffffff;
 }
