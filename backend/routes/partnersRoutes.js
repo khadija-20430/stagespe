@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { withAuditContext } = require('../lib/auditContext');
@@ -17,8 +17,8 @@ const PARTNER_JOIN = `
 `;
 const PARTNER_SELECT = `
   SELECT partners.*, countries.name AS country_name,
-         establishment_types.label AS establishment_type,
-         partnership_types.label AS partnership_type
+         establishment_types.label AS establishment_type_label,
+         partnership_types.label AS partnership_type_label
 `;
 
 router.get('/', async (req, res) => {
@@ -47,7 +47,7 @@ router.get('/map', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/admin/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/admin/all', verifyToken, checkPermission('partners.view'), async (req, res) => {
   try {
     const result = await pool.query(`${PARTNER_SELECT} ${PARTNER_JOIN} ORDER BY partners.id DESC`);
     res.json(result.rows);
@@ -80,13 +80,13 @@ router.get('/:id', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/:id/translations', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/:id/translations', verifyToken, checkPermission('partners.view'), async (req, res) => {
   try {
     res.json(await getAllTranslations('partner', req.params.id));
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('partners.create'), async (req, res) => {
   try {
     const {
       name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
@@ -107,7 +107,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id', verifyToken, checkPermission('partners.edit'), async (req, res) => {
   try {
     const {
       name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
@@ -132,7 +132,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/publish', verifyToken, checkPermission('partners.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE partners SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Partenaire non trouvé' });
@@ -141,7 +141,7 @@ router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/archive', verifyToken, checkPermission('partners.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE partners SET statut_publication='archived', archived_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Partenaire non trouvé' });
@@ -150,7 +150,7 @@ router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/:id/duplicate', verifyToken, checkPermission('partners.create'), async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO partners
@@ -168,7 +168,7 @@ router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), as
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('partners.delete'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM partners WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Partenaire non trouvé' });

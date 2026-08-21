@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 
@@ -17,14 +17,14 @@ router.get('/partner/:partnerId', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/partner/:partnerId/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/partner/:partnerId/all', verifyToken, checkPermission('partners.view'), async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM partner_contacts WHERE partner_id = $1', [req.params.partnerId]);
     res.json(result.rows);
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('partners.edit'), async (req, res) => {
   try {
     const { partner_id, full_name, position, email, phone, is_primary, is_public, user_id } = req.body;
     const result = await pool.query(
@@ -37,7 +37,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id', verifyToken, checkPermission('partners.edit'), async (req, res) => {
   try {
     const { full_name, position, email, phone, is_primary, is_public, user_id } = req.body;
     const result = await pool.query(
@@ -50,7 +50,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('partners.edit'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM partner_contacts WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Contact non trouvé' });

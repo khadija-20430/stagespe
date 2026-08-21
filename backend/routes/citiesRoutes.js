@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
   try {
     const { name, country_id } = req.body;
     const result = await pool.query('INSERT INTO cities (name, country_id) VALUES ($1,$2) RETURNING *', [name, country_id]);
@@ -26,7 +26,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
   try {
     const { name, country_id } = req.body;
     const result = await pool.query('UPDATE cities SET name=$1, country_id=$2 WHERE id=$3 RETURNING *', [name, country_id, req.params.id]);
@@ -35,7 +35,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM cities WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Ville non trouvée' });

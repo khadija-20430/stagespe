@@ -80,7 +80,7 @@ router.get('/me', verifyToken, (req, res) => {
 // POST /register — réservé au super_admin (création de comptes = tâche système)
 router.post('/register', verifyToken, checkRole('super_admin'), async (req, res) => {
   try {
-    const { full_name, email, password, role } = req.body;
+    const { full_name, email, password, role, role_id } = req.body;
 
     if (!isPasswordValid(password)) {
       return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre' });
@@ -91,9 +91,9 @@ router.post('/register', verifyToken, checkRole('super_admin'), async (req, res)
 
     const password_hash = await bcrypt.hash(password, 10);
     const result = await pool.query(
-      `INSERT INTO users (full_name, email, password_hash, role)
-       VALUES ($1,$2,$3,$4) RETURNING id, full_name, email, role, is_active, created_at`,
-      [full_name, email, password_hash, role || 'utilisateur']
+      `INSERT INTO users (full_name, email, password_hash, role, role_id)
+       VALUES ($1,$2,$3,$4,$5) RETURNING id, full_name, email, role, role_id, is_active, created_at`,
+      [full_name, email, password_hash, role || 'utilisateur', role === 'admin' ? (role_id || null) : null]
     );
 
     await logAction(req.user.id, 'create', 'user', result.rows[0].id, { email }, req);
@@ -104,7 +104,10 @@ router.post('/register', verifyToken, checkRole('super_admin'), async (req, res)
 router.get('/users', verifyToken, checkRole('super_admin'), async (req, res) => {
   try {
     const result = await pool.query(
-      'SELECT id, full_name, email, role, is_active, last_login, created_at FROM users ORDER BY id DESC'
+      `SELECT users.id, users.full_name, users.email, users.role, users.role_id,
+              roles.name AS role_name, users.is_active, users.last_login, users.created_at
+       FROM users LEFT JOIN roles ON users.role_id = roles.id
+       ORDER BY users.id DESC`
     );
     res.json(result.rows);
   } catch (err) { sendError(res, err); }
@@ -140,13 +143,63 @@ router.put('/users/:id/role', verifyToken, checkRole('super_admin'), async (req,
     if (!['super_admin', 'admin', 'utilisateur'].includes(role)) {
       return res.status(400).json({ error: 'Rôle invalide' });
     }
+    // Changer le rôle de base retire l'éventuel rôle personnalisé — on le
+    // réattribue séparément via /users/:id/assign-role si besoin
     const result = await pool.query(
-      'UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, role',
+      'UPDATE users SET role = $1, role_id = NULL, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, role, role_id',
       [role, req.params.id]
     );
     if (result.rows.length === 0) return res.status(404).json({ error: 'Utilisateur non trouvé' });
     await logAction(req.user.id, 'update_role', 'user', req.params.id, { new_role: role }, req);
     res.json(result.rows[0]);
+  } catch (err) { sendError(res, err); }
+});
+
+// Attribue un rôle personnalisé (avec ses permissions précises) à un compte admin.
+// C'est ici que se fait le "on crée un rôle et on l'attribue à cet admin-là".
+router.put('/users/:id/assign-role', verifyToken, checkRole('super_admin'), async (req, res) => {
+  try {
+    const { role_id } = req.body;
+
+    const target = await pool.query('SELECT role FROM users WHERE id = $1', [req.params.id]);
+    if (target.rows.length === 0) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    if (target.rows[0].role !== 'admin') {
+      return res.status(400).json({ error: 'Seul un compte de rôle "admin" peut recevoir un rôle personnalisé' });
+    }
+
+    if (role_id) {
+      const roleCheck = await pool.query('SELECT id FROM roles WHERE id = $1', [role_id]);
+      if (roleCheck.rows.length === 0) return res.status(404).json({ error: 'Rôle non trouvé' });
+    }
+
+    const result = await pool.query(
+      `UPDATE users SET role_id = $1, updated_at = NOW() WHERE id = $2
+       RETURNING id, full_name, email, role, role_id`,
+      [role_id || null, req.params.id]
+    );
+    await logAction(req.user.id, 'assign_role', 'user', req.params.id, { role_id }, req);
+    res.json(result.rows[0]);
+  } catch (err) { sendError(res, err); }
+});
+
+// Permissions effectives de l'utilisateur connecté — le frontend appelle ça
+// au chargement du dashboard admin pour savoir quels boutons/sections afficher.
+router.get('/my-permissions', verifyToken, async (req, res) => {
+  try {
+    if (req.user.role === 'super_admin') {
+      const all = await pool.query('SELECT code FROM permissions');
+      return res.json(all.rows.map((r) => r.code));
+    }
+    if (req.user.role !== 'admin') return res.json([]);
+
+    const result = await pool.query(
+      `SELECT permissions.code FROM permissions
+       JOIN role_permissions ON role_permissions.permission_id = permissions.id
+       JOIN users ON users.role_id = role_permissions.role_id
+       WHERE users.id = $1`,
+      [req.user.id]
+    );
+    res.json(result.rows.map((r) => r.code));
   } catch (err) { sendError(res, err); }
 });
 

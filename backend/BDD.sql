@@ -660,6 +660,108 @@ FROM projects pr
 LEFT JOIN programmes pg ON pr.programme_id = pg.id
 GROUP BY pg.name, pr.status
 ORDER BY pg.name, pr.status;
+-- =====================================================================
+-- AJOUT : rôles personnalisés + permissions granulaires
+-- Script additif, sans danger sur une base existante (IF NOT EXISTS partout).
+-- Ne touche à AUCUNE table existante à part l'ajout d'une colonne sur users.
+-- =====================================================================
+
+CREATE TABLE IF NOT EXISTS permissions (
+  id SERIAL PRIMARY KEY,
+  code VARCHAR(100) NOT NULL UNIQUE,   -- ex: 'partners.view', 'documents.delete'
+  module VARCHAR(50) NOT NULL,          -- ex: 'partners', 'documents'
+  action VARCHAR(50) NOT NULL,          -- ex: 'view', 'create', 'edit', 'delete', 'publish'
+  label VARCHAR(150) NOT NULL           -- ex: 'Voir les partenaires'
+);
+
+CREATE TABLE IF NOT EXISTS roles (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(100) NOT NULL UNIQUE,
+  description VARCHAR(255),
+  is_system BOOLEAN NOT NULL DEFAULT FALSE,
+  created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS role_permissions (
+  role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+  permission_id INTEGER NOT NULL REFERENCES permissions(id) ON DELETE CASCADE,
+  PRIMARY KEY (role_id, permission_id)
+);
+
+-- Un compte 'admin' peut se voir attribuer un rôle personnalisé (avec ses
+-- permissions précises). super_admin et utilisateur n'en ont pas besoin :
+-- super_admin passe toujours, utilisateur n'a jamais accès à l'admin.
+ALTER TABLE users ADD COLUMN IF NOT EXISTS role_id INTEGER REFERENCES roles(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_role_permissions_role ON role_permissions(role_id);
+CREATE INDEX IF NOT EXISTS idx_permissions_module ON permissions(module);
+CREATE INDEX IF NOT EXISTS idx_users_role_id ON users(role_id);
+
+-- =====================================================================
+-- SEED : la liste complète des permissions disponibles, par module
+-- =====================================================================
+INSERT INTO permissions (code, module, action, label) VALUES
+  ('partners.view',    'partners', 'view',    'Voir les partenaires'),
+  ('partners.create',  'partners', 'create',  'Ajouter un partenaire'),
+  ('partners.edit',    'partners', 'edit',    'Modifier un partenaire'),
+  ('partners.delete',  'partners', 'delete',  'Supprimer un partenaire'),
+  ('partners.publish', 'partners', 'publish', 'Publier/archiver un partenaire'),
+
+  ('agreements.view',   'agreements', 'view',   'Voir les conventions'),
+  ('agreements.create', 'agreements', 'create', 'Ajouter une convention'),
+  ('agreements.edit',   'agreements', 'edit',   'Modifier une convention'),
+  ('agreements.delete', 'agreements', 'delete', 'Supprimer une convention'),
+
+  ('projects.view',    'projects', 'view',    'Voir les projets'),
+  ('projects.create',  'projects', 'create',  'Ajouter un projet'),
+  ('projects.edit',    'projects', 'edit',    'Modifier un projet'),
+  ('projects.delete',  'projects', 'delete',  'Supprimer un projet'),
+  ('projects.publish', 'projects', 'publish', 'Publier/archiver un projet'),
+
+  ('calls.view',    'calls', 'view',    'Voir les appels à projets'),
+  ('calls.create',  'calls', 'create',  'Ajouter un appel à projets'),
+  ('calls.edit',    'calls', 'edit',    'Modifier un appel à projets'),
+  ('calls.delete',  'calls', 'delete',  'Supprimer un appel à projets'),
+  ('calls.publish', 'calls', 'publish', 'Publier/archiver un appel à projets'),
+
+  ('mobility.view',    'mobility', 'view',    'Voir les offres de mobilité'),
+  ('mobility.create',  'mobility', 'create',  'Ajouter une offre de mobilité'),
+  ('mobility.edit',    'mobility', 'edit',    'Modifier une offre de mobilité'),
+  ('mobility.delete',  'mobility', 'delete',  'Supprimer une offre de mobilité'),
+  ('mobility.publish', 'mobility', 'publish', 'Publier/archiver une offre de mobilité'),
+
+  ('news_events.view',    'news_events', 'view',    'Voir les actualités/événements'),
+  ('news_events.create',  'news_events', 'create',  'Ajouter une actualité/événement'),
+  ('news_events.edit',    'news_events', 'edit',    'Modifier une actualité/événement'),
+  ('news_events.delete',  'news_events', 'delete',  'Supprimer une actualité/événement'),
+  ('news_events.publish', 'news_events', 'publish', 'Publier une actualité/événement'),
+
+  ('documents.view',   'documents', 'view',   'Voir les documents'),
+  ('documents.upload', 'documents', 'upload', 'Téléverser un document'),
+  ('documents.edit',   'documents', 'edit',   'Modifier un document'),
+  ('documents.delete', 'documents', 'delete', 'Supprimer un document'),
+
+  ('reference_data.manage', 'reference_data', 'manage', 'Gérer les listes de référence (pays, types, catégories...)')
+ON CONFLICT (code) DO NOTHING;
+
+-- =====================================================================
+-- SEED : deux rôles système de départ, prêts à l'emploi
+-- =====================================================================
+INSERT INTO roles (name, description, is_system) VALUES
+  ('Gestion complète', 'Accès à tous les modules de contenu, sans suppression', TRUE),
+  ('Documentaliste', 'Consultation et gestion des documents uniquement', TRUE)
+ON CONFLICT (name) DO NOTHING;
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p
+WHERE r.name = 'Gestion complète' AND p.action IN ('view', 'create', 'edit', 'publish', 'upload')
+ON CONFLICT DO NOTHING;
+
+INSERT INTO role_permissions (role_id, permission_id)
+SELECT r.id, p.id FROM roles r, permissions p
+WHERE r.name = 'Documentaliste' AND p.module = 'documents'
+ON CONFLICT DO NOTHING;
 
 INSERT INTO programmes (name, acronym, organisme_financeur, description) VALUES
   ('Erasmus+', 'ERA+', 'Commission Européenne', 'Programme européen de mobilité et coopération dans l''éducation'),

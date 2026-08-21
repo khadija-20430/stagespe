@@ -31,6 +31,8 @@ app.use('/api/institutions', require('./routes/institutionsRoutes'));
 
 app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/roles', require('./routes/rolesRoutes'));
+app.use('/api/permissions', require('./routes/permissionsRoutes'));
 
 app.use('/api/partners', require('./routes/partnersRoutes'));
 app.use('/api/partner-contacts', require('./routes/partnerContactsRoutes'));

@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { withAuditContext } = require('../lib/auditContext');
@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/admin/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/admin/all', verifyToken, checkPermission('projects.view'), async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT projects.*, programmes.name AS programme_name FROM projects
@@ -91,13 +91,13 @@ router.get('/:id', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/:id/translations', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/:id/translations', verifyToken, checkPermission('projects.view'), async (req, res) => {
   try {
     res.json(await getAllTranslations('project', req.params.id));
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('projects.create'), async (req, res) => {
   const client = await pool.connect();
   try {
     const {
@@ -138,7 +138,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   }
 });
 
-router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id', verifyToken, checkPermission('projects.edit'), async (req, res) => {
   const client = await pool.connect();
   try {
     const {
@@ -185,7 +185,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   }
 });
 
-router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/publish', verifyToken, checkPermission('projects.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE projects SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Projet non trouvé' });
@@ -194,7 +194,7 @@ router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/archive', verifyToken, checkPermission('projects.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE projects SET statut_publication='archived', archived_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Projet non trouvé' });
@@ -203,7 +203,7 @@ router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/:id/duplicate', verifyToken, checkPermission('projects.create'), async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -244,7 +244,7 @@ router.post('/:id/duplicate', verifyToken, checkRole('super_admin', 'admin'), as
   }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('projects.delete'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM projects WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Projet non trouvé' });

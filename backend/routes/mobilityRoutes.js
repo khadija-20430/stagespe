@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { translateList, translateOne, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/admin/all', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/admin/all', verifyToken, checkPermission('mobility.view'), async (req, res) => {
   try {
     const result = await pool.query(`${MOBILITY_SELECT} ${MOBILITY_JOIN} ORDER BY mobility.deadline ASC`);
     res.json(result.rows);
@@ -75,13 +75,13 @@ router.get('/:id', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/:id/translations', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.get('/:id/translations', verifyToken, checkPermission('mobility.view'), async (req, res) => {
   try {
     res.json(await getAllTranslations('mobility', req.params.id));
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('mobility.create'), async (req, res) => {
   const client = await pool.connect();
   try {
     const {
@@ -121,7 +121,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   }
 });
 
-router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id', verifyToken, checkPermission('mobility.edit'), async (req, res) => {
   const client = await pool.connect();
   try {
     const {
@@ -163,7 +163,7 @@ router.put('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, r
   }
 });
 
-router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/publish', verifyToken, checkPermission('mobility.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE mobility SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Offre non trouvée' });
@@ -172,7 +172,7 @@ router.put('/:id/publish', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.put('/:id/archive', verifyToken, checkPermission('mobility.publish'), async (req, res) => {
   try {
     const result = await pool.query(`UPDATE mobility SET statut_publication='archived', archived_at=NOW() WHERE id=$1 RETURNING *`, [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Offre non trouvée' });
@@ -181,7 +181,7 @@ router.put('/:id/archive', verifyToken, checkRole('super_admin', 'admin'), async
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('mobility.delete'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM mobility WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Offre non trouvée' });

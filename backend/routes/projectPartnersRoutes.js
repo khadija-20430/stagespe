@@ -1,7 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole } = require('../middleware/rbac');
+const { checkRole, checkPermission } = require('../middleware/rbac');
 const sendError = require('../middleware/errorResponse');
 
 const router = express.Router();
@@ -20,7 +20,7 @@ router.get('/project/:projectId', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.post('/', verifyToken, checkPermission('projects.edit'), async (req, res) => {
   try {
     const { project_id, partner_id, role } = req.body;
     if (!role) return res.status(400).json({ error: 'Le rôle du partenaire dans le projet est requis' });
@@ -32,7 +32,7 @@ router.post('/', verifyToken, checkRole('super_admin', 'admin'), async (req, res
   } catch (err) { sendError(res, err); }
 });
 
-router.delete('/:id', verifyToken, checkRole('super_admin', 'admin'), async (req, res) => {
+router.delete('/:id', verifyToken, checkPermission('projects.edit'), async (req, res) => {
   try {
     const result = await pool.query('DELETE FROM project_partners WHERE id=$1 RETURNING *', [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Lien non trouvé' });
