@@ -8,17 +8,18 @@ import {
   getPartenaires,
   getProjets,
 } from '../../services/api.js';
-
+import { getActualites } from '../../services/api.js';
 export default function Dashboard() {
   const { t } = useTranslation();
   const [counts, setCounts] = useState({});
 
   const config = [
-    { key: 'partenaires', label: t('admin.nav.partners'), fetch: getPartenaires, icon: '🤝' },
-    { key: 'projets', label: t('admin.nav.projects'), fetch: getProjets, icon: '🔬' },
-    { key: 'appels', label: t('admin.nav.calls'), fetch: getAppels, icon: '📢' },
-    { key: 'mobilites', label: t('admin.nav.mobility'), fetch: getMobilites, icon: '✈️' },
-    { key: 'documents', label: t('admin.nav.documents'), fetch: getDocuments, icon: '📄' },
+    { key: 'partenaires', label: t('partners'), fetch: getPartenaires, icon: '🤝' },
+    { key: 'projets', label: t('projects'), fetch: getProjets, icon: '🔬' },
+    { key: 'appels', label: t('calls'), fetch: getAppels, icon: '📢' },
+    { key: 'mobilites', label: t('mobility'), fetch: getMobilites, icon: '✈️' },
+    { key: 'actualites', label: t('news'), fetch: getActualites, icon: '📰' },
+    { key: 'documents', label: t('document'), fetch: getDocuments, icon: '📚' },
   ];
 
   useEffect(() => {

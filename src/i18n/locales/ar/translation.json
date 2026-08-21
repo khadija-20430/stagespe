@@ -294,6 +294,8 @@
       "meeting": "لقاء",
       "testimonial": "شهادة"
     },
+      "admin.nav.newsEvents": "الأخبار والأحداث",
+
     "documentCategory": {
       "institutionnel": "مؤسساتي",
       "template_projet": "نموذج مشروع",

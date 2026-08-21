@@ -12,12 +12,13 @@ export default function AdminLayout() {
   const [open, setOpen] = useState(false);
 
   const links = [
-    { to: '/admin', label: t('admin.nav.dashboard'), end: true, icon: '📊' },
-    { to: '/admin/partenaires', label: t('admin.nav.partners'), icon: '🤝' },
-    { to: '/admin/projets', label: t('admin.nav.projects'), icon: '🔬' },
-    { to: '/admin/appels', label: t('admin.nav.calls'), icon: '📢' },
-    { to: '/admin/mobilites', label: t('admin.nav.mobility'), icon: '✈️' },
-    { to: '/admin/documents', label: t('admin.nav.documents'), icon: '📄' },
+    { to: '/admin', label: t('dashboard'), end: true, icon: '📊' },
+    { to: '/admin/partenaires', label: t('partners'), icon: '🤝' },
+    { to: '/admin/projets', label: t('projects'), icon: '🔬' },
+    { to: '/admin/appels', label: t('calls'), icon: '📢' },
+    { to: '/admin/mobilites', label: t('mobility'), icon: '✈️' },
+    { to: '/admin/news-events', label: t('Actualités'), icon: '📰' },
+    { to: '/admin/documents', label: t('document'), icon: '📚' },
     { to: '/admin/roles', label: 'Rôles & permissions', icon: '🔐' },
     { to: '/admin/test-acces', label: 'Tester RBAC', icon: '🧪' },
     { to: '/admin/journal', label: "Journal d'audit", icon: '📜' },

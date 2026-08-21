@@ -35,7 +35,10 @@ export const getProjets = async(lang = 'fr') => {
     const data = await request(`/projects?lang=${lang}`);
     return data.map(mapProjet);
 };
-
+export const getProjetsAdmin = async () => {
+  const data = await authRequest('/projects/admin/all');
+  return data.map(mapProjet);
+};
 export const getProjetById = async(id, lang = 'fr') => {
     const data = await request(`/projects/${id}?lang=${lang}`);
     return mapProjet(data);
@@ -45,6 +48,10 @@ export const getProjetById = async(id, lang = 'fr') => {
 export const getAppels = async(lang = 'fr') => {
     const data = await request(`/calls?lang=${lang}`);
     return data.map(mapAppel);
+};
+export const getAppelsAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/calls/admin/all?lang=${lang}`);
+  return data.map(mapAppel);
 };
 
 export const getAppelById = async(id, lang = 'fr') => {
@@ -58,6 +65,10 @@ export const getMobilites = async(lang = 'fr') => {
     return data.map(mapMobilite);
 };
 
+export const getMobilitesAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/mobility/admin/all?lang=${lang}`);
+  return data.map(mapMobilite);
+};
 export const getMobiliteById = async(id, lang = 'fr') => {
     const data = await request(`/mobility/${id}?lang=${lang}`);
     return mapMobilite(data);
@@ -91,6 +102,11 @@ export const getPartenaires = async(lang = 'fr') => {
     const data = await request(`/partners?lang=${lang}`);
     return data.map(mapPartner);
 };
+export const getPartenairesAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/partners/admin/all?lang=${lang}`);
+  return data.map(mapPartner);
+};
+
 
 export const getPartenaireById = async(id, lang = 'fr') => {
     const data = await request(`/partners/${id}?lang=${lang}`);
@@ -207,4 +223,61 @@ export const getLoginHistory = () => authRequest('/auth/login-history');
 export const getAuditLog = (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return authRequest(`/audit-logs${qs ? `?${qs}` : ''}`);
+};
+export const publishProjet = (id) => authRequest(`/projects/${id}/publish`, { method: 'PUT' });
+export const archiveProjet = (id) => authRequest(`/projects/${id}/archive`, { method: 'PUT' });
+export const publishAppel = (id) => authRequest(`/calls/${id}/publish`, { method: 'PUT' });
+export const archiveAppel = (id) => authRequest(`/calls/${id}/archive`, { method: 'PUT' });
+
+
+export const publishPARTNER = (id) => authRequest(`/partners/${id}/publish`, { method: 'PUT' });
+export const archivePARTNER  = (id) => authRequest(`/partners/${id}/archive`, { method: 'PUT' });
+export const publishMobilite = (id) => authRequest(`/mobility/${id}/publish`, { method: 'PUT' });
+export const archiveMobilite = (id) => authRequest(`/mobility/${id}/archive`, { method: 'PUT' });
+export const getActualitesAdmin = async () => {
+  const data = await authRequest('/news-events/admin/all');
+  return data.map(mapActualite);
+};
+
+export const createActualite = (payload) =>
+  authRequest('/news-events', {
+    method: 'POST',
+    body: payload,
+  });
+
+export const updateActualite = (id, payload) =>
+  authRequest(`/news-events/${id}`, {
+    method: 'PUT',
+    body: payload,
+  });
+
+export const deleteActualite = (id) =>
+  authRequest(`/news-events/${id}`, {
+    method: 'DELETE',
+  });
+
+export const publishActualite = (id) =>
+  authRequest(`/news-events/${id}/publish`, {
+    method: 'PUT',
+  });
+
+export const archiveActualite = (id) =>
+  authRequest(`/news-events/${id}/archive`, {
+    method: 'PUT',
+  });
+  // ✅ Version pour fichiers en base64
+const handleDownload = (document) => {
+  if (document.fichier_base64) {
+    // Si le fichier est en base64
+    const link = document.createElement('a');
+    link.href = document.fichier_base64;
+    link.download = document.nom || document.titre || 'document';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else {
+    // Sinon, utiliser l'URL
+    const fileUrl = document.fichier || document.lien;
+    window.open(fileUrl, '_blank');
+  }
 };

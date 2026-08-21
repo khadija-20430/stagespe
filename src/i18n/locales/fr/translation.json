@@ -261,6 +261,7 @@
       }
     }
   },
+  "admin.nav.newsEvents": "Actualités",
   "enums": {
     "projectStatus": { "proposed": "Proposé", "ongoing": "En cours", "completed": "Terminé", "suspended": "Suspendu" },
     "callStatus": { "open": "Ouvert", "closed": "Fermé", "upcoming": "Bientôt", "closing_soon": "Clôture proche" },

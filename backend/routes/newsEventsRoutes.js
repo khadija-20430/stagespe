@@ -8,6 +8,7 @@ const { translateList, translateOne, upsertTranslations, getAllTranslations, del
 
 const router = express.Router();
 
+// =============== ROUTES PUBLIQUES ===============
 router.get('/', async (req, res) => {
   try {
     const { type, project_id, is_featured } = req.query;
@@ -22,18 +23,19 @@ router.get('/', async (req, res) => {
   } catch (err) { sendError(res, err); }
 });
 
-router.get('/admin/all', verifyToken, checkPermission('news_events.view'), async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM news_events ORDER BY created_at DESC');
-    res.json(result.rows);
-  } catch (err) { sendError(res, err); }
-});
-
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM news_events WHERE id = $1 AND statut = 'published'", [req.params.id]);
     if (result.rows.length === 0) return res.status(404).json({ error: 'Contenu non trouvé' });
     res.json(await translateOne('news', result.rows[0], req.query.lang));
+  } catch (err) { sendError(res, err); }
+});
+
+// =============== ROUTES ADMIN ===============
+router.get('/admin/all', verifyToken, checkPermission('news_events.view'), async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM news_events ORDER BY created_at DESC');
+    res.json(result.rows);
   } catch (err) { sendError(res, err); }
 });
 
@@ -43,6 +45,7 @@ router.get('/:id/translations', verifyToken, checkPermission('news_events.view')
   } catch (err) { sendError(res, err); }
 });
 
+// =============== CRUD ===============
 router.post('/', verifyToken, checkPermission('news_events.create'), async (req, res) => {
   try {
     const {
@@ -105,4 +108,84 @@ router.delete('/:id', verifyToken, checkPermission('news_events.delete'), async 
   } catch (err) { sendError(res, err); }
 });
 
-module.exports = router;
+// =============== ✅ ROUTES PUBLICATION (AJOUTÉES) ===============
+
+// ✅ PUBLIER une actualité
+router.put('/:id/publish', verifyToken, checkPermission('news_events.edit'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      `UPDATE news_events 
+       SET statut = 'published', 
+           published_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $1 
+       RETURNING *`,
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Actualité non trouvée' });
+    }
+    
+    await logAction(req.user.id, 'publish', 'news_event', id, null, req);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('❌ Erreur publication:', error);
+    res.status(500).json({ error: 'Erreur lors de la publication' });
+  }
+});
+
+// ✅ ARCHIVER une actualité
+router.put('/:id/archive', verifyToken, checkPermission('news_events.edit'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      `UPDATE news_events 
+       SET statut = 'archived', 
+           updated_at = NOW()
+       WHERE id = $1 
+       RETURNING *`,
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Actualité non trouvée' });
+    }
+    
+    await logAction(req.user.id, 'archive', 'news_event', id, null, req);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('❌ Erreur archivage:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'archivage' });
+  }
+});
+
+// ✅ RESTAURER une actualité (optionnel)
+router.put('/:id/restore', verifyToken, checkPermission('news_events.edit'), async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query(
+      `UPDATE news_events 
+       SET statut = 'draft', 
+           updated_at = NOW()
+       WHERE id = $1 
+       RETURNING *`,
+      [id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Actualité non trouvée' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('❌ Erreur restauration:', error);
+    res.status(500).json({ error: 'Erreur lors de la restauration' });
+  }
+});
+
+module.exports = router;  // ✅ Garder module.exports

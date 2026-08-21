@@ -13,7 +13,10 @@ function emptyItem(fields) {
   return obj;
 }
 
-export default function CrudManager({ title, idPrefix, fetcher, columns, fields, toPayload, onCreate, onUpdate, onDelete }) {
+export default function CrudManager({
+  title, idPrefix, fetcher, columns, fields, toPayload,
+  onCreate, onUpdate, onDelete, onPublish, onArchive,
+}) {
   const { t } = useTranslation();
   const [items, setItems] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -21,6 +24,7 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields,
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [actionLoadingId, setActionLoadingId] = useState(null);
 
   const reload = () => fetcher().then(setItems);
 
@@ -55,6 +59,32 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields,
       await reload();
     } catch (err) {
       alert(err.message || 'Erreur lors de la suppression');
+    }
+  };
+
+  const doPublish = async (id) => {
+    if (!onPublish) return;
+    setActionLoadingId(id);
+    try {
+      await onPublish(id);
+      await reload();
+    } catch (err) {
+      alert(err.message || 'Erreur lors de la publication');
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const doArchive = async (id) => {
+    if (!onArchive) return;
+    setActionLoadingId(id);
+    try {
+      await onArchive(id);
+      await reload();
+    } catch (err) {
+      alert(err.message || "Erreur lors de l'archivage");
+    } finally {
+      setActionLoadingId(null);
     }
   };
 
@@ -143,7 +173,27 @@ export default function CrudManager({ title, idPrefix, fetcher, columns, fields,
                       </td>
                     ))}
                     <td className="px-5 py-4 text-right">
-                      <div className="flex justify-end gap-2">
+                      <div className="flex flex-wrap justify-end gap-2">
+                        {onPublish && item.statutPublication !== 'published' ? (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={actionLoadingId === item.id}
+                            onClick={() => doPublish(item.id)}
+                          >
+                            {actionLoadingId === item.id ? '...' : 'Publier'}
+                          </Button>
+                        ) : null}
+                        {onArchive && item.statutPublication !== 'archived' ? (
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            disabled={actionLoadingId === item.id}
+                            onClick={() => doArchive(item.id)}
+                          >
+                            {actionLoadingId === item.id ? '...' : 'Archiver'}
+                          </Button>
+                        ) : null}
                         <Button size="sm" variant="secondary" onClick={() => openEdit(item)}>
                           {t('admin.crud.edit')}
                         </Button>

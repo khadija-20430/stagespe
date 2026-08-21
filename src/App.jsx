@@ -25,7 +25,7 @@ import ManageDocuments from './pages/admin/ManageDocuments.jsx';
 import ManageRoles from './pages/admin/ManageRoles.jsx';
 import TestAccess from './pages/admin/TestAccess.jsx';
 import JournalAudit from './pages/admin/JournalAudit.jsx';
-
+import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -64,6 +64,8 @@ export default function App() {
           <Route path="projets" element={<ManageProjets />} />
           <Route path="appels" element={<ManageAppels />} />
           <Route path="mobilites" element={<ManageMobilites />} />
+                    <Route path="news-events" element={<ManageNewsEvents />} />
+
           <Route path="documents" element={<ManageDocuments />} />
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />

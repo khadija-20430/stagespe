@@ -49,7 +49,7 @@ export default function ManageDocuments() {
 
   return (
     <CrudManager
-      title={t('admin.nav.documents')}
+      title={t('document')}
       idPrefix="doc"
       fetcher={getDocuments}
       toPayload={toDocumentPayload}
@@ -57,19 +57,19 @@ export default function ManageDocuments() {
       onUpdate={updateDocument}
       onDelete={deleteDocument}
       columns={[
-        { key: 'nom', label: t('admin.documents.columns.titre') },
-        { key: 'categorieLabel', label: t('admin.documents.columns.categorie'),
+        { key: 'nom', label: t('titre') },
+        { key: 'categorieLabel', label: t('categorie'),
           render: (i) => <Badge tone="cobalt">{i.categorieLabel}</Badge> },
-        { key: 'format', label: t('admin.documents.columns.format') },
-        { key: 'taille', label: t('admin.documents.columns.taille') },
-        { key: 'date', label: t('admin.documents.columns.date') },
+        { key: 'format', label: t('format') },
+        { key: 'taille', label: t('taille') },
+        { key: 'date', label: t('date') },
       ]}
       fields={[
-        { name: 'titre', label: t('admin.documents.fields.titre'), type: 'text' },
-        { name: 'description', label: t('admin.documents.fields.description'), type: 'textarea' },
+        { name: 'titre', label: t('titre'), type: 'text' },
+        { name: 'description', label: t('description'), type: 'textarea' },
         {
           name: 'fichier_url',
-          label: t('admin.documents.fields.fichier'),
+          label: t('fichier'),
           type: 'file',
           onFile: async (file, setField) => {
             try {
@@ -82,15 +82,15 @@ export default function ManageDocuments() {
             }
           },
         },
-        { name: 'categorieId', label: t('admin.documents.fields.categorie'), type: 'select',
+        { name: 'categorieId', label: t('categorie'), type: 'select',
           options: categories.map((c) => ({ value: c.id, label: c.label })) },
-        { name: 'langage', label: t('admin.documents.fields.langage'), type: 'select', options: LANGUAGES },
-        { name: 'version', label: t('admin.documents.fields.version'), type: 'text' },
-        { name: 'visibilite', label: t('admin.documents.fields.visibilite'), type: 'select',
+        { name: 'langage', label: t('langage'), type: 'select', options: LANGUAGES },
+        { name: 'version', label: t('version'), type: 'text' },
+        { name: 'visibilite', label: t('visibilite'), type: 'select',
           options: VISIBILITY.map((code) => ({ value: code, label: t(`enums.documentVisibility.${code}`) })) },
-        { name: 'misEnAvant', label: t('admin.documents.fields.misEnAvant'), type: 'select',
-          options: [{ value: 'true', label: t('admin.common.yes') }, { value: 'false', label: t('admin.common.no') }] },
-        { name: 'dateExpiration', label: t('admin.documents.fields.dateExpiration'), type: 'text' },
+        { name: 'misEnAvant', label: t('misEnAvant'), type: 'select',
+          options: [{ value: 'true', label: t('yes') }, { value: 'false', label: t('no') }] },
+        { name: 'dateExpiration', label: t('dateExpiration'), type: 'text' },
       ]}
     />
   );

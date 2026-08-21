@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
-import {
-  getPartenaires, createPartenaire, updatePartenaire, deletePartenaire,
+import {publishPARTNER,archivePARTNER,
+ getPartenairesAdmin, createPartenaire, updatePartenaire, deletePartenaire,
   getCountries, getEstablishmentTypes, getPartnershipTypes,
 } from '../../services/api.js';
 import { toPartnerPayload } from '../../services/mappers.js';
@@ -27,40 +27,42 @@ export default function ManagePartenaires() {
 
   return (
     <CrudManager
-      title={t('admin.nav.partners')}
+      title={t('partners')}
       idPrefix="part"
-      fetcher={getPartenaires}
+      fetcher={getPartenairesAdmin}
       toPayload={toPartnerPayload}
       onCreate={createPartenaire}
       onUpdate={updatePartenaire}
       onDelete={deletePartenaire}
+      onPublish={publishPARTNER}
+      onArchive={archivePARTNER}
       columns={[
-        { key: 'nom', label: t('admin.partenaires.columns.nom') },
-        { key: 'pays', label: t('admin.partenaires.columns.pays') },
-        { key: 'ville', label: t('admin.partenaires.columns.ville') },
-        { key: 'partnershipStatus', label: t('admin.partenaires.columns.statutPartenariat'),
-          render: (i) => <Badge tone={partnershipStatusTone(i.partnershipStatus)}>{t(`enums.partnershipStatus.${i.partnershipStatus}`)}</Badge> },
-        { key: 'statutPublication', label: t('admin.partenaires.columns.statutPublication'),
-          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`enums.publicationStatus.${i.statutPublication}`)}</Badge> },
+        { key: 'nom', label: t('nom') },
+        { key: 'pays', label: t('pays') },
+        { key: 'ville', label: t('ville') },
+        { key: 'partnershipStatus', label: t('statutPartenariat'),
+          render: (i) => <Badge tone={partnershipStatusTone(i.partnershipStatus)}>{t(`${i.partnershipStatus}`)}</Badge> },
+        { key: 'statutPublication', label: t('statutPublication'),
+          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`${i.statutPublication}`)}</Badge> },
       ]}
       fields={[
-        { name: 'nom', label: t('admin.partenaires.fields.nom'), type: 'text' },
-        { name: 'nomOfficiel', label: t('admin.partenaires.fields.nomOfficiel'), type: 'text' },
-        { name: 'paysId', label: t('admin.partenaires.fields.pays'), type: 'select',
+        { name: 'nom', label: t('nom'), type: 'text' },
+        { name: 'nomOfficiel', label: t('nomOfficiel'), type: 'text' },
+        { name: 'paysId', label: t('pays'), type: 'select',
           options: countries.map((c) => ({ value: c.id, label: c.name })) },
-        { name: 'ville', label: t('admin.partenaires.fields.ville'), type: 'text' },
-        { name: 'typeEtablissementId', label: t('admin.partenaires.fields.typeEtablissement'), type: 'select',
+        { name: 'ville', label: t('ville'), type: 'text' },
+        { name: 'typeEtablissementId', label: t('typeEtablissement'), type: 'select',
           options: establishmentTypes.map((et) => ({ value: et.id, label: et.label })) },
-        { name: 'typePartenariatId', label: t('admin.partenaires.fields.typePartenariat'), type: 'select',
+        { name: 'typePartenariatId', label: t('typePartenariat'), type: 'select',
           options: partnershipTypes.map((pt) => ({ value: pt.id, label: pt.label })) },
-        { name: 'statutPartenariat', label: t('admin.partenaires.fields.statutPartenariat'), type: 'select',
-          options: PARTNERSHIP_STATUS.map((code) => ({ value: code, label: t(`enums.partnershipStatus.${code}`) })) },
-        { name: 'siteWeb', label: t('admin.partenaires.fields.siteWeb'), type: 'text' },
-        { name: 'domaines', label: t('admin.partenaires.fields.domaines'), type: 'list' },
-        { name: 'description', label: t('admin.partenaires.fields.description'), type: 'textarea' },
+        { name: 'statutPartenariat', label: t('statutPartenariat'), type: 'select',
+          options: PARTNERSHIP_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
+        { name: 'siteWeb', label: t('siteWeb'), type: 'text' },
+        { name: 'domaines', label: t('domaines'), type: 'list' },
+        { name: 'description', label: t('description'), type: 'textarea' },
         {
   name: 'logo_url',
-  label: t('admin.partenaires.fields.logo'),
+  label: t('logo'),
   type: 'file',
   accept: 'image/*',
   onFile: async (file, setField) => {
@@ -72,8 +74,8 @@ export default function ManagePartenaires() {
     }
   },
 },
-        { name: 'statutPublication', label: t('admin.partenaires.fields.statutPublication'), type: 'select',
-          options: PUBLICATION_STATUS.map((code) => ({ value: code, label: t(`enums.publicationStatus.${code}`) })) },
+        { name: 'statutPublication', label: t('statutPublication'), type: 'select',
+          options: PUBLICATION_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
       ]}
     />
   );
