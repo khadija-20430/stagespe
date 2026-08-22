@@ -7,8 +7,7 @@ import FilterChip from '../components/ui/FilterChip.jsx';
 import Button from '../components/ui/Button.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getDocuments } from '../services/api.js';
-import { DOCUMENT_CATEGORIES } from '../lib/enums.js';
+import { getDocuments, getFileUrl } from '../services/api.js';
 
 const formatBytes = (bytes) => {
   if (!bytes) return '—';
@@ -32,7 +31,7 @@ export default function Documents() {
   useEffect(() => {
     getDocuments()
       .then(setDocuments)
-      .catch(err => {
+      .catch((err) => {
         console.error('Erreur chargement:', err);
         setError('Impossible de charger les documents');
       });
@@ -48,101 +47,60 @@ export default function Documents() {
     return documents.filter((d) => categorie === 'toutes' || d.categorie === categorie);
   }, [documents, categorie]);
 
-  // ✅ Fonction de téléchargement améliorée
-  const handleDownload = async (document) => {
-    setDownloading(document.id);
+  // ✅ Téléchargement réel du document.
+  // Important : le lien <a download> ne force PAS le téléchargement pour une URL
+  // cross-origin (frontend sur un port, backend sur un autre) — le navigateur
+  // l'ignore et ouvre juste le fichier. On récupère donc le fichier en mémoire
+  // (blob) puis on crée une URL locale blob:, que le navigateur télécharge toujours.
+  const handleDownload = async (doc) => {
     setError(null);
-    
+    const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);
+
+    if (!url) {
+      setError('URL du document non disponible');
+      return;
+    }
+
+    setDownloading(doc.id);
     try {
-      // Récupérer l'URL du fichier
-      let fileUrl = document.fichier || document.lien || document.fichier_url;
-      
-      if (!fileUrl) {
-        throw new Error('URL du document non disponible');
-      }
-      
-      // Vérifier si c'est une URL complète ou relative
-      const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:13000/api';
-      
-      // Si l'URL est relative, construire l'URL complète
-      if (!fileUrl.startsWith('http://') && !fileUrl.startsWith('https://')) {
-        // Si l'URL commence par /, ne pas ajouter de slash supplémentaire
-        fileUrl = fileUrl.startsWith('/') ? `${baseUrl}${fileUrl}` : `${baseUrl}/${fileUrl}`;
-      }
-      
-      console.log('📥 Téléchargement depuis:', fileUrl);
-      
-      // Récupérer le token pour l'authentification
-      const token = localStorage.getItem('esi_admin_token');
-      
-      // Faire la requête
-      const response = await fetch(fileUrl, {
-        headers: {
-          'Authorization': token ? `Bearer ${token}` : '',
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`Erreur ${response.status}: ${response.statusText}`);
-      }
-      
-      // Récupérer le nom du fichier
-      let fileName = document.nom || document.titre || 'document';
-      
-      // Essayer d'extraire le nom du fichier depuis l'URL
-      const urlParts = fileUrl.split('/');
-      const lastPart = urlParts[urlParts.length - 1];
-      if (lastPart && lastPart.includes('.')) {
-        fileName = lastPart;
-      }
-      
-      // Télécharger le fichier
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Erreur ${response.status}`);
+
       const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = downloadUrl;
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      // Nom de fichier : titre du document + extension d'origine (si trouvable dans l'URL)
+      const extMatch = url.match(/\.[a-zA-Z0-9]+$/);
+      const ext = extMatch ? extMatch[0] : '';
+      const baseName = (doc.titre || doc.nom || 'document').replace(/[/\\?%*:|"<>]/g, '-');
+      const fileName = baseName.toLowerCase().endsWith(ext.toLowerCase()) ? baseName : `${baseName}${ext}`;
+
+      const link = window.document.createElement('a');
+      link.href = blobUrl;
       link.download = fileName;
-      document.body.appendChild(link);
+      window.document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
-      
-      console.log('✅ Téléchargement réussi:', fileName);
-      
-    } catch (error) {
-      console.error('❌ Erreur téléchargement:', error);
-      setError(`Erreur: ${error.message}`);
-      
-      // ✅ Si le téléchargement direct échoue, essayer d'ouvrir dans un nouvel onglet
-      try {
-        const fileUrl = document.fichier || document.lien || document.fichier_url;
-        if (fileUrl) {
-          const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:13000/api';
-          const fullUrl = fileUrl.startsWith('http') ? fileUrl : `${baseUrl}${fileUrl.startsWith('/') ? '' : '/'}${fileUrl}`;
-          window.open(fullUrl, '_blank');
-        }
-      } catch (e) {
-        alert('Impossible de télécharger le document. Veuillez contacter l\'administrateur.');
-      }
+      window.document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error('❌ Erreur téléchargement:', err);
+      setError(`Erreur: ${err.message}`);
     } finally {
       setDownloading(null);
     }
   };
 
-  // ✅ Téléchargement direct (ouvrir dans un nouvel onglet)
-  const handleOpen = (document) => {
-    let fileUrl = document.fichier || document.lien || document.fichier_url;
-    if (!fileUrl) {
-      alert('URL du document non disponible');
+  // ✅ Ouvrir le document dans un nouvel onglet
+  const handleOpen = (doc) => {
+    setError(null);
+    const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);
+
+    if (!url) {
+      setError('URL du document non disponible');
       return;
     }
-    
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:13000/api';
-    if (!fileUrl.startsWith('http')) {
-      fileUrl = fileUrl.startsWith('/') ? `${baseUrl}${fileUrl}` : `${baseUrl}/${fileUrl}`;
-    }
-    
-    window.open(fileUrl, '_blank');
+
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -215,17 +173,9 @@ export default function Documents() {
                               variant="secondary"
                               disabled={downloading === d.id}
                             >
-                              {downloading === d.id ? (
-                                '⏳ Téléchargement...'
-                              ) : (
-                                '📥 Télécharger'
-                              )}
+                              {downloading === d.id ? '⏳ Téléchargement...' : '📥 Télécharger'}
                             </Button>
-                            <Button
-                              onClick={() => handleOpen(d)}
-                              size="sm"
-                              variant="outline"
-                            >
+                            <Button onClick={() => handleOpen(d)} size="sm" variant="outline">
                               👁️ Ouvrir
                             </Button>
                           </div>

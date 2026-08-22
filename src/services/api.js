@@ -18,6 +18,22 @@ import {
 const API =
     import.meta.env.VITE_API_URL;
 
+// ✅ Base pour les fichiers statiques (uploads) — sans le suffixe /api
+// Ex: si VITE_API_URL = "http://localhost:5000/api" -> FILES_BASE_URL = "http://localhost:5000"
+export const FILES_BASE_URL = API.replace(/\/api\/?$/, '');
+
+/**
+ * ✅ Construit l'URL complète et correcte d'un fichier stocké côté serveur
+ * (ex: /uploads/xxx.pdf -> http://localhost:5000/uploads/xxx.pdf).
+ * Retourne null si aucun chemin n'est fourni. Gère aussi le cas où le
+ * chemin est déjà une URL absolue (http/https).
+ * @param {string} path - chemin relatif renvoyé par l'API (ex: '/uploads/xxx.pdf')
+ */
+export const getFileUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${FILES_BASE_URL}${path}`;
+};
+
 /**
  * Petit wrapper fetch : gère les erreurs HTTP et le parsing JSON.
  * @param {string} path - chemin relatif à API (ex: '/partners')
@@ -75,7 +91,6 @@ export const getMobiliteById = async(id, lang = 'fr') => {
 };
 
 /* ------------------------------- Actualités -------------------------------- */
-// ⚠️ Adapter le chemin '/news-events' si votre route diffère.
 export const getActualites = async() => {
     const data = await request('/news-events');
     return data.map(mapActualite);
@@ -195,7 +210,9 @@ export const deleteMobilite = (id) => authRequest(`/mobility/${id}`, { method: '
 /* ------------------------------- Documents (CRUD) --------------------------------- */
 export const createDocument = (payload) => authRequest('/documents', { method: 'POST', body: payload });
 export const updateDocument = (id, payload) => authRequest(`/documents/${id}`, { method: 'PUT', body: payload });
-export const deleteDocument = (id) => authRequest(`/documents/${id}`, { method: 'DELETE' }); /* -------------------------- Rôles & permissions (RBAC) -------------------------- */
+export const deleteDocument = (id) => authRequest(`/documents/${id}`, { method: 'DELETE' });
+
+/* -------------------------- Rôles & permissions (RBAC) -------------------------- */
 export const getRoles = () => authRequest('/roles');
 export const getRoleById = (id) => authRequest(`/roles/${id}`);
 export const createRole = (payload) => authRequest('/roles', { method: 'POST', body: payload });
@@ -229,11 +246,11 @@ export const archiveProjet = (id) => authRequest(`/projects/${id}/archive`, { me
 export const publishAppel = (id) => authRequest(`/calls/${id}/publish`, { method: 'PUT' });
 export const archiveAppel = (id) => authRequest(`/calls/${id}/archive`, { method: 'PUT' });
 
-
 export const publishPARTNER = (id) => authRequest(`/partners/${id}/publish`, { method: 'PUT' });
 export const archivePARTNER  = (id) => authRequest(`/partners/${id}/archive`, { method: 'PUT' });
 export const publishMobilite = (id) => authRequest(`/mobility/${id}/publish`, { method: 'PUT' });
 export const archiveMobilite = (id) => authRequest(`/mobility/${id}/archive`, { method: 'PUT' });
+
 export const getActualitesAdmin = async () => {
   const data = await authRequest('/news-events/admin/all');
   return data.map(mapActualite);
@@ -265,19 +282,3 @@ export const archiveActualite = (id) =>
   authRequest(`/news-events/${id}/archive`, {
     method: 'PUT',
   });
-  // ✅ Version pour fichiers en base64
-const handleDownload = (document) => {
-  if (document.fichier_base64) {
-    // Si le fichier est en base64
-    const link = document.createElement('a');
-    link.href = document.fichier_base64;
-    link.download = document.nom || document.titre || 'document';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  } else {
-    // Sinon, utiliser l'URL
-    const fileUrl = document.fichier || document.lien;
-    window.open(fileUrl, '_blank');
-  }
-};
