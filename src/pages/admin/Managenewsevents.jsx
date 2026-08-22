@@ -87,7 +87,7 @@ onArchive={archiveActualite}
           label: t('status'),
           render: (i) => (
             <Badge tone={publicationStatusTone(i.statut)}>
-              {i.statut}
+              {t(`${i.statut}`)}
             </Badge>
           ),
         },

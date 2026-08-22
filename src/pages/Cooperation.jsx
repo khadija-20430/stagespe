@@ -4,7 +4,7 @@ import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import Loader from '../components/ui/Loader.jsx';
-import { getPartenaires } from '../services/api.js';
+import { getPartenaires, getFileUrl } from '../services/api.js';
 
 export default function Cooperation() {
   const { t } = useTranslation();
@@ -64,7 +64,15 @@ export default function Cooperation() {
               {partenaires.map((p) => (
                 <Card key={p.id} hover className="p-6">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">{p.logo}</span>
+                    {p.logo ? (
+                      <img
+                        src={getFileUrl(p.logo)}
+                        alt={p.nom}
+                        className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 object-contain bg-white"
+                      />
+                    ) : (
+                      <span className="text-3xl">🏫</span>
+                    )}
                     <div>
                       <h3 className="font-bold text-navy">{p.nom}</h3>
                       <p className="text-sm text-slate-500">{p.ville}, {p.pays}</p>

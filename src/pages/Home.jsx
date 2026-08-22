@@ -6,8 +6,9 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getActualites, getAppels, getMobilites, getPartenaires, getStats } from '../services/api.js';
+import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
+import esiLogo from '../assets/logo-esi.png';
 
 function Hero() {
   const { t } = useTranslation();
@@ -20,6 +21,11 @@ function Hero() {
         }}
       />
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <img
+          src={esiLogo}
+          alt="ESI"
+          className="mb-6 h-16 w-auto"
+        />
         <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-200">
           {t('home.hero.eyebrow')}
         </p>
@@ -187,7 +193,15 @@ export default function Home() {
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {partenaires.map((p) => (
               <div key={p.id} className="flex flex-col items-center rounded-card border border-slate-200 bg-surface p-4 text-center">
-                <span className="text-2xl">{p.logo}</span>
+                {p.logo ? (
+                  <img
+                    src={getFileUrl(p.logo)}
+                    alt={p.nom}
+                    className="h-8 w-8 rounded object-contain"
+                  />
+                ) : (
+                  <span className="text-2xl">🏫</span>
+                )}
                 <span className="mt-2 text-xs font-semibold text-navy">{p.nom}</span>
                 <span className="text-[11px] text-slate-400">{p.pays}</span>
               </div>

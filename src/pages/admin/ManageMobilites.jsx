@@ -45,8 +45,8 @@ export default function ManageMobilites() {
         { key: 'statut', label: t('statut'),
           render: (i) => <Badge tone={mobilityStatusTone(i.statut)}>{t(`${i.statut}`)}</Badge> },
         { key: 'places', label: t('places') },
-        { key: 'statutPublication', label: 'Publication',
-          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{i.statutPublication}</Badge> },
+        { key: 'statutPublication', label: t('statutPublication'),
+          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`${i.statutPublication}`)}</Badge> },
       ]}
       fields={[
         { name: 'titre', label: t('titre'), type: 'text' },

@@ -4,7 +4,7 @@ import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {publishPARTNER,archivePARTNER,
  getPartenairesAdmin, createPartenaire, updatePartenaire, deletePartenaire,
-  getCountries, getEstablishmentTypes, getPartnershipTypes,
+  getCountries, getEstablishmentTypes, getPartnershipTypes, uploadFile,
 } from '../../services/api.js';
 import { toPartnerPayload } from '../../services/mappers.js';
 
@@ -61,14 +61,14 @@ export default function ManagePartenaires() {
         { name: 'domaines', label: t('domaines'), type: 'list' },
         { name: 'description', label: t('description'), type: 'textarea' },
         {
-  name: 'logo_url',
+  name: 'logo',
   label: t('logo'),
   type: 'file',
   accept: 'image/*',
   onFile: async (file, setField) => {
     try {
       const uploaded = await uploadFile(file); // même fonction que pour documents
-      setField('logo_url', uploaded.fichier_url);
+      setField('logo', uploaded.fichier_url);
     } catch (err) {
       alert(err.message);
     }

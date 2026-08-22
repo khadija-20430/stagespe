@@ -4,7 +4,7 @@ import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
   getDocuments, createDocument, updateDocument, deleteDocument,
-  getDocumentCategories, getToken,
+  getDocumentCategories, uploadFile,
 } from '../../services/api.js';
 import { toDocumentPayload } from '../../services/mappers.js';
 
@@ -22,21 +22,6 @@ const formatBytes = (bytes) => {
   let i = 0; let n = bytes;
   while (n >= 1024 && i < units.length - 1) { n /= 1024; i += 1; }
   return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
-};
-
-const API = import.meta.env.VITE_API_URL;
-
-// Upload physique du fichier — renvoie fichier_url, file_size, file_format
-const uploadFile = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  const res = await fetch(`${API}/documents/upload`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${getToken()}` },
-    body: formData,
-  });
-  if (!res.ok) throw new Error('Échec de l\'upload du fichier');
-  return res.json();
 };
 
 export default function ManageDocuments() {

@@ -17,7 +17,7 @@ export default function AdminLayout() {
     { to: '/admin/projets', label: t('projects'), icon: '🔬' },
     { to: '/admin/appels', label: t('calls'), icon: '📢' },
     { to: '/admin/mobilites', label: t('mobility'), icon: '✈️' },
-    { to: '/admin/news-events', label: t('Actualités'), icon: '📰' },
+    { to: '/admin/news-events', label: t('newsEvents'), icon: '📰' },
     { to: '/admin/documents', label: t('document'), icon: '📚' },
     { to: '/admin/roles', label: 'Rôles & permissions', icon: '🔐' },
     { to: '/admin/test-acces', label: 'Tester RBAC', icon: '🧪' },

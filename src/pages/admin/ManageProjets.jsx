@@ -34,12 +34,12 @@ export default function ManageProjets() {
         { key: 'titre', label: t('titre') },
         { key: 'programme', label: t('programme'), render: (i) => <Badge tone="cobalt">{i.programme}</Badge> },
         { key: 'statut', label: t('statut'),
-          render: (i) => <Badge tone={projectStatusTone(i.statut)}>{t(`projectStatus${i.statut}`)}</Badge> },
+          render: (i) => <Badge tone={projectStatusTone(i.statut)}>{t(`${i.statut}`)}</Badge> },
         { key: 'budget', label: t('budget'),
           render: (i) => i.budget != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(i.budget) : '—' },
         { key: 'coordinateur', label: t('coordinateur') },
         { key: 'statutPublication', label: t('statutPublication'),
-          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{i.statutPublication}</Badge> },
+          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`${i.statutPublication}`)}</Badge> },
       ]}
       fields={[
         { name: 'titre', label: t('titre'), type: 'text' },

@@ -112,6 +112,27 @@ export const getDocumentById = async(id) => {
     return mapDocument(data);
 };
 
+/**
+ * Upload physique d'un fichier (logo partenaire, document, image actualité...).
+ * Route générique côté backend : POST /documents/upload (protégée par
+ * la permission "documents.upload"). Renvoie { fichier_url, file_size, file_format }.
+ * Utilisée par tous les formulaires admin ayant un champ de type "file".
+ */
+export const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API}/documents/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData,
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Échec de l'upload du fichier");
+    }
+    return res.json();
+};
+
 /* ------------------------------ Partenaires --------------------------------- */
 export const getPartenaires = async(lang = 'fr') => {
     const data = await request(`/partners?lang=${lang}`);

@@ -18,7 +18,7 @@ export default function Dashboard() {
     { key: 'projets', label: t('projects'), fetch: getProjets, icon: '🔬' },
     { key: 'appels', label: t('calls'), fetch: getAppels, icon: '📢' },
     { key: 'mobilites', label: t('mobility'), fetch: getMobilites, icon: '✈️' },
-    { key: 'actualites', label: t('news'), fetch: getActualites, icon: '📰' },
+    { key: 'actualites', label: t('newsEvents'), fetch: getActualites, icon: '📰' },
     { key: 'documents', label: t('document'), fetch: getDocuments, icon: '📚' },
   ];
 
