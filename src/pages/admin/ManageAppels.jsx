@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
-  getAppels, createAppel, updateAppel, deleteAppel,
+  getAppelsAdmin, createAppel, updateAppel, deleteAppel,
+  publishAppel, archiveAppel,
   getProgrammes, getActionTypes, getCountries,
 } from '../../services/api.js';
 import { toAppelPayload } from '../../services/mappers.js';
 import { CALL_STATUS, callStatusTone } from '../../lib/enums.js';
 
-const PUBLICATION_STATUS = ['draft', 'published', 'archived'];
 const publicationStatusTone = (s) => (s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber');
 
 export default function ManageAppels() {
@@ -28,11 +28,13 @@ export default function ManageAppels() {
     <CrudManager
       title={t('admin.nav.calls')}
       idPrefix="app"
-      fetcher={getAppels}
+      fetcher={getAppelsAdmin}
       toPayload={toAppelPayload}
       onCreate={createAppel}
       onUpdate={updateAppel}
       onDelete={deleteAppel}
+      onPublish={publishAppel}
+      onArchive={archiveAppel}
       columns={[
         { key: 'titre', label: t('admin.appels.columns.titre') },
         { key: 'programme', label: t('admin.appels.columns.programme'), render: (i) => <Badge tone="cobalt">{i.programme}</Badge> },
@@ -40,6 +42,8 @@ export default function ManageAppels() {
         { key: 'statut', label: t('admin.appels.columns.statut'),
           render: (i) => <Badge tone={callStatusTone(i.statut)}>{t(`enums.callStatus.${i.statut}`)}</Badge> },
         { key: 'dateLimite', label: t('admin.appels.columns.dateLimite') },
+        { key: 'statutPublication', label: 'Publication',
+          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{i.statutPublication}</Badge> },
       ]}
       fields={[
         { name: 'titre', label: t('admin.appels.fields.titre'), type: 'text' },
@@ -60,8 +64,7 @@ export default function ManageAppels() {
         { name: 'lienOfficiel', label: t('admin.appels.fields.lienOfficiel'), type: 'text' },
         { name: 'personneContact', label: t('admin.appels.fields.personneContact'), type: 'text' },
         { name: 'resume', label: t('admin.appels.fields.resume'), type: 'textarea' },
-        { name: 'statutPublication', label: t('admin.appels.fields.statutPublication'), type: 'select',
-          options: PUBLICATION_STATUS.map((code) => ({ value: code, label: t(`enums.publicationStatus.${code}`) })) },
+        // ⚠️ statutPublication RETIRÉ du formulaire — géré par les boutons Publier/Archiver
       ]}
     />
   );

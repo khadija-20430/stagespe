@@ -18,6 +18,22 @@ import {
 const API =
     import.meta.env.VITE_API_URL;
 
+// ✅ Base pour les fichiers statiques (uploads) — sans le suffixe /api
+// Ex: si VITE_API_URL = "http://localhost:5000/api" -> FILES_BASE_URL = "http://localhost:5000"
+export const FILES_BASE_URL = API.replace(/\/api\/?$/, '');
+
+/**
+ * ✅ Construit l'URL complète et correcte d'un fichier stocké côté serveur
+ * (ex: /uploads/xxx.pdf -> http://localhost:5000/uploads/xxx.pdf).
+ * Retourne null si aucun chemin n'est fourni. Gère aussi le cas où le
+ * chemin est déjà une URL absolue (http/https).
+ * @param {string} path - chemin relatif renvoyé par l'API (ex: '/uploads/xxx.pdf')
+ */
+export const getFileUrl = (path) => {
+    if (!path) return null;
+    return path.startsWith('http') ? path : `${FILES_BASE_URL}${path}`;
+};
+
 /**
  * Petit wrapper fetch : gère les erreurs HTTP et le parsing JSON.
  * @param {string} path - chemin relatif à API (ex: '/partners')
@@ -35,7 +51,10 @@ export const getProjets = async(lang = 'fr') => {
     const data = await request(`/projects?lang=${lang}`);
     return data.map(mapProjet);
 };
-
+export const getProjetsAdmin = async () => {
+  const data = await authRequest('/projects/admin/all');
+  return data.map(mapProjet);
+};
 export const getProjetById = async(id, lang = 'fr') => {
     const data = await request(`/projects/${id}?lang=${lang}`);
     return mapProjet(data);
@@ -45,6 +64,10 @@ export const getProjetById = async(id, lang = 'fr') => {
 export const getAppels = async(lang = 'fr') => {
     const data = await request(`/calls?lang=${lang}`);
     return data.map(mapAppel);
+};
+export const getAppelsAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/calls/admin/all?lang=${lang}`);
+  return data.map(mapAppel);
 };
 
 export const getAppelById = async(id, lang = 'fr') => {
@@ -58,13 +81,16 @@ export const getMobilites = async(lang = 'fr') => {
     return data.map(mapMobilite);
 };
 
+export const getMobilitesAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/mobility/admin/all?lang=${lang}`);
+  return data.map(mapMobilite);
+};
 export const getMobiliteById = async(id, lang = 'fr') => {
     const data = await request(`/mobility/${id}?lang=${lang}`);
     return mapMobilite(data);
 };
 
 /* ------------------------------- Actualités -------------------------------- */
-// ⚠️ Adapter le chemin '/news-events' si votre route diffère.
 export const getActualites = async() => {
     const data = await request('/news-events');
     return data.map(mapActualite);
@@ -86,11 +112,37 @@ export const getDocumentById = async(id) => {
     return mapDocument(data);
 };
 
+/**
+ * Upload physique d'un fichier (logo partenaire, document, image actualité...).
+ * Route générique côté backend : POST /documents/upload (protégée par
+ * la permission "documents.upload"). Renvoie { fichier_url, file_size, file_format }.
+ * Utilisée par tous les formulaires admin ayant un champ de type "file".
+ */
+export const uploadFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API}/documents/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData,
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Échec de l'upload du fichier");
+    }
+    return res.json();
+};
+
 /* ------------------------------ Partenaires --------------------------------- */
 export const getPartenaires = async(lang = 'fr') => {
     const data = await request(`/partners?lang=${lang}`);
     return data.map(mapPartner);
 };
+export const getPartenairesAdmin = async (lang = 'fr') => {
+  const data = await authRequest(`/partners/admin/all?lang=${lang}`);
+  return data.map(mapPartner);
+};
+
 
 export const getPartenaireById = async(id, lang = 'fr') => {
     const data = await request(`/partners/${id}?lang=${lang}`);
@@ -179,7 +231,9 @@ export const deleteMobilite = (id) => authRequest(`/mobility/${id}`, { method: '
 /* ------------------------------- Documents (CRUD) --------------------------------- */
 export const createDocument = (payload) => authRequest('/documents', { method: 'POST', body: payload });
 export const updateDocument = (id, payload) => authRequest(`/documents/${id}`, { method: 'PUT', body: payload });
-export const deleteDocument = (id) => authRequest(`/documents/${id}`, { method: 'DELETE' }); /* -------------------------- Rôles & permissions (RBAC) -------------------------- */
+export const deleteDocument = (id) => authRequest(`/documents/${id}`, { method: 'DELETE' });
+
+/* -------------------------- Rôles & permissions (RBAC) -------------------------- */
 export const getRoles = () => authRequest('/roles');
 export const getRoleById = (id) => authRequest(`/roles/${id}`);
 export const createRole = (payload) => authRequest('/roles', { method: 'POST', body: payload });
@@ -208,3 +262,44 @@ export const getAuditLog = (params = {}) => {
         const qs = new URLSearchParams(params).toString();
         return authRequest(`/audit-logs${qs ? `?${qs}` : ''}`);
 };
+export const publishProjet = (id) => authRequest(`/projects/${id}/publish`, { method: 'PUT' });
+export const archiveProjet = (id) => authRequest(`/projects/${id}/archive`, { method: 'PUT' });
+export const publishAppel = (id) => authRequest(`/calls/${id}/publish`, { method: 'PUT' });
+export const archiveAppel = (id) => authRequest(`/calls/${id}/archive`, { method: 'PUT' });
+
+export const publishPARTNER = (id) => authRequest(`/partners/${id}/publish`, { method: 'PUT' });
+export const archivePARTNER  = (id) => authRequest(`/partners/${id}/archive`, { method: 'PUT' });
+export const publishMobilite = (id) => authRequest(`/mobility/${id}/publish`, { method: 'PUT' });
+export const archiveMobilite = (id) => authRequest(`/mobility/${id}/archive`, { method: 'PUT' });
+
+export const getActualitesAdmin = async () => {
+  const data = await authRequest('/news-events/admin/all');
+  return data.map(mapActualite);
+};
+
+export const createActualite = (payload) =>
+  authRequest('/news-events', {
+    method: 'POST',
+    body: payload,
+  });
+
+export const updateActualite = (id, payload) =>
+  authRequest(`/news-events/${id}`, {
+    method: 'PUT',
+    body: payload,
+  });
+
+export const deleteActualite = (id) =>
+  authRequest(`/news-events/${id}`, {
+    method: 'DELETE',
+  });
+
+export const publishActualite = (id) =>
+  authRequest(`/news-events/${id}/publish`, {
+    method: 'PUT',
+  });
+
+export const archiveActualite = (id) =>
+  authRequest(`/news-events/${id}/archive`, {
+    method: 'PUT',
+  });

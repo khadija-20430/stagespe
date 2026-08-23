@@ -35,13 +35,25 @@
     "copyright": "École Supérieure en Informatique — All rights reserved.",
     "department": "Directorate of International Relations"
   },
-  "common": { "all": "All", "allFem": "All" },
+  "common": {
+    "all": "All",
+    "allFem": "All"
+  },
   "appels": {
     "eyebrow": "Funding",
     "title": "Calls for Projects",
     "description": "Filter calls for projects by program, country, and status to find the opportunities that fit you.",
-    "filters": { "programme": "Program", "country": "Country / region", "status": "Status" },
-    "statuts": { "tous": "All", "ouvert": "Open", "bientot": "Coming soon", "ferme": "Closed" },
+    "filters": {
+      "programme": "Program",
+      "country": "Country / region",
+      "status": "Status"
+    },
+    "statuts": {
+      "tous": "All",
+      "ouvert": "Open",
+      "bientot": "Coming soon",
+      "ferme": "Closed"
+    },
     "empty": "No calls match the selected filters.",
     "deadline": "Deadline",
     "budget": "Funding",
@@ -51,15 +63,39 @@
     "eyebrow": "About",
     "title": "International Cooperation",
     "description": "The École Supérieure en Informatique pursues an active cooperation policy with research and teaching institutions worldwide.",
-    "axesSection": { "eyebrow": "Our focus areas", "title": "Cooperation Areas", "description": "Four major directions shape our international engagement." },
-    "axes": {
-      "research": { "title": "Collaborative Research", "text": "Joint projects, co-supervised theses, and shared labs with our international academic partners." },
-      "mobility": { "title": "Academic Mobility", "text": "Exchange programs for students, PhD candidates, and researchers, under Erasmus+ and bilateral agreements." },
-      "degrees": { "title": "Double Degrees", "text": "Joint curricula leading to degrees recognized by several partner institutions." },
-      "networks": { "title": "Networks & Consortia", "text": "Participation in European and international consortia addressing major digital challenges." }
+    "axesSection": {
+      "eyebrow": "Our focus areas",
+      "title": "Cooperation Areas",
+      "description": "Four major directions shape our international engagement."
     },
-    "partnersSection": { "eyebrow": "Network", "title": "Partner Institutions", "description": "Universities and research institutes linked to the school through formal agreements." },
-    "partnerFields": { "type": "Type", "agreement": "Agreement", "since": "Since" }
+    "axes": {
+      "research": {
+        "title": "Collaborative Research",
+        "text": "Joint projects, co-supervised theses, and shared labs with our international academic partners."
+      },
+      "mobility": {
+        "title": "Academic Mobility",
+        "text": "Exchange programs for students, PhD candidates, and researchers, under Erasmus+ and bilateral agreements."
+      },
+      "degrees": {
+        "title": "Double Degrees",
+        "text": "Joint curricula leading to degrees recognized by several partner institutions."
+      },
+      "networks": {
+        "title": "Networks & Consortia",
+        "text": "Participation in European and international consortia addressing major digital challenges."
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Network",
+      "title": "Partner Institutions",
+      "description": "Universities and research institutes linked to the school through formal agreements."
+    },
+    "partnerFields": {
+      "type": "Type",
+      "agreement": "Agreement",
+      "since": "Since"
+    }
   },
   "home": {
     "hero": {
@@ -69,20 +105,56 @@
       "ctaCalls": "View calls for projects",
       "ctaMobility": "Explore mobility"
     },
-    "stats": { "partners": "International partners", "projects": "Active research projects", "mobility": "Mobility placements per year", "countries": "Partner countries" },
-    "calls": { "eyebrow": "Opportunities", "title": "Open Calls for Projects", "description": "Funding and programs currently open to researchers and students.", "seeAll": "All calls" },
-    "mobility": { "eyebrow": "Mobility", "title": "Mobility Opportunities", "description": "Student exchanges, doctoral placements, and international teaching assignments.", "seeAll": "All mobility opportunities", "spots": "{{count}} spots available" },
-    "news": { "eyebrow": "Right now", "title": "News & Events", "description": "The latest news on the school's international cooperation.", "seeAll": "All news" },
-    "partners": { "eyebrow": "Network", "title": "Our International Partners", "description": "A network of leading universities and research institutes." }
+    "stats": {
+      "partners": "International partners",
+      "projects": "Active research projects",
+      "mobility": "Mobility placements per year",
+      "countries": "Partner countries"
+    },
+    "calls": {
+      "eyebrow": "Opportunities",
+      "title": "Open Calls for Projects",
+      "description": "Funding and programs currently open to researchers and students.",
+      "seeAll": "All calls"
+    },
+    "mobility": {
+      "eyebrow": "Mobility",
+      "title": "Mobility Opportunities",
+      "description": "Student exchanges, doctoral placements, and international teaching assignments.",
+      "seeAll": "All mobility opportunities",
+      "spots": "{{count}} spots available"
+    },
+    "news": {
+      "eyebrow": "Right now",
+      "title": "News & Events",
+      "description": "The latest news on the school's international cooperation.",
+      "seeAll": "All news"
+    },
+    "partners": {
+      "eyebrow": "Network",
+      "title": "Our International Partners",
+      "description": "A network of leading universities and research institutes."
+    }
   },
   "projets": {
     "eyebrow": "Research",
     "title": "Research Projects",
     "description": "Discover the international research projects led or co-led by the school.",
-    "filters": { "programme": "Program", "status": "Status" },
-    "statuts": { "tous": "All", "en_cours": "Ongoing", "termine": "Completed" },
+    "filters": {
+      "programme": "Program",
+      "status": "Status"
+    },
+    "statuts": {
+      "tous": "All",
+      "en_cours": "Ongoing",
+      "termine": "Completed"
+    },
     "empty": "No projects match the selected filters.",
-    "fields": { "coordinator": "Coordinator", "budget": "Budget", "period": "Period" },
+    "fields": {
+      "coordinator": "Coordinator",
+      "budget": "Budget",
+      "period": "Period"
+    },
     "featured": "Featured"
   },
   "actualites": {
@@ -101,16 +173,29 @@
     "eyebrow": "Resources",
     "title": "Document Library",
     "description": "Guides, forms, agreements, and reports related to international cooperation.",
-    "table": { "name": "Document", "category": "Category", "format": "Format", "size": "Size", "updated": "Updated", "action": "Action" },
+    "table": {
+      "name": "Document",
+      "category": "Category",
+      "format": "Format",
+      "size": "Size",
+      "updated": "Updated",
+      "action": "Action"
+    },
     "download": "Download"
   },
   "mobilites": {
     "eyebrow": "Mobility",
     "title": "Mobility Opportunities",
     "description": "Student exchanges, doctoral placements, and teaching assignments with our international partners.",
-    "filters": { "type": "Mobility type" },
+    "filters": {
+      "type": "Mobility type"
+    },
     "spots": "{{count}} spots",
-    "fields": { "duration": "Duration", "level": "Level", "programme": "Program" },
+    "fields": {
+      "duration": "Duration",
+      "level": "Level",
+      "programme": "Program"
+    },
     "apply": "Apply"
   },
   "notFound": {
@@ -262,19 +347,146 @@
     }
   },
   "enums": {
-    "projectStatus": { "proposed": "Proposed", "ongoing": "Ongoing", "completed": "Completed", "suspended": "Suspended" },
-    "callStatus": { "open": "Open", "closed": "Closed", "upcoming": "Coming soon", "closing_soon": "Closing soon" },
-    "mobilityType": {
-      "student_outgoing": "Student (outgoing)", "student_incoming": "Student (incoming)",
-      "teaching": "Teaching", "research": "Research / PhD", "staff": "Administrative staff",
-      "internship": "Internship", "summer_school": "Summer school"
+    "projectStatus": {
+      "proposed": "Proposed",
+      "ongoing": "Ongoing",
+      "completed": "Completed",
+      "suspended": "Suspended"
     },
-    "newsType": { "news": "News", "event": "Event", "workshop": "Workshop", "meeting": "Meeting", "testimonial": "Testimonial" },
+    "callStatus": {
+      "open": "Open",
+      "closed": "Closed",
+      "upcoming": "Coming soon",
+      "closing_soon": "Closing soon"
+    },
+    "mobilityType": {
+      "student_outgoing": "Student (outgoing)",
+      "student_incoming": "Student (incoming)",
+      "teaching": "Teaching",
+      "research": "Research / PhD",
+      "staff": "Administrative staff",
+      "internship": "Internship",
+      "summer_school": "Summer school"
+    },
+    "newsType": {
+      "news": "News",
+      "event": "Event",
+      "workshop": "Workshop",
+      "meeting": "Meeting",
+      "testimonial": "Testimonial"
+    },
     "currentFile": "Current file",
     "documentCategory": {
-      "institutionnel": "Institutional", "template_projet": "Project template", "formulaire_financier": "Financial form",
-      "erasmus_mobilite": "Erasmus+ mobility", "horizon_msca": "Horizon Europe / MSCA", "national": "National program",
-      "guide_faq": "Guide / FAQ", "rapport": "Report", "brochure": "Brochure", "convention": "Agreement"
+      "institutionnel": "Institutional",
+      "template_projet": "Project template",
+      "formulaire_financier": "Financial form",
+      "erasmus_mobilite": "Erasmus+ mobility",
+      "horizon_msca": "Horizon Europe / MSCA",
+      "national": "National program",
+      "guide_faq": "Guide / FAQ",
+      "rapport": "Report",
+      "brochure": "Brochure",
+      "convention": "Agreement"
+    },
+    "documentVisibility": {
+      "public": "Public",
+      "staff": "Staff only",
+      "admin": "Admins only"
     }
-  }
+  },
+  "dashboard": "Dashboard",
+  "partners": "Partners",
+  "projects": "Projects",
+  "calls": "Calls for Projects",
+  "mobility": "Mobility",
+  "document": "Documents",
+  "newsEvents": "News & Events",
+  "nom": "Name",
+  "nomOfficiel": "Official name",
+  "pays": "Country",
+  "ville": "City",
+  "typeEtablissement": "Institution type",
+  "typePartenariat": "Partnership type",
+  "statutPartenariat": "Partnership status",
+  "siteWeb": "Website",
+  "domaines": "Fields",
+  "description": "Description",
+  "logo": "Logo",
+  "statutPublication": "Publication status",
+  "titre": "Title",
+  "title": "Title",
+  "programme": "Programme",
+  "statut": "Status",
+  "status": "Status",
+  "budget": "Budget",
+  "coordinateur": "Coordinator",
+  "acronyme": "Acronym",
+  "codeReference": "Reference code",
+  "debut": "Start date",
+  "fin": "End date",
+  "resume": "Summary",
+  "objectifs": "Objectives",
+  "groupesCibles": "Target groups",
+  "resultats": "Results",
+  "livrables": "Deliverables",
+  "misEnAvant": "Featured",
+  "yes": "Yes",
+  "no": "No",
+  "type": "Type",
+  "duree": "Duration",
+  "periode": "Period",
+  "places": "Places",
+  "institutionAccueil": "Host institution",
+  "dateLimite": "Deadline",
+  "publicCible": "Target audience",
+  "conditions": "Conditions",
+  "financement": "Funding",
+  "lienCandidature": "Application link",
+  "personneContact": "Contact person",
+  "emailContact": "Contact email",
+  "categorie": "Category",
+  "date": "Date",
+  "dateExpiration": "Expiration date",
+  "fichier": "File",
+  "format": "Format",
+  "langage": "Language",
+  "taille": "Size",
+  "version": "Version",
+  "visibilite": "Visibility",
+  "eventDate": "Event date",
+  "endDate": "End date",
+  "location": "Location",
+  "featured": "Featured",
+  "summary": "Summary",
+  "project": "Project",
+  "imageUrl": "Image",
+  "authorName": "Author name",
+  "authorRole": "Author role",
+  "authorPhotoUrl": "Author photo",
+  "quoteText": "Quote",
+  "active": "Active",
+  "pending": "Pending",
+  "ended": "Ended",
+  "draft": "Draft",
+  "published": "Published",
+  "archived": "Archived",
+  "proposed": "Proposed",
+  "ongoing": "Ongoing",
+  "completed": "Completed",
+  "suspended": "Suspended",
+  "open": "Open",
+  "closed": "Closed",
+  "upcoming": "Upcoming",
+  "news": "News",
+  "event": "Event",
+  "workshop": "Workshop",
+  "meeting": "Meeting",
+  "testimonial": "Testimonial",
+  "student_outgoing": "Outgoing student",
+  "student_incoming": "Incoming student",
+  "teaching": "Teaching",
+  "research": "Research",
+  "staff": "Staff",
+  "internship": "Internship",
+  "summer_school": "Summer school"
 }
