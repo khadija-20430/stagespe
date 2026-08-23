@@ -60,8 +60,8 @@ exports.create = async(req, res) => {
             return res.status(400).json({ error: 'Un témoignage nécessite un auteur et une citation' });
         }
 
-        const image_url = req.files && req.files.image ? `/uploads/${req.files.image[0].filename}` : null;
-        const author_photo_url = req.files && req.files.author_photo ? `/uploads/${req.files.author_photo[0].filename}` : null;
+        const image_url = req.files?.image ? `/uploads/${req.files.image[0].filename}` : null;
+        const author_photo_url = req.files?.author_photo ? `/uploads/${req.files.author_photo[0].filename}` : null;
 
         const news = await newsEventsModel.create({
             title,
@@ -112,13 +112,13 @@ exports.update = async(req, res) => {
         const existing = await newsEventsModel.findFilesById(req.params.id);
 
         let image_url = req.body.image_url || null;
-        if (req.files && req.files.image) {
+        if (req.files?.image) {
             if (existing) newsEventsModel.deleteOldFile(existing.image_url);
             image_url = `/uploads/${req.files.image[0].filename}`;
         }
 
         let author_photo_url = req.body.author_photo_url || null;
-        if (req.files && req.files.author_photo) {
+        if (req.files?.author_photo) {
             if (existing) newsEventsModel.deleteOldFile(existing.author_photo_url);
             author_photo_url = `/uploads/${req.files.author_photo[0].filename}`;
         }
