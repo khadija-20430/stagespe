@@ -141,11 +141,6 @@ export default function ManageRoles() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy">Rôles &amp; permissions</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        Crée un rôle personnalisé, coche ses permissions, puis attribue-le à un compte admin
-        (via <code className="rounded bg-slate-100 px-1 py-0.5" translate="no">PUT /auth/users/:id/assign-role</code>).
-        Les changements sont vérifiés en base à chaque requête — aucun cache dans le token.
-      </p>
 
       {error ? (
         <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">

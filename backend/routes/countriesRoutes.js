@@ -1,24 +1,11 @@
 const express = require('express');
-const pool = require('../db');
 const verifyToken = require('../middleware/verifyToken');
-const { checkRole, checkPermission } = require('../middleware/rbac');
-const sendError = require('../middleware/errorResponse');
+const { checkPermission } = require('../middleware/rbac');
+const countriesController = require('../controllers/countriesController');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM countries ORDER BY name ASC');
-    res.json(result.rows);
-  } catch (err) { sendError(res, err); }
-});
-
-router.post('/', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
-  try {
-    const { name, iso_code, region } = req.body;
-    const result = await pool.query('INSERT INTO countries (name, iso_code, region) VALUES ($1,$2,$3) RETURNING *', [name, iso_code, region]);
-    res.status(201).json(result.rows[0]);
-  } catch (err) { sendError(res, err); }
-});
+router.get('/', countriesController.getAll);
+router.post('/', verifyToken, checkPermission('reference_data.manage'), countriesController.create);
 
 module.exports = router;

@@ -48,15 +48,6 @@ export default function Dashboard() {
         ))}
       </div>
 
-      <Card className="mt-8 p-6">
-        <h2 className="font-bold text-navy">{t('admin.dashboard.about.title')}</h2>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
-          <Trans
-            i18nKey="admin.dashboard.about.text"
-            components={{ code: <code className="rounded bg-slate-100 px-1 py-0.5" /> }}
-          />
-        </p>
-      </Card>
     </div>
   );
 }

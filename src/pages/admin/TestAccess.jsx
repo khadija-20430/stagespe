@@ -71,16 +71,11 @@ export default function TestAccess() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-navy">Tester les accès RBAC</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        Teste en direct, avec le compte actuellement connecté, ce que{' '}
-        <code className="rounded bg-slate-100 px-1 py-0.5" translate="no">rbac.js</code> autorise
-        vraiment côté backend. Change les permissions d'un rôle dans "Rôles &amp; permissions", puis relance le
-        test — le middleware interroge la base à chaque requête, pas besoin de te reconnecter.
-      </p>
+      
 
       <Card className="mt-6 p-5">
         <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Mes permissions effectives (GET /auth/my-permissions)
+          Mes permissions effectives
         </div>
         {myPermissions === null ? (
           <p className="text-sm text-slate-400">Chargement…</p>
@@ -126,13 +121,6 @@ export default function TestAccess() {
           ))}
         </div>
       </Card>
-
-      <p className="mt-4 text-xs text-slate-400">
-        Pour tester les actions d'écriture (créer/modifier/supprimer), le plus simple reste d'utiliser
-        directement tes pages existantes (Appels, Documents, Partenaires…) en étant connecté avec le
-        compte admin dont tu viens de modifier le rôle : un bouton "Ajouter" ou "Supprimer" qui échoue avec un
-        message "Accès refusé" confirme que la permission correspondante n'est pas accordée.
-      </p>
     </div>
   );
 }
