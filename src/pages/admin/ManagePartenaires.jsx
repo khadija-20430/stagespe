@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import CrudManager from './CrudManager.jsx';
+import { geocodeAddress } from '../../lib/geocode.js';
 import Badge from '../../components/ui/Badge.jsx';
 import {publishPARTNER,archivePARTNER,
  getPartenairesAdmin, createPartenaire, updatePartenaire, deletePartenaire,
@@ -51,6 +52,17 @@ export default function ManagePartenaires() {
         { name: 'paysId', label: t('pays'), type: 'select',
           options: countries.map((c) => ({ value: c.id, label: c.name })) },
         { name: 'ville', label: t('ville'), type: 'text' },
+        { name: 'adresse', label: 'Adresse exacte (pour la localisation sur la carte)', type: 'text' },
+        {
+          name: 'geocode',
+          label: 'Localisation sur la carte',
+          type: 'geocode',
+          onGeocode: (draft) => {
+            const pays = countries.find((c) => String(c.id) === String(draft.paysId));
+            const query = `${draft.adresse}, ${draft.ville}, ${pays ? pays.name : ''}`;
+            return geocodeAddress(query);
+          },
+        },
         { name: 'typeEtablissementId', label: t('typeEtablissement'), type: 'select',
           options: establishmentTypes.map((et) => ({ value: et.id, label: et.label })) },
         { name: 'typePartenariatId', label: t('typePartenariat'), type: 'select',

@@ -28,16 +28,26 @@ exports.findAllPublished = async(filters) => {
     const { country_id, establishment_type_id, partnership_type_id, partnership_status, search } = filters;
     let query = `${PARTNER_SELECT} ${PARTNER_JOIN} WHERE partners.statut_publication = 'published'`;
     const params = [];
-    if (country_id) { params.push(country_id);
-        query += ` AND partners.country_id = $${params.length}`; }
-    if (establishment_type_id) { params.push(establishment_type_id);
-        query += ` AND partners.establishment_type_id = $${params.length}`; }
-    if (partnership_type_id) { params.push(partnership_type_id);
-        query += ` AND partners.partnership_type_id = $${params.length}`; }
-    if (partnership_status) { params.push(partnership_status);
-        query += ` AND partners.partnership_status = $${params.length}`; }
-    if (search) { params.push(`%${search}%`);
-        query += ` AND partners.name ILIKE $${params.length}`; }
+    if (country_id) {
+        params.push(country_id);
+        query += ` AND partners.country_id = $${params.length}`;
+    }
+    if (establishment_type_id) {
+        params.push(establishment_type_id);
+        query += ` AND partners.establishment_type_id = $${params.length}`;
+    }
+    if (partnership_type_id) {
+        params.push(partnership_type_id);
+        query += ` AND partners.partnership_type_id = $${params.length}`;
+    }
+    if (partnership_status) {
+        params.push(partnership_status);
+        query += ` AND partners.partnership_status = $${params.length}`;
+    }
+    if (search) {
+        params.push(`%${search}%`);
+        query += ` AND partners.name ILIKE $${params.length}`;
+    }
     query += ' ORDER BY partners.id DESC';
     const result = await pool.query(query, params);
     return result.rows;
@@ -93,6 +103,7 @@ exports.create = async(data, userId) => {
         official_name,
         country_id,
         city,
+        address,
         establishment_type_id,
         partnership_type_id,
         partnership_status,
@@ -106,9 +117,9 @@ exports.create = async(data, userId) => {
 
     const result = await pool.query(
         `INSERT INTO partners
-     (name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
+     (name, official_name, country_id, city, address, establishment_type_id, partnership_type_id, partnership_status,
       website, cooperation_areas, description, logo_url, latitude, longitude, created_by)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`, [name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status || 'active',
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) RETURNING *`, [name, official_name, country_id, city, address, establishment_type_id, partnership_type_id, partnership_status || 'active',
             website, cooperation_areas, description, logo_url, latitude, longitude, userId
         ]
     );
@@ -123,6 +134,7 @@ exports.update = async(id, data, auditContext) => {
         official_name,
         country_id,
         city,
+        address,
         establishment_type_id,
         partnership_type_id,
         partnership_status,
@@ -136,10 +148,10 @@ exports.update = async(id, data, auditContext) => {
 
     return withAuditContext(auditContext.userId, auditContext.ip, async(client) => {
         const result = await client.query(
-            `UPDATE partners SET name=$1, official_name=$2, country_id=$3, city=$4, establishment_type_id=$5,
-       partnership_type_id=$6, partnership_status=$7, website=$8, cooperation_areas=$9, description=$10,
-       logo_url=$11, latitude=$12, longitude=$13
-       WHERE id=$14 RETURNING *`, [name, official_name, country_id, city, establishment_type_id, partnership_type_id, partnership_status,
+            `UPDATE partners SET name=$1, official_name=$2, country_id=$3, city=$4, address=$5, establishment_type_id=$6,
+       partnership_type_id=$7, partnership_status=$8, website=$9, cooperation_areas=$10, description=$11,
+       logo_url=$12, latitude=$13, longitude=$14
+       WHERE id=$15 RETURNING *`, [name, official_name, country_id, city, address, establishment_type_id, partnership_type_id, partnership_status,
                 website, cooperation_areas, description, logo_url, latitude, longitude, id
             ]
         );

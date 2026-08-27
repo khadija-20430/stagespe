@@ -25,6 +25,8 @@ export default function CrudManager({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [geocoding, setGeocoding] = useState(false);
+  const [geocodeMsg, setGeocodeMsg] = useState('');
 
   const reload = () => fetcher().then(setItems);
 
@@ -230,6 +232,39 @@ export default function CrudManager({
                       rows={3}
                       className="w-full rounded-lg border border-slate-300 px-3 py-2 text-base focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
                     />
+                                     ) : f.type === 'geocode' ? (
+                    <div>
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={geocoding}
+                        onClick={async () => {
+                          setGeocoding(true);
+                          setGeocodeMsg('');
+                          try {
+                            const result = await f.onGeocode(draft);
+                            setField('latitude', result.latitude);
+                            setField('longitude', result.longitude);
+                            setGeocodeMsg(`Trouvé : ${result.displayName}`);
+                          } catch (err) {
+                            setGeocodeMsg(err.message || 'Adresse introuvable');
+                          } finally {
+                            setGeocoding(false);
+                          }
+                        }}
+                      >
+                        {geocoding ? '...' : 'Localiser'}
+                      </Button>
+                      {geocodeMsg ? (
+                        <p className="mt-1.5 text-xs text-slate-500">{geocodeMsg}</p>
+                      ) : null}
+                      {draft.latitude && draft.longitude ? (
+                        <p className="mt-1 text-xs text-emerald-600">
+                          Coordonnées enregistrées : {Number(draft.latitude).toFixed(4)}, {Number(draft.longitude).toFixed(4)}
+                        </p>
+                      ) : null}
+                    </div>
                   ) : f.type === 'select' ? (
                     <select
                       value={draft[f.name] ?? ''}

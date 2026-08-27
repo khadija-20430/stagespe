@@ -95,6 +95,11 @@
             "type": "Type",
             "agreement": "Accord",
             "since": "Depuis"
+        },
+        "mapSection": {
+            "eyebrow": "Localisation",
+            "title": "Carte des partenaires",
+            "description": "Visualisez la répartition géographique de nos établissements partenaires à travers le monde."
         }
     },
     "home": {

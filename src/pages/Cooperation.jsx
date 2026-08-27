@@ -4,14 +4,17 @@ import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import Loader from '../components/ui/Loader.jsx';
-import { getPartenaires, getFileUrl } from '../services/api.js';
+import { getPartenaires, getFileUrl, getPartenairesMap } from '../services/api.js';
+import PartnersMap from '../components/PartnersMap.jsx';
 
 export default function Cooperation() {
   const { t } = useTranslation();
   const [partenaires, setPartenaires] = useState(null);
+  const [partenairesMap, setPartenairesMap] = useState(null);
 
   useEffect(() => {
     getPartenaires().then(setPartenaires);
+    getPartenairesMap().then(setPartenairesMap);
   }, []);
 
   const axes = ['research', 'mobility', 'degrees', 'networks'].map((key) => ({
@@ -83,8 +86,6 @@ export default function Cooperation() {
                       <dt className="text-slate-400">{t('cooperation.partnerFields.type')}</dt>
                       <dd className="text-right font-medium text-slate-700">{p.typeEtablissement}</dd>
                     </div>
-                    {/* accord : issu de la table agreements liée (1 partenaire → N conventions),
-                        agrégé côté API, pas un champ de partners lui-même. */}
                     {p.accord ? (
                       <>
                         <div className="flex justify-between gap-2">
@@ -110,6 +111,21 @@ export default function Cooperation() {
             </div>
           )}
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+        <SectionHeading
+          eyebrow={t('cooperation.mapSection.eyebrow')}
+          title={t('cooperation.mapSection.title')}
+          description={t('cooperation.mapSection.description')}
+        />
+        {partenairesMap === null ? (
+          <Loader />
+        ) : (
+          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100">
+            <PartnersMap partners={partenairesMap} />
+          </div>
+        )}
       </section>
     </div>
   );

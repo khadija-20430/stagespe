@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext.jsx';
 import PublicLayout from './components/layout/PublicLayout.jsx';
-
+import 'leaflet/dist/leaflet.css';
 import Home from './pages/Home.jsx';
 import Cooperation from './pages/Cooperation.jsx';
 import Projets from './pages/Projets.jsx';

@@ -51,9 +51,9 @@ export const getProjets = async(lang = 'fr') => {
     const data = await request(`/projects?lang=${lang}`);
     return data.map(mapProjet);
 };
-export const getProjetsAdmin = async () => {
-  const data = await authRequest('/projects/admin/all');
-  return data.map(mapProjet);
+export const getProjetsAdmin = async() => {
+    const data = await authRequest('/projects/admin/all');
+    return data.map(mapProjet);
 };
 export const getProjetById = async(id, lang = 'fr') => {
     const data = await request(`/projects/${id}?lang=${lang}`);
@@ -65,9 +65,9 @@ export const getAppels = async(lang = 'fr') => {
     const data = await request(`/calls?lang=${lang}`);
     return data.map(mapAppel);
 };
-export const getAppelsAdmin = async (lang = 'fr') => {
-  const data = await authRequest(`/calls/admin/all?lang=${lang}`);
-  return data.map(mapAppel);
+export const getAppelsAdmin = async(lang = 'fr') => {
+    const data = await authRequest(`/calls/admin/all?lang=${lang}`);
+    return data.map(mapAppel);
 };
 
 export const getAppelById = async(id, lang = 'fr') => {
@@ -81,9 +81,9 @@ export const getMobilites = async(lang = 'fr') => {
     return data.map(mapMobilite);
 };
 
-export const getMobilitesAdmin = async (lang = 'fr') => {
-  const data = await authRequest(`/mobility/admin/all?lang=${lang}`);
-  return data.map(mapMobilite);
+export const getMobilitesAdmin = async(lang = 'fr') => {
+    const data = await authRequest(`/mobility/admin/all?lang=${lang}`);
+    return data.map(mapMobilite);
 };
 export const getMobiliteById = async(id, lang = 'fr') => {
     const data = await request(`/mobility/${id}?lang=${lang}`);
@@ -118,7 +118,7 @@ export const getDocumentById = async(id) => {
  * la permission "documents.upload"). Renvoie { fichier_url, file_size, file_format }.
  * Utilisée par tous les formulaires admin ayant un champ de type "file".
  */
-export const uploadFile = async (file) => {
+export const uploadFile = async(file) => {
     const formData = new FormData();
     formData.append('file', file);
     const res = await fetch(`${API}/documents/upload`, {
@@ -138,15 +138,19 @@ export const getPartenaires = async(lang = 'fr') => {
     const data = await request(`/partners?lang=${lang}`);
     return data.map(mapPartner);
 };
-export const getPartenairesAdmin = async (lang = 'fr') => {
-  const data = await authRequest(`/partners/admin/all?lang=${lang}`);
-  return data.map(mapPartner);
+export const getPartenairesAdmin = async(lang = 'fr') => {
+    const data = await authRequest(`/partners/admin/all?lang=${lang}`);
+    return data.map(mapPartner);
 };
 
 
 export const getPartenaireById = async(id, lang = 'fr') => {
     const data = await request(`/partners/${id}?lang=${lang}`);
     return mapPartner(data);
+};
+
+export const getPartenairesMap = async() => {
+    return request('/partners/map');
 };
 
 /* ------------------------------ Statistiques --------------------------------- */
