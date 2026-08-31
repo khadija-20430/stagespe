@@ -70,17 +70,17 @@ export default function TestAccess() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy">Tester les accès RBAC</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white">Tester les accès RBAC</h1>
       
 
-      <Card className="mt-6 p-5">
-        <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <Card className="mt-6 p-5 dark:bg-slate-900">
+        <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           Mes permissions effectives
         </div>
         {myPermissions === null ? (
-          <p className="text-sm text-slate-400">Chargement…</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Chargement…</p>
         ) : myPermissions.length === 0 ? (
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-400 dark:text-slate-500">
             Aucune permission (compte utilisateur simple, ou admin sans rôle assigné).
           </p>
         ) : (
@@ -94,9 +94,9 @@ export default function TestAccess() {
         )}
       </Card>
 
-      <Card className="mt-4 p-5">
+      <Card className="mt-4 p-5 dark:bg-slate-900">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
             Endpoints à tester (lecture seule, sans risque)
           </div>
           <button
@@ -107,12 +107,12 @@ export default function TestAccess() {
             {running ? 'Test en cours…' : 'Lancer le test'}
           </button>
         </div>
-        <div className="divide-y divide-slate-100">
+        <div className="divide-y divide-slate-100 dark:divide-slate-700">
           {CHECKS.map((check) => (
             <div key={check.path} className="flex items-center justify-between gap-3 py-3">
               <div>
-                <div className="text-sm font-medium text-slate-700">{check.label}</div>
-                <div className="text-xs text-slate-400" translate="no">
+                <div className="text-sm font-medium text-slate-700 dark:text-slate-300">{check.label}</div>
+                <div className="text-xs text-slate-400 dark:text-slate-500" translate="no">
                   {check.method} {check.path} — {check.permission}
                 </div>
               </div>

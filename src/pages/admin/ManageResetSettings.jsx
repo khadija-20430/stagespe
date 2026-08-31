@@ -45,30 +45,30 @@ export default function SettingsResetPassword() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy">Réinitialisation de mot de passe</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <h1 className="text-2xl font-bold text-navy dark:text-white">Réinitialisation de mot de passe</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Ces réglages s'appliquent immédiatement, sans redéploiement.
       </p>
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       ) : null}
 
       {success ? (
-        <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+        <div className="mt-4 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
           Réglages enregistrés.
         </div>
       ) : null}
 
-      <Card className="mt-6 max-w-xl p-5">
+      <Card className="mt-6 max-w-xl p-5 dark:bg-slate-900">
         {loading || !settings ? (
-          <p className="text-sm text-slate-400">Chargement...</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Chargement...</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Durée de validité du code (minutes)
               </label>
               <input
@@ -78,12 +78,12 @@ export default function SettingsResetPassword() {
                 value={settings.reset_code_window_minutes}
                 onChange={(e) => handleChange('reset_code_window_minutes', e.target.value)}
                 required
-                className="min-h-[40px] w-full rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Nombre max de tentatives
               </label>
               <input
@@ -93,12 +93,12 @@ export default function SettingsResetPassword() {
                 value={settings.max_reset_attempts}
                 onChange={(e) => handleChange('max_reset_attempts', e.target.value)}
                 required
-                className="min-h-[40px] w-full rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Sujet de l'email
               </label>
               <input
@@ -106,15 +106,15 @@ export default function SettingsResetPassword() {
                 value={settings.reset_email_subject}
                 onChange={(e) => handleChange('reset_email_subject', e.target.value)}
                 required
-                className="min-h-[40px] w-full rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium text-slate-700">
+              <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
                 Texte de l'email
               </label>
-              <p className="mb-1 text-xs text-slate-400">
+              <p className="mb-1 text-xs text-slate-400 dark:text-slate-500">
                 Utilise <code>{'{{code}}'}</code> pour le code et <code>{'{{minutes}}'}</code> pour la durée.
               </p>
               <textarea
@@ -122,7 +122,7 @@ export default function SettingsResetPassword() {
                 value={settings.reset_email_text}
                 onChange={(e) => handleChange('reset_email_text', e.target.value)}
                 required
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
             </div>
 

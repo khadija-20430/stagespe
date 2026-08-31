@@ -140,10 +140,10 @@ export default function ManageRoles() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy">Rôles &amp; permissions</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white">Rôles &amp; permissions</h1>
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       ) : null}
@@ -151,8 +151,8 @@ export default function ManageRoles() {
       <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
         {/* Sidebar rôles */}
         <div className="space-y-4">
-          <Card className="p-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <Card className="p-4 dark:bg-slate-900">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Rôles ({roles.length})
             </div>
             <div className="space-y-1">
@@ -163,7 +163,7 @@ export default function ManageRoles() {
                   className={`flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm transition-colors ${
                     role.id === selectedRoleId
                       ? 'bg-cobalt text-white'
-                      : 'text-slate-700 hover:bg-slate-100'
+                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                   }`}
                 >
                   <span className="flex items-center gap-2">
@@ -171,7 +171,7 @@ export default function ManageRoles() {
                     {role.is_system ? (
                       <span
                         className={`text-[10px] uppercase ${
-                          role.id === selectedRoleId ? 'text-white/70' : 'text-slate-400'
+                          role.id === selectedRoleId ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'
                         }`}
                       >
                         système
@@ -180,7 +180,7 @@ export default function ManageRoles() {
                   </span>
                   <span
                     className={`tabular-nums text-xs ${
-                      role.id === selectedRoleId ? 'text-white/80' : 'text-slate-400'
+                      role.id === selectedRoleId ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'
                     }`}
                   >
                     {role.users_count}
@@ -188,13 +188,13 @@ export default function ManageRoles() {
                 </button>
               ))}
               {!loading && roles.length === 0 ? (
-                <p className="px-1 py-2 text-sm text-slate-400">Aucun rôle pour l'instant.</p>
+                <p className="px-1 py-2 text-sm text-slate-400 dark:text-slate-500">Aucun rôle pour l'instant.</p>
               ) : null}
             </div>
           </Card>
 
-          <Card className="p-4">
-            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <Card className="p-4 dark:bg-slate-900">
+            <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
               Nouveau rôle
             </div>
             <form onSubmit={createRole} className="space-y-2">
@@ -203,14 +203,14 @@ export default function ManageRoles() {
                 placeholder="Nom (ex : Gestionnaire appels)"
                 value={newRoleName}
                 onChange={(e) => setNewRoleName(e.target.value)}
-                className="min-h-[40px] w-full rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <textarea
                 placeholder="Description (optionnelle)"
                 value={newRoleDesc}
                 onChange={(e) => setNewRoleDesc(e.target.value)}
                 rows={2}
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+                className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <Button type="submit" disabled={creating || !newRoleName.trim()} className="w-full">
                 {creating ? '...' : 'Créer le rôle'}
@@ -220,16 +220,16 @@ export default function ManageRoles() {
         </div>
 
         {/* Grille de permissions */}
-        <Card className="p-5">
+        <Card className="p-5 dark:bg-slate-900">
           {!selectedRole ? (
-            <p className="text-sm text-slate-400">Sélectionne un rôle pour voir ses permissions.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">Sélectionne un rôle pour voir ses permissions.</p>
           ) : (
             <>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base font-semibold text-navy">{selectedRole.name}</h2>
+                  <h2 className="text-base font-semibold text-navy dark:text-white">{selectedRole.name}</h2>
                   {selectedRole.description ? (
-                    <p className="text-sm text-slate-500">{selectedRole.description}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">{selectedRole.description}</p>
                   ) : null}
                 </div>
                 {selectedRole.is_system ? (
@@ -243,19 +243,19 @@ export default function ManageRoles() {
 
               <div className="space-y-4">
                 {Object.entries(grouped).map(([module, perms]) => (
-                  <div key={module} className="overflow-hidden rounded-xl border border-slate-200">
-                    <div className="border-b border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">
+                  <div key={module} className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700">
+                    <div className="border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
                       {module}
                     </div>
-                    <div className="divide-y divide-slate-100">
+                    <div className="divide-y divide-slate-100 dark:divide-slate-700">
                       {perms.map((perm) => {
                         const granted = rolePermissionIds.has(perm.id);
                         const disabled = selectedRole.is_system || busyPerm === perm.id;
                         return (
                           <div key={perm.id} className="flex items-center justify-between px-4 py-3">
                             <div>
-                              <div className="text-sm text-slate-700">{perm.action}</div>
-                              <div className="text-xs text-slate-400" translate="no">
+                              <div className="text-sm text-slate-700 dark:text-slate-300">{perm.action}</div>
+                              <div className="text-xs text-slate-400 dark:text-slate-500" translate="no">
                                 {perm.code}
                               </div>
                             </div>
@@ -265,7 +265,7 @@ export default function ManageRoles() {
                               aria-pressed={granted}
                               aria-label={perm.code}
                               className={`relative h-6 w-10 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-40 ${
-                                granted ? 'bg-emerald-600' : 'bg-slate-300'
+                                granted ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-600'
                               }`}
                             >
                               <span

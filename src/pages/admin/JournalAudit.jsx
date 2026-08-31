@@ -124,17 +124,17 @@ export default function JournalAudit() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy">Journal d'audit</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <h1 className="text-2xl font-bold text-navy dark:text-white">Journal d'audit</h1>
+      <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Historique de toutes les actions effectuées dans l'admin — qui a fait quoi, et quand.
         Réservé au super_admin.
       </p>
 
       {error ? (
-        <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">
           {error}
           {error.includes('404') ? (
-            <div className="mt-1 text-xs text-red-500">
+            <div className="mt-1 text-xs text-red-500 dark:text-red-400">
               La route /audit-log semble introuvable — vérifie le chemin de montage de auditLogRoutes.js
               côté serveur et corrige AUDIT_LOG_PATH en haut de ce fichier.
             </div>
@@ -142,14 +142,14 @@ export default function JournalAudit() {
         </div>
       ) : null}
 
-      <Card className="mt-6 p-4">
+      <Card className="mt-6 p-4 dark:bg-slate-900">
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">Table</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Table</label>
             <select
               value={tableName}
               onChange={(e) => setTableName(e.target.value)}
-              className="min-h-[40px] rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+              className="min-h-[40px] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
             >
               {TABLES.map((tb) => (
                 <option key={tb} value={tb}>{tb || 'Toutes'}</option>
@@ -157,13 +157,13 @@ export default function JournalAudit() {
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500">Action</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Action</label>
             <input
               type="text"
               placeholder="ex: create, delete, login_success…"
               value={action}
               onChange={(e) => setAction(e.target.value)}
-              className="min-h-[40px] rounded-lg border border-slate-300 px-3 text-sm focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
+              className="min-h-[40px] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
             />
           </div>
           <button
@@ -175,7 +175,7 @@ export default function JournalAudit() {
           {(tableName || action) && (
             <button
               onClick={() => { setTableName(''); setAction(''); }}
-              className="text-sm text-slate-500 underline"
+              className="text-sm text-slate-500 dark:text-slate-400 underline"
             >
               Réinitialiser
             </button>
@@ -183,32 +183,32 @@ export default function JournalAudit() {
         </div>
       </Card>
 
-      <Card className="mt-4 p-5">
+      <Card className="mt-4 p-5 dark:bg-slate-900">
         {logs === null ? (
-          <p className="text-sm text-slate-400">Chargement…</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Chargement…</p>
         ) : logs.length === 0 ? (
-          <p className="text-sm text-slate-400">Aucune entrée pour ces filtres.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">Aucune entrée pour ces filtres.</p>
         ) : (
-          <ol className="relative border-l border-slate-200 pl-6">
+          <ol className="relative border-l border-slate-200 dark:border-slate-700 pl-6">
             {logs.map((log) => {
               const isOpen = expandedId === log.id;
               const hasDetails = log.changes || log.old_data || log.new_data;
               return (
                 <li key={log.id} className="mb-5 last:mb-0">
-                  <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-white text-[10px]">
+                  <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-[10px]">
                     {ACTION_ICON[log.action] || '•'}
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone={ACTION_TONE[log.action] || 'slate'}>{actionLabel(log.action)}</Badge>
                     {log.table_name ? (
-                      <span className="text-xs text-slate-400" translate="no">
+                      <span className="text-xs text-slate-400 dark:text-slate-500" translate="no">
                         {log.table_name}{log.record_id ? ` #${log.record_id}` : ''}
                       </span>
                     ) : null}
                   </div>
-                  <p className="mt-1 text-sm text-slate-700">
+                  <p className="mt-1 text-sm text-slate-700 dark:text-slate-300">
                     <span className="font-medium">{log.user_name || 'Système'}</span>{' '}
-                    <span className="text-slate-400">— {formatDate(log.created_at)}</span>
+                    <span className="text-slate-400 dark:text-slate-500">— {formatDate(log.created_at)}</span>
                   </p>
                   {hasDetails ? (
                     <button
@@ -219,7 +219,7 @@ export default function JournalAudit() {
                     </button>
                   ) : null}
                   {isOpen && hasDetails ? (
-                    <pre className="mt-2 max-w-xl overflow-x-auto rounded-lg bg-slate-50 p-3 text-xs text-slate-600">
+                    <pre className="mt-2 max-w-xl overflow-x-auto rounded-lg bg-slate-50 dark:bg-slate-800 p-3 text-xs text-slate-600 dark:text-slate-300">
                       {JSON.stringify(log.changes || log.new_data || log.old_data, null, 2)}
                     </pre>
                   ) : null}
