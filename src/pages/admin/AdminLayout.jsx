@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import {
   Link,
@@ -9,6 +8,7 @@ import {
 
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { usePermissions } from '../../context/PermissionsContext.jsx';
 import { useDarkMode } from '../../hooks/useDarkMode.js';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -20,6 +20,7 @@ export default function AdminLayout() {
 
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
+  const { hasPermission } = usePermissions();
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
@@ -32,6 +33,7 @@ export default function AdminLayout() {
   ========================================================= */
 
   const links = [
+    // Pas de permission dédiée pour le tableau de bord : visible dès qu'on est connecté.
     {
       to: '/admin',
       label: t('dashboard'),
@@ -42,53 +44,73 @@ export default function AdminLayout() {
       to: '/admin/partenaires',
       label: t('partners'),
       icon: '🤝',
+      requiredPerm: 'partners.view',
     },
     {
       to: '/admin/projets',
       label: t('projects'),
       icon: '🔬',
+      requiredPerm: 'projects.view',
     },
     {
       to: '/admin/appels',
       label: t('calls'),
       icon: '📢',
+      requiredPerm: 'calls.view',
     },
     {
       to: '/admin/mobilites',
       label: t('mobility'),
       icon: '✈️',
+      requiredPerm: 'mobility.view',
     },
     {
       to: '/admin/news-events',
       label: t('newsEvents'),
       icon: '📰',
+      requiredPerm: 'news_events.view',
     },
     {
       to: '/admin/documents',
       label: t('document'),
       icon: '📚',
+      requiredPerm: 'documents.view',
     },
-     {
-    to: '/admin/settings-reset-password',
-    label: 'Mot de passe',  // Ou utilisez t('admin.password') si vous avez la traduction
-    icon: '🔑',
-  },
+    // Ces liens-là n'ont pas de code de permission dédié dans la table `permissions` —
+    // ils restent donc réservés au rôle super_admin (comme protégé côté backend).
     {
       to: '/admin/roles',
       label: 'Rôles & permissions',
       icon: '🔐',
+      superAdminOnly: true,
     },
     {
       to: '/admin/test-acces',
       label: 'Tester RBAC',
       icon: '🧪',
+      superAdminOnly: true,
     },
     {
       to: '/admin/journal',
       label: "Journal d'audit",
       icon: '📜',
+      superAdminOnly: true,
+    },
+    {
+      to: '/admin/settings/reset-password',
+      label: 'Mot de passe',
+      icon: '🔑',
+      superAdminOnly: true,
     },
   ];
+
+  const canSeeLink = (link) => {
+    if (link.superAdminOnly) return user?.role === 'super_admin';
+    if (link.requiredPerm) return hasPermission(link.requiredPerm);
+    return true;
+  };
+
+  const visibleLinks = links.filter(canSeeLink);
 
   /* =========================================================
      LOGOUT
@@ -130,7 +152,7 @@ export default function AdminLayout() {
 
   const Nav = () => (
     <nav className="space-y-1">
-      {links.map((link) => (
+      {visibleLinks.map((link) => (
         <NavLink
           key={link.to}
           to={link.to}
@@ -642,4 +664,3 @@ export default function AdminLayout() {
     </div>
   );
 }
-

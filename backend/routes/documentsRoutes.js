@@ -18,6 +18,8 @@ router.post('/', verifyToken, checkPermission('documents.upload'), documentsCont
 router.post('/:id/link', verifyToken, checkPermission('documents.edit'), documentsController.createLink);
 router.delete('/:id/link', verifyToken, checkPermission('documents.edit'), documentsController.removeLink);
 router.put('/:id', verifyToken, checkPermission('documents.edit'), documentsController.update);
+router.put('/:id/publish', verifyToken, checkPermission('documents.edit'), documentsController.publish);
+router.put('/:id/archive', verifyToken, checkPermission('documents.edit'), documentsController.archive);
 router.delete('/:id', verifyToken, checkPermission('documents.delete'), documentsController.remove);
 
 module.exports = router;

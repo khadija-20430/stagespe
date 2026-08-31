@@ -78,9 +78,10 @@ export default function App() {
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />
-          <Route 
-      path= 'settings-reset-password'
-      element= {<ManageResetSettings  />} />
+          <Route
+            path="settings/reset-password"
+            element={<ManageResetSettings />}
+          />
         </Route>
 
         <Route path="*" element={<NotFound />} />

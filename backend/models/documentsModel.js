@@ -1,4 +1,3 @@
-
 const pool = require('../db');
 
 const LINK_TABLES = {
@@ -16,7 +15,7 @@ exports.LINK_TABLES = LINK_TABLES;
 // DOCUMENTS PUBLICS
 // =========================================================
 
-exports.findAllPublic = async (filters) => {
+exports.findAllPublic = async(filters) => {
     const {
         categorie_id,
         programme_id,
@@ -112,7 +111,7 @@ exports.findAllPublic = async (filters) => {
 // DOCUMENTS ADMIN
 // =========================================================
 
-exports.findAllAdmin = async () => {
+exports.findAllAdmin = async() => {
     const result = await pool.query(`
         SELECT
             documents.*,
@@ -132,7 +131,7 @@ exports.findAllAdmin = async () => {
 // DOCUMENTS EXPIRÉS
 // =========================================================
 
-exports.findExpired = async () => {
+exports.findExpired = async() => {
     const result = await pool.query(
         'SELECT * FROM documents_expired'
     );
@@ -145,7 +144,7 @@ exports.findExpired = async () => {
 // DOCUMENT PAR ID
 // =========================================================
 
-exports.findById = async (id) => {
+exports.findById = async(id) => {
     const result = await pool.query(
         `
         SELECT
@@ -156,8 +155,7 @@ exports.findById = async (id) => {
         JOIN document_categories
             ON documents.categorie_id = document_categories.id
         WHERE documents.id = $1
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
@@ -168,17 +166,16 @@ exports.findById = async (id) => {
 // LIENS D'UN DOCUMENT
 // =========================================================
 
-exports.findLinksForDocument = async (id) => {
+exports.findLinksForDocument = async(id) => {
     const links = {};
 
     for (const [
-        entityType,
-        { table, fk }
-    ] of Object.entries(LINK_TABLES)) {
+            entityType,
+            { table, fk }
+        ] of Object.entries(LINK_TABLES)) {
 
         const linkResult = await pool.query(
-            `SELECT ${fk} FROM ${table} WHERE document_id = $1`,
-            [id]
+            `SELECT ${fk} FROM ${table} WHERE document_id = $1`, [id]
         );
 
         links[entityType] = linkResult.rows.map(
@@ -194,7 +191,7 @@ exports.findLinksForDocument = async (id) => {
 // LOG ACCÈS DOCUMENT
 // =========================================================
 
-exports.logAccess = async (
+exports.logAccess = async(
     documentId,
     userId,
     ip,
@@ -212,8 +209,7 @@ exports.logAccess = async (
             action
         )
         VALUES ($1, $2, $3, $4, $5)
-        `,
-        [
+        `, [
             documentId,
             userId,
             ip,
@@ -228,7 +224,7 @@ exports.logAccess = async (
 // RÉVISIONS
 // =========================================================
 
-exports.findRevisions = async (id) => {
+exports.findRevisions = async(id) => {
     const result = await pool.query(
         `
         SELECT
@@ -239,8 +235,7 @@ exports.findRevisions = async (id) => {
             ON document_revisions.changed_by = users.id
         WHERE document_id = $1
         ORDER BY created_at DESC
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows;
@@ -251,46 +246,39 @@ exports.findRevisions = async (id) => {
 // CRÉER DOCUMENT
 // =========================================================
 
-// Dans votre documentsModel.js, trouvez la fonction update et modifiez-la :
-
 exports.update = async(id, data) => {
     try {
-        // Extraire les champs et ajouter statut_publication par défaut si non fourni
         const {
             titre,
             description,
-            langue,
+            langage,
             version,
-            statut_publication = 'draft', // VALEUR PAR DÉFAUT DRAFT
+            statut_publication = 'draft',
             fichier_url,
             file_size,
             file_format,
             uploaded_by
         } = data;
 
-        // Vous pouvez laisser 'draft' ou le changer en 'brouillon' selon votre préférence
-        // 'draft' est généralement utilisé en anglais dans les bases de données
-        
         const query = `
             UPDATE documents 
             SET 
                 titre = COALESCE($1, titre),
                 description = COALESCE($2, description),
-                langue = COALESCE($3, langue),
+                langage = COALESCE($3, langage),
                 version = COALESCE($4, version),
                 statut_publication = COALESCE($5, statut_publication, 'draft'),
                 fichier_url = COALESCE($6, fichier_url),
                 file_size = COALESCE($7, file_size),
                 file_format = COALESCE($8, file_format),
-                uploaded_by = COALESCE($9, uploaded_by),
-                updated_at = NOW()
+                uploaded_by = COALESCE($9, uploaded_by)
             WHERE id = $10
             RETURNING *
         `;
         const values = [
             titre,
             description,
-            langue,
+            langage,
             version,
             statut_publication,
             fichier_url,
@@ -306,16 +294,14 @@ exports.update = async(id, data) => {
         throw error;
     }
 };
-
-// Aussi dans la fonction create, assurez-vous d'avoir une valeur par défaut :
 exports.create = async(data) => {
     try {
         const {
             titre,
             description,
-            langue,
+            langage,
             version = '1.0',
-            statut_publication = 'draft', // VALEUR PAR DÉFAUT
+            statut_publication = 'draft',
             fichier_url,
             file_size,
             file_format,
@@ -324,7 +310,7 @@ exports.create = async(data) => {
 
         const query = `
             INSERT INTO documents (
-                titre, description, langue, version, statut_publication,
+                titre, description, langage, version, statut_publication,
                 fichier_url, file_size, file_format, uploaded_by, created_at, updated_at
             ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
             RETURNING *
@@ -332,7 +318,7 @@ exports.create = async(data) => {
         const values = [
             titre,
             description,
-            langue,
+            langage,
             version,
             statut_publication,
             fichier_url,
@@ -347,12 +333,11 @@ exports.create = async(data) => {
         throw error;
     }
 };
-
 // =========================================================
 // CRÉER LIEN
 // =========================================================
 
-exports.createLink = async (
+exports.createLink = async(
     entityType,
     documentId,
     entityId
@@ -370,8 +355,7 @@ exports.createLink = async (
         )
         VALUES ($1, $2)
         ON CONFLICT DO NOTHING
-        `,
-        [
+        `, [
             documentId,
             entityId
         ]
@@ -385,7 +369,7 @@ exports.createLink = async (
 // SUPPRIMER LIEN
 // =========================================================
 
-exports.removeLink = async (
+exports.removeLink = async(
     entityType,
     documentId,
     entityId
@@ -399,8 +383,7 @@ exports.removeLink = async (
         DELETE FROM ${config.table}
         WHERE document_id = $1
         AND ${config.fk} = $2
-        `,
-        [
+        `, [
             documentId,
             entityId
         ]
@@ -414,7 +397,7 @@ exports.removeLink = async (
 // INFOS FICHIER POUR RÉVISION
 // =========================================================
 
-exports.getRevisionSourceInfo = async (id) => {
+exports.getRevisionSourceInfo = async(id) => {
     const result = await pool.query(
         `
         SELECT
@@ -423,8 +406,7 @@ exports.getRevisionSourceInfo = async (id) => {
             file_size
         FROM documents
         WHERE id = $1
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
@@ -435,7 +417,7 @@ exports.getRevisionSourceInfo = async (id) => {
 // CRÉER RÉVISION
 // =========================================================
 
-exports.createRevision = async (
+exports.createRevision = async(
     documentId,
     version,
     fichierUrl,
@@ -455,8 +437,7 @@ exports.createRevision = async (
             change_note
         )
         VALUES ($1, $2, $3, $4, $5, $6)
-        `,
-        [
+        `, [
             documentId,
             version,
             fichierUrl,
@@ -478,14 +459,13 @@ exports.createRevision = async (
 // SUPPRIMER
 // =========================================================
 
-exports.remove = async (id) => {
+exports.remove = async(id) => {
     const result = await pool.query(
         `
         DELETE FROM documents
         WHERE id = $1
         RETURNING *
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
@@ -496,15 +476,14 @@ exports.remove = async (id) => {
 // PUBLIER
 // =========================================================
 
-exports.publish = async (id) => {
+exports.publish = async(id) => {
     const result = await pool.query(
         `
         UPDATE documents
         SET statut_publication = 'published'
         WHERE id = $1
         RETURNING *
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
@@ -515,15 +494,14 @@ exports.publish = async (id) => {
 // ARCHIVER
 // =========================================================
 
-exports.archive = async (id) => {
+exports.archive = async(id) => {
     const result = await pool.query(
         `
         UPDATE documents
         SET statut_publication = 'archived'
         WHERE id = $1
         RETURNING *
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
@@ -534,17 +512,15 @@ exports.archive = async (id) => {
 // RESTAURER
 // =========================================================
 
-exports.restore = async (id) => {
+exports.restore = async(id) => {
     const result = await pool.query(
         `
         UPDATE documents
         SET statut_publication = 'draft'
         WHERE id = $1
         RETURNING *
-        `,
-        [id]
+        `, [id]
     );
 
     return result.rows[0];
 };
-

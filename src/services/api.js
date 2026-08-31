@@ -1,4 +1,3 @@
-
 // ============================================================
 // API SERVICES
 // Point d'accès unique aux données
@@ -21,7 +20,8 @@ import {
 // CONFIGURATION
 // ============================================================
 
-const API = import.meta.env.VITE_API_URL;
+const API =
+    import.meta.env.VITE_API_URL;
 
 
 // Base pour les fichiers statiques
@@ -38,9 +38,9 @@ export const FILES_BASE_URL = API.replace(/\/api\/?$/, '');
 export const getFileUrl = (path) => {
     if (!path) return null;
 
-    return path.startsWith('http')
-        ? path
-        : `${FILES_BASE_URL}${path}`;
+    return path.startsWith('http') ?
+        path :
+        `${FILES_BASE_URL}${path}`;
 };
 
 
@@ -64,7 +64,7 @@ export const clearToken = () =>
 // REQUEST PUBLIQUE
 // ============================================================
 
-const request = async (path) => {
+const request = async(path) => {
 
     const res = await fetch(`${API}${path}`);
 
@@ -94,9 +94,8 @@ const request = async (path) => {
 // REQUEST AUTHENTIFIÉE
 // ============================================================
 
-const authRequest = async (
-    path,
-    {
+const authRequest = async(
+    path, {
         method = 'GET',
         body,
     } = {}
@@ -115,10 +114,8 @@ const authRequest = async (
     const res = await fetch(`${API}${path}`, {
         method,
         headers,
-        body:
-            body !== undefined
-                ? JSON.stringify(body)
-                : undefined,
+        body: body !== undefined ?
+            JSON.stringify(body) : undefined,
     });
 
     if (!res.ok) {
@@ -151,14 +148,13 @@ const authRequest = async (
 // AUTH
 // ============================================================
 
-export const login = async (
+export const login = async(
     email,
     password
 ) => {
 
     const data = await authRequest(
-        '/auth/login',
-        {
+        '/auth/login', {
             method: 'POST',
             body: {
                 email,
@@ -173,12 +169,11 @@ export const login = async (
 };
 
 
-export const logout = async () => {
+export const logout = async() => {
 
     try {
         await authRequest(
-            '/auth/logout',
-            {
+            '/auth/logout', {
                 method: 'POST',
             }
         );
@@ -196,7 +191,7 @@ export const getMe = () =>
 // PROJETS
 // ============================================================
 
-export const getProjets = async (
+export const getProjets = async(
     lang = 'fr'
 ) => {
 
@@ -209,7 +204,7 @@ export const getProjets = async (
 };
 
 
-export const getProjetsAdmin = async () => {
+export const getProjetsAdmin = async() => {
 
     const data =
         await authRequest(
@@ -220,7 +215,7 @@ export const getProjetsAdmin = async () => {
 };
 
 
-export const getProjetById = async (
+export const getProjetById = async(
     id,
     lang = 'fr'
 ) => {
@@ -237,11 +232,10 @@ export const getProjetById = async (
 // CRUD
 
 export const createProjet = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/projects',
-        {
+        '/projects', {
             method: 'POST',
             body: payload,
         }
@@ -249,12 +243,11 @@ export const createProjet = (
 
 
 export const updateProjet = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/projects/${id}`,
-        {
+        `/projects/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -262,11 +255,10 @@ export const updateProjet = (
 
 
 export const deleteProjet = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/projects/${id}`,
-        {
+        `/projects/${id}`, {
             method: 'DELETE',
         }
     );
@@ -275,22 +267,20 @@ export const deleteProjet = (
 // Publication
 
 export const publishProjet = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/projects/${id}/publish`,
-        {
+        `/projects/${id}/publish`, {
             method: 'PUT',
         }
     );
 
 
 export const archiveProjet = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/projects/${id}/archive`,
-        {
+        `/projects/${id}/archive`, {
             method: 'PUT',
         }
     );
@@ -300,7 +290,7 @@ export const archiveProjet = (
 // APPELS À PROJETS
 // ============================================================
 
-export const getAppels = async (
+export const getAppels = async(
     lang = 'fr'
 ) => {
 
@@ -313,7 +303,7 @@ export const getAppels = async (
 };
 
 
-export const getAppelsAdmin = async (
+export const getAppelsAdmin = async(
     lang = 'fr'
 ) => {
 
@@ -326,7 +316,7 @@ export const getAppelsAdmin = async (
 };
 
 
-export const getAppelById = async (
+export const getAppelById = async(
     id,
     lang = 'fr'
 ) => {
@@ -343,11 +333,10 @@ export const getAppelById = async (
 // CRUD
 
 export const createAppel = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/calls',
-        {
+        '/calls', {
             method: 'POST',
             body: payload,
         }
@@ -355,12 +344,11 @@ export const createAppel = (
 
 
 export const updateAppel = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/calls/${id}`,
-        {
+        `/calls/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -368,11 +356,10 @@ export const updateAppel = (
 
 
 export const deleteAppel = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/calls/${id}`,
-        {
+        `/calls/${id}`, {
             method: 'DELETE',
         }
     );
@@ -381,22 +368,20 @@ export const deleteAppel = (
 // Publication
 
 export const publishAppel = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/calls/${id}/publish`,
-        {
+        `/calls/${id}/publish`, {
             method: 'PUT',
         }
     );
 
 
 export const archiveAppel = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/calls/${id}/archive`,
-        {
+        `/calls/${id}/archive`, {
             method: 'PUT',
         }
     );
@@ -406,7 +391,7 @@ export const archiveAppel = (
 // MOBILITÉS
 // ============================================================
 
-export const getMobilites = async (
+export const getMobilites = async(
     lang = 'fr'
 ) => {
 
@@ -419,7 +404,7 @@ export const getMobilites = async (
 };
 
 
-export const getMobilitesAdmin = async (
+export const getMobilitesAdmin = async(
     lang = 'fr'
 ) => {
 
@@ -432,7 +417,7 @@ export const getMobilitesAdmin = async (
 };
 
 
-export const getMobiliteById = async (
+export const getMobiliteById = async(
     id,
     lang = 'fr'
 ) => {
@@ -449,11 +434,10 @@ export const getMobiliteById = async (
 // CRUD
 
 export const createMobilite = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/mobility',
-        {
+        '/mobility', {
             method: 'POST',
             body: payload,
         }
@@ -461,12 +445,11 @@ export const createMobilite = (
 
 
 export const updateMobilite = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/mobility/${id}`,
-        {
+        `/mobility/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -474,11 +457,10 @@ export const updateMobilite = (
 
 
 export const deleteMobilite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/mobility/${id}`,
-        {
+        `/mobility/${id}`, {
             method: 'DELETE',
         }
     );
@@ -487,22 +469,20 @@ export const deleteMobilite = (
 // Publication
 
 export const publishMobilite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/mobility/${id}/publish`,
-        {
+        `/mobility/${id}/publish`, {
             method: 'PUT',
         }
     );
 
 
 export const archiveMobilite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/mobility/${id}/archive`,
-        {
+        `/mobility/${id}/archive`, {
             method: 'PUT',
         }
     );
@@ -512,7 +492,7 @@ export const archiveMobilite = (
 // PARTENAIRES
 // ============================================================
 
-export const getPartenaires = async (
+export const getPartenaires = async(
     lang = 'fr'
 ) => {
 
@@ -525,7 +505,7 @@ export const getPartenaires = async (
 };
 
 
-export const getPartenairesAdmin = async (
+export const getPartenairesAdmin = async(
     lang = 'fr'
 ) => {
 
@@ -538,7 +518,7 @@ export const getPartenairesAdmin = async (
 };
 
 
-export const getPartenaireById = async (
+export const getPartenaireById = async(
     id,
     lang = 'fr'
 ) => {
@@ -552,18 +532,17 @@ export const getPartenaireById = async (
 };
 
 
-export const getPartenairesMap = async () =>
+export const getPartenairesMap = async() =>
     request('/partners/map');
 
 
 // CRUD
 
 export const createPartenaire = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/partners',
-        {
+        '/partners', {
             method: 'POST',
             body: payload,
         }
@@ -571,12 +550,11 @@ export const createPartenaire = (
 
 
 export const updatePartenaire = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/partners/${id}`,
-        {
+        `/partners/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -584,11 +562,10 @@ export const updatePartenaire = (
 
 
 export const deletePartenaire = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/partners/${id}`,
-        {
+        `/partners/${id}`, {
             method: 'DELETE',
         }
     );
@@ -599,22 +576,20 @@ export const deletePartenaire = (
 // ⚠️ Les routes doivent exister dans ton backend.
 
 export const publishPartner = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/partners/${id}/publish`,
-        {
+        `/partners/${id}/publish`, {
             method: 'PUT',
         }
     );
 
 
 export const archivePartner = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/partners/${id}/archive`,
-        {
+        `/partners/${id}/archive`, {
             method: 'PUT',
         }
     );
@@ -631,7 +606,7 @@ export const archivePARTNER = archivePartner;
 // ACTUALITÉS / ÉVÉNEMENTS
 // ============================================================
 
-export const getActualites = async () => {
+export const getActualites = async() => {
 
     const data =
         await request(
@@ -642,7 +617,7 @@ export const getActualites = async () => {
 };
 
 
-export const getActualiteById = async (
+export const getActualiteById = async(
     id
 ) => {
 
@@ -655,7 +630,7 @@ export const getActualiteById = async (
 };
 
 
-export const getActualitesAdmin = async () => {
+export const getActualitesAdmin = async() => {
 
     const data =
         await authRequest(
@@ -669,11 +644,10 @@ export const getActualitesAdmin = async () => {
 // CRUD
 
 export const createActualite = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/news-events',
-        {
+        '/news-events', {
             method: 'POST',
             body: payload,
         }
@@ -681,12 +655,11 @@ export const createActualite = (
 
 
 export const updateActualite = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/news-events/${id}`,
-        {
+        `/news-events/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -694,11 +667,10 @@ export const updateActualite = (
 
 
 export const deleteActualite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/news-events/${id}`,
-        {
+        `/news-events/${id}`, {
             method: 'DELETE',
         }
     );
@@ -707,22 +679,20 @@ export const deleteActualite = (
 // Publication
 
 export const publishActualite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/news-events/${id}/publish`,
-        {
+        `/news-events/${id}/publish`, {
             method: 'PUT',
         }
     );
 
 
 export const archiveActualite = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/news-events/${id}/archive`,
-        {
+        `/news-events/${id}/archive`, {
             method: 'PUT',
         }
     );
@@ -732,7 +702,7 @@ export const archiveActualite = (
 // DOCUMENTS
 // ============================================================
 
-export const getDocuments = async () => {
+export const getDocuments = async() => {
 
     const data =
         await request(
@@ -743,7 +713,7 @@ export const getDocuments = async () => {
 };
 
 
-export const getDocumentsAdmin = async () => {
+export const getDocumentsAdmin = async() => {
 
     const data =
         await authRequest(
@@ -754,7 +724,7 @@ export const getDocumentsAdmin = async () => {
 };
 
 
-export const getDocumentById = async (
+export const getDocumentById = async(
     id
 ) => {
 
@@ -771,7 +741,7 @@ export const getDocumentById = async (
 // UPLOAD FICHIER
 // ============================================================
 
-export const uploadFile = async (
+export const uploadFile = async(
     file
 ) => {
 
@@ -785,13 +755,11 @@ export const uploadFile = async (
 
     const res =
         await fetch(
-            `${API}/documents/upload`,
-            {
+            `${API}/documents/upload`, {
                 method: 'POST',
 
                 headers: {
-                    Authorization:
-                        `Bearer ${getToken()}`,
+                    Authorization: `Bearer ${getToken()}`,
                 },
 
                 body: formData,
@@ -802,8 +770,8 @@ export const uploadFile = async (
 
         const err =
             await res
-                .json()
-                .catch(() => ({}));
+            .json()
+            .catch(() => ({}));
 
         throw new Error(
             err.error ||
@@ -820,11 +788,10 @@ export const uploadFile = async (
 // ============================================================
 
 export const createDocument = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/documents',
-        {
+        '/documents', {
             method: 'POST',
             body: payload,
         }
@@ -832,12 +799,11 @@ export const createDocument = (
 
 
 export const updateDocument = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/documents/${id}`,
-        {
+        `/documents/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -845,11 +811,10 @@ export const updateDocument = (
 
 
 export const deleteDocument = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/documents/${id}`,
-        {
+        `/documents/${id}`, {
             method: 'DELETE',
         }
     );
@@ -858,58 +823,33 @@ export const deleteDocument = (
 // ============================================================
 // DOCUMENTS — PUBLICATION
 //
-// ⚠️ IMPORTANT
-// La colonne PostgreSQL est : statut_publication
+// Appelle directement les routes dédiées côté backend (vérifiées
+// fonctionnelles dans Postman), au lieu de reconstruire un payload
+// complet via getDocumentById + updateDocument.
 // ============================================================
 
-export const publishDocument = async (
-    id
-) => {
-
-    const document =
-        await getDocumentById(id);
-
-    const payload =
-        toDocumentPayload({
-            ...document,
-
-            statutPublication:
-                'published',
-        });
-
-    return updateDocument(
-        id,
-        payload
+export const publishDocument = (
+        id
+    ) =>
+    authRequest(
+        `/documents/${id}/publish`, {
+            method: 'PUT',
+        }
     );
-};
 
 
 // ============================================================
 // DOCUMENTS — ARCHIVAGE
 // ============================================================
 
-export const archiveDocument = async (
-    id
-) => {
-
-    const document =
-        await getDocumentById(id);
-
-    const payload =
-        toDocumentPayload({
-            ...document,
-
-            statutPublication:
-                'archived',
-        });
-
-    return updateDocument(
-        id,
-        payload
+export const archiveDocument = (
+        id
+    ) =>
+    authRequest(
+        `/documents/${id}/archive`, {
+            method: 'PUT',
+        }
     );
-};
-
-
 // ============================================================
 // CATÉGORIES DOCUMENTS
 // ============================================================
@@ -924,7 +864,7 @@ export const getDocumentCategories = () =>
 // STATISTIQUES
 // ============================================================
 
-export const getStats = async () => {
+export const getStats = async() => {
 
     const data =
         await request(
@@ -972,19 +912,18 @@ export const getRoles = () =>
 
 
 export const getRoleById = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
         `/roles/${id}`
     );
 
 
 export const createRole = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/roles',
-        {
+        '/roles', {
             method: 'POST',
             body: payload,
         }
@@ -992,12 +931,11 @@ export const createRole = (
 
 
 export const updateRole = (
-    id,
-    payload
-) =>
+        id,
+        payload
+    ) =>
     authRequest(
-        `/roles/${id}`,
-        {
+        `/roles/${id}`, {
             method: 'PUT',
             body: payload,
         }
@@ -1005,44 +943,39 @@ export const updateRole = (
 
 
 export const deleteRole = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/roles/${id}`,
-        {
+        `/roles/${id}`, {
             method: 'DELETE',
         }
     );
 
 
 export const setRolePermissions = (
-    id,
-    permissionIds
-) =>
+        id,
+        permissionIds
+    ) =>
     authRequest(
-        `/roles/${id}/permissions`,
-        {
+        `/roles/${id}/permissions`, {
             method: 'PUT',
             body: {
-                permission_ids:
-                    permissionIds,
+                permission_ids: permissionIds,
             },
         }
     );
 
 
 export const toggleRolePermission = (
-    id,
-    permissionId,
-    enabled
-) =>
+        id,
+        permissionId,
+        enabled
+    ) =>
     authRequest(
-        `/roles/${id}/permissions/toggle`,
-        {
+        `/roles/${id}/permissions/toggle`, {
             method: 'PUT',
             body: {
-                permission_id:
-                    permissionId,
+                permission_id: permissionId,
                 enabled,
             },
         }
@@ -1072,11 +1005,10 @@ export const getUsers = () =>
 
 
 export const registerUser = (
-    payload
-) =>
+        payload
+    ) =>
     authRequest(
-        '/auth/register',
-        {
+        '/auth/register', {
             method: 'POST',
             body: payload,
         }
@@ -1084,34 +1016,31 @@ export const registerUser = (
 
 
 export const activateUser = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/auth/users/${id}/activate`,
-        {
+        `/auth/users/${id}/activate`, {
             method: 'PUT',
         }
     );
 
 
 export const deactivateUser = (
-    id
-) =>
+        id
+    ) =>
     authRequest(
-        `/auth/users/${id}/deactivate`,
-        {
+        `/auth/users/${id}/deactivate`, {
             method: 'PUT',
         }
     );
 
 
 export const updateUserRole = (
-    id,
-    role
-) =>
+        id,
+        role
+    ) =>
     authRequest(
-        `/auth/users/${id}/role`,
-        {
+        `/auth/users/${id}/role`, {
             method: 'PUT',
             body: {
                 role,
@@ -1121,16 +1050,14 @@ export const updateUserRole = (
 
 
 export const assignRoleToUser = (
-    id,
-    roleId
-) =>
+        id,
+        roleId
+    ) =>
     authRequest(
-        `/auth/users/${id}/assign-role`,
-        {
+        `/auth/users/${id}/assign-role`, {
             method: 'PUT',
             body: {
-                role_id:
-                    roleId,
+                role_id: roleId,
             },
         }
     );
@@ -1147,16 +1074,16 @@ export const getLoginHistory = () =>
 // ============================================================
 
 export const getAuditLog = (
-    params = {}
-) => {
+        params = {}
+    ) => {
 
-    const qs =
-        new URLSearchParams(
-            params
-        ).toString();
+        const qs =
+            new URLSearchParams(
+                params
+            ).toString();
 
-    return authRequest(
-        `/audit-logs${
+        return authRequest(
+                `/audit-logs${
             qs
                 ? `?${qs}`
                 : ''
@@ -1185,4 +1112,3 @@ export const updateResetSettings = (
             body: payload,
         }
     );
-

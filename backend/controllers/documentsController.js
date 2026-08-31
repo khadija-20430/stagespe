@@ -119,3 +119,20 @@ exports.remove = async(req, res) => {
         res.json({ message: 'Document supprimé', deleted: doc });
     } catch (err) { sendError(res, err); }
 };
+exports.publish = async(req, res) => {
+    try {
+        const doc = await documentsModel.publish(req.params.id);
+        if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        await logAction(req.user.id, 'publish', 'document', req.params.id, null, req);
+        res.json(doc);
+    } catch (err) { sendError(res, err); }
+};
+
+exports.archive = async(req, res) => {
+    try {
+        const doc = await documentsModel.archive(req.params.id);
+        if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        await logAction(req.user.id, 'archive', 'document', req.params.id, null, req);
+        res.json(doc);
+    } catch (err) { sendError(res, err); }
+};

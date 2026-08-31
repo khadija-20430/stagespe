@@ -219,7 +219,7 @@ const safeItems = Array.isArray(items)
 
 const getStatus = (item) => {
   return String(
-    item.statut_publication || 'draft'
+    item.statut_publication ?? item.statutPublication ?? 'draft'
   )
     .toLowerCase()
     .trim();

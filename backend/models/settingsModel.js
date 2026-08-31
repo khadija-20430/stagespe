@@ -13,7 +13,7 @@ exports.getAll = async() => {
     const result = await pool.query('SELECT key, value FROM app_settings');
     const map = {};
     result.rows.forEach((row) => { map[row.key] = row.value; });
-    return { ...exports.DEFAULTS, ...map };
+    return {...exports.DEFAULTS, ...map };
 };
 
 // entries: [{ key, value }, ...]
@@ -21,8 +21,7 @@ exports.upsertMany = async(entries) => {
     const queries = entries.map(({ key, value }) =>
         pool.query(
             `INSERT INTO app_settings (key, value, updated_at) VALUES ($1,$2,NOW())
-             ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`,
-            [key, value]
+             ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()`, [key, value]
         )
     );
     await Promise.all(queries);

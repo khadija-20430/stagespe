@@ -357,7 +357,7 @@ CREATE TABLE documents (
   version VARCHAR(20) DEFAULT '1.0',
   file_size BIGINT,
   file_format VARCHAR(20),
-  visibilite VARCHAR(20) NOT NULL DEFAULT 'public' CHECK (visibilite IN ('public', 'staff', 'admin')),
+  statut_publication VARCHAR(20) NOT NULL DEFAULT 'draft' CHECK (statut_publication IN ('draft', 'published', 'archived')),
   is_featured BOOLEAN NOT NULL DEFAULT FALSE,
   date_expiration DATE,
   date_upload TIMESTAMP DEFAULT NOW(),

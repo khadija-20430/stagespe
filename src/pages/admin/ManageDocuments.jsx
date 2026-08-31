@@ -316,19 +316,20 @@ export default function ManageDocuments() {
           key: 'statut_publication',
           label: 'Statut',
 
-          render: (item) => {
-            const status =
-              item.statut_publication ||
-              'draft';
+        render: (item) => {
+  const status =
+    item.statutPublication ||
+    item.statut_publication ||
+    'draft';
 
-            return (
-              <Badge
-                tone={publicationTone(status)}
-              >
-                {publicationLabel(status)}
-              </Badge>
-            );
-          },
+  return (
+    <Badge
+      tone={publicationTone(status)}
+    >
+      {publicationLabel(status)}
+    </Badge>
+  );
+},
         },
 
         /* ----------------------------------------------------
