@@ -10,44 +10,145 @@ import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFi
 import { callStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
 
+
+
+
 function Hero() {
   const { t } = useTranslation();
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      eyebrow: "Bienvenue",
+      title: "Portail de la coopération internationale",
+      description: "📋Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle.",
+    },
+    {
+      eyebrow: "Opportunités",
+      title: "Mobilités internationales",
+      description: "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience.",
+    },
+    {
+      eyebrow: "Partenaires",
+      title: "Réseau mondial",
+      description: "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables.",
+    },
+    {
+      eyebrow: "Projets",
+      title: "Recherche et innovation",
+      description: "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise.",
+    },
+  ];
+
+  // Auto-play
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [slides.length]);
+
+  const currentSlideData = slides[currentSlide];
+
   return (
-    <section className="relative overflow-hidden bg-navy">
-      <div className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at 20% 20%, #2563EB 0, transparent 45%), radial-gradient(circle at 80% 0, #2563EB 0, transparent 40%)',
-        }}
-      />
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-        <img
-          src={esiLogo}
-          alt="ESI"
-          className="mb-6 h-16 w-auto"
-        />
-        <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-blue-200">
-          {t('home.hero.eyebrow')}
-        </p>
-        <h1 className="max-w-3xl text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl">
-          {t('home.hero.title')}
-        </h1>
-        <p className="mt-5 max-w-2xl text-lg leading-relaxed text-slate-300">
-          {t('home.hero.description')}
-        </p>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <Button as={Link} to="/appels" size="lg">
-            {t('home.hero.ctaCalls')}
-          </Button>
-          <Button as={Link} to="/mobilites" size="lg" variant="secondary"
-            className="border-white/25 bg-transparent text-blue-200 hover:border-cobalt hover:text-blue-200">
-            {t('home.hero.ctaMobility')}
-          </Button>
+    <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
+      {/* Décoration de fond animée */}
+      <div className="pointer-events-none absolute inset-0 opacity-30">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-8 right-20 w-72 h-72 bg-cobalt/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-2000"></div>
+      </div>
+
+<div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+  {/* Logo et titre */}
+  <div className="mb-12 flex flex-col items-center text-center">
+    {/* Logo animé et agrandir */}
+    <img 
+      src={esiLogo} 
+      alt="ESI" 
+      className="h-24 w-auto mb-4 animate-pulse-scale" 
+    />
+    
+    {/* Titre centré */}
+    <h2 className="text-4xl font-bold text-white">
+      ESI Coopération Internationale
+    </h2>
+  </div>
+        
+
+        {/* CADRE ANIMÉ - CENTRÉ */}
+        <div className="relative max-w-2xl mx-auto mb-8">
+          {/* Cadre avec fond gris light */}
+          <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl transition-all duration-500">
+            
+            {/* Badge avec animation */}
+            <div className="mb-6 inline-block">
+              <p className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in">
+                {currentSlideData.eyebrow}
+              </p>
+            </div>
+
+            {/* Titre avec animation */}
+            <div className="mb-6 min-h-[100px] overflow-hidden">
+              <h1 className="text-3xl font-extrabold leading-tight text-white animate-slide-up">
+                {currentSlideData.title}
+              </h1>
+            </div>
+
+            {/* Description avec animation */}
+            <div className="min-h-[90px] overflow-hidden">
+              <p className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light">
+                {currentSlideData.description}
+              </p>
+            </div>
+
+            {/* Indicateurs - EN BAS DU CADRE */}
+            <div className="mt-10 flex justify-start gap-2">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    index === currentSlide 
+                      ? 'bg-cobalt w-10 shadow-lg shadow-cobalt/50' 
+                      : 'bg-slate-400/30 w-2.5 hover:bg-slate-400/60'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Glow effect */}
+          <div className="absolute -inset-4 bg-gradient-to-r from-slate-400/10 via-slate-300/10 to-transparent rounded-2xl blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        </div>
+
+                {/* BOUTONS - SOUS LE CADRE */}
+        <div className="max-w-2xl mx-auto">
+          <div className="grid grid-cols-2 gap-4">
+            <Button 
+              as={Link} 
+              to="/appels" 
+              size="lg"
+              className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105"
+            >
+              📋 Voir les appels à projets
+            </Button>
+            
+            <Button 
+              as={Link} 
+              to="/mobilites" 
+              size="lg"
+              className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all"
+            >
+              🌍 Explorer les mobilités
+            </Button>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
 
 export default function Home() {
   const { t } = useTranslation();

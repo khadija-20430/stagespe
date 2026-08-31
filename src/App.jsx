@@ -1,6 +1,7 @@
 import { Route, Routes, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext.jsx';
+import { PermissionsProvider } from './context/PermissionsContext.jsx';
 import PublicLayout from './components/layout/PublicLayout.jsx';
 import 'leaflet/dist/leaflet.css';
 import Home from './pages/Home.jsx';
@@ -14,6 +15,8 @@ import Documents from './pages/Documents.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 import Login from './pages/admin/Login.jsx';
+import ForgotPassword from './pages/admin/ForgotPassword.jsx';
+import ResetPassword from './pages/admin/ResetPassword.jsx';
 import ProtectedRoute from './pages/admin/ProtectedRoute.jsx';
 import AdminLayout from './pages/admin/AdminLayout.jsx';
 import Dashboard from './pages/admin/Dashboard.jsx';
@@ -26,6 +29,7 @@ import ManageRoles from './pages/admin/ManageRoles.jsx';
 import TestAccess from './pages/admin/TestAccess.jsx';
 import JournalAudit from './pages/admin/JournalAudit.jsx';
 import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
+import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {
@@ -51,11 +55,15 @@ export default function App() {
         </Route>
 
         <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route
           path="/admin"
           element={
             <ProtectedRoute>
-              <AdminLayout />
+              <PermissionsProvider>
+                <AdminLayout />
+              </PermissionsProvider>
             </ProtectedRoute>
           }
         >
@@ -64,12 +72,15 @@ export default function App() {
           <Route path="projets" element={<ManageProjets />} />
           <Route path="appels" element={<ManageAppels />} />
           <Route path="mobilites" element={<ManageMobilites />} />
-                    <Route path="news-events" element={<ManageNewsEvents />} />
+          <Route path="news-events" element={<ManageNewsEvents />} />
 
           <Route path="documents" element={<ManageDocuments />} />
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />
+          <Route 
+      path= 'settings-reset-password'
+      element= {<ManageResetSettings  />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

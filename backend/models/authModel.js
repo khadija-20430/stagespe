@@ -1,10 +1,10 @@
-const pool = require('../db');
+const pool = require('../db'); // ← SEUL import nécessaire
 
 exports.countRecentFailures = async(email, windowMinutes) => {
     const result = await pool.query(
         `SELECT COUNT(*) FROM login_history
-     WHERE email_attempted = $1 AND success = FALSE
-       AND created_at > NOW() - INTERVAL '${windowMinutes} minutes'`, [email]
+         WHERE email_attempted = $1 AND success = FALSE
+         AND created_at > NOW() - INTERVAL '${windowMinutes} minutes'`, [email]
     );
     return parseInt(result.rows[0].count);
 };
@@ -16,8 +16,15 @@ exports.findActiveUserByEmail = async(email) => {
 
 exports.recordLoginAttempt = async(userId, email, success, ip, userAgent) => {
     await pool.query(
-        'INSERT INTO login_history (user_id, email_attempted, success, ip_address, user_agent) VALUES ($1,$2,$3,$4,$5)', [userId, email, success, ip, userAgent]
+        'INSERT INTO login_history (user_id, email_attempted, success, ip_address, user_agent) VALUES ($1,$2,$3,$4,$5)', 
+        [userId, email, success, ip, userAgent]
     );
+};
+
+exports.findUserById = async(id) => {
+    const query = 'SELECT id, full_name, email FROM users WHERE id = $1';
+    const result = await pool.query(query, [id]);
+    return result.rows[0];
 };
 
 exports.updateLastLogin = async(userId) => {
@@ -27,7 +34,8 @@ exports.updateLastLogin = async(userId) => {
 exports.createUser = async({ full_name, email, password_hash, role, role_id }) => {
     const result = await pool.query(
         `INSERT INTO users (full_name, email, password_hash, role, role_id)
-     VALUES ($1,$2,$3,$4,$5) RETURNING id, full_name, email, role, role_id, is_active, created_at`, [full_name, email, password_hash, role || 'utilisateur', role === 'admin' ? (role_id || null) : null]
+         VALUES ($1,$2,$3,$4,$5) RETURNING id, full_name, email, role, role_id, is_active, created_at`, 
+        [full_name, email, password_hash, role || 'utilisateur', role === 'admin' ? (role_id || null) : null]
     );
     return result.rows[0];
 };
@@ -35,23 +43,25 @@ exports.createUser = async({ full_name, email, password_hash, role, role_id }) =
 exports.findAllUsers = async() => {
     const result = await pool.query(
         `SELECT users.id, users.full_name, users.email, users.role, users.role_id,
-            roles.name AS role_name, users.is_active, users.last_login, users.created_at
-     FROM users LEFT JOIN roles ON users.role_id = roles.id
-     ORDER BY users.id DESC`
+                roles.name AS role_name, users.is_active, users.last_login, users.created_at
+         FROM users LEFT JOIN roles ON users.role_id = roles.id
+         ORDER BY users.id DESC`
     );
     return result.rows;
 };
 
 exports.setActiveStatus = async(id, isActive) => {
     const result = await pool.query(
-        'UPDATE users SET is_active = $1, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, is_active', [isActive, id]
+        'UPDATE users SET is_active = $1, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, is_active', 
+        [isActive, id]
     );
     return result.rows[0];
 };
 
 exports.updateRole = async(id, role) => {
     const result = await pool.query(
-        'UPDATE users SET role = $1, role_id = NULL, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, role, role_id', [role, id]
+        'UPDATE users SET role = $1, role_id = NULL, updated_at = NOW() WHERE id = $2 RETURNING id, full_name, email, role, role_id', 
+        [role, id]
     );
     return result.rows[0];
 };
@@ -69,7 +79,8 @@ exports.roleExists = async(roleId) => {
 exports.assignCustomRole = async(id, roleId) => {
     const result = await pool.query(
         `UPDATE users SET role_id = $1, updated_at = NOW() WHERE id = $2
-     RETURNING id, full_name, email, role, role_id`, [roleId || null, id]
+         RETURNING id, full_name, email, role, role_id`, 
+        [roleId || null, id]
     );
     return result.rows[0];
 };
@@ -82,9 +93,10 @@ exports.findAllPermissionCodes = async() => {
 exports.findUserPermissionCodes = async(userId) => {
     const result = await pool.query(
         `SELECT permissions.code FROM permissions
-     JOIN role_permissions ON role_permissions.permission_id = permissions.id
-     JOIN users ON users.role_id = role_permissions.role_id
-     WHERE users.id = $1`, [userId]
+         JOIN role_permissions ON role_permissions.permission_id = permissions.id
+         JOIN users ON users.role_id = role_permissions.role_id
+         WHERE users.id = $1`, 
+        [userId]
     );
     return result.rows.map((r) => r.code);
 };
@@ -92,8 +104,8 @@ exports.findUserPermissionCodes = async(userId) => {
 exports.findLoginHistory = async() => {
     const result = await pool.query(
         `SELECT login_history.*, users.full_name
-     FROM login_history LEFT JOIN users ON login_history.user_id = users.id
-     ORDER BY login_history.created_at DESC LIMIT 200`
+         FROM login_history LEFT JOIN users ON login_history.user_id = users.id
+         ORDER BY login_history.created_at DESC LIMIT 200`
     );
     return result.rows;
 };
@@ -103,21 +115,67 @@ exports.findUserIdByEmail = async(email) => {
     return result.rows[0];
 };
 
+// FONCTION CORRIGÉE: createResetToken (renommée et avec les bons paramètres)
 exports.createResetToken = async(userId, token, expiresAt) => {
-    await pool.query('INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES ($1,$2,$3)', [userId, token, expiresAt]);
-};
-
-exports.findValidResetToken = async(token) => {
     const result = await pool.query(
-        `SELECT * FROM password_reset_tokens WHERE token = $1 AND used = FALSE AND expires_at > NOW()`, [token]
+        `INSERT INTO password_reset_tokens (user_id, token, expires_at, created_at)
+         VALUES ($1, $2, $3, NOW())
+         RETURNING id, user_id, token, expires_at, used, attempts, created_at`, 
+        [userId, token, expiresAt]
     );
     return result.rows[0];
 };
 
-exports.updatePassword = async(userId, passwordHash) => {
-    await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [passwordHash, userId]);
+// NOUVELLE FONCTION: createResetCode (alias pour createResetToken pour compatibilité)
+exports.createResetCode = async(userId, token, expiresAt) => {
+    return exports.createResetToken(userId, token, expiresAt);
 };
 
+// NOUVELLE FONCTION: findLatestValidResetCode
+exports.findLatestValidResetCode = async(userId) => {
+    const result = await pool.query(
+        `SELECT * FROM password_reset_tokens 
+         WHERE user_id = $1 AND used = FALSE AND expires_at > NOW()
+         ORDER BY created_at DESC LIMIT 1`, 
+        [userId]
+    );
+    return result.rows[0];
+};
+
+// NOUVELLE FONCTION: incrementResetAttempts
+exports.incrementResetAttempts = async(resetTokenId) => {
+    const result = await pool.query(
+        `UPDATE password_reset_tokens 
+         SET attempts = attempts + 1 
+         WHERE id = $1
+         RETURNING *`, 
+        [resetTokenId]
+    );
+    return result.rows[0];
+};
+
+// FONCTION CORRIGÉE: updatePassword (déjà existante, conservée)
+exports.updatePassword = async(userId, passwordHash) => {
+    await pool.query(
+        'UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', 
+        [passwordHash, userId]
+    );
+};
+
+// FONCTION CORRIGÉE: markResetTokenUsed (déjà existante, conservée)
 exports.markResetTokenUsed = async(tokenId) => {
-    await pool.query('UPDATE password_reset_tokens SET used = TRUE WHERE id = $1', [tokenId]);
+    await pool.query(
+        'UPDATE password_reset_tokens SET used = TRUE WHERE id = $1', 
+        [tokenId]
+    );
+};
+
+// NOUVELLE FONCTION: findValidResetToken (pour la vérification)
+exports.findValidResetToken = async(token) => {
+    const result = await pool.query(
+        `SELECT * FROM password_reset_tokens 
+         WHERE token = $1 AND used = FALSE AND expires_at > NOW()`, 
+        [token]
+    );
+    return result.rows[0];
 };

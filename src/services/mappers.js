@@ -95,20 +95,270 @@ export const mapMobilite = (row) => ({
 
 /* ----------------------------- Documents --------------------------------- */
 // mappers.js
+/* ----------------------------- Documents --------------------------------- */
+
+/* ----------------------------- Documents --------------------------------- */
+
+
+/* ============================================================
+   DOCUMENT → FRONTEND
+============================================================ */
+
 export const mapDocument = (row) => ({
+
     id: row.id,
-    nom: row.titre || row.nom,
-    titre: row.titre || row.nom,
-    categorie: row.categorie_code || row.categorie,
-    fileFormat: row.file_format || row.format || 'PDF',
-    fileSize: row.file_size || row.taille,
-    dateUpload: row.date_upload || row.date,
-    fichier: row.fichier_url || row.lien, // ✅ Important pour le téléchargement
-    lien: row.fichier_url || row.lien,
-    fichier_url: row.fichier_url,
-    date: row.date_upload || row.date,
-    format: row.file_format || row.format,
-    taille: row.file_size || row.taille,
+
+    /* ---------------------------------------------------------
+       TITRE
+    --------------------------------------------------------- */
+
+    nom:
+        row.titre ||
+        row.nom,
+
+    titre:
+        row.titre ||
+        row.nom,
+
+
+    /* ---------------------------------------------------------
+       DESCRIPTION
+    --------------------------------------------------------- */
+
+    description:
+        row.description || '',
+
+
+    /* ---------------------------------------------------------
+       CATEGORIE
+    --------------------------------------------------------- */
+
+    categorie:
+        row.categorie_code ||
+        row.categorie ||
+        row.categorie_name,
+
+    categorieLabel:
+        row.categorie_label ||
+        row.categorie_name ||
+        row.categorie_code ||
+        row.categorie,
+
+    categorieId:
+        row.categorie_id,
+
+
+    /* ---------------------------------------------------------
+       FICHIER
+    --------------------------------------------------------- */
+
+    fileFormat:
+        row.file_format ||
+        row.format ||
+        'PDF',
+
+    fileSize:
+        row.file_size ||
+        row.taille,
+
+    fichier:
+        row.fichier_url ||
+        row.lien,
+
+    fichier_url:
+        row.fichier_url,
+
+    lien:
+        row.fichier_url ||
+        row.lien,
+
+    format:
+        row.file_format ||
+        row.format,
+
+    taille:
+        row.file_size ||
+        row.taille,
+
+
+    /* ---------------------------------------------------------
+       LANGUE / VERSION
+    --------------------------------------------------------- */
+
+    langage:
+        row.langage ||
+        'fr',
+
+    version:
+        row.version ||
+        '1.0',
+
+
+    /* =========================================================
+       IMPORTANT
+
+       visibilite = statut de publication
+       
+       draft    = Brouillon
+       public   = Publié
+       archived = Archivé
+    ========================================================= */
+
+    visibilite:
+        row.visibilite ||
+        'draft',
+
+    statutPublication:
+        row.visibilite ||
+        'draft',
+
+
+    /* ---------------------------------------------------------
+       MIS EN AVANT
+    --------------------------------------------------------- */
+
+    isFeatured:
+        row.is_featured === true,
+
+
+    /* ---------------------------------------------------------
+       DATE EXPIRATION
+    --------------------------------------------------------- */
+
+    dateExpiration:
+        row.date_expiration ||
+        null,
+
+
+    /* ---------------------------------------------------------
+       DATE UPLOAD
+    --------------------------------------------------------- */
+
+    dateUpload:
+        row.date_upload ||
+        row.date,
+
+    date:
+        row.date_upload ||
+        row.date,
+});
+
+
+/* ============================================================
+   FRONTEND → BACKEND
+============================================================ */
+
+export const toDocumentPayload = (draft) => ({
+
+    /* ---------------------------------------------------------
+       TITRE
+    --------------------------------------------------------- */
+
+    titre:
+        draft.titre,
+
+
+    /* ---------------------------------------------------------
+       DESCRIPTION
+    --------------------------------------------------------- */
+
+    description:
+        draft.description ||
+        null,
+
+
+    /* ---------------------------------------------------------
+       FICHIER
+    --------------------------------------------------------- */
+
+    fichier_url:
+        draft.fichier_url,
+
+
+    /* ---------------------------------------------------------
+       CATEGORIE
+    --------------------------------------------------------- */
+
+    categorie_id:
+        draft.categorieId ||
+        null,
+
+
+    /* ---------------------------------------------------------
+       LANGUE
+    --------------------------------------------------------- */
+
+    langage:
+        draft.langage ||
+        'fr',
+
+
+    /* ---------------------------------------------------------
+       VERSION
+    --------------------------------------------------------- */
+
+    version:
+        draft.version ||
+        '1.0',
+
+
+    /* ---------------------------------------------------------
+       INFORMATIONS FICHIER
+       
+       Automatiques depuis uploadFile()
+    --------------------------------------------------------- */
+
+    file_size:
+        draft.fileSize ||
+        null,
+
+    file_format:
+        draft.fileFormat ||
+        null,
+
+
+    /* =========================================================
+       STATUT DE PUBLICATION
+       
+       IMPORTANT :
+       
+       À la création :
+       draft.visibilite n'existe pas
+       → draft automatiquement
+       
+       À la modification :
+       on conserve le statut existant.
+       
+       Publication :
+       public
+       
+       Archivage :
+       archived
+    ========================================================= */
+
+    visibilite:
+        draft.visibilite ||
+        draft.statutPublication ||
+        'draft',
+
+
+    /* ---------------------------------------------------------
+       MIS EN AVANT
+    --------------------------------------------------------- */
+
+    is_featured:
+        draft.misEnAvant === 'true' ||
+        draft.misEnAvant === true ||
+        draft.isFeatured === true,
+
+
+    /* ---------------------------------------------------------
+       DATE EXPIRATION
+    --------------------------------------------------------- */
+
+    date_expiration:
+        draft.dateExpiration ||
+        null,
 });
 /* ----------------------------- Statistiques ------------------------------- */
 export const mapStats = (row) => ({
@@ -154,7 +404,9 @@ export const toProjetPayload = (draft) => ({
     objectives: draft.objectifs,
     target_groups: draft.groupesCibles,
     official_website: draft.siteWeb,
-    status: draft.statut || 'proposed',
+    status:  'proposed',
+        statut_publication: data.statut_publication || 'draft', // ✅ OBLIGATOIRE
+
     programme_id: draft.programmeId || null,
     coordinator_partner_id: draft.coordinateurPartenaireId || null,
     budget: draft.budget || null,
@@ -180,7 +432,9 @@ export const toAppelPayload = (draft) => ({
     deadline: draft.dateLimite || null,
     official_link: draft.lienOfficiel,
     contact_person: draft.personneContact,
-    status: draft.statut || 'open',
+    status: 'open',
+        statut_publication: data.statut_publication || 'draft', // ✅ OBLIGATOIRE
+
     country_ids: draft.paysEligiblesIds || [],
     theme_ids: draft.themeIds || [],
 });
@@ -202,22 +456,12 @@ export const toMobilitePayload = (draft) => ({
     contact_person: draft.personneContact,
     contact_email: draft.emailContact,
     deadline: draft.dateLimite || null,
-    status: draft.statut || 'open',
+    status:'open',
+        statut_publication: data.statut_publication || 'draft', // ✅ OBLIGATOIRE
+
 });
 
-export const toDocumentPayload = (draft) => ({
-    titre: draft.titre,
-    description: draft.description,
-    fichier_url: draft.fichier_url,
-    categorie_id: draft.categorieId || null,
-    langage: draft.langage || 'fr',
-    version: draft.version || '1.0',
-    file_size: draft.fileSize || null,
-    file_format: draft.fileFormat || null,
-    visibilite: draft.visibilite || 'public',
-    is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
-    date_expiration: draft.dateExpiration || null,
-});
+
 export const mapActualite = (row) => ({
     id: row.id,
     titre: row.title,
@@ -249,29 +493,23 @@ export const mapActualite = (row) => ({
     createdAt: row.created_at,
     updatedAt: row.updated_at,
 });
-export const toActualitePayload = (draft) => ({
-    title: draft.titre,
-    type: draft.type || 'news',
-    summary: draft.resume,
-    description: draft.contenu,
-
-    project_id: draft.projectId || null,
-
-    event_date: draft.eventDate || null,
-    end_date: draft.endDate || null,
-    location: draft.location,
-
-    image_url: draft.imageUrl,
-
-    is_featured: draft.isFeatured === 'true' ||
-        draft.isFeatured === true,
-
-    author_name: draft.authorName,
-    author_role: draft.authorRole,
-    author_photo_url: draft.authorPhotoUrl,
-
-    quote_text: draft.quoteText,
-
-    // Ne pas permettre au formulaire de modifier le statut.
-    // Il sera géré par Publier / Archiver.
-});
+// ===================== NEWS / EVENTS =====================
+export const toActualitePayload = (data) => {
+  return {
+    titre: data.title,
+    type: data.type,
+    resume: data.summary || '',
+    contenu: data.description || '',
+    projetId: data.projectId || null,
+    dateEvenement: data.eventDate || null,
+    dateFin: data.endDate || null,
+    lieu: data.location || '',
+    imageUrl: data.imageUrl || '',
+    misEnAvant: data.isFeatured === 'true' || data.isFeatured === true,
+    nomAuteur: data.authorName || '',
+    roleAuteur: data.authorRole || '',
+    urlPhotoAuteur: data.authorPhotoUrl || '',
+    texteDeposition: data.quoteText || '',
+    statut_publication: data.statut_publication || 'draft', // ✅ OBLIGATOIRE
+  };
+};

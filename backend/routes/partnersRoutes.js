@@ -15,8 +15,8 @@ router.get('/:id/translations', verifyToken, checkPermission('partners.view'), p
 router.post('/', verifyToken, checkPermission('partners.create'), upload.single('logo'), partnersController.create);
 router.put('/:id', verifyToken, checkPermission('partners.edit'), upload.single('logo'), partnersController.update);
 
-router.put('/:id/publish', verifyToken, checkPermission('partners.publish'), partnersController.publish);
-router.put('/:id/archive', verifyToken, checkPermission('partners.publish'), partnersController.archive);
+router.patch('/:id/publish', verifyToken, checkPermission('partners.publish'), partnersController.publish);
+router.patch('/:id/archive', verifyToken, checkPermission('partners.publish'), partnersController.archive);
 router.post('/:id/duplicate', verifyToken, checkPermission('partners.create'), partnersController.duplicate);
 
 router.delete('/:id', verifyToken, checkPermission('partners.delete'), partnersController.remove);

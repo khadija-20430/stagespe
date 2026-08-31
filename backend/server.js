@@ -12,7 +12,7 @@ const app = express();
 
 app.set('trust proxy', 1);
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
 }));
 app.use(cors());
 app.use(express.json());
@@ -50,6 +50,7 @@ app.use('/api/documents', require('./routes/documentsRoutes'));
 app.use('/api/notifications', require('./routes/notificationsRoutes'));
 app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
+app.use('/api/settings', require('./routes/settingsRoutes'));
 
 app.get('/', (req, res) => {
     res.json({ status: 'ok', message: 'API Portail International ESI' });

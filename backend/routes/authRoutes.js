@@ -5,10 +5,12 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
+// ==================== LOGIN / LOGOUT ====================
 router.post('/login', authController.login);
 router.post('/logout', verifyToken, authController.logout);
 router.get('/me', verifyToken, authController.me);
 
+// ==================== USER MANAGEMENT (Super Admin only) ====================
 router.post('/register', verifyToken, checkRole('super_admin'), authController.register);
 router.get('/users', verifyToken, checkRole('super_admin'), authController.getAllUsers);
 router.put('/users/:id/activate', verifyToken, checkRole('super_admin'), authController.activateUser);
@@ -16,10 +18,13 @@ router.put('/users/:id/deactivate', verifyToken, checkRole('super_admin'), authC
 router.put('/users/:id/role', verifyToken, checkRole('super_admin'), authController.updateUserRole);
 router.put('/users/:id/assign-role', verifyToken, checkRole('super_admin'), authController.assignCustomRole);
 
+// ==================== PERMISSIONS & HISTORY ====================
 router.get('/my-permissions', verifyToken, authController.myPermissions);
 router.get('/login-history', verifyToken, checkRole('super_admin'), authController.loginHistory);
 
+// ==================== PASSWORD RESET (Public - pas de verifyToken) ====================
 router.post('/forgot-password', authController.forgotPassword);
+router.post('/verify-reset-token', authController.verifyResetToken); // ← NOUVEAU
 router.post('/reset-password', authController.resetPassword);
 
 module.exports = router;

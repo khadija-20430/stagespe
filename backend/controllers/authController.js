@@ -2,8 +2,10 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const authModel = require('../models/authModel');
+const settingsModel = require('../models/settingsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
+const { sendResetCodeEmail } = require('../lib/Mailer');
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MINUTES = 15;
@@ -162,33 +164,88 @@ exports.loginHistory = async(req, res) => {
 exports.forgotPassword = async(req, res) => {
     try {
         const { email } = req.body;
-        const found = await authModel.findUserIdByEmail(email);
-        if (!found) {
-            return res.json({ message: 'Si ce compte existe, un lien de réinitialisation a été généré.' });
+        if (!email) return res.status(400).json({ error: 'Email requis' });
+
+        const genericResponse = { message: 'Si ce compte existe, un code de réinitialisation a été envoyé par email.' };
+
+        const user = await authModel.findActiveUserByEmail(email);
+        if (!user) return res.json(genericResponse);
+
+        const settings = await settingsModel.getAll();
+        const windowMinutes = Number(settings.reset_code_window_minutes);
+
+        const code = crypto.randomInt(100000, 1000000).toString(); // code à 6 chiffres
+        const codeHash = await bcrypt.hash(code, 10);
+        const expiresAt = new Date(Date.now() + windowMinutes * 60 * 1000);
+
+        // CORRECTION: Utiliser createResetToken au lieu de createResetCode
+        await authModel.createResetToken(user.id, codeHash, expiresAt);
+        await sendResetCodeEmail(user.email, code, windowMinutes, settings.reset_email_subject, settings.reset_email_text);
+
+        res.json(genericResponse);
+    } catch (err) { sendError(res, err); }
+};
+
+exports.verifyResetToken = async(req, res) => {
+    try {
+        const { email, code } = req.body;
+        if (!email || !code) return res.status(400).json({ error: 'Email et code requis' });
+
+        const user = await authModel.findActiveUserByEmail(email);
+        if (!user) return res.status(400).json({ error: 'Code invalide ou expiré' });
+
+        const resetRow = await authModel.findLatestValidResetCode(user.id);
+        if (!resetRow) return res.status(400).json({ error: 'Code invalide ou expiré' });
+
+        const settings = await settingsModel.getAll();
+        const maxAttempts = Number(settings.max_reset_attempts);
+
+        if (resetRow.attempts >= maxAttempts) {
+            return res.status(429).json({ error: 'Trop de tentatives. Demandez un nouveau code.' });
         }
 
-        const token = crypto.randomBytes(32).toString('hex');
-        const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+        const codeMatches = await bcrypt.compare(code, resetRow.token);
+        if (!codeMatches) {
+            await authModel.incrementResetAttempts(resetRow.id);
+            return res.status(400).json({ error: 'Code invalide ou expiré' });
+        }
 
-        await authModel.createResetToken(found.id, token, expiresAt);
-        res.json({ message: 'Lien de réinitialisation généré.', reset_token: token });
+        res.json({ valid: true, message: 'Code valide' });
     } catch (err) { sendError(res, err); }
 };
 
 exports.resetPassword = async(req, res) => {
     try {
-        const { token, new_password } = req.body;
+        const { email, code, new_password } = req.body;
+
+        if (!email || !code) return res.status(400).json({ error: 'Email et code requis' });
         if (!isPasswordValid(new_password)) {
             return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre' });
         }
 
-        const resetToken = await authModel.findValidResetToken(token);
-        if (!resetToken) return res.status(400).json({ error: 'Lien invalide ou expiré' });
+        const user = await authModel.findActiveUserByEmail(email);
+        if (!user) return res.status(400).json({ error: 'Code invalide ou expiré' });
+
+        const resetRow = await authModel.findLatestValidResetCode(user.id);
+        if (!resetRow) return res.status(400).json({ error: 'Code invalide ou expiré' });
+
+        const settings = await settingsModel.getAll();
+        const maxAttempts = Number(settings.max_reset_attempts);
+
+        if (resetRow.attempts >= maxAttempts) {
+            return res.status(429).json({ error: 'Trop de tentatives. Demandez un nouveau code.' });
+        }
+
+        const codeMatches = await bcrypt.compare(code, resetRow.token);
+        if (!codeMatches) {
+            await authModel.incrementResetAttempts(resetRow.id);
+            return res.status(400).json({ error: 'Code invalide ou expiré' });
+        }
 
         const password_hash = await bcrypt.hash(new_password, 10);
-        await authModel.updatePassword(resetToken.user_id, password_hash);
-        await authModel.markResetTokenUsed(resetToken.id);
-        await logAction(resetToken.user_id, 'password_reset', 'user', resetToken.user_id, null, req);
+        await authModel.updatePassword(user.id, password_hash);
+        await authModel.markResetTokenUsed(resetRow.id);
+        await logAction(user.id, 'password_reset', 'user', user.id, null, req);
 
         res.json({ message: 'Mot de passe mis à jour avec succès' });
     } catch (err) { sendError(res, err); }
