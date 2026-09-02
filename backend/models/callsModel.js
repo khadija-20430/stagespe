@@ -28,11 +28,18 @@ exports.findAllPublished = async(filters) => {
 
 exports.findAllAdmin = async() => {
     const result = await pool.query(
-        `SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label
-     FROM calls
-     LEFT JOIN programmes ON calls.programme_id = programmes.id
-     LEFT JOIN action_types ON calls.action_type_id = action_types.id
-     ORDER BY calls.deadline ASC`
+        `SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label,
+                COALESCE(
+                    ARRAY_AGG(countries.name) FILTER (WHERE countries.name IS NOT NULL),
+                    '{}'
+                ) AS country_names
+         FROM calls
+         LEFT JOIN programmes ON calls.programme_id = programmes.id
+         LEFT JOIN action_types ON calls.action_type_id = action_types.id
+         LEFT JOIN call_countries ON call_countries.call_id = calls.id
+         LEFT JOIN countries ON countries.id = call_countries.country_id
+         GROUP BY calls.id, programmes.name, action_types.label
+         ORDER BY calls.deadline ASC`
     );
     return result.rows;
 };

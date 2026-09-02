@@ -1,45 +1,56 @@
 const splitList = (value) =>
     value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
-
 export const mapPartner = (row) => ({
-    id: row.id,
-    nom: row.name,
-    nomOfficiel: row.official_name,
-    pays: row.country_name,
-    ville: row.city,
-    adresse: row.address,
-    type: row.establishment_type,
-    typeEtablissement: row.establishment_type,
-    partnershipStatus: row.partnership_status,
-    domaines: splitList(row.cooperation_areas),
-    accord: row.agreements?.[0] ? {
-            titre: row.agreements[0].title,
-            type: row.agreements[0].type,
-            depuis: row.agreements[0].start_date ?
-                new Date(row.agreements[0].start_date).getFullYear() : null,
-        } : undefined,
-    logo: row.logo_url,
-    site: row.website,
-    statutPublication: row.statut_publication,
-    agreements: row.agreements,
-    contacts: row.contacts,
-    projects: row.projects,
-});
+  id: row.id,
+  nom: row.name,
+  nomOfficiel: row.official_name,
+  pays: row.country_name,
+  paysId: row.country_id,
+  ville: row.city,
+  adresse: row.address,
+  typeEtablissement: row.establishment_type,
+  typeEtablissementId: row.establishment_type_id,
+  typePartenariatId: row.partnership_type_id,
+  partnershipStatus: row.partnership_status,
+  domaines: splitList(row.cooperation_areas),
 
+  accord: row.agreements?.[0]
+    ? {
+        titre: row.agreements[0].title,
+        type: row.agreements[0].type,
+        depuis: row.agreements[0].start_date
+          ? new Date(row.agreements[0].start_date).getFullYear()
+          : null,
+      }
+    : undefined,
+
+  logo: row.logo_url,
+  site: row.website,
+  statut_publication: row.statut_publication,
+  agreements: row.agreements,
+  contacts: row.contacts,
+  projects: row.projects,
+});
 export const mapProjet = (row) => ({
     id: row.id,
     titre: row.title,
+    acronyme: row.acronym,
+    codeReference: row.reference_code,
     programme: row.programme_name,
+    programmeId: row.programme_id,
     statut: row.status,
-    partenaires: row.partners ?
-        row.partners.map((p) => p.partner_name) : row.coordinator_partner_name ? [row.coordinator_partner_name] : [],
     budget: row.budget != null ? Number(row.budget) : null,
     debut: row.start_date,
     fin: row.end_date,
     resume: row.description,
-    coordinateur: row.coordinator_partner_name,
+    objectifs: row.objectives,
+    groupesCibles: row.target_groups,
+    siteWeb: row.official_website,
+    resultats: row.results,
+    livrables: row.deliverables,
+    coordinator_partner_id: row.coordinator_partner_id,
     isFeatured: row.is_featured,
-    statutPublication: row.statut_publication,
+    statut_publication: row.statut_publication,
     news: row.news,
     documents: row.documents,
 });
@@ -48,10 +59,10 @@ export const mapAppel = (row) => ({
     id: row.id,
     titre: row.title,
     programme: row.programme_name,
-    paysEligibles: row.countries?.length
-        ? row.countries.map((c) => c.name)
-        : splitList(row.eligible_countries),
-    statut: row.status,
+    paysEligibles: Array.isArray(row.country_names) && row.country_names.length > 0
+        ? row.country_names
+        : splitList(row.eligibility),
+    status: row.status,
     dateLimite: row.deadline,
     budgetDisponible: row.budget_available != null ? Number(row.budget_available) : null,
     budgetLabel: row.budget_available != null ?
@@ -61,11 +72,14 @@ export const mapAppel = (row) => ({
     themes: row.themes,
     countries: row.countries,
     documents: row.documents,
+    statut_publication: row.statut_publication,
 });
 
 export const mapMobilite = (row) => ({
     id: row.id,
     type: row.type,
+    title: row.title,
+    status: row.status,
     institutionAccueil: row.institution_name || row.partner_name,
     paysDestination: row.country_name,
     villeAccueil: row.city_name,
@@ -76,7 +90,7 @@ export const mapMobilite = (row) => ({
     programme: row.programme_name,
     description: row.description,
     dateLimite: row.deadline,
-    statut: row.status,
+    statut_publication: row.statut_publication,
 });
 
 export const mapDocument = (row) => ({
@@ -140,8 +154,7 @@ export const toPartnerPayload = (draft) => ({
     official_name: draft.nomOfficiel,
     country_id: draft.paysId || null,
     city: draft.ville,
-    address: draft.adresse,
-    establishment_type_id: draft.typeEtablissementId || null,
+address: draft.adresse,    establishment_type_id: draft.typeEtablissementId || null,
     partnership_type_id: draft.typePartenariatId || null,
     partnership_status: draft.statutPartenariat || 'active',
     website: draft.siteWeb,
@@ -160,10 +173,10 @@ export const toProjetPayload = (draft) => ({
     objectives: draft.objectifs,
     target_groups: draft.groupesCibles,
     official_website: draft.siteWeb,
-    status: 'proposed',
-    statut_publication: draft.statutPublication || 'draft',
+status: draft.statut || 'proposed',  
+  statut_publication: draft.statut_publication || 'draft',
     programme_id: draft.programmeId || null,
-    coordinator_partner_id: draft.coordinateurPartenaireId || null,
+    coordinator_partner_id: draft.coordinator_partner_id || null,
     budget: draft.budget || null,
     start_date: draft.debut || null,
     end_date: draft.fin || null,
@@ -173,28 +186,32 @@ export const toProjetPayload = (draft) => ({
     results: typeof draft.resultats === 'string' ?
         draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
 });
-
 export const toAppelPayload = (draft) => ({
     title: draft.titre,
     programme_id: draft.programmeId || null,
+
     funding_body: draft.organismeFinanceur,
     description: draft.resume,
     action_type_id: draft.typeActionId || null,
+
     budget_available: draft.budgetDisponible || null,
     funding_rate: draft.tauxFinancement || null,
     target_audience: draft.publicCible,
+
     publication_date: draft.datePublication || null,
     deadline: draft.dateLimite || null,
+
     official_link: draft.lienOfficiel,
     contact_person: draft.personneContact,
-    status: 'open',
-    statut_publication: draft.statutPublication || 'draft',
+
+    status: draft.status || 'open',
+    statut_publication: draft.statut_publication || 'draft',
+
     country_ids: draft.paysEligiblesIds || [],
     theme_ids: draft.themeIds || [],
 });
-
 export const toMobilitePayload = (draft) => ({
-    title: draft.titre,
+    title: draft.title,
     type: draft.type,
     programme_id: draft.programmeId || null,
     destination_country_id: draft.paysDestinationId || null,
@@ -210,50 +227,46 @@ export const toMobilitePayload = (draft) => ({
     contact_person: draft.personneContact,
     contact_email: draft.emailContact,
     deadline: draft.dateLimite || null,
-    status: 'open',
+    status: draft.status || 'open',
     statut_publication: draft.statutPublication || 'draft',
 });
 
 export const mapActualite = (row) => ({
     id: row.id,
-    titre: row.title,
+    title: row.title,
     type: row.type,
-    resume: row.summary,
-    contenu: row.description,
+    summary: row.summary,
+    description: row.description,
     projectId: row.project_id,
     eventDate: row.event_date,
     endDate: row.end_date,
     location: row.location,
     imageUrl: row.image_url,
     isFeatured: row.is_featured,
-    auteur: row.author_name ? {
-        nom: row.author_name,
-        role: row.author_role,
-        photo: row.author_photo_url,
-    } : undefined,
-    citation: row.quote_text,
-    statut: row.statut,
+    authorName: row.author_name,
+    authorRole: row.author_role,
+    authorPhotoUrl: row.author_photo_url,
+    quoteText: row.quote_text,
+    statut_publication: row.statut_publication,
     publishedAt: row.published_at,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
 });
 
-export const toActualitePayload = (data) => {
-    return {
-        titre: data.title,
-        type: data.type,
-        resume: data.summary || '',
-        contenu: data.description || '',
-        projetId: data.projectId || null,
-        dateEvenement: data.eventDate || null,
-        dateFin: data.endDate || null,
-        lieu: data.location || '',
-        imageUrl: data.imageUrl || '',
-        misEnAvant: data.isFeatured === 'true' || data.isFeatured === true,
-        nomAuteur: data.authorName || '',
-        roleAuteur: data.authorRole || '',
-        urlPhotoAuteur: data.authorPhotoUrl || '',
-        texteDeposition: data.quoteText || '',
-        statut_publication: data.statut_publication || 'draft',
-    };
-};
+export const toActualitePayload = (data) => ({
+    title: data.title,
+    type: data.type,
+    summary: data.summary || null,
+    description: data.description || null,
+    project_id: data.projectId || null,
+    event_date: data.eventDate || null,
+    end_date: data.endDate || null,
+    location: data.location || null,
+    image_url: data.imageUrl || null,
+    is_featured: data.isFeatured === 'true' || data.isFeatured === true,
+    author_name: data.authorName || null,
+    author_role: data.authorRole || null,
+    author_photo_url: data.authorPhotoUrl || null,
+    quote_text: data.quoteText || null,
+    statut_publication: data.statut_publication || 'draft',
+});

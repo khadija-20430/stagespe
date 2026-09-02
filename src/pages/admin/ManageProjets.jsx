@@ -31,18 +31,18 @@ export default function ManageProjets() {
       onPublish={publishProjet}
       onArchive={archiveProjet}
       columns={[
-        { key: 'titre', label: t('titre') },
+        { key: 'titre', label: t('titre') , required: true },
         { key: 'programme', label: t('programme'), render: (i) => <Badge tone="cobalt">{i.programme}</Badge> },
         { key: 'statut', label: t('statut'),
           render: (i) => <Badge tone={projectStatusTone(i.statut)}>{t(`${i.statut}`)}</Badge> },
         { key: 'budget', label: t('budget'),
           render: (i) => i.budget != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(i.budget) : '—' },
-        { key: 'coordinateur', label: t('coordinateur') },
-        { key: 'statutPublication', label: t('statutPublication'),
-          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`${i.statutPublication}`)}</Badge> },
+        { key: 'coordinator_partner_id', label: t('coordinator_partner_id') },
+        { key: 'statut_publication', label: t('statut_publication'),
+          render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
       ]}
       fields={[
-        { name: 'titre', label: t('titre'), type: 'text' },
+        { name: 'titre', label: t('titre'), type: 'text', required: true  },
         { name: 'acronyme', label: t('acronyme'), type: 'text' },
         { name: 'codeReference', label: t('codeReference'), type: 'text' },
         { name: 'programmeId', label: t('programme'), type: 'select',
