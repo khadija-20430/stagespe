@@ -165,27 +165,33 @@ address: draft.adresse,    establishment_type_id: draft.typeEtablissementId || n
     longitude: draft.longitude || null,
 });
 
-export const toProjetPayload = (draft) => ({
-    title: draft.titre,
-    acronym: draft.acronyme,
-    reference_code: draft.codeReference,
-    description: draft.resume,
-    objectives: draft.objectifs,
-    target_groups: draft.groupesCibles,
-    official_website: draft.siteWeb,
-status: draft.statut || 'proposed',  
-  statut_publication: draft.statut_publication || 'draft',
-    programme_id: draft.programmeId || null,
-    coordinator_partner_id: draft.coordinator_partner_id || null,
-    budget: draft.budget || null,
-    start_date: draft.debut || null,
-    end_date: draft.fin || null,
-    is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
-    deliverables: typeof draft.livrables === 'string' ?
-        draft.livrables.split(',').map((s) => s.trim()).filter(Boolean) : draft.livrables,
-    results: typeof draft.resultats === 'string' ?
-        draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
-});
+export const toProjetPayload = (draft) => {
+    if (draft.debut && draft.fin && draft.fin < draft.debut) {
+        throw new Error('La date de fin doit être postérieure ou égale à la date de début');
+    }
+
+    return {
+        title: draft.titre,
+        acronym: draft.acronyme,
+        reference_code: draft.codeReference,
+        description: draft.resume,
+        objectives: draft.objectifs,
+        target_groups: draft.groupesCibles,
+        official_website: draft.siteWeb,
+        status: draft.statut || 'proposed',
+        statut_publication: draft.statut_publication || 'draft',
+        programme_id: draft.programmeId || null,
+        coordinator_partner_id: draft.coordinator_partner_id || null,
+        budget: draft.budget || null,
+        start_date: draft.debut || null,
+        end_date: draft.fin || null,
+        is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
+        deliverables: typeof draft.livrables === 'string' ?
+            draft.livrables.split(',').map((s) => s.trim()).filter(Boolean) : draft.livrables,
+        results: typeof draft.resultats === 'string' ?
+            draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
+    };
+};
 export const toAppelPayload = (draft) => ({
     title: draft.titre,
     programme_id: draft.programmeId || null,
