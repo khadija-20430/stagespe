@@ -31,6 +31,7 @@ import JournalAudit from './pages/admin/JournalAudit.jsx';
 import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
 import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
+import ManageAgreements from './pages/admin/ManageAgreements.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -78,6 +79,8 @@ export default function App() {
 
           <Route path="documents" element={<ManageDocuments />} />
           <Route path="users" element={<ManageUsers />} />
+          <Route path="agreements" element={<ManageAgreements />} />
+
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />

@@ -312,3 +312,51 @@ export const toUserPayload = (draft) => {
         password: draft.password || undefined,
     };
 };
+// Dans mappers.js - Ajouter ces fonctions
+
+// ============================================================
+// AGREEMENTS MAPPER
+// ============================================================
+
+// Dans mappers.js - À la fin du fichier
+// Copier le contenu de mappers_additions.js
+// services/api.js
+
+export const mapAgreement = (row) => ({
+    id: row.id,
+    partnerId: row.partner_id, // Correspondance snake_case -> camelCase
+    partnerName: row.partner_name,
+    titre: row.title,
+    type: row.type,
+    description: row.description,
+    termes: row.terms_conditions,
+    fichierPdf: row.fichier_pdf,
+    dateSignature: row.signature_date,
+    dateDebut: row.start_date,
+    dateFin: row.end_date,
+    statut: row.status,
+    statutPublication: row.statut_publication,
+    creeePar: row.created_by,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    documents: row.documents || [],
+    
+    // NOUVEAU : Champs provenant de la vue agreements_expiring_soon
+    daysRemaining: row.days_remaining,
+    urgencyLevel: row.urgency_level,
+    alertMessage: row.alert_message,
+});
+
+export const toAgreementPayload = (draft) => ({
+    partner_id: draft.partnerId, // CORRIGÉ : Envoi de partner_id au lieu de partnerId
+    title: draft.titre,          // CORRIGÉ : Envoi de title au lieu de titre
+    type: draft.type || null,
+    description: draft.description || null,
+    terms_conditions: draft.termes || null, // CORRIGÉ
+    fichier_pdf: draft.fichierPdf || null,
+    signature_date: draft.dateSignature || null,
+    start_date: draft.dateDebut || null,
+    end_date: draft.dateFin || null,
+    status: draft.statut || 'active',
+    statut_publication: draft.statutPublication || 'draft',
+});

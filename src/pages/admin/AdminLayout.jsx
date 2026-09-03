@@ -70,18 +70,26 @@ export default function AdminLayout() {
       icon: '📰',
       requiredPerm: 'news_events.view',
     },
+    {
+      to: '/admin/agreements',
+      label: t('agreements'),
+      icon: '📋',
+      requiredPerm: 'agreements.view',
+    },
        {
       to: '/admin/documents',
       label: t('document'),
       icon: '📚',
       requiredPerm: 'documents.view',
     },
+
     {
       to: '/admin/users',
       label: t('users'),
       icon: '👤',
       requiredPerm: 'users.view',
     },
+    
     // Ces liens-là n'ont pas de code de permission dédié dans la table `permissions` —
     // Ces liens-là n'ont pas de code de permission dédié dans la table `permissions` —
     // ils restent donc réservés au rôle super_admin (comme protégé côté backend).

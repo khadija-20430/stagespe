@@ -4,6 +4,7 @@
 // Express + PostgreSQL
 // ============================================================
 
+
 import {
     mapPartner,
     mapProjet,
@@ -12,12 +13,15 @@ import {
     mapActualite,
     mapDocument,
     mapStats,
+    
+    mapAgreement,  // ← BIEN AJOUTER CETTE LIGNE
     toAppelPayload,
     toProjetPayload,
     toMobilitePayload,
     toActualitePayload,
     toPartnerPayload,
     toDocumentPayload,
+    toAgreementPayload,  // ← AJOUTER AUSSI
 } from './mappers.js';
 
 
@@ -1137,3 +1141,81 @@ export const deleteUser = (
             method: 'DELETE',
         }
     );
+    // Dans api.js - Ajouter ces fonctions
+
+// ============================================================
+// À AJOUTER dans api.js (après les imports)
+// ============================================================
+
+
+// ============================================================
+// ACCORDS / AGREEMENTS
+// ============================================================
+
+export const getAgreements = async() => {
+    const data = await request('/agreements');
+    return data.map(mapAgreement);
+};
+
+export const getAgreementsAdmin = async() => {
+    const data = await authRequest('/agreements');
+    return data.map(mapAgreement);
+};
+
+export const getAgreementById = async(id) => {
+    const data = await request(`/agreements/${id}`);
+    return mapAgreement(data);
+};
+
+export const getAgreementsByPartner = async(partnerId) => {
+    const data = await request(`/agreements?partner_id=${partnerId}`);
+    return data.map(mapAgreement);
+};
+
+export const getAgreementsExpiringSoon = async() => {
+    const data = await authRequest('/agreements/expiring-soon');
+    return data.map(mapAgreement);
+};
+
+// CRUD
+
+export const createAgreement = (payload) =>
+    authRequest('/agreements', {
+        method: 'POST',
+        body: payload,
+    });
+
+export const updateAgreement = (id, payload) =>
+    authRequest(`/agreements/${id}`, {
+        method: 'PUT',
+        body: payload,
+    });
+
+export const deleteAgreement = (id) =>
+    authRequest(`/agreements/${id}`, {
+        method: 'DELETE',
+    });
+
+// FILE UPLOAD
+export const uploadAgreementFile = async(file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(
+        `${API}/agreements/upload`,
+        {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${getToken()}`,
+            },
+            body: formData,
+        }
+    );
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Échec de l'upload du fichier");
+    }
+
+    return res.json();
+};
