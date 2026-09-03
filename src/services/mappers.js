@@ -276,3 +276,39 @@ export const toActualitePayload = (data) => ({
     quote_text: data.quoteText || null,
     statut_publication: data.statut_publication || 'draft',
 });
+// Valeur sentinelle utilisée dans le select "Rôle" du formulaire pour
+// représenter un compte sans rôle RBAC détaillé (role='utilisateur').
+// La table `roles` ne contient aucune ligne pour ce cas, d'où ce fallback.
+export const PLAIN_USER_ROLE_ID = '__utilisateur__';
+
+export const mapUser = (row) => ({
+    id: row.id,
+    nom: row.full_name,
+    email: row.email,
+    role: row.role,
+    roleId: row.role_id,
+    roleName: row.role_name,
+    // Valeur pré-sélectionnée dans le select fusionné : le vrai role_id
+    // si le compte est admin avec un rôle détaillé, sinon la sentinelle.
+    roleSelectValue: row.role === 'admin' && row.role_id
+        ? row.role_id
+        : PLAIN_USER_ROLE_ID,
+    isActive: row.is_active,
+    lastLogin: row.last_login,
+    createdAt: row.created_at,
+});
+
+export const toUserPayload = (draft) => {
+    const isPlainUser =
+        !draft.roleSelectValue ||
+        draft.roleSelectValue === PLAIN_USER_ROLE_ID;
+
+    return {
+        full_name: draft.nom,
+        email: draft.email,
+        role: isPlainUser ? 'utilisateur' : 'admin',
+        role_id: isPlainUser ? null : draft.roleSelectValue,
+        is_active: draft.isActive === 'true' || draft.isActive === true,
+        password: draft.password || undefined,
+    };
+};

@@ -1117,3 +1117,23 @@ export const updateResetSettings = (
             body: payload,
         }
     );
+    export const updateUserProfile = (
+        id,
+        payload
+    ) =>
+    authRequest(
+        `/auth/users/${id}/profile`, {
+            method: 'PUT',
+            body: payload,
+        }
+    );
+
+
+export const deleteUser = (
+        id
+    ) =>
+    authRequest(
+        `/auth/users/${id}`, {
+            method: 'DELETE',
+        }
+    );
