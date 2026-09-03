@@ -27,8 +27,8 @@ router.put('/:id', verifyToken, checkPermission('news_events.edit'), newsUpload,
 router.delete('/:id', verifyToken, checkPermission('news_events.delete'), newsEventsController.remove);
 
 // =============== PUBLICATION ===============
-router.put('/:id/publish', verifyToken, checkPermission('news_events.edit'), newsEventsController.publish);
-router.put('/:id/archive', verifyToken, checkPermission('news_events.edit'), newsEventsController.archive);
+router.patch('/:id/publish', verifyToken, checkPermission('news_events.edit'), newsEventsController.publish);
+router.patch('/:id/archive', verifyToken, checkPermission('news_events.edit'), newsEventsController.archive);
 router.put('/:id/restore', verifyToken, checkPermission('news_events.edit'), newsEventsController.restore);
 
 module.exports = router;

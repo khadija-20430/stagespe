@@ -38,19 +38,19 @@ export default function ManageMobilites() {
       onPublish={publishMobilite}
       onArchive={archiveMobilite}
       columns={[
-        { key: 'titre', label: t('titre') },
+        { key: 'title', label: t('title') },
         { key: 'paysDestination', label: t('pays') },
         { key: 'type', label: t('type'),
           render: (i) => <Badge tone="navy">{t(`${i.type}`)}</Badge> },
-        { key: 'statut', label: t('statut'),
-          render: (i) => <Badge tone={mobilityStatusTone(i.statut)}>{t(`${i.statut}`)}</Badge> },
+        { key: 'status', label: t('status'),
+          render: (i) => <Badge tone={mobilityStatusTone(i.status)}>{t(`${i.status}`)}</Badge> },
         { key: 'places', label: t('places') },
-        { key: 'statutPublication', label: t('statutPublication'),
-          render: (i) => <Badge tone={publicationStatusTone(i.statutPublication)}>{t(`${i.statutPublication}`)}</Badge> },
+        { key: 'statut_publication', label: t('statut_publication'),
+          render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
       ]}
       fields={[
-        { name: 'titre', label: t('titre'), type: 'text' },
-        { name: 'type', label: t('type'), type: 'select',
+        { name: 'title', label: t('title'), type: 'text',required: true, },
+        { name: 'type', label: t('type'),required: true, type: 'select',
           options: MOBILITY_TYPE.map((code) => ({ value: code, label: t(`${code}`) })) },
         { name: 'programmeId', label: t('programme'), type: 'select',
           options: programmes.map((p) => ({ value: p.id, label: p.name })) },
@@ -61,8 +61,8 @@ export default function ManageMobilites() {
         { name: 'duree', label: t('duree'), type: 'text' },
         { name: 'periode', label: t('periode'), type: 'text' },
         { name: 'places', label: t('places'), type: 'number' },
-        { name: 'dateLimite', label: t('dateLimite'), type: 'text' },
-        { name: 'statut', label: t('statut'), type: 'select',
+        { name: 'dateLimite', label: t('dateLimite'), type: 'date' },
+        { name: 'status', label: t('status'), type: 'select',
           options: MOBILITY_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
         { name: 'publicCible', label: t('publicCible'), type: 'textarea' },
         { name: 'conditions', label: t('conditions'), type: 'textarea' },

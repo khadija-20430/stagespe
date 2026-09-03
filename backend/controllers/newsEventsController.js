@@ -53,7 +53,7 @@ exports.create = async(req, res) => {
             author_name,
             author_role,
             quote_text,
-            statut
+            statut_publication,
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -78,7 +78,7 @@ exports.create = async(req, res) => {
             author_role,
             author_photo_url,
             quote_text,
-            statut
+            statut_publication,
         }, req.user.id);
 
         await logAction(req.user.id, 'create', 'news_event', news.id, null, req);
@@ -102,7 +102,7 @@ exports.update = async(req, res) => {
             author_name,
             author_role,
             quote_text,
-            statut
+            statut_publication,
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -138,11 +138,11 @@ exports.update = async(req, res) => {
             author_role,
             author_photo_url,
             quote_text,
-            statut
+            statut_publication,
         });
         if (!news) return res.status(404).json({ error: 'Contenu non trouvé' });
 
-        await logAction(req.user.id, statut === 'published' ? 'publish' : 'update', 'news_event', req.params.id, null, req);
+        await logAction(req.user.id, statut_publication === 'published' ? 'publish' : 'update', 'news_event', req.params.id, null, req);
         await upsertTranslations('news', req.params.id, req.body.translations);
         res.json(news);
     } catch (err) { sendError(res, err); }

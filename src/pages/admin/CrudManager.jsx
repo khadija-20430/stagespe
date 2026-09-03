@@ -208,6 +208,21 @@ export default function CrudManager({
           : value,
     }));
 
+  // =========================================================
+  // REQUIRED DYNAMIQUE
+  //
+  // f.required peut être :
+  //   - un booléen (true/false)
+  //   - une fonction (values) => boolean
+  //
+  // IMPORTANT : ne jamais faire Boolean(f.required) directement,
+  // car Boolean(uneFonction) vaut toujours true.
+  // =========================================================
+  const isFieldRequired = (f) =>
+    typeof f.required === 'function'
+      ? f.required(draft || {})
+      : Boolean(f.required);
+
 
 // =========================================================
 // STATUT
@@ -377,6 +392,10 @@ const stats = getStats();
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-amber-50 dark:bg-slate-800">
     <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">Brouillons</p>
     <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-2">{stats.drafts}</p>
+  </div>
+  <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-gris-50 dark:bg-slate-800">
+    <p className="text-xs font-semibold text-gris-600 dark:text-gris-400 uppercase">archivés</p>
+    <p className="text-3xl font-bold text-gris-600 dark:text-gris-400 mt-2">{stats.archived}</p>
   </div>
 </div>
       {/* =====================================================
@@ -979,7 +998,7 @@ const stats = getStats();
 
                     {f.label}
 
-                    {f.required ? (
+                    {isFieldRequired(f) ? (
                       <span className="ml-1 text-red-500">
                         *
                       </span>
@@ -1009,7 +1028,7 @@ const stats = getStats();
                       rows={3}
 
                       required={
-                        Boolean(f.required)
+                        isFieldRequired(f)
                       }
 
                       className="
@@ -1161,7 +1180,7 @@ const stats = getStats();
                       }
 
                       required={
-                        Boolean(f.required)
+                        isFieldRequired(f)
                       }
 
                       className="
@@ -1237,7 +1256,7 @@ const stats = getStats();
                       }
 
                       required={
-                        Boolean(f.required)
+                        isFieldRequired(f)
                       }
 
                       className="
@@ -1314,7 +1333,7 @@ const stats = getStats();
                          */
                         required={
                           Boolean(
-                            f.required &&
+                            isFieldRequired(f) &&
                             !draft[f.name]
                           )
                         }
@@ -1383,7 +1402,7 @@ const stats = getStats();
                       }
 
                       required={
-                        Boolean(f.required)
+                        isFieldRequired(f)
                       }
 
                       placeholder={

@@ -12,6 +12,11 @@ import {
     mapActualite,
     mapDocument,
     mapStats,
+    toAppelPayload,
+    toProjetPayload,
+    toMobilitePayload,
+    toActualitePayload,
+    toPartnerPayload,
     toDocumentPayload,
 } from './mappers.js';
 
@@ -271,7 +276,7 @@ export const publishProjet = (
     ) =>
     authRequest(
         `/projects/${id}/publish`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -281,7 +286,7 @@ export const archiveProjet = (
     ) =>
     authRequest(
         `/projects/${id}/archive`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -372,7 +377,7 @@ export const publishAppel = (
     ) =>
     authRequest(
         `/calls/${id}/publish`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -382,7 +387,7 @@ export const archiveAppel = (
     ) =>
     authRequest(
         `/calls/${id}/archive`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -473,7 +478,7 @@ export const publishMobilite = (
     ) =>
     authRequest(
         `/mobility/${id}/publish`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -483,7 +488,7 @@ export const archiveMobilite = (
     ) =>
     authRequest(
         `/mobility/${id}/archive`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -580,7 +585,7 @@ export const publishPartner = (
     ) =>
     authRequest(
         `/partners/${id}/publish`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -590,7 +595,7 @@ export const archivePartner = (
     ) =>
     authRequest(
         `/partners/${id}/archive`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -683,7 +688,7 @@ export const publishActualite = (
     ) =>
     authRequest(
         `/news-events/${id}/publish`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 
@@ -693,7 +698,7 @@ export const archiveActualite = (
     ) =>
     authRequest(
         `/news-events/${id}/archive`, {
-            method: 'PUT',
+            method: 'PATCH',
         }
     );
 

@@ -14,8 +14,8 @@ router.get('/:id/translations', verifyToken, checkPermission('projects.view'), p
 router.post('/', verifyToken, checkPermission('projects.create'), upload.single('logo'), projectsController.create);
 router.put('/:id', verifyToken, checkPermission('projects.edit'), upload.single('logo'), projectsController.update);
 
-router.put('/:id/publish', verifyToken, checkPermission('projects.publish'), projectsController.publish);
-router.put('/:id/archive', verifyToken, checkPermission('projects.publish'), projectsController.archive);
+router.patch('/:id/publish', verifyToken, checkPermission('projects.publish'), projectsController.publish);
+router.patch('/:id/archive', verifyToken, checkPermission('projects.publish'), projectsController.archive);
 router.post('/:id/duplicate', verifyToken, checkPermission('projects.create'), projectsController.duplicate);
 
 router.delete('/:id', verifyToken, checkPermission('projects.delete'), projectsController.remove);

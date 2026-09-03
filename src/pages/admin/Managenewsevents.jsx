@@ -222,12 +222,10 @@ export default function ManageNewsEvents() {
         {
           key: 'statut_publication',
           label: t('status'),
-
           render: (item) => {
             const status =
               item.statut_publication ||
               'draft';
-
             return (
               <Badge
                 tone={
@@ -428,7 +426,8 @@ export default function ManageNewsEvents() {
           name: 'authorName',
           label: t('authorName'),
           type: 'text',
-
+          required: (values) => values.type === 'testimonial',
+ 
           help:
             "Nom de l'auteur",
         },
@@ -437,6 +436,7 @@ export default function ManageNewsEvents() {
           name: 'authorRole',
           label: t('authorRole'),
           type: 'text',
+            required: (values) => values.type === 'testimonial',
 
           help:
             "Rôle/position de l'auteur",
