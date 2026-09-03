@@ -107,6 +107,20 @@ exports.deactivateUser = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.deleteUser = async(req, res) => {
+    try {
+        if (String(req.user.id) === String(req.params.id)) {
+            return res.status(400).json({ error: 'Vous ne pouvez pas supprimer votre propre compte' });
+        }
+
+        const user = await authModel.deleteUser(req.params.id);
+        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+        await logAction(req.user.id, 'delete', 'user', req.params.id, { email: user.email }, req);
+        res.json({ message: 'Utilisateur supprimé avec succès' });
+    } catch (err) { sendError(res, err); }
+};
+
 exports.updateUserRole = async(req, res) => {
     try {
         const { role } = req.body;
@@ -119,7 +133,26 @@ exports.updateUserRole = async(req, res) => {
         res.json(user);
     } catch (err) { sendError(res, err); }
 };
+exports.updateUserProfile = async(req, res) => {
+    try {
+        const { full_name, email } = req.body;
 
+        if (!full_name && !email) {
+            return res.status(400).json({ error: 'Au moins un champ (full_name ou email) est requis' });
+        }
+
+        const user = await authModel.updateUserProfile(req.params.id, { full_name, email });
+        if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+        await logAction(req.user.id, 'update', 'user', req.params.id, { full_name, email }, req);
+        res.json(user);
+    } catch (err) {
+        if (err.code === '23505') {
+            return res.status(409).json({ error: 'Cet email est déjà utilisé par un autre compte' });
+        }
+        sendError(res, err);
+    }
+};
 exports.assignCustomRole = async(req, res) => {
     try {
         const { role_id } = req.body;
@@ -174,11 +207,10 @@ exports.forgotPassword = async(req, res) => {
         const settings = await settingsModel.getAll();
         const windowMinutes = Number(settings.reset_code_window_minutes);
 
-        const code = crypto.randomInt(100000, 1000000).toString(); // code à 6 chiffres
+        const code = crypto.randomInt(100000, 1000000).toString();
         const codeHash = await bcrypt.hash(code, 10);
         const expiresAt = new Date(Date.now() + windowMinutes * 60 * 1000);
 
-        // CORRECTION: Utiliser createResetToken au lieu de createResetCode
         await authModel.createResetToken(user.id, codeHash, expiresAt);
         await sendResetCodeEmail(user.email, code, windowMinutes, settings.reset_email_subject, settings.reset_email_text);
 
