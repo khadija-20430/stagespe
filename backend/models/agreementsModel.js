@@ -2,7 +2,7 @@ const pool = require('../db');
 const { withAuditContext } = require('../lib/auditContext');
 
 exports.findAll = async(filters) => {
-    const { partner_id, status } = filters;
+    const { partner_id, status, statut_publication } = filters;
     let query = `
         SELECT 
             agreements.*, 
@@ -36,6 +36,13 @@ exports.findAll = async(filters) => {
     if (status) { 
         params.push(status);
         query += ` AND agreements.status = $${params.length}`; 
+    }
+    // NOUVEAU : filtre optionnel sur le statut de publication.
+    // - Non fourni (route admin) → aucun filtre, les 3 statuts remontent.
+    // - 'published' (route publique) → seul le contenu publié remonte.
+    if (statut_publication) {
+        params.push(statut_publication);
+        query += ` AND agreements.statut_publication = $${params.length}`;
     }
     
     query += ' GROUP BY agreements.id, partners.name ORDER BY agreements.start_date DESC';
@@ -79,7 +86,7 @@ exports.create = async(data) => {
     const { 
         partner_id, title, type, description, terms_conditions, 
         fichier_pdf, signature_date, start_date, end_date, 
-        status, created_by, document_ids 
+        status, statut_publication, created_by, document_ids 
     } = data;
     
     const client = await pool.connect();
@@ -89,12 +96,13 @@ exports.create = async(data) => {
         const result = await client.query(
             `INSERT INTO agreements 
                 (partner_id, title, type, description, terms_conditions, 
-                 fichier_pdf, signature_date, start_date, end_date, status, created_by)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) 
+                 fichier_pdf, signature_date, start_date, end_date, status, 
+                 statut_publication, created_by)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) 
              RETURNING *`,
             [partner_id, title, type, description, terms_conditions, 
              fichier_pdf, signature_date, start_date, end_date, 
-             status || 'active', created_by]
+             status || 'active', statut_publication || 'draft', created_by]
         );
         
         const agreement = result.rows[0];

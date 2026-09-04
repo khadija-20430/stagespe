@@ -389,8 +389,8 @@ textarea {
 }
 
 .badge-draft {
-    background-color: #f3f4f6;
-    color: #4b5563;
+    background-color: #ffedd5;
+    color: #c2410c;
 }
 
 .badge-published {
@@ -830,4 +830,198 @@ textarea {
         font-size: 0.75rem;
         padding: 0.3rem 0.4rem;
     }
+}
+
+/* ============================================================
+   DARK MODE — GESTION DES ACCORDS
+   Suppose une stratégie Tailwind "class" : une classe .dark est
+   posée sur <html> (ou <body>) par ton switch de thème. Si ton
+   projet utilise un autre mécanisme (media query, data-theme...),
+   remplace le sélecteur ".dark" ci-dessous par le bon.
+   ============================================================ */
+
+/* Titre & header */
+.dark .manage-agreements h1 {
+    color: #f1f5f9;
+}
+
+/* Filtres (select "Tous les partenaires" / "Tous les statuts") */
+.dark .filter-select {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+.dark .filter-select:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .stat-badge.total {
+    background-color: #334155;
+    color: #e2e8f0;
+}
+
+/* Tableau */
+.dark .table-wrapper {
+    background: #0f172a;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.dark .agreements-table thead {
+    background-color: #1e293b;
+    border-bottom-color: #334155;
+}
+
+.dark .agreements-table th {
+    color: #f1f5f9;
+}
+
+.dark .agreements-table td {
+    color: #cbd5e1;
+    border-bottom-color: #334155;
+}
+
+.dark .agreements-table tbody tr:hover {
+    background-color: #1e293b;
+}
+
+.dark .row-expired {
+    background-color: rgba(239, 68, 68, 0.12) !important;
+}
+
+.dark .row-warning {
+    background-color: rgba(245, 158, 11, 0.12) !important;
+}
+
+/* Colonne Actions "sticky" : garder le même fond que la ligne survolée */
+.dark .agreements-table th:last-child,
+.dark .agreements-table td.actions {
+    background: #0f172a;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .agreements-table tbody tr:hover td.actions {
+    background-color: #1e293b;
+}
+
+.dark .agreements-table tr.row-expired td.actions {
+    background-color: #1e1113;
+}
+
+.dark .agreements-table tr.row-warning td.actions {
+    background-color: #1e1a10;
+}
+
+.dark .empty-state,
+.dark .loading {
+    color: #94a3b8;
+}
+
+/* Modale */
+.dark .modal-content {
+    background: #0f172a;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+}
+
+.dark .modal-content h2 {
+    color: #f1f5f9;
+}
+
+.dark .form-group label {
+    color: #e2e8f0;
+}
+
+.dark .form-group input,
+.dark .form-group select,
+.dark .form-group textarea {
+    background-color: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+.dark .form-group input:focus,
+.dark .form-group select:focus,
+.dark .form-group textarea:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .modal-actions {
+    border-top-color: #334155;
+}
+
+.dark .file-info {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+/* Badges : légère opacité pour rester lisibles sur fond sombre */
+.dark .badge-active,
+.dark .badge-published {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.dark .badge-expired {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.dark .badge-pending {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.dark .badge-negotiation {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.dark .badge-draft {
+    background-color: rgba(249, 115, 22, 0.15);
+    color: #fb923c;
+}
+
+.dark .badge-archived {
+    background-color: #334155;
+    color: #cbd5e1;
+}
+
+.dark .alert-badge.alert-danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+}
+
+.dark .alert-badge.alert-warning {
+    background-color: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+}
+
+.dark .alert-badge.alert-info {
+    background-color: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+}
+
+.dark .alert-badge.alert-ok {
+    background-color: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+}
+
+.dark .alert-error {
+    background-color: rgba(239, 68, 68, 0.12);
+    border-color: #7f1d1d;
+    color: #fca5a5;
+}
+
+.dark .alert-success {
+    background-color: rgba(34, 197, 94, 0.12);
+    border-color: #14532d;
+    color: #86efac;
+}
+
+.dark .alert-warning {
+    background-color: rgba(245, 158, 11, 0.12);
+    border-color: #78350f;
+    color: #fcd34d;
 }

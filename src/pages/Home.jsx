@@ -51,6 +51,9 @@ function Hero() {
   const currentSlideData = slides[currentSlide];
 
   return (
+    // NOTE : le Hero est volontairement un dégradé sombre (navy) dans les
+    // deux modes (c'est un choix de design, pas une page "claire" qu'il
+    // faudrait inverser) — pas de variantes dark: nécessaires ici.
     <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
       {/* Décoration de fond animée */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
@@ -156,39 +159,38 @@ export default function Home() {
   const [appels, setAppels] = useState([]);
   const [mobilites, setMobilites] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
+  const [stats, setStats] = useState([
+    { key: 'partners', value: '—' },
+    { key: 'projects', value: '—' },
+    { key: 'mobility', value: '—' },
+    { key: 'countries', value: '—' },
+  ]);
 
   useEffect(() => {
-  getActualites().then((d) => setActualites(d.slice(0, 3)));
-  getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
-  getMobilites().then((d) => setMobilites(d.slice(0, 3)));
-  getPartenaires().then(setPartenaires);
-  getStats().then((s) =>
-    setStats([
-      { key: 'partners', value: String(s.partners) },
-      { key: 'projects', value: String(s.projects) },
-      { key: 'mobility', value: String(s.openMobility) },
-      { key: 'countries', value: String(s.countries) },
-    ])
-  );
-}, []);
-
-  const [stats, setStats] = useState([
-  { key: 'partners', value: '—' },
-  { key: 'projects', value: '—' },
-  { key: 'mobility', value: '—' },
-  { key: 'countries', value: '—' },
-]);
+    getActualites().then((d) => setActualites(d.slice(0, 3)));
+    getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
+    getMobilites().then((d) => setMobilites(d.slice(0, 3)));
+    getPartenaires().then(setPartenaires);
+    getStats().then((s) =>
+      setStats([
+        { key: 'partners', value: String(s.partners) },
+        { key: 'projects', value: String(s.projects) },
+        { key: 'mobility', value: String(s.openMobility) },
+        { key: 'countries', value: String(s.countries) },
+      ])
+    );
+  }, []);
 
   return (
     <div>
       <Hero />
 
-      <section className="border-b border-slate-200 bg-white">
+      <section className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-4">
           {stats.map((s) => (
             <div key={s.key} className="text-center md:text-left">
-              <div className="text-3xl font-extrabold text-navy">{s.value}</div>
-              <div className="mt-1 text-sm text-slate-500">{t(`home.stats.${s.key}`)}</div>
+              <div className="text-3xl font-extrabold text-navy dark:text-white">{s.value}</div>
+              <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t(`home.stats.${s.key}`)}</div>
             </div>
           ))}
         </div>
@@ -212,9 +214,9 @@ export default function Home() {
                 <Badge tone="cobalt">{a.programme}</Badge>
                 <Badge tone={callStatusTone(a.statut)}>{t(`enums.callStatus.${a.statut}`)}</Badge>
               </div>
-              <h3 className="mt-4 text-lg font-bold text-navy">{a.titre}</h3>
-              <p className="mt-2 flex-1 text-sm text-slate-600">{a.resume}</p>
-              <p className="mt-4 text-sm font-medium text-slate-500">
+              <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
+              <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{a.resume}</p>
+              <p className="mt-4 text-sm font-medium text-slate-500 dark:text-slate-400">
                 {t('appels.deadline')} : {formatDate(a.dateLimite)}
               </p>
             </Card>
@@ -222,7 +224,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-surface">
+      <section className="bg-surface dark:bg-slate-800">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading
@@ -239,10 +241,10 @@ export default function Home() {
               <Card key={m.id} hover className="flex flex-col p-6">
                 <Badge tone="navy">{t(`enums.mobilityType.${m.type}`)}</Badge>
                 {/* destination_partner / host_institution + host_city, remplace l'ancien champ libre "destination" */}
-                <h3 className="mt-4 text-lg font-bold text-navy">{m.institutionAccueil}</h3>
-                <p className="text-sm text-slate-500">{m.paysDestination} · {m.villeAccueil}</p>
-                <p className="mt-2 flex-1 text-sm text-slate-600">{m.description}</p>
-                <p className="mt-4 text-sm font-semibold text-cobalt">
+                <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{m.institutionAccueil}</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">{m.paysDestination} · {m.villeAccueil}</p>
+                <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{m.description}</p>
+                <p className="mt-4 text-sm font-semibold text-cobalt dark:text-blue-400">
                   {t('home.mobility.spots', { count: m.places })}
                 </p>
               </Card>
@@ -270,11 +272,11 @@ export default function Home() {
               <div className="flex flex-1 flex-col p-6">
                 <div className="flex items-center justify-between text-xs">
                   <Badge tone="cobalt">{t(`enums.newsType.${n.type}`)}</Badge>
-                  <span className="text-slate-400">{formatDate(n.eventDate)}</span>
+                  <span className="text-slate-400 dark:text-slate-500">{formatDate(n.eventDate)}</span>
                 </div>
-                <h3 className="mt-3 text-lg font-bold text-navy">{n.titre}</h3>
-                <p className="mt-2 flex-1 text-sm text-slate-600">{n.resume}</p>
-                <Link to={`/actualites/${n.id}`} className="mt-4 text-sm font-semibold text-cobalt hover:underline">
+                <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{n.titre}</h3>
+                <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{n.resume}</p>
+                <Link to={`/actualites/${n.id}`} className="mt-4 text-sm font-semibold text-cobalt hover:underline dark:text-blue-400">
                   {t('actualites.readMore')} →
                 </Link>
               </div>
@@ -283,7 +285,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="border-t border-slate-200 bg-white">
+      <section className="border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <SectionHeading
             center
@@ -293,7 +295,10 @@ export default function Home() {
           />
           <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {partenaires.map((p) => (
-              <div key={p.id} className="flex flex-col items-center rounded-card border border-slate-200 bg-surface p-4 text-center">
+              <div
+                key={p.id}
+                className="flex flex-col items-center rounded-card border border-slate-200 bg-surface p-4 text-center dark:border-slate-700 dark:bg-slate-800"
+              >
                 {p.logo ? (
                   <img
                     src={getFileUrl(p.logo)}
@@ -303,8 +308,8 @@ export default function Home() {
                 ) : (
                   <span className="text-2xl">🏫</span>
                 )}
-                <span className="mt-2 text-xs font-semibold text-navy">{p.nom}</span>
-                <span className="text-[11px] text-slate-400">{p.pays}</span>
+                <span className="mt-2 text-xs font-semibold text-navy dark:text-white">{p.nom}</span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">{p.pays}</span>
               </div>
             ))}
           </div>

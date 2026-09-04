@@ -4,12 +4,14 @@ import { useTranslation } from 'react-i18next';
 import Card from '../../components/ui/Card.jsx';
 
 import {
-  getAppels,
-  getDocuments,
-  getMobilites,
-  getPartenaires,
-  getProjets,
-  getActualites,
+  getAppelsAdmin,
+  getDocumentsAdmin,
+  getMobilitesAdmin,
+  getPartenairesAdmin,
+  getProjetsAdmin,
+  getActualitesAdmin,
+  getAgreementsAdmin,
+  getUsers,
 } from '../../services/api.js';
 
 export default function Dashboard() {
@@ -18,42 +20,58 @@ export default function Dashboard() {
   const [counts, setCounts] = useState({});
   const [loading, setLoading] = useState(true);
 
+  // ⚠️ Toutes les entrées utilisent volontairement les fonctions "...Admin"
+  // (tous statuts : draft + published + archived), car ce dashboard est
+  // réservé à l'admin. Ne jamais remettre les versions publiques ici,
+  // sinon les brouillons/archives ne seraient plus comptés.
   const config = [
     {
       key: 'partenaires',
       label: t('partners'),
-      fetch: getPartenaires,
+      fetch: getPartenairesAdmin,
       icon: '🤝',
     },
     {
       key: 'projets',
       label: t('projects'),
-      fetch: getProjets,
+      fetch: getProjetsAdmin,
       icon: '🔬',
     },
     {
       key: 'appels',
       label: t('calls'),
-      fetch: getAppels,
+      fetch: getAppelsAdmin,
       icon: '📢',
     },
     {
       key: 'mobilites',
       label: t('mobility'),
-      fetch: getMobilites,
+      fetch: getMobilitesAdmin,
       icon: '✈️',
     },
     {
       key: 'actualites',
       label: t('newsEvents'),
-      fetch: getActualites,
+      fetch: getActualitesAdmin,
       icon: '📰',
     },
     {
       key: 'documents',
       label: t('document'),
-      fetch: getDocuments,
+      fetch: getDocumentsAdmin,
       icon: '📚',
+    },
+    {
+      key: 'agreements',
+      label: t('agreements', 'Accords'),
+      fetch: getAgreementsAdmin,
+      icon: '📄',
+    },
+    {
+      key: 'users',
+      label: t('users', 'Utilisateurs'),
+      fetch: getUsers,
+      icon: '👤',
     },
   ];
 
@@ -236,7 +254,7 @@ export default function Dashboard() {
         >
           Utilisez le menu de gauche pour gérer les
           partenaires, projets, appels à projets, mobilités,
-          actualités, documents, rôles et permissions.
+          actualités, documents, accords, utilisateurs, rôles et permissions.
 
           Vous pouvez également changer la langue et le thème
           clair/sombre en haut à droite.

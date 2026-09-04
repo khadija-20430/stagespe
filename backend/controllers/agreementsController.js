@@ -11,12 +11,35 @@ function deleteOldFile(fileUrl) {
     fs.unlink(filePath, () => {});
 }
 
-exports.getAll = async(req, res) => {
+// ============================================================
+// PUBLIC — uniquement les accords publiés
+// Route : GET /agreements
+// Réutilise findAll (JOIN partners + documents) en forçant
+// statut_publication='published', quoi que le visiteur envoie
+// en query string — on ne fait jamais confiance à req.query ici.
+// ============================================================
+exports.getPublic = async(req, res) => {
+    try {
+        const agreements = await agreementsModel.findAll({
+            ...req.query,
+            statut_publication: 'published',
+        });
+        res.json(agreements);
+    } catch (err) {
+        sendError(res, err);
+    }
+};
+
+// ============================================================
+// ADMIN — tous les accords, quel que soit le statut
+// Route : GET /agreements/admin/all
+// ============================================================
+exports.getAdmin = async(req, res) => {
     try {
         const agreements = await agreementsModel.findAll(req.query);
         res.json(agreements);
-    } catch (err) { 
-        sendError(res, err); 
+    } catch (err) {
+        sendError(res, err);
     }
 };
 
@@ -144,5 +167,3 @@ exports.remove = async(req, res) => {
         sendError(res, err); 
     }
 };
-
-module.exports = exports;

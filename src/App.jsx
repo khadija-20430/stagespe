@@ -33,7 +33,7 @@ import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
 import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
-import ManageSchool from './pages/admin/ManageSchool.jsx';
+import ManageSchool from './pages/admin/Manageschool.jsx';
 
 
 function ScrollToTop() {

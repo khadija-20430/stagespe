@@ -42,6 +42,12 @@ export default function AdminLayout() {
       end: true,
       icon: '📊',
     },
+{
+  to: '/admin/school-presentation',
+  label: 'Présentation école',
+  icon: '🏫',
+  requiredPerm: 'school_presentation.view',
+},
     {
       to: '/admin/partenaires',
       label: t('partners'),
@@ -119,13 +125,7 @@ export default function AdminLayout() {
       icon: '🔑',
       superAdminOnly: true,
     },
-    // Dans le tableau links, ajoute :
-{
-  to: '/admin/school-presentation',
-  label: 'Présentation école',
-  icon: '🏫',
-  requiredPerm: 'school_presentation.view',
-},
+
     
   ];
 

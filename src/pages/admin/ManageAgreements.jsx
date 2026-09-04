@@ -188,6 +188,45 @@ const ManageAgreements = () => {
         }
     };
 
+    // ===== STATS (cartes en haut de page) =====
+    // FIX : safeItems et getStatus n'étaient pas définis, causant
+    // "getStatus is not defined" au rendu.
+    const safeItems = Array.isArray(agreements) ? agreements : [];
+
+    const getStatus = (item) => item?.statutPublication || '';
+
+    const getStats = () => {
+        const total = safeItems.length;
+
+        const published = safeItems.filter((item) => {
+            const status = getStatus(item);
+            return status === 'published';
+        }).length;
+
+        const drafts = safeItems.filter((item) => {
+            const status = getStatus(item);
+            return (
+                status === 'draft' ||
+                status === 'brouillon' ||
+                status === ''
+            );
+        }).length;
+
+        const archived = safeItems.filter((item) => {
+            const status = getStatus(item);
+            return status === 'archived';
+        }).length;
+
+        return {
+            total,
+            published,
+            drafts,
+            archived
+        };
+    };
+
+    const stats = getStats();
+
     // ===== HANDLERS =====
     const handleOpenModal = (agreement = null) => {
         if (agreement) {
@@ -357,6 +396,27 @@ const ManageAgreements = () => {
                 <button className="btn-primary" onClick={() => handleOpenModal()}>
                     + Nouvel Accord
                 </button>
+            </div>
+
+            {/* STATS CARDS */}
+            <div className="grid gap-4 md:grid-cols-4">
+                <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-slate-800">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Total</p>
+                    <p className="text-3xl font-bold text-navy dark:text-white mt-2">{stats.total}</p>
+                </div>
+                <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-slate-800">
+                    <p className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase">Publiés</p>
+                    <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{stats.published}</p>
+                </div>
+                <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-amber-50 dark:bg-slate-800">
+                    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">Brouillons</p>
+                    <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-2">{stats.drafts}</p>
+                </div>
+                {/* FIX : "gris" n'est pas une couleur Tailwind valide -> "slate" */}
+                <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Archivés</p>
+                    <p className="text-3xl font-bold text-slate-600 dark:text-slate-400 mt-2">{stats.archived}</p>
+                </div>
             </div>
 
             {/* ALERTES D'EXPIRATION GLOBALES */}

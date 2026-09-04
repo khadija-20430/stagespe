@@ -393,9 +393,9 @@ const stats = getStats();
     <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">Brouillons</p>
     <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-2">{stats.drafts}</p>
   </div>
-  <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-gris-50 dark:bg-slate-800">
-    <p className="text-xs font-semibold text-gris-600 dark:text-gris-400 uppercase">archivés</p>
-    <p className="text-3xl font-bold text-gris-600 dark:text-gris-400 mt-2">{stats.archived}</p>
+  <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
+    <p className="text-xs font-semibold text-gris-600 dark:text-gray-400 uppercase">archivés</p>
+    <p className="text-3xl font-bold text-gris-600 dark:text-gray-400 mt-2">{stats.archived}</p>
   </div>
 </div>
       {/* =====================================================

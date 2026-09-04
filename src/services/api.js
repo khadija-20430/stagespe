@@ -1174,7 +1174,7 @@ export const getAgreements = async() => {
 };
 
 export const getAgreementsAdmin = async() => {
-    const data = await authRequest('/agreements');
+    const data = await authRequest('/agreements/admin/all'); // ← FIX ICI
     return data.map(mapAgreement);
 };
 
@@ -1182,7 +1182,6 @@ export const getAgreementById = async(id) => {
     const data = await request(`/agreements/${id}`);
     return mapAgreement(data);
 };
-
 export const getAgreementsByPartner = async(partnerId) => {
     const data = await request(`/agreements?partner_id=${partnerId}`);
     return data.map(mapAgreement);
