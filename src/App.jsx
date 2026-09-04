@@ -12,6 +12,7 @@ import Mobilites from './pages/Mobilites.jsx';
 import Actualites from './pages/Actualites.jsx';
 import ActualiteDetail from './pages/ActualiteDetail.jsx';
 import Documents from './pages/Documents.jsx';
+import School from './pages/School.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 import Login from './pages/admin/Login.jsx';
@@ -32,6 +33,7 @@ import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
 import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
+import ManageSchool from './pages/admin/ManageSchool.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -55,6 +57,7 @@ export default function App() {
           <Route path="/actualites" element={<Actualites />} />
           <Route path="/actualites/:id" element={<ActualiteDetail />} />
           <Route path="/documents" element={<Documents />} />
+          <Route path="/school" element={<School />} />
         </Route>
 
         <Route path="/admin/login" element={<Login />} />
@@ -76,11 +79,10 @@ export default function App() {
           <Route path="appels" element={<ManageAppels />} />
           <Route path="mobilites" element={<ManageMobilites />} />
           <Route path="news-events" element={<ManageNewsEvents />} />
-
           <Route path="documents" element={<ManageDocuments />} />
           <Route path="users" element={<ManageUsers />} />
           <Route path="agreements" element={<ManageAgreements />} />
-
+          <Route path="school-presentation" element={<ManageSchool />} />
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />

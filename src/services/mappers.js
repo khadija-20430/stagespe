@@ -1,35 +1,33 @@
 const splitList = (value) =>
     value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
 export const mapPartner = (row) => ({
-  id: row.id,
-  nom: row.name,
-  nomOfficiel: row.official_name,
-  pays: row.country_name,
-  paysId: row.country_id,
-  ville: row.city,
-  adresse: row.address,
-  typeEtablissement: row.establishment_type,
-  typeEtablissementId: row.establishment_type_id,
-  typePartenariatId: row.partnership_type_id,
-  partnershipStatus: row.partnership_status,
-  domaines: splitList(row.cooperation_areas),
+    id: row.id,
+    nom: row.name,
+    nomOfficiel: row.official_name,
+    pays: row.country_name,
+    paysId: row.country_id,
+    ville: row.city,
+    adresse: row.address,
+    typeEtablissement: row.establishment_type,
+    typeEtablissementId: row.establishment_type_id,
+    typePartenariatId: row.partnership_type_id,
+    partnershipStatus: row.partnership_status,
+    domaines: splitList(row.cooperation_areas),
 
-  accord: row.agreements?.[0]
-    ? {
-        titre: row.agreements[0].title,
-        type: row.agreements[0].type,
-        depuis: row.agreements[0].start_date
-          ? new Date(row.agreements[0].start_date).getFullYear()
-          : null,
-      }
-    : undefined,
+    accord: row.agreements?.[0] ? {
+            titre: row.agreements[0].title,
+            type: row.agreements[0].type,
+            depuis: row.agreements[0].start_date ?
+                new Date(row.agreements[0].start_date).getFullYear() : null,
+        } :
+        undefined,
 
-  logo: row.logo_url,
-  site: row.website,
-  statut_publication: row.statut_publication,
-  agreements: row.agreements,
-  contacts: row.contacts,
-  projects: row.projects,
+    logo: row.logo_url,
+    site: row.website,
+    statut_publication: row.statut_publication,
+    agreements: row.agreements,
+    contacts: row.contacts,
+    projects: row.projects,
 });
 export const mapProjet = (row) => ({
     id: row.id,
@@ -59,9 +57,8 @@ export const mapAppel = (row) => ({
     id: row.id,
     titre: row.title,
     programme: row.programme_name,
-    paysEligibles: Array.isArray(row.country_names) && row.country_names.length > 0
-        ? row.country_names
-        : splitList(row.eligibility),
+    paysEligibles: Array.isArray(row.country_names) && row.country_names.length > 0 ?
+        row.country_names : splitList(row.eligibility),
     status: row.status,
     dateLimite: row.deadline,
     budgetDisponible: row.budget_available != null ? Number(row.budget_available) : null,
@@ -154,7 +151,8 @@ export const toPartnerPayload = (draft) => ({
     official_name: draft.nomOfficiel,
     country_id: draft.paysId || null,
     city: draft.ville,
-address: draft.adresse,    establishment_type_id: draft.typeEtablissementId || null,
+    address: draft.adresse,
+    establishment_type_id: draft.typeEtablissementId || null,
     partnership_type_id: draft.typePartenariatId || null,
     partnership_status: draft.statutPartenariat || 'active',
     website: draft.siteWeb,
@@ -290,17 +288,15 @@ export const mapUser = (row) => ({
     roleName: row.role_name,
     // Valeur pré-sélectionnée dans le select fusionné : le vrai role_id
     // si le compte est admin avec un rôle détaillé, sinon la sentinelle.
-    roleSelectValue: row.role === 'admin' && row.role_id
-        ? row.role_id
-        : PLAIN_USER_ROLE_ID,
+    roleSelectValue: row.role === 'admin' && row.role_id ?
+        row.role_id : PLAIN_USER_ROLE_ID,
     isActive: row.is_active,
     lastLogin: row.last_login,
     createdAt: row.created_at,
 });
 
 export const toUserPayload = (draft) => {
-    const isPlainUser =
-        !draft.roleSelectValue ||
+    const isPlainUser = !draft.roleSelectValue ||
         draft.roleSelectValue === PLAIN_USER_ROLE_ID;
 
     return {
@@ -361,3 +357,27 @@ export const toAgreementPayload = (draft) => ({
     status: draft.statut || 'active',
     statut_publication: draft.statutPublication || 'draft',
 });
+
+// ============================================================
+// SCHOOL PRESENTATION MAPPER
+// ============================================================
+
+export const mapSchoolPresentation = (row) => {
+    if (!row) return null;
+    return {
+        id: row.id,
+        schoolPresentationId: row.school_presentation_id,
+        langCode: row.language_code || row.lang_code,
+        languageId: row.language_id,
+        titre: row.titre,
+        description: row.description,
+        fichierUrl: row.fichier_url,
+        fileFormat: row.file_format,
+        fileSize: row.file_size,
+        visibilite: row.visibilite,
+        statutPublication: row.statut_publication,
+        createdAt: row.created_at || row.presentation_created_at,
+        updatedAt: row.updated_at,
+        revisions: row.revisions || [],
+    };
+};

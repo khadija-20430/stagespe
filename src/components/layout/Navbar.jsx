@@ -211,7 +211,7 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/ecole"
+            to="/school"
             className={({ isActive }) =>
               cn(
                 'flex min-h-[44px] items-center px-3 text-sm font-medium transition-all duration-200',
@@ -282,7 +282,7 @@ export default function Navbar() {
           </NavLink>
 
           <NavLink
-            to="/ecole"
+            to="/school"
             onClick={() => setMobileOpen(false)}
             className={({ isActive }) =>
               cn(

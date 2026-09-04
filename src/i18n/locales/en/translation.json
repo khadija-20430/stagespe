@@ -351,6 +351,42 @@
             }
         }
     },
+
+    "school": {
+        "defaultTitle": "School Presentation",
+        "defaultDescription": "Discover the Higher School of Computer Science, its values and its mission.",
+        "download": "Download the presentation",
+        "error": {
+            "loading": "Unable to load the presentation"
+        },
+        "noContent": "No detailed presentation has been published yet.",
+        "about": {
+            "title": "About ESI",
+            "description": "ESI is an institution dedicated to excellence in computer science and international partnerships.",
+            "mission": {
+                "title": "Our Mission",
+                "text": "We train the best computer engineers and promote international cooperation."
+            },
+            "values": {
+                "title": "Our Values",
+                "text": "Excellence, innovation, collaboration and social responsibility are at the heart of our approach."
+            }
+        },
+        "values": {
+            "excellence": {
+                "title": "Academic Excellence",
+                "text": "Internationally recognized excellence in education."
+            },
+            "innovation": {
+                "title": "Innovation",
+                "text": "At the forefront of technologies and teaching methods."
+            },
+            "collaboration": {
+                "title": "Collaboration",
+                "text": "A network of partners committed to international cooperation."
+            }
+        }
+    },
     "enums": {
         "projectStatus": {
             "proposed": "Proposed",

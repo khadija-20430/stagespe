@@ -117,6 +117,14 @@ export default function AdminLayout() {
       icon: '🔑',
       superAdminOnly: true,
     },
+    // Dans le tableau links, ajoute :
+{
+  to: '/admin/school-presentation',
+  label: '🏫 Présentation école',
+  icon: '🏫',
+  requiredPerm: 'school_presentation.view',
+},
+    
   ];
 
   const canSeeLink = (link) => {

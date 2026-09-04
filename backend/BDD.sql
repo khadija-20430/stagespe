@@ -744,7 +744,18 @@ INSERT INTO permissions (code, module, action, label) VALUES
 
   ('reference_data.manage', 'reference_data', 'manage', 'Gérer les listes de référence (pays, types, catégories...)')
 ON CONFLICT (code) DO NOTHING;
-
+INSERT INTO permissions (code, module, action, label) VALUES
+  ('users.view',   'users', 'view',   'Voir les utilisateurs'),
+  ('users.create', 'users', 'create', 'Créer un utilisateur'),
+  ('users.edit',   'users', 'edit',   'Modifier un utilisateur'),
+  ('users.delete', 'users', 'delete', 'Supprimer un utilisateur')
+ON CONFLICT (code) DO NOTHING;
+INSERT INTO permissions (code, module, action, label) VALUES
+  ('school_presentation.view',   'school_presentation', 'view',   'Voir la présentation de l''école'),
+  ('school_presentation.create', 'school_presentation', 'create', 'Créer une présentation de l''école'),
+  ('school_presentation.edit',   'school_presentation', 'edit',   'Modifier la présentation de l''école'),
+  ('school_presentation.delete', 'school_presentation', 'delete', 'Supprimer la présentation de l''école')
+ON CONFLICT (code) DO NOTHING;
 -- =====================================================================
 -- SEED : deux rôles système de départ, prêts à l'emploi
 -- =====================================================================
@@ -872,3 +883,84 @@ CREATE INDEX IF NOT EXISTS idx_login_history_created ON login_history(created_at
 CREATE INDEX IF NOT EXISTS idx_partners_name_trgm ON partners USING GIN (name gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_projects_title_trgm ON projects USING GIN (title gin_trgm_ops);
 CREATE INDEX IF NOT EXISTS idx_calls_title_trgm ON calls USING GIN (title gin_trgm_ops);
+
+-- ============================================================
+-- Présentation institutionnelle de l'école (PDF multilingue)
+-- Principe : un "concept" language-agnostic (school_presentation),
+-- une ligne par langue avec son propre fichier (school_presentation_translation),
+-- et un historique des anciens fichiers à chaque remplacement
+-- (school_presentation_revisions) — même logique que documents/document_revisions.
+-- ============================================================
+
+-- Fonction générique pour auto-mettre à jour updated_at
+-- (si tu l'as déjà définie ailleurs dans ton schéma, supprime ce bloc)
+CREATE OR REPLACE FUNCTION set_updated_at()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- 1. Le "concept" : la présentation de l'école, indépendamment de la langue
+CREATE TABLE school_presentation (
+    id SERIAL PRIMARY KEY,
+    visibilite VARCHAR(20) NOT NULL DEFAULT 'public', -- public / draft
+    created_by INTEGER REFERENCES users(id),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+CREATE TRIGGER trg_school_presentation_updated_at
+    BEFORE UPDATE ON school_presentation
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- 2. Une ligne par langue : titre, définition (description), et le fichier lui-même
+CREATE TABLE school_presentation_translation (
+    id SERIAL PRIMARY KEY,
+    school_presentation_id INTEGER NOT NULL REFERENCES school_presentation(id) ON DELETE CASCADE,
+    language_id INTEGER NOT NULL REFERENCES languages(id),
+    titre VARCHAR(255) NOT NULL,
+    description TEXT, -- la "définition" de la présentation
+    fichier_url TEXT NOT NULL,
+    file_format VARCHAR(10),
+    file_size INTEGER, -- en octets
+    created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
+    UNIQUE (school_presentation_id, language_id)
+);
+
+CREATE TRIGGER trg_school_presentation_translation_updated_at
+    BEFORE UPDATE ON school_presentation_translation
+    FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- 3. Historique : à chaque "Remplacer le fichier", l'ancienne version part ici
+--    avant d'être écrasée dans school_presentation_translation
+CREATE TABLE school_presentation_revisions (
+    id SERIAL PRIMARY KEY,
+    translation_id INTEGER NOT NULL REFERENCES school_presentation_translation(id) ON DELETE CASCADE,
+    fichier_url TEXT NOT NULL,      -- ancien fichier remplacé
+    file_format VARCHAR(10),
+    file_size INTEGER,
+    replaced_by INTEGER REFERENCES users(id),
+    replaced_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+
+-- Index utiles
+CREATE INDEX idx_school_presentation_translation_lang ON school_presentation_translation(language_id);
+CREATE INDEX idx_school_presentation_revisions_translation ON school_presentation_revisions(translation_id);
+
+CREATE OR REPLACE FUNCTION grant_new_permission_to_super_admin()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO role_permissions (role_id, permission_id)
+  SELECT id, NEW.id FROM roles WHERE is_system = TRUE
+  ON CONFLICT DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_grant_new_permission_to_super_admin
+AFTER INSERT ON permissions
+FOR EACH ROW
+EXECUTE FUNCTION grant_new_permission_to_super_admin();

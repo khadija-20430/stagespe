@@ -13,14 +13,16 @@ import {
     mapActualite,
     mapDocument,
     mapStats,
-    mapAgreement,          // ← AJOUTER
+    mapAgreement, // ← AJOUTER
+    mapSchoolPresentation, // ← AJOUT
     toAppelPayload,
     toProjetPayload,
     toMobilitePayload,
     toActualitePayload,
     toPartnerPayload,
     toDocumentPayload,
-    toAgreementPayload,    // ← AJOUTER
+    toAgreementPayload, // ← AJOUTER
+
 } from './mappers.js';
 
 
@@ -1233,4 +1235,131 @@ export const uploadAgreementFile = async(file) => {
     }
 
     return res.json();
+};
+// ============================================================
+// SCHOOL PRESENTATION
+// ============================================================
+
+// PUBLIC — Routes sans authentification
+export const getSchoolPresentations = async () => {
+    const data = await request('/school-presentation');
+    return data;
+};
+
+export const getSchoolPresentationById = async (id) => {
+    const data = await request(`/school-presentation/${id}`);
+    return data;
+};
+
+export const getSchoolPresentationByLanguage = async (code) => {
+    const data = await request(`/school-presentation/lang/${code}`);
+    return mapSchoolPresentation(data);
+};
+
+// ADMIN — Routes protégées
+export const getSchoolPresentationsAdmin = async () => {
+    const data = await authRequest('/school-presentation/admin/all');
+    return data;
+};
+
+export const uploadSchoolFile = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(`${API}/school-presentation/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Échec de l'upload du fichier");
+    }
+    return res.json();
+};
+
+export const createSchoolPresentation = async (data) => {
+    // Si c'est un FormData (upload de fichier)
+    if (data instanceof FormData) {
+        const res = await fetch(`${API}/school-presentation`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${getToken()}` },
+            body: data,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || "Erreur lors de la création");
+        }
+        return res.json();
+    }
+    return authRequest('/school-presentation', { method: 'POST', body: data });
+};
+
+export const addSchoolTranslation = async (id, data) => {
+    if (data instanceof FormData) {
+        const res = await fetch(`${API}/school-presentation/${id}/translations`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${getToken()}` },
+            body: data,
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.error || "Erreur lors de l'ajout de la traduction");
+        }
+        return res.json();
+    }
+    return authRequest(`/school-presentation/${id}/translations`, { method: 'POST', body: data });
+};
+
+export const updateSchoolTranslation = async (translationId, payload) => {
+    return authRequest(`/school-presentation/translations/${translationId}`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
+
+export const replaceSchoolFile = async (translationId, file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch(`${API}/school-presentation/translations/${translationId}/file`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${getToken()}` },
+        body: formData,
+    });
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || "Erreur lors du remplacement du fichier");
+    }
+    return res.json();
+};
+
+export const getSchoolRevisions = async (translationId) => {
+    const data = await authRequest(`/school-presentation/translations/${translationId}/revisions`);
+    return data;
+};
+
+export const updateSchoolVisibilite = async (id, visibilite) => {
+    return authRequest(`/school-presentation/${id}/visibilite`, {
+        method: 'PATCH',
+        body: { visibilite },
+    });
+};
+
+export const publishSchoolPresentation = async (id) => {
+    return authRequest(`/school-presentation/${id}/publish`, { method: 'PUT' });
+};
+
+export const archiveSchoolPresentation = async (id) => {
+    return authRequest(`/school-presentation/${id}/archive`, { method: 'PUT' });
+};
+
+export const deleteSchoolPresentation = async (id) => {
+    return authRequest(`/school-presentation/${id}`, { method: 'DELETE' });
+};
+
+export const deleteSchoolTranslation = async (translationId) => {
+    return authRequest(`/school-presentation/translations/${translationId}`, { method: 'DELETE' });
 };

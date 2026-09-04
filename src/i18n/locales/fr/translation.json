@@ -348,6 +348,41 @@
             }
         }
     },
+    "school": {
+        "defaultTitle": "Présentation de l'école",
+        "defaultDescription": "Découvrez l'École Supérieure en Informatique, ses valeurs et sa mission.",
+        "download": "Télécharger la présentation",
+        "error": {
+            "loading": "Impossible de charger la présentation"
+        },
+        "noContent": "Aucune présentation détaillée n'est encore publiée.",
+        "about": {
+            "title": "À propos de l'ESI",
+            "description": "L'ESI est une institution dédiée à l'excellence en informatique et aux partenariats internationaux.",
+            "mission": {
+                "title": "Notre Mission",
+                "text": "Nous formons les meilleurs ingénieurs informatiques et favorisons la coopération internationale."
+            },
+            "values": {
+                "title": "Nos Valeurs",
+                "text": "Excellence, innovation, collaboration et responsabilité sociale sont au cœur de notre approche."
+            }
+        },
+        "values": {
+            "excellence": {
+                "title": "Excellence académique",
+                "text": "Des formations d'excellence reconnues internationalement."
+            },
+            "innovation": {
+                "title": "Innovation",
+                "text": "À la pointe des technologies et des méthodes pédagogiques."
+            },
+            "collaboration": {
+                "title": "Collaboration",
+                "text": "Un réseau de partenaires engagés dans la coopération internationale."
+            }
+        }
+    },
     "enums": {
         "projectStatus": {
             "proposed": "Proposé",
