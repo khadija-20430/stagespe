@@ -12,7 +12,10 @@
         "mobilites": "التنقل",
         "actualites": "الأخبار والفعاليات",
         "documents": "مكتبة الوثائق",
-        "admin": "فضاء الإدارة"
+        "agreements": "الاتفاقيات",
+        "admin": "فضاء الإدارة",
+        "menuAria": "القائمة",
+        "languageAria": "تغيير اللغة"
     },
     "footer": {
         "brandName": "التعاون الدولي",
@@ -29,15 +32,34 @@
                 "title": "الموارد",
                 "actualites": "الأخبار والفعاليات",
                 "documents": "مكتبة الوثائق",
+                "agreements": "الاتفاقيات",
                 "admin": "فضاء الإدارة"
             }
         },
         "copyright": "المدرسة العليا للإعلام الآلي — جميع الحقوق محفوظة.",
-        "department": "مديرية العلاقات الدولية"
+        "department": "مديرية العلاقات الدولية",
+        "location": {
+            "title": "الموقع",
+            "schoolName": "المدرسة العليا للإعلام الآلي",
+            "city": "وادي السمار، الجزائر العاصمة",
+            "country": "الجزائر",
+            "viewOnMaps": "عرض على الخريطة"
+        },
+        "contact": {
+            "emailLabel": "البريد الإلكتروني:",
+            "phoneLabel": "الهاتف:"
+        },
+        "legal": {
+            "privacyPolicy": "سياسة الخصوصية",
+            "termsOfUse": "شروط الاستخدام"
+        }
     },
     "common": {
         "all": "الكل",
-        "allFem": "الكل"
+        "allFem": "الكل",
+        "pays": "البلد",
+        "debut": "البداية",
+        "fin": "النهاية"
     },
     "appels": {
         "eyebrow": "التمويل",
@@ -108,8 +130,38 @@
             "title": "بوابة التعاون الدولي",
             "description": "اكتشف واطّلع على جميع الأنشطة الدولية للمدرسة: مشاريع البحث، دعوات المشاريع، فرص التنقل والشراكات الأكاديمية حول العالم.",
             "ctaCalls": "عرض دعوات المشاريع",
-            "ctaMobility": "استكشاف فرص التنقل"
+            "ctaMobility": "استكشاف فرص التنقل",
+            "brandTitle": "المدرسة العليا للإعلام الآلي - التعاون الدولي",
+"slideAria": "الانتقال إلى الشريحة {{number}}",
+"slides": [
+  {
+    "eyebrow": "مرحبًا بكم",
+    "title": "بوابة التعاون الدولي",
+    "description": "📋 اكتشف دعوات المشاريع وفرص التنقل الأكاديمي. اكتشف عالمًا من الإمكانيات لمسيرتك المهنية."
+  },
+  {
+    "eyebrow": "الفرص",
+    "title": "التنقل الدولي",
+    "description": "شارك في التبادلات الأكاديمية في أكثر من 50 دولة. ابنِ شبكتك الدولية وأثرِ تجربتك."
+  },
+  {
+    "eyebrow": "الشركاء",
+    "title": "شبكة عالمية",
+    "description": "تعاون مع أفضل الجامعات والمؤسسات في العالم. منصة لبناء صداقات دائمة."
+  },
+  {
+    "eyebrow": "المشاريع",
+    "title": "البحث والابتكار",
+    "description": "ساهم في مشاريع بحثية معترف بها دوليًا. اصنع الفرق في مجال تخصصك."
+  }
+]
         },
+         "agreements": {
+  "eyebrow": "الاتفاقيات",
+  "title": "اتفاقياتنا الدولية",
+  "description": "اكتشف جميع الاتفاقيات الموقعة مع شركائنا الدوليين.",
+  "cta": "عرض جميع الاتفاقيات"
+},
         "stats": {
             "partners": "الشركاء الدوليون",
             "projects": "مشاريع البحث النشطة",
@@ -199,7 +251,8 @@
         "fields": {
             "duration": "المدة",
             "level": "المستوى",
-            "programme": "البرنامج"
+            "programme": "البرنامج",
+            "audience": "الفئة المستهدفة"
         },
         "apply": "تقديم طلب"
     },
@@ -210,14 +263,6 @@
     },
     "admin": {
         "title": "الإدارة",
-        "nav": {
-            "dashboard": "لوحة التحكم",
-            "partners": "الشركاء",
-            "projects": "المشاريع",
-            "calls": "دعوات المشاريع",
-            "mobility": "التنقل",
-            "documents": "المستندات"
-        },
         "logout": "تسجيل الخروج",
         "menuAria": "القائمة",
         "exit": "خروج",
@@ -259,99 +304,30 @@
             "itemsCount_many": "{{count}} عنصرًا",
             "itemsCount_other": "{{count}} عنصر"
         },
-        "appels": {
-            "columns": {
-                "titre": "العنوان",
-                "programme": "البرنامج",
-                "pays": "البلد",
-                "statut": "الحالة",
-                "dateLimite": "الموعد النهائي"
-            },
-            "fields": {
-                "titre": "العنوان",
-                "programme": "البرنامج",
-                "pays": "البلد / المنطقة",
-                "statut": "الحالة",
-                "dateLimite": "تاريخ الإغلاق",
-                "budget": "التمويل",
-                "resume": "ملخص"
-            }
-        },
-        "documents": {
-            "columns": {
-                "nom": "الاسم",
-                "categorie": "الفئة",
-                "format": "الصيغة",
-                "taille": "الحجم",
-                "date": "التاريخ"
-            },
-            "fields": {
-                "nom": "اسم المستند",
-                "categorie": "الفئة",
-                "format": "الصيغة",
-                "taille": "الحجم",
-                "date": "التاريخ",
-                "lien": "الرابط"
-            }
-        },
-        "mobilites": {
-            "columns": {
-                "destination": "الوجهة",
-                "pays": "البلد",
-                "type": "النوع",
-                "niveau": "المستوى",
-                "places": "الأماكن"
-            },
-            "fields": {
-                "destination": "الوجهة",
-                "pays": "البلد",
-                "type": "النوع",
-                "niveau": "المستوى",
-                "duree": "المدة",
-                "places": "الأماكن",
-                "programme": "البرنامج",
-                "description": "الوصف"
-            }
-        },
-        "partenaires": {
-            "columns": {
-                "nom": "الاسم",
-                "pays": "البلد",
-                "type": "النوع",
-                "accord": "الاتفاقية",
-                "depuis": "منذ"
-            },
-            "fields": {
-                "nom": "الاسم",
-                "pays": "البلد",
-                "ville": "المدينة",
-                "type": "النوع",
-                "accord": "نوع الاتفاقية",
-                "depuis": "شريك منذ",
-                "domaines": "المجالات",
-                "logo": "رمز تعبيري / شعار"
-            }
-        },
-        "projets": {
-            "columns": {
-                "titre": "العنوان",
-                "programme": "البرنامج",
-                "statut": "الحالة",
-                "budget": "الميزانية",
-                "coordinateur": "المنسق"
-            },
-            "fields": {
-                "titre": "العنوان",
-                "programme": "البرنامج",
-                "statut": "الحالة",
-                "coordinateur": "المنسق",
-                "budget": "الميزانية",
-                "debut": "تاريخ البدء",
-                "fin": "تاريخ الانتهاء",
-                "pays": "البلدان",
-                "partenaires": "الشركاء",
-                "resume": "ملخص"
-            }
+        "nav": {
+            "menuAria": "فتح القائمة",
+            "admin": "الإدارة",
+            "title": "لوحة الإدارة",
+            "dashboard": "لوحة التحكم",
+            "partners": "الشركاء",
+            "projects": "المشاريع",
+            "calls": "دعوات المشاريع",
+            "mobility": "التنقل",
+            "news": "الأخبار والفعاليات",
+            "documents": "الوثائق",
+            "agreements": "الاتفاقيات",
+            "users": "المستخدمون",
+            "roles": "الأدوار والصلاحيات",
+            "school": "تقديم المدرسة",
+            "testAccess": "اختبار الصلاحيات",
+            "audit": "سجل التدقيق",
+            "settings": "الإعدادات",
+            "changeLanguage": "تغيير اللغة",
+            "lightMode": "الوضع الفاتح",
+            "darkMode": "الوضع الداكن",
+            "user": "مستخدم",
+            "logout": "تسجيل الخروج",
+            "administration": "الإدارة"
         }
     },
     "school": {
@@ -419,7 +395,6 @@
             "meeting": "لقاء",
             "testimonial": "شهادة"
         },
-        "admin.nav.newsEvents": "الأخبار والأحداث",
         "documentCategory": {
             "institutionnel": "مؤسساتي",
             "template_projet": "نموذج مشروع",
@@ -436,6 +411,11 @@
             "public": "عام",
             "staff": "الموظفون فقط",
             "admin": "المدراء فقط"
+        },
+        "userRole": {
+            "super_admin": "مدير عام",
+            "admin": "مدير",
+            "utilisateur": "مستخدم"
         }
     },
     "dashboard": "لوحة التحكم",
@@ -532,5 +512,79 @@
     "research": "بحث",
     "staff": "موظف",
     "internship": "تدريب",
-    "summer_school": "مدرسة صيفية"
+    "summer_school": "مدرسة صيفية",
+    "adresse": "العنوان",
+    "agreements": "الاتفاقيات",
+    "datePublication": "تاريخ النشر",
+    "email": "البريد الإلكتروني",
+    "inactive": "غير نشط",
+    "lastLogin": "آخر تسجيل دخول",
+    "lienOfficiel": "الرابط الرسمي",
+    "organismeFinanceur": "الجهة الممولة",
+    "password": "كلمة المرور",
+    "presentationEcole": "تقديم المدرسة",
+    "role": "الدور",
+    "tauxFinancement": "نسبة التمويل",
+    "typeAction": "نوع الإجراء",
+    "users": "المستخدمون",
+    "adminRoles": "الأدوار والصلاحيات",
+    "adminTestAccess": "اختبار الصلاحيات (RBAC)",
+    "adminAuditLog": "سجل التدقيق",
+    "agreementsList": {
+        "eyebrow": "الشراكات",
+        "title": "اتفاقياتنا مع الشركاء",
+        "description": "الاتفاقيات والمعاهدات الموقعة مع شركائنا الدوليين.",
+        "empty": "لا توجد اتفاقيات متاحة حاليًا.",
+        "partner": "الشريك",
+        "period": "الفترة",
+        "viewPdf": "عرض ملف PDF",
+        "linkedDocuments": "المستندات المرتبطة",
+        "itemsCount": "اتفاقية"
+    },
+    "adminFallbackName": "المدير",
+    "adminSpaceTitle": "مساحة إدارة ESI",
+    "changeLanguageAria": "تغيير اللغة",
+    "lightMode": "الوضع الفاتح",
+    "darkMode": "الوضع الداكن",
+    "changeThemeAria": "تغيير المظهر",
+    "notifications": {
+        "title": "الإشعارات",
+        "unreadCount_zero": "لا إشعارات غير مقروءة",
+        "unreadCount_one": "إشعار واحد غير مقروء",
+        "unreadCount_two": "إشعاران غير مقروءين",
+        "unreadCount_few": "{{count}} إشعارات غير مقروءة",
+        "unreadCount_many": "{{count}} إشعارًا غير مقروء",
+        "unreadCount_other": "{{count}} إشعار غير مقروء",
+        "empty": "لا توجد إشعارات",
+        "new": "جديد",
+        "confirmDelete": "هل تريد حذف هذا الإشعار؟",
+        "close": "إغلاق",
+        "time": {
+            "now": "الآن",
+            "secondsAgo_one": "منذ ثانية",
+            "secondsAgo_two": "منذ ثانيتين",
+            "secondsAgo_few": "منذ {{count}} ثوانٍ",
+            "secondsAgo_many": "منذ {{count}} ثانية",
+            "secondsAgo_other": "منذ {{count}} ثانية",
+            "oneMinuteAgo": "منذ دقيقة",
+            "minutesAgo_one": "منذ دقيقة",
+            "minutesAgo_two": "منذ دقيقتين",
+            "minutesAgo_few": "منذ {{count}} دقائق",
+            "minutesAgo_many": "منذ {{count}} دقيقة",
+            "minutesAgo_other": "منذ {{count}} دقيقة",
+            "oneHourAgo": "منذ ساعة",
+            "hoursAgo_one": "منذ ساعة",
+            "hoursAgo_two": "منذ ساعتين",
+            "hoursAgo_few": "منذ {{count}} ساعات",
+            "hoursAgo_many": "منذ {{count}} ساعة",
+            "hoursAgo_other": "منذ {{count}} ساعة",
+            "yesterday": "أمس",
+            "daysAgo_one": "منذ يوم",
+            "daysAgo_two": "منذ يومين",
+            "daysAgo_few": "منذ {{count}} أيام",
+            "daysAgo_many": "منذ {{count}} يومًا",
+            "daysAgo_other": "منذ {{count}} يوم"
+        }
+    }
+   
 }

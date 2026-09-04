@@ -12,7 +12,10 @@
         "mobilites": "Mobility",
         "actualites": "News & Events",
         "documents": "Document Library",
-        "admin": "Admin Area"
+        "agreements": "Agreements",
+        "admin": "Admin Area",
+        "menuAria": "Menu",
+        "languageAria": "Change language"
     },
     "footer": {
         "brandName": "International Cooperation",
@@ -29,15 +32,34 @@
                 "title": "Resources",
                 "actualites": "News & Events",
                 "documents": "Document Library",
+                "agreements": "Agreements",
                 "admin": "Admin Area"
             }
         },
         "copyright": "École Supérieure en Informatique — All rights reserved.",
-        "department": "Directorate of International Relations"
+        "department": "Directorate of International Relations",
+        "location": {
+            "title": "Location",
+            "schoolName": "École Supérieure en Informatique",
+            "city": "Oued Smar, Algiers",
+            "country": "Algeria",
+            "viewOnMaps": "View on Maps"
+        },
+        "contact": {
+            "emailLabel": "Email:",
+            "phoneLabel": "Phone:"
+        },
+        "legal": {
+            "privacyPolicy": "Privacy Policy",
+            "termsOfUse": "Terms of Use"
+        }
     },
     "common": {
         "all": "All",
-        "allFem": "All"
+        "allFem": "All",
+        "pays": "Country",
+        "debut": "Start",
+        "fin": "End"
     },
     "appels": {
         "eyebrow": "Funding",
@@ -108,8 +130,38 @@
             "title": "International Cooperation Portal",
             "description": "Discover and centralize all of the school's international activities: research projects, calls for projects, mobility opportunities, and academic partnerships worldwide.",
             "ctaCalls": "View calls for projects",
-            "ctaMobility": "Explore mobility"
+            "ctaMobility": "Explore mobility",
+            "brandTitle": "ESI International Cooperation",
+"slideAria": "Go to slide {{number}}",
+"slides": [
+  {
+    "eyebrow": "Welcome",
+    "title": "International Cooperation Portal",
+    "description": "📋 Explore calls for projects and academic mobility opportunities. Discover a world of possibilities for your professional career."
+  },
+  {
+    "eyebrow": "Opportunities",
+    "title": "International Mobility",
+    "description": "Take part in academic exchanges in over 50 countries. Build your international network and enrich your experience."
+  },
+  {
+    "eyebrow": "Partners",
+    "title": "Global Network",
+    "description": "Collaborate with the world's leading universities and institutions. A platform for building lasting friendships."
+  },
+  {
+    "eyebrow": "Projects",
+    "title": "Research and Innovation",
+    "description": "Contribute to internationally recognized research projects. Make a difference in your field of expertise."
+  }
+]
         },
+        "agreements": {
+  "eyebrow": "Agreements",
+  "title": "Our International Agreements",
+  "description": "Explore all the agreements signed with our international partners.",
+  "cta": "View all agreements"
+},
         "stats": {
             "partners": "International partners",
             "projects": "Active research projects",
@@ -199,7 +251,8 @@
         "fields": {
             "duration": "Duration",
             "level": "Level",
-            "programme": "Program"
+            "programme": "Program",
+            "audience": "Target audience"
         },
         "apply": "Apply"
     },
@@ -210,14 +263,6 @@
     },
     "admin": {
         "title": "Administration",
-        "nav": {
-            "dashboard": "Dashboard",
-            "partners": "Partners",
-            "projects": "Projects",
-            "calls": "Calls for Projects",
-            "mobility": "Mobility",
-            "documents": "Documents"
-        },
         "logout": "Log out",
         "menuAria": "Menu",
         "exit": "Exit",
@@ -256,102 +301,32 @@
             "itemsCount_one": "{{count}} item",
             "itemsCount_other": "{{count}} items"
         },
-        "appels": {
-            "columns": {
-                "titre": "Title",
-                "programme": "Program",
-                "pays": "Country",
-                "statut": "Status",
-                "dateLimite": "Deadline"
-            },
-            "fields": {
-                "titre": "Title",
-                "programme": "Program",
-                "pays": "Country / region",
-                "statut": "Status",
-                "dateLimite": "Deadline",
-                "budget": "Funding",
-                "resume": "Summary"
-            }
-        },
-        "documents": {
-            "columns": {
-                "nom": "Name",
-                "categorie": "Category",
-                "format": "Format",
-                "taille": "Size",
-                "date": "Date"
-            },
-            "fields": {
-                "nom": "Document name",
-                "categorie": "Category",
-                "format": "Format",
-                "taille": "Size",
-                "date": "Date",
-                "lien": "Link"
-            }
-        },
-        "mobilites": {
-            "columns": {
-                "destination": "Destination",
-                "pays": "Country",
-                "type": "Type",
-                "niveau": "Level",
-                "places": "Spots"
-            },
-            "fields": {
-                "destination": "Destination",
-                "pays": "Country",
-                "type": "Type",
-                "niveau": "Level",
-                "duree": "Duration",
-                "places": "Spots",
-                "programme": "Program",
-                "description": "Description"
-            }
-        },
-        "partenaires": {
-            "columns": {
-                "nom": "Name",
-                "pays": "Country",
-                "type": "Type",
-                "accord": "Agreement",
-                "depuis": "Since"
-            },
-            "fields": {
-                "nom": "Name",
-                "pays": "Country",
-                "ville": "City",
-                "type": "Type",
-                "accord": "Agreement type",
-                "depuis": "Partner since",
-                "domaines": "Fields",
-                "logo": "Emoji / logo"
-            }
-        },
-        "projets": {
-            "columns": {
-                "titre": "Title",
-                "programme": "Program",
-                "statut": "Status",
-                "budget": "Budget",
-                "coordinateur": "Coordinator"
-            },
-            "fields": {
-                "titre": "Title",
-                "programme": "Program",
-                "statut": "Status",
-                "coordinateur": "Coordinator",
-                "budget": "Budget",
-                "debut": "Start date",
-                "fin": "End date",
-                "pays": "Countries",
-                "partenaires": "Partners",
-                "resume": "Summary"
-            }
+        "nav": {
+            "menuAria": "Open menu",
+            "admin": "Administration",
+            "title": "Admin Panel",
+            "dashboard": "Dashboard",
+            "partners": "Partners",
+            "projects": "Projects",
+            "calls": "Calls for Projects",
+            "mobility": "Mobility",
+            "news": "News & Events",
+            "documents": "Documents",
+            "agreements": "Agreements",
+            "users": "Users",
+            "roles": "Roles & Permissions",
+            "school": "School Presentation",
+            "testAccess": "Test RBAC",
+            "audit": "Audit Log",
+            "settings": "Settings",
+            "changeLanguage": "Change language",
+            "lightMode": "Light Mode",
+            "darkMode": "Dark Mode",
+            "user": "User",
+            "logout": "Log out",
+            "administration": "Administration"
         }
     },
-
     "school": {
         "defaultTitle": "School Presentation",
         "defaultDescription": "Discover the Higher School of Computer Science, its values and its mission.",
@@ -433,6 +408,11 @@
             "public": "Public",
             "staff": "Staff only",
             "admin": "Admins only"
+        },
+        "userRole": {
+            "super_admin": "Super Admin",
+            "admin": "Admin",
+            "utilisateur": "User"
         }
     },
     "dashboard": "Dashboard",
@@ -529,5 +509,63 @@
     "research": "Research",
     "staff": "Staff",
     "internship": "Internship",
-    "summer_school": "Summer school"
+    "summer_school": "Summer school",
+    "adresse": "Address",
+    "agreements": "Agreements",
+    "datePublication": "Publication date",
+    "email": "Email",
+    "inactive": "Inactive",
+    "lastLogin": "Last login",
+    "lienOfficiel": "Official link",
+    "organismeFinanceur": "Funding body",
+    "password": "Password",
+    "presentationEcole": "School presentation",
+    "role": "Role",
+    "tauxFinancement": "Funding rate",
+    "typeAction": "Action type",
+    "users": "Users",
+    "adminRoles": "Roles & permissions",
+    "adminTestAccess": "Test RBAC",
+    "adminAuditLog": "Audit log",
+    "agreementsList": {
+        "eyebrow": "Partnerships",
+        "title": "Our Partnership Agreements",
+        "description": "Agreements and conventions signed with our international partners.",
+        "empty": "No agreements available at the moment.",
+        "partner": "Partner",
+        "period": "Period",
+        "viewPdf": "View PDF",
+        "linkedDocuments": "Related documents",
+        "itemsCount": "agreements"
+    },
+    "adminFallbackName": "Admin",
+    "adminSpaceTitle": "ESI Admin Space",
+    "changeLanguageAria": "Change language",
+    "lightMode": "Light mode",
+    "darkMode": "Dark mode",
+    "changeThemeAria": "Change theme",
+    "notifications": {
+        "title": "Notifications",
+        "unreadCount_one": "{{count}} unread",
+        "unreadCount_other": "{{count}} unread",
+        "empty": "No notifications",
+        "new": "New",
+        "confirmDelete": "Delete this notification?",
+        "close": "Close",
+        "time": {
+            "now": "Just now",
+            "secondsAgo_one": "{{count}} second ago",
+            "secondsAgo_other": "{{count}} seconds ago",
+            "oneMinuteAgo": "1 minute ago",
+            "minutesAgo_one": "{{count}} minute ago",
+            "minutesAgo_other": "{{count}} minutes ago",
+            "oneHourAgo": "1 hour ago",
+            "hoursAgo_one": "{{count}} hour ago",
+            "hoursAgo_other": "{{count}} hours ago",
+            "yesterday": "Yesterday",
+            "daysAgo_one": "{{count}} day ago",
+            "daysAgo_other": "{{count}} days ago"
+        }
+    }
+    
 }

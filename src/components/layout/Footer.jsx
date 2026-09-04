@@ -16,11 +16,12 @@ export default function Footer() {
     },
     {
       titleKey: 'footer.columns.resources.title',
-      links: [
-        { to: '/actualites', labelKey: 'footer.columns.resources.actualites' },
-        { to: '/documents', labelKey: 'footer.columns.resources.documents' },
-        { to: '/admin', labelKey: 'footer.columns.resources.admin' },
-      ],
+     links: [
+      { to: '/actualites', labelKey: 'footer.columns.resources.actualites' },
+      { to: '/documents', labelKey: 'footer.columns.resources.documents' },
+      { to: '/agreements', labelKey: 'footer.columns.resources.agreements' }, // AJOUTÉ
+      { to: '/admin', labelKey: 'footer.columns.resources.admin' },
+    ],
     },
   ];
 
@@ -102,7 +103,7 @@ export default function Footer() {
             {/* Colonne 4: Localisation */}
             <div className="lg:col-span-1">
               <h3 className="text-xs font-semibold uppercase tracking-widest text-white/90 mb-5">
-                📍 Localisation
+                📍 {t('footer.location.title')}
               </h3>
               
               {/* Carte interactive */}
@@ -114,11 +115,11 @@ export default function Footer() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-white">
-                      École Supérieure en Informatique
+                      {t('footer.location.schoolName')}
                     </p>
                     <p className="text-xs text-slate-400 mt-1">
-                      Oued Smar, Alger<br/>
-                      Algérie
+                      {t('footer.location.city')}<br/>
+                      {t('footer.location.country')}
                     </p>
                     <a
                       href="https://maps.google.com/maps?q=esi+oued+smar+alger"
@@ -126,7 +127,7 @@ export default function Footer() {
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-xs text-cobalt hover:text-blue-300 transition-colors mt-2"
                     >
-                      Voir sur Maps →
+                      {t('footer.location.viewOnMaps')} →
                     </a>
                   </div>
                 </div>
@@ -135,11 +136,11 @@ export default function Footer() {
               {/* Contact info */}
               <div className="mt-4 space-y-2">
                 <p className="text-xs text-slate-400">
-                  <span className="text-white font-semibold">Email:</span><br/>
+                  <span className="text-white font-semibold">{t('footer.contact.emailLabel')}</span><br/>
                   contact@esi.dz
                 </p>
                 <p className="text-xs text-slate-400">
-                  <span className="text-white font-semibold">Tel:</span><br/>
+                  <span className="text-white font-semibold">{t('footer.contact.phoneLabel')}</span><br/>
                   +213 (0) 21 XX XX XX
                 </p>
               </div>
@@ -161,10 +162,10 @@ export default function Footer() {
             {/* Quick links */}
             <div className="flex gap-6 text-xs">
               <a href="#" className="text-slate-400 hover:text-cobalt transition-colors">
-                Politique de confidentialité
+                {t('footer.legal.privacyPolicy')}
               </a>
               <a href="#" className="text-slate-400 hover:text-cobalt transition-colors">
-                Conditions d'utilisation
+                {t('footer.legal.termsOfUse')}
               </a>
             </div>
           </div>

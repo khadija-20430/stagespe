@@ -369,7 +369,7 @@ const stats = getStats();
             transition
           "
         >
-          ➕ {t('admin.crud.add')}
+          {t('admin.crud.add')}
         </Button>
 
       </div>

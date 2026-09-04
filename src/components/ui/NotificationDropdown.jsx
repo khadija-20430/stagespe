@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getNotifications, markAsRead, deleteNotification } from '../../services/api.js';
 
@@ -16,7 +17,15 @@ const typeIcons = {
     error: '❌',
 };
 
+// Locale ICU/Intl à utiliser pour toLocaleDateString selon la langue i18n active.
+const localeMap = {
+    fr: 'fr-FR',
+    en: 'en-US',
+    ar: 'ar-DZ',
+};
+
 export default function NotificationDropdown({ onClose, onCountUpdate }) {
+    const { t, i18n } = useTranslation();
     const { user } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,7 +62,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
     };
 
     const handleDelete = async (id) => {
-        if (!confirm('Supprimer cette notification ?')) return;
+        if (!confirm(t('notifications.confirmDelete'))) return;
         setDeleting(id);
         try {
             await deleteNotification(id);
@@ -74,22 +83,22 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
             const diffMs = now - d;
             const diffSec = Math.floor(diffMs / 1000);
             
-            if (diffSec < 5) return 'À l\'instant';
-            if (diffSec < 60) return `Il y a ${diffSec} secondes`;
+            if (diffSec < 5) return t('notifications.time.now');
+            if (diffSec < 60) return t('notifications.time.secondsAgo', { count: diffSec });
             
             const diffMin = Math.floor(diffSec / 60);
-            if (diffMin < 2) return 'Il y a 1 minute';
-            if (diffMin < 60) return `Il y a ${diffMin} minutes`;
+            if (diffMin < 2) return t('notifications.time.oneMinuteAgo');
+            if (diffMin < 60) return t('notifications.time.minutesAgo', { count: diffMin });
             
             const diffHours = Math.floor(diffMin / 60);
-            if (diffHours < 2) return 'Il y a 1 heure';
-            if (diffHours < 24) return `Il y a ${diffHours} heures`;
+            if (diffHours < 2) return t('notifications.time.oneHourAgo');
+            if (diffHours < 24) return t('notifications.time.hoursAgo', { count: diffHours });
             
             const diffDays = Math.floor(diffHours / 24);
-            if (diffDays < 2) return 'Hier';
-            if (diffDays < 7) return `Il y a ${diffDays} jours`;
+            if (diffDays < 2) return t('notifications.time.yesterday');
+            if (diffDays < 7) return t('notifications.time.daysAgo', { count: diffDays });
             
-            return d.toLocaleDateString('fr-FR', {
+            return d.toLocaleDateString(localeMap[i18n.language] || 'fr-FR', {
                 day: '2-digit',
                 month: '2-digit',
                 year: 'numeric',
@@ -150,7 +159,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
                         <div className="flex items-center gap-2 flex-shrink-0">
                             {!notif.is_read && (
                                 <span className="text-[10px] font-bold uppercase text-blue-600 bg-blue-100 dark:bg-blue-900/40 px-2 py-0.5 rounded-full animate-pulse">
-                                    ● Nouveau
+                                    ● {t('notifications.new')}
                                 </span>
                             )}
                             <button
@@ -160,7 +169,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
                                 }}
                                 disabled={deleting === notif.id}
                                 className="text-slate-400 hover:text-red-500 transition text-sm"
-                                title="Supprimer"
+                                title={t('admin.crud.delete')}
                             >
                                 {deleting === notif.id ? '...' : '✕'}
                             </button>
@@ -195,9 +204,9 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
         <div className="w-96 max-h-[500px] overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl animate-scale-up">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                <h3 className="font-bold text-navy dark:text-white">🔔 Notifications</h3>
+                <h3 className="font-bold text-navy dark:text-white">🔔 {t('notifications.title')}</h3>
                 <span className="text-xs text-slate-400">
-                    {notifications.filter(n => !n.is_read).length} non lue(s)
+                    {t('notifications.unreadCount', { count: notifications.filter(n => !n.is_read).length })}
                 </span>
             </div>
 
@@ -210,7 +219,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
                 ) : notifications.length === 0 ? (
                     <div className="py-8 text-center text-slate-400">
                         <p className="text-4xl mb-2">📭</p>
-                        <p className="text-sm">Aucune notification</p>
+                        <p className="text-sm">{t('notifications.empty')}</p>
                     </div>
                 ) : (
                     notifications.map((notif) => (
@@ -228,7 +237,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
                         onClick={onClose}
                         className="text-sm text-slate-500 hover:text-cobalt transition"
                     >
-                        Fermer
+                        {t('notifications.close')}
                     </button>
                 </div>
             )}

@@ -23,13 +23,7 @@ import { mapUser, toUserPayload } from '../../services/mappers.js';
  * dans le badge ("key 'admin (fr)' returned an object instead of string").
  * On utilise donc un mapping dédié, indépendant du système de traduction.
  */
-const ROLE_LABELS = {
-  super_admin: 'Super Admin',
-  admin: 'Admin',
-  utilisateur: 'Utilisateur',
-};
-
-const roleLabel = (role) => ROLE_LABELS[role] || role;
+const roleLabel = (role, t) => t(`enums.userRole.${role}`, { defaultValue: role });
 
 const roleTone = (role) =>
   role === 'super_admin'
@@ -133,7 +127,7 @@ export default function ManageUsers() {
             }>
               {item.role === 'admin' && item.roleName
                 ? item.roleName
-                : roleLabel('utilisateur')}
+                : roleLabel('utilisateur', t)}
             </Badge>
           ),
         },

@@ -83,7 +83,7 @@ export default function Appels() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone="cobalt">{a.programme}</Badge>
-                    <Badge tone={callStatusTone(a.statut)}>{t(`enums.callStatus.${a.statut}`)}</Badge>
+                    <Badge tone={callStatusTone(a.status)}>{t(`${a.status}`)}</Badge>
                     <span className="text-xs text-slate-400">{(a.paysEligibles ?? []).join(', ')}</span>
                   </div>
                   <h3 className="mt-3 text-lg font-bold text-navy">{a.titre}</h3>

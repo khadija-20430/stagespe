@@ -6,7 +6,7 @@ import { useDarkMode } from '../../hooks/useDarkMode.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 export default function AdminNavbar() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isDark, setIsDark] = useDarkMode();
 
   const [langOpen, setLangOpen] = useState(false);
@@ -23,39 +23,74 @@ export default function AdminNavbar() {
 
   const menuItems = [
     {
-      path: '/admin/dashboard',
+      path: '/admin',
       icon: '📊',
-      label: 'Tableau de bord',
+      label: t('admin.nav.dashboard'),
     },
     {
       path: '/admin/partenaires',
       icon: '🤝',
-      label: 'Partenaires',
+      label: t('admin.nav.partners'),
     },
     {
       path: '/admin/projets',
       icon: '🔬',
-      label: 'Projets',
+      label: t('admin.nav.projects'),
     },
     {
       path: '/admin/appels',
       icon: '📢',
-      label: 'Appels à projets',
+      label: t('admin.nav.calls'),
     },
     {
       path: '/admin/mobilites',
       icon: '✈️',
-      label: 'Mobilités',
+      label: t('admin.nav.mobility'),
     },
     {
-      path: '/admin/actualites',
+      path: '/admin/news-events',
       icon: '📰',
-      label: 'Actualités',
+      label: t('admin.nav.news'),
     },
     {
       path: '/admin/documents',
       icon: '📚',
-      label: 'Documents',
+      label: t('admin.nav.documents'),
+    },
+    {
+      path: '/admin/agreements',
+      icon: '📄',
+      label: t('admin.nav.agreements'),
+    },
+    {
+      path: '/admin/users',
+      icon: '👤',
+      label: t('admin.nav.users'),
+    },
+    {
+      path: '/admin/roles',
+      icon: '🔑',
+      label: t('admin.nav.roles'),
+    },
+    {
+      path: '/admin/school-presentation',
+      icon: '🏫',
+      label: t('admin.nav.school'),
+    },
+    {
+      path: '/admin/test-acces',
+      icon: '🧪',
+      label: t('admin.nav.testAccess'),
+    },
+    {
+      path: '/admin/journal',
+      icon: '📋',
+      label: t('admin.nav.audit'),
+    },
+    {
+      path: '/admin/settings/reset-password',
+      icon: '⚙️',
+      label: t('admin.nav.settings'),
     },
   ];
 
@@ -71,9 +106,7 @@ export default function AdminNavbar() {
 
   return (
     <>
-      {/* =====================================================
-          TOP NAVBAR
-      ===================================================== */}
+      {/* TOP NAVBAR */}
       <nav
         className="
           fixed top-0 left-0 right-0
@@ -105,7 +138,7 @@ export default function AdminNavbar() {
                 hover:bg-slate-100
                 dark:hover:bg-slate-800
               "
-              aria-label="Menu"
+              aria-label={t('admin.nav.menuAria')}
             >
               ☰
             </button>
@@ -130,11 +163,10 @@ export default function AdminNavbar() {
 
             <div className="hidden sm:flex flex-col leading-tight">
               <span className="text-sm font-bold text-navy dark:text-white">
-                Admin
+                {t('admin.nav.admin')}
               </span>
-
               <span className="text-xs text-slate-500 dark:text-slate-400">
-                Dashboard
+                {t('admin.nav.dashboard')}
               </span>
             </div>
           </div>
@@ -142,18 +174,15 @@ export default function AdminNavbar() {
           {/* CENTER */}
           <div className="hidden md:block">
             <h1 className="text-lg font-bold text-navy dark:text-white">
-              Espace Admin ESI
+              {t('admin.nav.title')}
             </h1>
           </div>
 
           {/* RIGHT CONTROLS */}
           <div className="flex items-center gap-2 sm:gap-4">
 
-            {/* =================================================
-                LANGUAGE
-            ================================================= */}
+            {/* LANGUAGE */}
             <div className="relative">
-
               <button
                 onClick={() => setLangOpen(!langOpen)}
                 className="
@@ -167,7 +196,7 @@ export default function AdminNavbar() {
                   hover:text-cobalt
                   transition
                 "
-                title="Changer la langue"
+                title={t('admin.nav.changeLanguage')}
               >
                 <svg
                   className="h-5 w-5"
@@ -178,15 +207,7 @@ export default function AdminNavbar() {
                 >
                   <circle cx="12" cy="12" r="10" />
                   <path d="M2 12h20" />
-                  <path
-                    d="
-                      M12 2
-                      a15.3 15.3 0 0 1 4 10
-                      a15.3 15.3 0 0 1-4 10
-                      a15.3 15.3 0 0 1-4-10
-                      a15.3 15.3 0 0 1 4-10
-                    "
-                  />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10a15.3 15.3 0 0 1-4 10a15.3 15.3 0 0 1-4-10a15.3 15.3 0 0 1 4-10z" />
                 </svg>
               </button>
 
@@ -239,9 +260,7 @@ export default function AdminNavbar() {
               )}
             </div>
 
-            {/* =================================================
-                DARK / LIGHT MODE
-            ================================================= */}
+            {/* DARK / LIGHT MODE */}
             <button
               onClick={() => setIsDark(!isDark)}
               className="
@@ -255,17 +274,10 @@ export default function AdminNavbar() {
                 hover:text-cobalt
                 transition
               "
-              title={isDark ? 'Mode clair' : 'Mode sombre'}
+              title={isDark ? t('admin.nav.lightMode') : t('admin.nav.darkMode')}
             >
               {isDark ? (
-                /* SUN */
-                <svg
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <circle cx="12" cy="12" r="5" />
                   <line x1="12" y1="1" x2="12" y2="3" />
                   <line x1="12" y1="21" x2="12" y2="23" />
@@ -277,22 +289,13 @@ export default function AdminNavbar() {
                   <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
                 </svg>
               ) : (
-                /* MOON */
-                <svg
-                  className="h-5 w-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
+                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                 </svg>
               )}
             </button>
 
-            {/* =================================================
-                USER
-            ================================================= */}
+            {/* USER */}
             <div
               className="
                 hidden sm:flex
@@ -305,11 +308,10 @@ export default function AdminNavbar() {
             >
               <div className="text-right">
                 <p className="text-sm font-medium text-navy dark:text-white">
-                  {user?.full_name || 'Admin'}
+                  {user?.full_name || t('admin.nav.admin')}
                 </p>
-
                 <p className="text-xs text-slate-500 dark:text-slate-400 capitalize">
-                  {user?.role || 'Utilisateur'}
+                  {user?.role || t('admin.nav.user')}
                 </p>
               </div>
 
@@ -324,7 +326,7 @@ export default function AdminNavbar() {
                   rounded-lg
                   transition
                 "
-                title="Déconnexion"
+                title={t('admin.nav.logout')}
               >
                 🚪
               </button>
@@ -333,9 +335,7 @@ export default function AdminNavbar() {
         </div>
       </nav>
 
-      {/* =====================================================
-          SIDEBAR DESKTOP
-      ===================================================== */}
+      {/* SIDEBAR DESKTOP */}
       <aside
         className="
           hidden lg:flex
@@ -354,7 +354,6 @@ export default function AdminNavbar() {
           shadow-sm
         "
       >
-        {/* Menu title */}
         <div className="px-5 pt-6 pb-3">
           <p
             className="
@@ -366,13 +365,11 @@ export default function AdminNavbar() {
               dark:text-slate-500
             "
           >
-            Administration
+            {t('admin.nav.administration')}
           </p>
         </div>
 
-        {/* Menu */}
         <div className="flex-1 px-3 space-y-1 overflow-y-auto">
-
           {menuItems.map((item) => (
             <NavLink
               key={item.path}
@@ -402,27 +399,13 @@ export default function AdminNavbar() {
                 }
               `}
             >
-              <span className="text-xl">
-                {item.icon}
-              </span>
-
-              <span>
-                {item.label}
-              </span>
+              <span className="text-xl">{item.icon}</span>
+              <span>{item.label}</span>
             </NavLink>
           ))}
-
         </div>
 
-        {/* Logout bottom */}
-        <div
-          className="
-            p-3
-            border-t
-            border-slate-200
-            dark:border-slate-700
-          "
-        >
+        <div className="p-3 border-t border-slate-200 dark:border-slate-700">
           <button
             onClick={handleLogout}
             className="
@@ -439,28 +422,19 @@ export default function AdminNavbar() {
             "
           >
             <span className="text-xl">🚪</span>
-            Déconnexion
+            {t('admin.nav.logout')}
           </button>
         </div>
       </aside>
 
-      {/* =====================================================
-          SIDEBAR MOBILE
-      ===================================================== */}
+      {/* SIDEBAR MOBILE */}
       {menuOpen && (
         <>
-          {/* Overlay */}
           <div
-            className="
-              fixed inset-0
-              z-40
-              bg-black/40
-              lg:hidden
-            "
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
             onClick={() => setMenuOpen(false)}
           />
 
-          {/* Menu */}
           <aside
             className="
               fixed
@@ -479,21 +453,12 @@ export default function AdminNavbar() {
             "
           >
             <div className="px-4 pt-6 pb-3">
-              <p
-                className="
-                  text-xs
-                  font-semibold
-                  uppercase
-                  tracking-wider
-                  text-slate-400
-                "
-              >
-                Administration
+              <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                {t('admin.nav.administration')}
               </p>
             </div>
 
             <div className="px-3 space-y-1">
-
               {menuItems.map((item) => (
                 <NavLink
                   key={item.path}
@@ -521,16 +486,10 @@ export default function AdminNavbar() {
                     }
                   `}
                 >
-                  <span className="text-xl">
-                    {item.icon}
-                  </span>
-
-                  <span>
-                    {item.label}
-                  </span>
+                  <span className="text-xl">{item.icon}</span>
+                  <span>{item.label}</span>
                 </NavLink>
               ))}
-
             </div>
           </aside>
         </>

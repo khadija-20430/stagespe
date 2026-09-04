@@ -12,33 +12,11 @@ import esiLogo from '../assets/logo-esi.png';
 
 
 
-
 function Hero() {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = [
-    {
-      eyebrow: "Bienvenue",
-      title: "Portail de la coopération internationale",
-      description: "📋Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle.",
-    },
-    {
-      eyebrow: "Opportunités",
-      title: "Mobilités internationales",
-      description: "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience.",
-    },
-    {
-      eyebrow: "Partenaires",
-      title: "Réseau mondial",
-      description: "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables.",
-    },
-    {
-      eyebrow: "Projets",
-      title: "Recherche et innovation",
-      description: "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise.",
-    },
-  ];
+  const slides = t('home.hero.slides', { returnObjects: true });
 
   // Auto-play
   useEffect(() => {
@@ -51,9 +29,6 @@ function Hero() {
   const currentSlideData = slides[currentSlide];
 
   return (
-    // NOTE : le Hero est volontairement un dégradé sombre (navy) dans les
-    // deux modes (c'est un choix de design, pas une page "claire" qu'il
-    // faudrait inverser) — pas de variantes dark: nécessaires ici.
     <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
       {/* Décoration de fond animée */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
@@ -61,28 +36,23 @@ function Hero() {
         <div className="absolute -bottom-8 right-20 w-72 h-72 bg-cobalt/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-2000"></div>
       </div>
 
-<div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-  {/* Logo et titre */}
-  <div className="mb-12 flex flex-col items-center text-center">
-    {/* Logo animé et agrandir */}
-    <img 
-      src={esiLogo} 
-      alt="ESI" 
-      className="h-24 w-auto mb-4 animate-pulse-scale" 
-    />
-    
-    {/* Titre centré */}
-    <h2 className="text-4xl font-bold text-white">
-      ESI Coopération Internationale
-    </h2>
-  </div>
-        
+      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        {/* Logo et titre */}
+        <div className="mb-12 flex flex-col items-center text-center">
+          <img
+            src={esiLogo}
+            alt="ESI"
+            className="h-24 w-auto mb-4 animate-pulse-scale"
+          />
+          <h2 className="text-4xl font-bold text-white">
+            {t('home.hero.brandTitle')}
+          </h2>
+        </div>
 
         {/* CADRE ANIMÉ - CENTRÉ */}
         <div className="relative max-w-2xl mx-auto mb-8">
-          {/* Cadre avec fond gris light */}
           <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl transition-all duration-500">
-            
+
             {/* Badge avec animation */}
             <div className="mb-6 inline-block">
               <p className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in">
@@ -104,46 +74,45 @@ function Hero() {
               </p>
             </div>
 
-            {/* Indicateurs - EN BAS DU CADRE */}
+            {/* Indicateurs */}
             <div className="mt-10 flex justify-start gap-2">
               {slides.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    index === currentSlide 
-                      ? 'bg-cobalt w-10 shadow-lg shadow-cobalt/50' 
+                    index === currentSlide
+                      ? 'bg-cobalt w-10 shadow-lg shadow-cobalt/50'
                       : 'bg-slate-400/30 w-2.5 hover:bg-slate-400/60'
                   }`}
-                  aria-label={`Go to slide ${index + 1}`}
+                  aria-label={t('home.hero.slideAria', { number: index + 1 })}
                 />
               ))}
             </div>
           </div>
 
-          {/* Glow effect */}
           <div className="absolute -inset-4 bg-gradient-to-r from-slate-400/10 via-slate-300/10 to-transparent rounded-2xl blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
 
-                {/* BOUTONS - SOUS LE CADRE */}
+        {/* BOUTONS */}
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-2 gap-4">
-            <Button 
-              as={Link} 
-              to="/appels" 
+            <Button
+              as={Link}
+              to="/appels"
               size="lg"
               className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105"
             >
-              📋 Voir les appels à projets
+              📋 {t('home.hero.ctaCalls')}
             </Button>
-            
-            <Button 
-              as={Link} 
-              to="/mobilites" 
+
+            <Button
+              as={Link}
+              to="/mobilites"
               size="lg"
               className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all"
             >
-              🌍 Explorer les mobilités
+              🌍 {t('home.hero.ctaMobility')}
             </Button>
           </div>
         </div>
@@ -315,6 +284,21 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+  <div className="text-center">
+    <SectionHeading
+      center
+      eyebrow={t('home.agreements.eyebrow', 'Conventions')}
+      title={t('home.agreements.title', 'Nos accords internationaux')}
+      description={t('home.agreements.description', 'Découvrez l\'ensemble des conventions signées avec nos partenaires internationaux.')}
+    />
+    <div className="mt-8">
+      <Button as={Link} to="/agreements" size="lg" variant="primary">
+        {t('home.agreements.cta', 'Voir tous les accords')}
+      </Button>
+    </div>
+  </div>
+</section>
     </div>
   );
 }

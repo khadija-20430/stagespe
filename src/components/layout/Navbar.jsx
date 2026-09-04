@@ -23,7 +23,7 @@ function Logo() {
   );
 }
 function LanguageSwitcher({ className = '' }) {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
 
   const languages = [
@@ -40,7 +40,7 @@ function LanguageSwitcher({ className = '' }) {
           'flex items-center justify-center h-10 w-10 text-slate-700 dark:text-slate-300 hover:text-cobalt dark:hover:text-cobalt transition-all',
           className
         )}
-        title="Language / Langue / اللغة"
+        title={t('navbar.languageAria')}
       >
         {/* Globe SVG */}
         <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -76,14 +76,15 @@ function LanguageSwitcher({ className = '' }) {
 }
 
 function DarkModeToggle() {
+  const { t } = useTranslation();
   const [isDark, setIsDark] = useDarkMode();
 
   return (
     <button
       onClick={() => setIsDark(!isDark)}
       className="flex items-center justify-center h-10 w-10 text-slate-700 dark:text-slate-300 hover:text-cobalt dark:hover:text-cobalt transition-all"
-      title={isDark ? 'Light Mode' : 'Dark Mode'}
-      aria-label="Toggle dark mode"
+      title={isDark ? t('lightMode') : t('darkMode')}
+      aria-label={t('changeThemeAria')}
     >
       {isDark ? (
         // Soleil SVG
@@ -182,9 +183,10 @@ export default function Navbar() {
   ];
 
   const ressources = [
-    { to: '/actualites', label: t('navbar.actualites') },
-    { to: '/documents', label: t('navbar.documents') },
-  ];
+  { to: '/actualites', label: t('navbar.actualites') },
+  { to: '/documents', label: t('navbar.documents') },
+  { to: '/agreements', label: t('navbar.agreements') }, // AJOUTÉ
+];
 
   const allLinks = [...consultation, ...ressources];
 
@@ -221,7 +223,7 @@ export default function Navbar() {
               )
             }
           >
-             Présentation de l'école
+             {t('school.defaultTitle')}
           </NavLink>
 
           <Dropdown label={t('navbar.consultationGroup')} items={consultation} pathname={pathname}  />
@@ -248,7 +250,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setMobileOpen((v) => !v)}
             className="flex h-11 w-11 items-center justify-center rounded-lg text-navy dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-            aria-label="Menu"
+            aria-label={t('navbar.menuAria')}
             aria-expanded={mobileOpen}
           >
             <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -293,7 +295,7 @@ export default function Navbar() {
               )
             }
           >
-            Présentation de l'école
+            {t('school.defaultTitle')}
           </NavLink>
 
           <div className="my-3 border-t border-slate-200 dark:border-slate-700" />

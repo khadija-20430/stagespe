@@ -12,7 +12,10 @@
         "mobilites": "Mobilités",
         "actualites": "Actualités & événements",
         "documents": "Bibliothèque de documents",
-        "admin": "Espace admin"
+        "agreements": "Accords",
+        "admin": "Espace admin",
+        "menuAria": "Menu",
+        "languageAria": "Changer la langue"
     },
     "footer": {
         "brandName": "Coopération Internationale",
@@ -29,15 +32,34 @@
                 "title": "Ressources",
                 "actualites": "Actualités & événements",
                 "documents": "Bibliothèque de documents",
+                "agreements": "Accords",
                 "admin": "Espace administrateur"
             }
         },
         "copyright": "École Supérieure en Informatique — Tous droits réservés.",
-        "department": "Direction des Relations Internationales"
+        "department": "Direction des Relations Internationales",
+        "location": {
+            "title": "Localisation",
+            "schoolName": "École Supérieure en Informatique",
+            "city": "Oued Smar, Alger",
+            "country": "Algérie",
+            "viewOnMaps": "Voir sur Maps"
+        },
+        "contact": {
+            "emailLabel": "Email :",
+            "phoneLabel": "Tél :"
+        },
+        "legal": {
+            "privacyPolicy": "Politique de confidentialité",
+            "termsOfUse": "Conditions d'utilisation"
+        }
     },
     "common": {
         "all": "Tous",
-        "allFem": "Toutes"
+        "allFem": "Toutes",
+        "pays": "Pays",
+        "debut": "Début",
+        "fin": "Fin"
     },
     "appels": {
         "eyebrow": "Financements",
@@ -108,8 +130,38 @@
             "title": "Portail de la coopération internationale",
             "description": "Centralisez et découvrez l'ensemble des activités internationales de l'école : projets de recherche, appels à projets, opportunités de mobilité et partenariats académiques à travers le monde.",
             "ctaCalls": "Voir les appels à projets",
-            "ctaMobility": "Explorer les mobilités"
+            "ctaMobility": "Explorer les mobilités",
+            "brandTitle": "ESI Coopération Internationale",
+"slideAria": "Aller à la diapositive {{number}}",
+"slides": [
+  {
+    "eyebrow": "Bienvenue",
+    "title": "Portail de la coopération internationale",
+    "description": "📋 Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle."
+  },
+  {
+    "eyebrow": "Opportunités",
+    "title": "Mobilités internationales",
+    "description": "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience."
+  },
+  {
+    "eyebrow": "Partenaires",
+    "title": "Réseau mondial",
+    "description": "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables."
+  },
+  {
+    "eyebrow": "Projets",
+    "title": "Recherche et innovation",
+    "description": "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise."
+  }
+]
         },
+        "agreements": {
+      "eyebrow": "Conventions",
+      "title": "Nos accords internationaux",
+      "description": "Découvrez l'ensemble des conventions signées avec nos partenaires internationaux.",
+      "cta": "Voir tous les accords"
+    },
         "stats": {
             "partners": "Partenaires internationaux",
             "projects": "Projets de recherche actifs",
@@ -199,7 +251,8 @@
         "fields": {
             "duration": "Durée",
             "level": "Niveau",
-            "programme": "Programme"
+            "programme": "Programme",
+            "audience": "Public visé"
         },
         "apply": "Candidater"
     },
@@ -210,21 +263,16 @@
     },
     "admin": {
         "title": "Administration",
-        "nav": {
-            "dashboard": "Tableau de bord",
-            "partners": "Partenaires",
-            "projects": "Projets",
-            "calls": "Appels à projets",
-            "mobility": "Mobilités",
-            "documents": "Documents"
-        },
         "logout": "Se déconnecter",
         "menuAria": "Menu",
         "exit": "Quitter",
         "dashboard": {
             "title": "Tableau de bord",
-            "description": "Vue d'ensemble et gestion des contenus du portail."
-
+            "description": "Vue d'ensemble et gestion des contenus du portail.",
+            "about": {
+                "title": "À propos de cette interface",
+                "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
+            }
         },
         "login": {
             "brand": "Espace administrateur",
@@ -253,99 +301,30 @@
             "itemsCount_one": "{{count}} élément",
             "itemsCount_other": "{{count}} éléments"
         },
-        "appels": {
-            "columns": {
-                "titre": "Titre",
-                "programme": "Programme",
-                "pays": "Pays",
-                "statut": "Statut",
-                "dateLimite": "Échéance"
-            },
-            "fields": {
-                "titre": "Titre",
-                "programme": "Programme",
-                "pays": "Pays / zone",
-                "statut": "Statut",
-                "dateLimite": "Date limite",
-                "budget": "Dotation",
-                "resume": "Résumé"
-            }
-        },
-        "documents": {
-            "columns": {
-                "nom": "Nom",
-                "categorie": "Catégorie",
-                "format": "Format",
-                "taille": "Taille",
-                "date": "Date"
-            },
-            "fields": {
-                "nom": "Nom du document",
-                "categorie": "Catégorie",
-                "format": "Format",
-                "taille": "Taille",
-                "date": "Date",
-                "lien": "Lien"
-            }
-        },
-        "mobilites": {
-            "columns": {
-                "destination": "Destination",
-                "pays": "Pays",
-                "type": "Type",
-                "niveau": "Niveau",
-                "places": "Places"
-            },
-            "fields": {
-                "destination": "Destination",
-                "pays": "Pays",
-                "type": "Type",
-                "niveau": "Niveau",
-                "duree": "Durée",
-                "places": "Places",
-                "programme": "Programme",
-                "description": "Description"
-            }
-        },
-        "partenaires": {
-            "columns": {
-                "nom": "Nom",
-                "pays": "Pays",
-                "type": "Type",
-                "accord": "Accord",
-                "depuis": "Depuis"
-            },
-            "fields": {
-                "nom": "Nom",
-                "pays": "Pays",
-                "ville": "Ville",
-                "type": "Type",
-                "accord": "Type d'accord",
-                "depuis": "Partenaire depuis",
-                "domaines": "Domaines",
-                "logo": "Emoji / logo"
-            }
-        },
-        "projets": {
-            "columns": {
-                "titre": "Titre",
-                "programme": "Programme",
-                "statut": "Statut",
-                "budget": "Budget",
-                "coordinateur": "Coordinateur"
-            },
-            "fields": {
-                "titre": "Titre",
-                "programme": "Programme",
-                "statut": "Statut",
-                "coordinateur": "Coordinateur",
-                "budget": "Budget",
-                "debut": "Date de début",
-                "fin": "Date de fin",
-                "pays": "Pays",
-                "partenaires": "Partenaires",
-                "resume": "Résumé"
-            }
+        "nav": {
+            "menuAria": "Ouvrir le menu",
+            "admin": "Administration",
+            "title": "Panneau d'administration",
+            "dashboard": "Tableau de bord",
+            "partners": "Partenaires",
+            "projects": "Projets",
+            "calls": "Appels à projets",
+            "mobility": "Mobilités",
+            "news": "Actualités & événements",
+            "documents": "Documents",
+            "agreements": "Accords",
+            "users": "Utilisateurs",
+            "roles": "Rôles & permissions",
+            "school": "Présentation de l'école",
+            "testAccess": "Tester RBAC",
+            "audit": "Journal d'audit",
+            "settings": "Paramètres",
+            "changeLanguage": "Changer la langue",
+            "lightMode": "Mode clair",
+            "darkMode": "Mode sombre",
+            "user": "Utilisateur",
+            "logout": "Se déconnecter",
+            "administration": "Administration"
         }
     },
     "school": {
@@ -429,6 +408,11 @@
             "public": "Public",
             "staff": "Personnel interne",
             "admin": "Administrateurs"
+        },
+        "userRole": {
+            "super_admin": "Super administrateur",
+            "admin": "Administrateur",
+            "utilisateur": "Utilisateur"
         }
     },
     "dashboard": "Tableau de bord",
@@ -525,5 +509,63 @@
     "research": "Recherche",
     "staff": "Personnel",
     "internship": "Stage",
-    "summer_school": "École d'été"
+    "summer_school": "École d'été",
+    "adresse": "Adresse",
+    "agreements": "Conventions",
+    "datePublication": "Date de publication",
+    "email": "E-mail",
+    "inactive": "Inactif",
+    "lastLogin": "Dernière connexion",
+    "lienOfficiel": "Lien officiel",
+    "organismeFinanceur": "Organisme financeur",
+    "password": "Mot de passe",
+    "presentationEcole": "Présentation de l'école",
+    "role": "Rôle",
+    "tauxFinancement": "Taux de financement",
+    "typeAction": "Type d'action",
+    "users": "Utilisateurs",
+    "adminRoles": "Rôles & permissions",
+    "adminTestAccess": "Tester RBAC",
+    "adminAuditLog": "Journal d'audit",
+    "agreementsList": {
+        "eyebrow": "Partenariats",
+        "title": "Nos accords de partenariat",
+        "description": "Conventions et accords signés avec nos partenaires internationaux.",
+        "empty": "Aucun accord disponible pour le moment.",
+        "partner": "Partenaire",
+        "period": "Période",
+        "viewPdf": "Consulter le PDF",
+        "linkedDocuments": "Documents liés",
+        "itemsCount": "accords"
+    },
+    "adminFallbackName": "Admin",
+    "adminSpaceTitle": "Espace Admin ESI",
+    "changeLanguageAria": "Changer la langue",
+    "lightMode": "Mode clair",
+    "darkMode": "Mode sombre",
+    "changeThemeAria": "Changer le thème",
+    "notifications": {
+        "title": "Notifications",
+        "unreadCount_one": "{{count}} non lue",
+        "unreadCount_other": "{{count}} non lues",
+        "empty": "Aucune notification",
+        "new": "Nouveau",
+        "confirmDelete": "Supprimer cette notification ?",
+        "close": "Fermer",
+        "time": {
+            "now": "À l'instant",
+            "secondsAgo_one": "Il y a {{count}} seconde",
+            "secondsAgo_other": "Il y a {{count}} secondes",
+            "oneMinuteAgo": "Il y a 1 minute",
+            "minutesAgo_one": "Il y a {{count}} minute",
+            "minutesAgo_other": "Il y a {{count}} minutes",
+            "oneHourAgo": "Il y a 1 heure",
+            "hoursAgo_one": "Il y a {{count}} heure",
+            "hoursAgo_other": "Il y a {{count}} heures",
+            "yesterday": "Hier",
+            "daysAgo_one": "Il y a {{count}} jour",
+            "daysAgo_other": "Il y a {{count}} jours"
+        }
+    }
+   
 }

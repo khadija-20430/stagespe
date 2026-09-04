@@ -44,7 +44,7 @@ export default function AdminLayout() {
     },
 {
   to: '/admin/school-presentation',
-  label: 'Présentation école',
+  label: t('presentationEcole'),
   icon: '🏫',
   requiredPerm: 'school_presentation.view',
 },
@@ -103,25 +103,25 @@ export default function AdminLayout() {
     // ils restent donc réservés au rôle super_admin (comme protégé côté backend).
     {
       to: '/admin/roles',
-      label: 'Rôles & permissions',
+      label: t('adminRoles'),
       icon: '🔐',
       superAdminOnly: true,
     },
     {
       to: '/admin/test-acces',
-      label: 'Tester RBAC',
+      label: t('adminTestAccess'),
       icon: '🧪',
       superAdminOnly: true,
     },
     {
       to: '/admin/journal',
-      label: "Journal d'audit",
+      label: t('adminAuditLog'),
       icon: '📜',
       superAdminOnly: true,
     },
     {
       to: '/admin/settings/reset-password',
-      label: 'Mot de passe',
+      label: t('password'),
       icon: '🔑',
       superAdminOnly: true,
     },
@@ -268,7 +268,7 @@ export default function AdminLayout() {
             </p>
 
             <p className="text-xs text-slate-400">
-              Dashboard
+              {t('dashboard')}
             </p>
           </div>
         </Link>
@@ -287,11 +287,11 @@ export default function AdminLayout() {
             className="px-3 text-xs text-slate-400 truncate"
             translate="no"
           >
-            {user?.email || 'Admin'}
+            {user?.email || t('adminFallbackName')}
           </p>
 
           <p className="px-3 mt-1 text-xs text-slate-500">
-            {user?.role || 'Utilisateur'}
+            {user?.role || t('enums.userRole.utilisateur')}
           </p>
 
           <button
@@ -412,7 +412,7 @@ export default function AdminLayout() {
           <div className="hidden md:block">
 
             <h1 className="text-lg font-bold text-navy dark:text-white">
-              Espace Admin ESI
+              {t('adminSpaceTitle')}
             </h1>
 
           </div>
@@ -443,7 +443,7 @@ export default function AdminLayout() {
                   dark:hover:bg-slate-800
                   transition
                 "
-                title="Changer la langue"
+                title={t('changeLanguageAria')}
               >
                 🌐
               </button>
@@ -538,8 +538,8 @@ export default function AdminLayout() {
                 dark:hover:bg-slate-800
                 transition
               "
-              title={isDark ? 'Mode clair' : 'Mode sombre'}
-              aria-label="Changer le thème"
+              title={isDark ? t('lightMode') : t('darkMode')}
+              aria-label={t('changeThemeAria')}
             >
               {isDark ? '☀️' : '🌙'}
             </button>
@@ -566,11 +566,11 @@ export default function AdminLayout() {
             <div className="hidden sm:block text-right">
 
               <p className="text-sm font-medium text-navy dark:text-white">
-                {user?.full_name || 'Admin'}
+                {user?.full_name || t('adminFallbackName')}
               </p>
 
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                {user?.role || 'Utilisateur'}
+                {user?.role || t('enums.userRole.utilisateur')}
               </p>
 
             </div>
@@ -590,7 +590,7 @@ export default function AdminLayout() {
                 dark:hover:bg-red-900/20
                 transition
               "
-              title="Déconnexion"
+              title={t('admin.logout')}
             >
               🚪
             </button>
@@ -647,11 +647,11 @@ export default function AdminLayout() {
                   className="px-3 text-xs text-slate-400 truncate"
                   translate="no"
                 >
-                  {user?.email || 'Admin'}
+                  {user?.email || t('adminFallbackName')}
                 </p>
 
                 <p className="px-3 mt-1 text-xs text-slate-500">
-                  {user?.role || 'Utilisateur'}
+                  {user?.role || t('enums.userRole.utilisateur')}
                 </p>
 
                 <button

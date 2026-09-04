@@ -34,7 +34,7 @@ import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
 import ManageSchool from './pages/admin/Manageschool.jsx';
-
+import AgreementsList from './pages/AgreementsList.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -49,6 +49,7 @@ export default function App() {
     <AuthProvider>
       <ScrollToTop />
       <Routes>
+        {/* Routes publiques avec layout */}
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/cooperation" element={<Cooperation />} />
@@ -58,12 +59,16 @@ export default function App() {
           <Route path="/actualites" element={<Actualites />} />
           <Route path="/actualites/:id" element={<ActualiteDetail />} />
           <Route path="/documents" element={<Documents />} />
+          <Route path="/agreements" element={<AgreementsList />} />
           <Route path="/school" element={<School />} />
         </Route>
 
+        {/* Routes d'authentification */}
         <Route path="/admin/login" element={<Login />} />
         <Route path="/admin/forgot-password" element={<ForgotPassword />} />
         <Route path="/admin/reset-password" element={<ResetPassword />} />
+
+        {/* Routes admin protégées */}
         <Route
           path="/admin"
           element={
@@ -87,12 +92,10 @@ export default function App() {
           <Route path="roles" element={<ManageRoles />} />
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />
-          <Route
-            path="settings/reset-password"
-            element={<ManageResetSettings />}
-          />
+          <Route path="settings/reset-password" element={<ManageResetSettings />} />
         </Route>
 
+        {/* Route 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AuthProvider>
