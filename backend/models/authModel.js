@@ -178,3 +178,7 @@ exports.updateUserProfile = async(id, { full_name, email }) => {
     );
     return result.rows[0];
 };
+exports.findRoleById = async(roleId) => {
+    const result = await pool.query('SELECT id, name FROM roles WHERE id = $1', [roleId]);
+    return result.rows[0];
+};

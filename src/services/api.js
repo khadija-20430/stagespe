@@ -1363,3 +1363,41 @@ export const deleteSchoolPresentation = async (id) => {
 export const deleteSchoolTranslation = async (translationId) => {
     return authRequest(`/school-presentation/translations/${translationId}`, { method: 'DELETE' });
 };
+// ============================================================
+// NOTIFICATIONS
+// ============================================================
+
+export const getNotifications = async (limit = 50, offset = 0) => {
+    const data = await authRequest(`/notifications?limit=${limit}&offset=${offset}`);
+    return data;
+};
+
+export const getUnreadNotifications = async () => {
+    const data = await authRequest('/notifications/unread');
+    return data;
+};
+
+export const getUnreadCount = async () => {
+    const data = await authRequest('/notifications/unread/count');
+    return data;
+};
+
+export const markAsRead = async (id) => {
+    const data = await authRequest(`/notifications/${id}/read`, { method: 'PUT' });
+    return data;
+};
+
+export const markAllAsRead = async () => {
+    const data = await authRequest('/notifications/read-all', { method: 'PUT' });
+    return data;
+};
+
+export const deleteNotification = async (id) => {
+    const data = await authRequest(`/notifications/${id}`, { method: 'DELETE' });
+    return data;
+};
+
+export const deleteAllNotifications = async () => {
+    const data = await authRequest('/notifications', { method: 'DELETE' });
+    return data;
+};

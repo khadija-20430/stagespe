@@ -10,6 +10,8 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { usePermissions } from '../../context/PermissionsContext.jsx';
 import { useDarkMode } from '../../hooks/useDarkMode.js';
+import NotificationBell from '../../components/ui/NotificationBell.jsx';
+
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
@@ -120,7 +122,7 @@ export default function AdminLayout() {
     // Dans le tableau links, ajoute :
 {
   to: '/admin/school-presentation',
-  label: '🏫 Présentation école',
+  label: 'Présentation école',
   icon: '🏫',
   requiredPerm: 'school_presentation.view',
 },
@@ -541,7 +543,10 @@ export default function AdminLayout() {
             >
               {isDark ? '☀️' : '🌙'}
             </button>
-
+            
+            {/* 🔔 NOTIFICATIONS */}
+            
+            <NotificationBell />
 
             {/* Separator */}
 

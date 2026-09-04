@@ -964,3 +964,9 @@ CREATE TRIGGER trg_grant_new_permission_to_super_admin
 AFTER INSERT ON permissions
 FOR EACH ROW
 EXECUTE FUNCTION grant_new_permission_to_super_admin();
+-- Supprimer l'ancienne contrainte
+ALTER TABLE notifications DROP CONSTRAINT notifications_type_check;
+
+-- Créer la nouvelle contrainte avec toutes les valeurs autorisées
+ALTER TABLE notifications ADD CONSTRAINT notifications_type_check 
+CHECK (type IN ('info', 'warning', 'success', 'error'));

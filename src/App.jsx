@@ -35,6 +35,7 @@ import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
 import ManageSchool from './pages/admin/ManageSchool.jsx';
 
+
 function ScrollToTop() {
   const { pathname } = useLocation();
   useEffect(() => {

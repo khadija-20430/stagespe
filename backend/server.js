@@ -7,6 +7,7 @@ require('dotenv').config();
 const { globalLimiter, loginLimiter } = require('./middleware/rateLimiter');
 const sanitizeBody = require('./middleware/sanitize');
 const ensureSuperAdmin = require('./lib/bootstrapAdmin');
+const { runAllJobs } = require('./services/notificationScheduler');
 
 const app = express();
 
@@ -57,7 +58,7 @@ app.use('/api/document-categories', require('./routes/documentCategoriesRoutes')
 app.use('/api/documents', require('./routes/documentsRoutes'));
 
 // ============================================================
-// ROUTES SCHOOL PRESENTATION ← AJOUT
+// ROUTES SCHOOL PRESENTATION
 // ============================================================
 app.use('/api/school-presentation', require('./routes/schoolPresentationRoutes'));
 
@@ -92,5 +93,16 @@ const PORT = process.env.PORT || 5000;
 ensureSuperAdmin().finally(() => {
     app.listen(PORT, () => {
         console.log(`Serveur backend lancé sur le port ${PORT}`);
+
+        // Exécuter les jobs de notification au démarrage
+        runAllJobs().catch(err => console.error('[INIT] Erreur jobs notifications:', err));
     });
 });
+
+// ============================================================
+// 🕐 CRON JOB : EXÉCUTER UNE FOIS PAR JOUR
+// ============================================================
+console.log('[NOTIFICATIONS] Exécution planifiée toutes les 24 heures');
+setInterval(() => {
+    runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
+}, 24 * 60 * 60 * 1000); // 24 heures
