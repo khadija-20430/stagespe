@@ -321,10 +321,13 @@ export const toUserPayload = (draft) => {
 // Dans mappers.js - À la fin du fichier
 // Copier le contenu de mappers_additions.js
 // services/api.js
+// ============================================================
+// À AJOUTER À LA FIN DE: src/services/mappers.js
+// ============================================================
 
 export const mapAgreement = (row) => ({
     id: row.id,
-    partnerId: row.partner_id, // Correspondance snake_case -> camelCase
+    partnerId: row.partner_id,
     partnerName: row.partner_name,
     titre: row.title,
     type: row.type,
@@ -340,19 +343,17 @@ export const mapAgreement = (row) => ({
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     documents: row.documents || [],
-    
-    // NOUVEAU : Champs provenant de la vue agreements_expiring_soon
     daysRemaining: row.days_remaining,
     urgencyLevel: row.urgency_level,
     alertMessage: row.alert_message,
 });
 
 export const toAgreementPayload = (draft) => ({
-    partner_id: draft.partnerId, // CORRIGÉ : Envoi de partner_id au lieu de partnerId
-    title: draft.titre,          // CORRIGÉ : Envoi de title au lieu de titre
+    partner_id: draft.partnerId,
+    title: draft.titre,
     type: draft.type || null,
     description: draft.description || null,
-    terms_conditions: draft.termes || null, // CORRIGÉ
+    terms_conditions: draft.termes || null,
     fichier_pdf: draft.fichierPdf || null,
     signature_date: draft.dateSignature || null,
     start_date: draft.dateDebut || null,

@@ -8,17 +8,45 @@ import {
     getPartenairesAdmin,
     getAgreementsExpiringSoon,
     uploadFile,
+    getFileUrl,
 } from '../../services/api.js';
-import {toAgreementPayload} from '../../services/mappers.js';
+import { toAgreementPayload } from '../../services/mappers.js';
+
+// ============================================================
+// FONCTION UTILITAIRE : TÉLÉCHARGEMENT SÉCURISÉ
+// ============================================================
+const downloadFileSecure = async (path, fallbackName) => {
+    try {
+        const url = getFileUrl(path);
+        if (!url) throw new Error('Aucun fichier disponible');
+
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`Impossible de télécharger (${response.status})`);
+
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = fallbackName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+        alert(error.message || "Erreur lors du téléchargement");
+    }
+};
 
 const ManageAgreements = () => {
-    // ===== STATE (Toutes les variables sont déclarées ici) =====
+    // ===== STATE =====
     const [agreements, setAgreements] = useState([]);
     const [partners, setPartners] = useState([]);
     const [expiringAgreements, setExpiringAgreements] = useState([]);
-    const [loading, setLoading] = useState(false); // <--- C'EST ICI QUE loading EST DÉCLARÉ
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [downloadingFileId, setDownloadingFileId] = useState(null);
 
     // Modal states
     const [showModal, setShowModal] = useState(false);
@@ -37,6 +65,7 @@ const ManageAgreements = () => {
         dateFin: '',
         statut: 'active',
         statutPublication: 'draft',
+        fichierPdf: null, // AJOUT : pour stocker le chemin du fichier
     });
 
     // Filters
@@ -49,7 +78,7 @@ const ManageAgreements = () => {
     useEffect(() => {
         fetchData();
         fetchExpiringAgreements();
-    }, [filters]); // Attention: si filters change, ça recharge tout. C'est voulu ici.
+    }, [filters]);
 
     // ===== FETCH EXPIRING AGREEMENTS =====
     const fetchExpiringAgreements = async () => {
@@ -58,7 +87,6 @@ const ManageAgreements = () => {
             setExpiringAgreements(data || []);
         } catch (err) {
             console.error('Error fetching expiring agreements:', err);
-            // Ne pas mettre setError ici pour ne pas bloquer l'écran si ça échoue
         }
     };
 
@@ -73,12 +101,10 @@ const ManageAgreements = () => {
 
             let filtered = agreementsData || [];
 
-            // Filtrer par statut
             if (filters.statut) {
                 filtered = filtered.filter((a) => a.statut === filters.statut);
             }
 
-            // Filtrer par partenaire (par ID)
             if (filters.partnerId) {
                 filtered = filtered.filter((a) => a.partnerId === parseInt(filters.partnerId));
             }
@@ -91,6 +117,24 @@ const ManageAgreements = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // ===== FONCTION TÉLÉCHARGER =====
+    const handleDownloadPDF = async (agreement) => {
+        if (!agreement.fichierPdf) {
+            setError(`Aucun fichier PDF pour l'accord "${agreement.titre}"`);
+            setTimeout(() => setError(''), 3000);
+            return;
+        }
+
+        const fileName = `${agreement.titre.replace(/\s+/g, '_')}.pdf`;
+        setDownloadingFileId(agreement.id);
+        
+        await downloadFileSecure(agreement.fichierPdf, fileName);
+        
+        setDownloadingFileId(null);
+        setSuccess(`Téléchargement de "${agreement.titre}" commencé`);
+        setTimeout(() => setSuccess(''), 3000);
     };
 
     // ===== EXPORT EXCEL =====
@@ -117,6 +161,7 @@ const ManageAgreements = () => {
                 'Statut publication': a.statutPublication === 'published' ? 'Publié' :
                                      a.statutPublication === 'archived' ? 'Archivé' :
                                      a.statutPublication === 'draft' ? 'Brouillon' : a.statutPublication || '',
+                'Fichier PDF': a.fichierPdf ? 'Oui' : 'Non',
                 'Description': a.description || '',
             }));
 
@@ -125,7 +170,7 @@ const ManageAgreements = () => {
             ws['!cols'] = [
                 { wch: 10 }, { wch: 40 }, { wch: 30 }, { wch: 20 },
                 { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
-                { wch: 15 }, { wch: 50 },
+                { wch: 15 }, { wch: 10 }, { wch: 50 },
             ];
 
             const wb = XLSX.utils.book_new();
@@ -158,6 +203,7 @@ const ManageAgreements = () => {
                 dateFin: agreement.dateFin || '',
                 statut: agreement.statut || 'active',
                 statutPublication: agreement.statutPublication || 'draft',
+                fichierPdf: agreement.fichierPdf || null,
             });
             setUploadedFile(agreement.fichierPdf || null);
         } else {
@@ -166,6 +212,7 @@ const ManageAgreements = () => {
                 titre: '', partnerId: '', type: '', description: '', termes: '',
                 dateSignature: '', dateDebut: '', dateFin: '',
                 statut: 'active', statutPublication: 'draft',
+                fichierPdf: null,
             });
             setUploadedFile(null);
         }
@@ -190,13 +237,18 @@ const ManageAgreements = () => {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
+    // ===== HANDLER UPLOAD FICHIER =====
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
         try {
             const result = await uploadFile(file);
-            setUploadedFile(result.fichier_url || result.file_path);
+            const filePath = result.fichier_url || result.file_path;
+
+            setForm((prev) => ({ ...prev, fichierPdf: filePath }));
+            setUploadedFile(filePath);
+
             setSuccess('Fichier uploadé avec succès');
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
@@ -221,6 +273,7 @@ const ManageAgreements = () => {
         return true;
     };
 
+    // ===== CORRECTION DU HANDLE SAVE (Ne ferme plus la modale trop tôt) =====
     const handleSave = async (e) => {
         e.preventDefault();
 
@@ -228,7 +281,6 @@ const ManageAgreements = () => {
 
         setLoading(true);
         try {
-            // Utilisation de toAgreementPayload pour convertir camelCase -> snake_case
             const payload = toAgreementPayload(form);
 
             if (editingId) {
@@ -239,9 +291,12 @@ const ManageAgreements = () => {
                 setSuccess('Accord créé avec succès');
             }
 
+            // On attend que les données soient à jour AVANT de fermer
+            await fetchData();
+            await fetchExpiringAgreements();
+            
+            // Ensuite on ferme proprement
             handleCloseModal();
-            fetchData();
-            fetchExpiringAgreements();
             setError('');
         } catch (err) {
             setError(err.message || "Erreur lors de la sauvegarde");
@@ -257,8 +312,8 @@ const ManageAgreements = () => {
         try {
             await deleteAgreement(id);
             setSuccess('Accord supprimé avec succès');
-            fetchData();
-            fetchExpiringAgreements();
+            await fetchData();
+            await fetchExpiringAgreements();
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError(err.message || 'Erreur lors de la suppression');
@@ -268,7 +323,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== CALCUL DES ALERTES D'EXPIRATION (Fallback) =====
+    // ===== CALCUL DES ALERTES D'EXPIRATION =====
     const getExpirationAlert = (endDate) => {
         if (!endDate) return null;
         
@@ -365,12 +420,12 @@ const ManageAgreements = () => {
                                 <th>Jours restants</th>
                                 <th>Statut</th>
                                 <th>Publication</th>
+                                <th>Fichier</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {agreements.map((agreement) => {
-                                // Priorité aux données de la vue SQL si elles existent
                                 let alert = null;
                                 if (agreement.daysRemaining !== undefined && agreement.daysRemaining !== null) {
                                     alert = {
@@ -379,7 +434,6 @@ const ManageAgreements = () => {
                                         message: agreement.alertMessage || `⚠️ ${agreement.daysRemaining} jours`
                                     };
                                 } else {
-                                    // Fallback si la vue n'est pas utilisée
                                     const calculated = getExpirationAlert(agreement.dateFin);
                                     if (calculated) alert = calculated;
                                 }
@@ -425,8 +479,40 @@ const ManageAgreements = () => {
                                                  agreement.statutPublication === 'archived' ? 'Archivé' : 'Brouillon'}
                                             </span>
                                         </td>
+                                        
+                                        {/* ===== COLONNE FICHIER (Voir + Télécharger) ===== */}
+                                        <td className="file-cell">
+                                            {agreement.fichierPdf ? (
+                                                <div className="flex items-center gap-3">
+                                                    <a
+                                                        href={getFileUrl(agreement.fichierPdf)}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-cobalt hover:text-blue-700 font-medium transition"
+                                                        title="Voir le fichier PDF"
+                                                    >
+                                                        👁️ <span>Voir</span>
+                                                    </a>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleDownloadPDF(agreement)}
+                                                        disabled={downloadingFileId === agreement.id}
+                                                        className="inline-flex items-center gap-1 text-green-600 hover:text-green-700 font-medium transition"
+                                                        title="Télécharger le PDF"
+                                                    >
+                                                        {downloadingFileId === agreement.id ? '⏳' : '⬇️'} 
+                                                        <span>Télécharger</span>
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <span className="text-slate-400">Aucun fichier</span>
+                                            )}
+                                        </td>
+
                                         <td className="actions">
                                             <button
+                                                type="button"
                                                 className="btn-edit"
                                                 onClick={() => handleOpenModal(agreement)}
                                                 title="Modifier"
@@ -434,6 +520,7 @@ const ManageAgreements = () => {
                                                 ✎
                                             </button>
                                             <button
+                                                type="button"
                                                 className="btn-delete"
                                                 onClick={() => handleDelete(agreement.id)}
                                                 title="Supprimer"

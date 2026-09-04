@@ -13,15 +13,14 @@ import {
     mapActualite,
     mapDocument,
     mapStats,
-    
-    mapAgreement,  // ← BIEN AJOUTER CETTE LIGNE
+    mapAgreement,          // ← AJOUTER
     toAppelPayload,
     toProjetPayload,
     toMobilitePayload,
     toActualitePayload,
     toPartnerPayload,
     toDocumentPayload,
-    toAgreementPayload,  // ← AJOUTER AUSSI
+    toAgreementPayload,    // ← AJOUTER
 } from './mappers.js';
 
 
@@ -1151,6 +1150,21 @@ export const deleteUser = (
 // ============================================================
 // ACCORDS / AGREEMENTS
 // ============================================================
+// ============================================================
+// À AJOUTER DANS: src/services/api.js
+// ============================================================
+
+// 1️⃣ EN HAUT (avec les autres imports):
+// Ajouter mapAgreement et toAgreementPayload aux imports existants
+
+
+
+
+// 2️⃣ AJOUTER À LA FIN DU FICHIER (après deleteUser):
+
+// ============================================================
+// ACCORDS / AGREEMENTS
+// ============================================================
 
 export const getAgreements = async() => {
     const data = await request('/agreements');
@@ -1197,6 +1211,7 @@ export const deleteAgreement = (id) =>
     });
 
 // FILE UPLOAD
+
 export const uploadAgreementFile = async(file) => {
     const formData = new FormData();
     formData.append('file', file);
