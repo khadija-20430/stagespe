@@ -277,6 +277,7 @@
     "dashboard": {
       "title": "Tableau de bord",
       "description": "Vue d'ensemble et gestion des contenus du portail.",
+      "backToSite": "Voir le site visiteur",
       "about": {
         "title": "À propos de cette interface",
         "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
@@ -332,7 +333,8 @@
       "darkMode": "Mode sombre",
       "user": "Utilisateur",
       "logout": "Se déconnecter",
-      "administration": "Administration"
+      "administration": "Administration",
+      "backToSite": "Voir le site"
     }
   },
   "school": {

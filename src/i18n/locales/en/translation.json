@@ -277,6 +277,7 @@
     "dashboard": {
       "title": "Dashboard",
       "description": "Overview and content management for the portal (mock data).",
+      "backToSite": "View visitor site",
       "about": {
         "title": "About this interface",
         "text": "This admin interface simulates CRUD operations (create, read, update, delete) in memory. Changes are not persisted: they disappear on page reload. The services layer (<code>/src/services</code>) is ready to connect to an external REST API."
@@ -332,7 +333,8 @@
       "darkMode": "Dark Mode",
       "user": "User",
       "logout": "Log out",
-      "administration": "Administration"
+      "administration": "Administration",
+      "backToSite": "View site"
     }
   },
   "school": {

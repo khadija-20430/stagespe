@@ -1031,3 +1031,16 @@ textarea {
     border-color: #78350f;
     color: #fcd34d;
 }
+/* Animation rotation flèche sidebar */
+aside button svg {
+    transition: transform 0.3s ease;
+}
+@keyframes gentle-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+/* Classe pour animer la flèche du logo */
+.animate-gentle-bounce {
+  animation: gentle-bounce 2s ease-in-out infinite;
+}
