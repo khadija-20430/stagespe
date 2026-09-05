@@ -1,7 +1,5 @@
 import { cn } from '../../lib/utils.js';
 
-// Bouton réutilisable — cible cliquable minimum 44px.
-// variant: 'primary' (cobalt plein) | 'secondary' (contour) | 'ghost' | 'navy'
 export default function Button({
   variant = 'primary',
   size = 'md',
@@ -21,9 +19,9 @@ export default function Button({
   const variants = {
     primary: 'bg-cobalt text-white hover:bg-blue-700',
     secondary:
-      'border border-slate-300 bg-white text-navy hover:border-cobalt hover:text-cobalt',
-    navy: 'bg-navy text-white hover:bg-slate-800',
-    ghost: 'text-navy hover:bg-slate-100',
+      'border border-slate-300 bg-white text-navy hover:border-cobalt hover:text-cobalt dark:border-slate-600 dark:bg-slate-800 dark:text-white dark:hover:border-cobalt dark:hover:text-blue-400',
+    navy: 'bg-navy text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600',
+    ghost: 'text-navy hover:bg-slate-100 dark:text-white dark:hover:bg-slate-800',
     danger: 'bg-red-600 text-white hover:bg-red-700',
   };
 

@@ -41,19 +41,19 @@ export default function Cooperation() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2">
           {axes.map((a) => (
             <Card key={a.key} className="flex gap-4 p-6">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-2xl">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-cobalt/20 text-2xl">
                 {a.icone}
               </div>
               <div>
-                <h3 className="text-lg font-bold text-navy">{a.titre}</h3>
-                <p className="mt-1.5 text-sm text-slate-600">{a.texte}</p>
+                <h3 className="text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
+                <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">{a.texte}</p>
               </div>
             </Card>
           ))}
         </div>
       </section>
 
-      <section className="bg-surface">
+      <section className="bg-surface dark:bg-slate-800">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <SectionHeading
             eyebrow={t('cooperation.partnersSection.eyebrow')}
@@ -71,37 +71,37 @@ export default function Cooperation() {
                       <img
                         src={getFileUrl(p.logo)}
                         alt={p.nom}
-                        className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 object-contain bg-white"
+                        className="h-10 w-10 shrink-0 rounded-lg border border-slate-100 dark:border-slate-700 object-contain bg-white"
                       />
                     ) : (
                       <span className="text-3xl">🏫</span>
                     )}
                     <div>
-                      <h3 className="font-bold text-navy">{p.nom}</h3>
-                      <p className="text-sm text-slate-500">{p.ville}, {p.pays}</p>
+                      <h3 className="font-bold text-navy dark:text-white">{p.nom}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{p.ville}, {p.pays}</p>
                     </div>
                   </div>
                   <dl className="mt-4 space-y-1.5 text-sm">
                     <div className="flex justify-between gap-2">
-                      <dt className="text-slate-400">{t('cooperation.partnerFields.type')}</dt>
-                      <dd className="text-right font-medium text-slate-700">{p.typeEtablissement}</dd>
+                      <dt className="text-slate-400 dark:text-slate-500">{t('cooperation.partnerFields.type')}</dt>
+                      <dd className="text-right font-medium text-slate-700 dark:text-slate-200">{p.typeEtablissement}</dd>
                     </div>
                     {p.accord ? (
                       <>
                         <div className="flex justify-between gap-2">
-                          <dt className="text-slate-400">{t('cooperation.partnerFields.agreement')}</dt>
-                          <dd className="text-right font-medium text-slate-700">{p.accord.titre}</dd>
+                          <dt className="text-slate-400 dark:text-slate-500">{t('cooperation.partnerFields.agreement')}</dt>
+                          <dd className="text-right font-medium text-slate-700 dark:text-slate-200">{p.accord.titre}</dd>
                         </div>
                         <div className="flex justify-between gap-2">
-                          <dt className="text-slate-400">{t('cooperation.partnerFields.since')}</dt>
-                          <dd className="text-right font-medium text-slate-700">{p.accord.depuis}</dd>
+                          <dt className="text-slate-400 dark:text-slate-500">{t('cooperation.partnerFields.since')}</dt>
+                          <dd className="text-right font-medium text-slate-700 dark:text-slate-200">{p.accord.depuis}</dd>
                         </div>
                       </>
                     ) : null}
                   </dl>
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {(p.domaines ?? []).map((d) => (
-                      <span key={d} className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">
+                      <span key={d} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
                         {d}
                       </span>
                     ))}
@@ -122,7 +122,7 @@ export default function Cooperation() {
         {partenairesMap === null ? (
           <Loader />
         ) : (
-          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100">
+          <div className="mt-8 overflow-hidden rounded-xl border border-slate-100 dark:border-slate-700">
             <PartnersMap partners={partenairesMap} />
           </div>
         )}

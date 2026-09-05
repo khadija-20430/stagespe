@@ -65,8 +65,8 @@ export default function School() {
   if (error) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
-        <h1 className="text-2xl font-bold text-navy">⚠️ {error}</h1>
-        <p className="mt-2 text-slate-600">
+        <h1 className="text-2xl font-bold text-navy dark:text-white">⚠️ {error}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">
           {t('school.error.loading') || 'Une erreur est survenue lors du chargement de la présentation.'}
         </p>
       </section>
@@ -122,32 +122,32 @@ export default function School() {
 
         <div className="mt-12 grid gap-8 md:grid-cols-2">
           <div>
-            <h3 className="text-xl font-bold text-navy">{t('school.about.mission.title')}</h3>
-            <p className="mt-3 text-slate-600">{t('school.about.mission.text')}</p>
+            <h3 className="text-xl font-bold text-navy dark:text-white">{t('school.about.mission.title')}</h3>
+            <p className="mt-3 text-slate-600 dark:text-slate-400">{t('school.about.mission.text')}</p>
           </div>
           <div>
-            <h3 className="text-xl font-bold text-navy">{t('school.about.values.title')}</h3>
-            <p className="mt-3 text-slate-600">{t('school.about.values.text')}</p>
+            <h3 className="text-xl font-bold text-navy dark:text-white">{t('school.about.values.title')}</h3>
+            <p className="mt-3 text-slate-600 dark:text-slate-400">{t('school.about.values.text')}</p>
           </div>
         </div>
 
         {/* Valeurs additionnelles */}
         <div className="mt-12 grid gap-8 md:grid-cols-3">
           {['excellence', 'innovation', 'collaboration'].map((value) => (
-            <div key={value} className="rounded-xl border border-slate-200 p-6 text-center">
+            <div key={value} className="rounded-xl border border-slate-200 dark:border-slate-700 p-6 text-center">
               <span className="text-4xl">
                 {value === 'excellence' && '⭐'}
                 {value === 'innovation' && '💡'}
                 {value === 'collaboration' && '🤝'}
               </span>
-              <h4 className="mt-3 font-bold text-navy">{t(`school.values.${value}.title`)}</h4>
-              <p className="mt-1 text-sm text-slate-600">{t(`school.values.${value}.text`)}</p>
+              <h4 className="mt-3 font-bold text-navy dark:text-white">{t(`school.values.${value}.title`)}</h4>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t(`school.values.${value}.text`)}</p>
             </div>
           ))}
         </div>
 
         {!presentation && (
-          <p className="mt-8 text-sm text-slate-400">
+          <p className="mt-8 text-sm text-slate-400 dark:text-slate-500">
             {t('school.noContent')}
           </p>
         )}

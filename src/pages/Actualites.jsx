@@ -49,7 +49,7 @@ export default function Actualites() {
         {actualites === null ? (
           <Loader />
         ) : filtres.length === 0 ? (
-          <p className="py-16 text-center text-slate-500">{t('actualites.empty')}</p>
+          <p className="py-16 text-center text-slate-500 dark:text-slate-400">{t('actualites.empty')}</p>
         ) : (
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtres.map((a) => (
@@ -58,13 +58,13 @@ export default function Actualites() {
                 <div className="flex flex-1 flex-col p-6">
                   <div className="flex items-center gap-3">
                     <Badge tone="cobalt">{t(`enums.newsType.${a.type}`)}</Badge>
-                    <span className="text-xs text-slate-400">{formatDate(a.date)}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">{formatDate(a.date)}</span>
                   </div>
-                  <h3 className="mt-3 text-lg font-bold text-navy">{a.titre}</h3>
-                  <p className="mt-2 flex-1 text-sm text-slate-600">{a.extrait}</p>
+                  <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
+                  <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{a.extrait}</p>
                   <Link
                     to={`/actualites/${a.id}`}
-                    className="mt-4 text-sm font-semibold text-cobalt hover:underline"
+                    className="mt-4 text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
                   >
                     {t('actualites.readMore')} →
                   </Link>

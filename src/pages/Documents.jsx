@@ -113,7 +113,7 @@ export default function Documents() {
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 dark:bg-red-900/30 dark:border-red-800 dark:text-red-400">
             <p className="font-semibold">⚠️ {error}</p>
           </div>
         )}
@@ -133,7 +133,7 @@ export default function Documents() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
                 <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                  <tr className="border-b border-slate-200 bg-slate-50 text-xs uppercase tracking-wide text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
                     <th className="px-6 py-4 font-semibold">{t('documents.table.name')}</th>
                     <th className="px-6 py-4 font-semibold">{t('documents.table.category')}</th>
                     <th className="hidden px-6 py-4 font-semibold sm:table-cell">{t('documents.table.format')}</th>
@@ -145,24 +145,24 @@ export default function Documents() {
                 <tbody>
                   {filtres.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-500">
+                      <td colSpan="6" className="text-center py-8 text-gray-500 dark:text-slate-400">
                         Aucun document trouvé
                       </td>
                     </tr>
                   ) : (
                     filtres.map((d) => (
-                      <tr key={d.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50">
-                        <td className="px-6 py-4 font-medium text-navy">{d.titre || d.nom}</td>
+                      <tr key={d.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
+                        <td className="px-6 py-4 font-medium text-navy dark:text-white">{d.titre || d.nom}</td>
                         <td className="px-6 py-4">
                           <Badge>{t(`enums.documentCategory.${d.categorie}`)}</Badge>
                         </td>
-                        <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">
+                        <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 sm:table-cell">
                           {d.fileFormat || d.format || 'PDF'}
                         </td>
-                        <td className="hidden px-6 py-4 text-slate-600 sm:table-cell">
+                        <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 sm:table-cell">
                           {formatBytes(d.fileSize || d.taille)}
                         </td>
-                        <td className="hidden px-6 py-4 text-slate-600 md:table-cell">
+                        <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 md:table-cell">
                           {formatDate(d.dateUpload || d.date)}
                         </td>
                         <td className="px-6 py-4 text-right">

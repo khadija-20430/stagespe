@@ -43,7 +43,7 @@ export default function Appels() {
 
   const Groupe = ({ label, options, value, onChange, getLabel = (o) => o }) => (
     <div>
-      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">{label}</p>
       <div className="flex flex-wrap gap-2">
         {options.map((o) => (
           <FilterChip key={o} active={value === o} onClick={() => onChange(o)}>
@@ -75,7 +75,7 @@ export default function Appels() {
         {appels === null ? (
           <Loader />
         ) : filtres.length === 0 ? (
-          <p className="py-16 text-center text-slate-500">{t('appels.empty')}</p>
+          <p className="py-16 text-center text-slate-500 dark:text-slate-400">{t('appels.empty')}</p>
         ) : (
           <div className="mt-10 space-y-4">
             {filtres.map((a) => (
@@ -84,14 +84,14 @@ export default function Appels() {
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone="cobalt">{a.programme}</Badge>
                     <Badge tone={callStatusTone(a.status)}>{t(`${a.status}`)}</Badge>
-                    <span className="text-xs text-slate-400">{(a.paysEligibles ?? []).join(', ')}</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">{(a.paysEligibles ?? []).join(', ')}</span>
                   </div>
-                  <h3 className="mt-3 text-lg font-bold text-navy">{a.titre}</h3>
-                  <p className="mt-1.5 text-sm text-slate-600">{a.resume}</p>
-                  <p className="mt-3 text-sm text-slate-500">
-                    <span className="font-medium text-slate-700">{t('appels.deadline')} :</span> {formatDate(a.dateLimite)}
-                    <span className="mx-2 text-slate-300">•</span>
-                    <span className="font-medium text-slate-700">{t('appels.budget')} :</span>{' '}
+                  <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
+                  <p className="mt-1.5 text-sm text-slate-600 dark:text-slate-400">{a.resume}</p>
+                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{t('appels.deadline')} :</span> {formatDate(a.dateLimite)}
+                    <span className="mx-2 text-slate-300 dark:text-slate-600">•</span>
+                    <span className="font-medium text-slate-700 dark:text-slate-200">{t('appels.budget')} :</span>{' '}
                     {a.budgetDisponible
                       ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(a.budgetDisponible)
                       : '—'}

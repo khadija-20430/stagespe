@@ -331,107 +331,93 @@ create table public.countries (
 create view public.dashboard_stats as
 select
   (
-    select
-      count(*) as count
-    from
-      partners
-    where
-      partners.partnership_status::text = 'active'::text
+    select count(*) 
+    from partners
+    where partners.partnership_status::text = 'active'::text
+      and partners.statut_publication::text = 'published'::text
   ) as total_active_partners,
+
   (
-    select
-      count(distinct partners.country_id) as count
-    from
-      partners
-    where
-      partners.country_id is not null
+    select count(distinct partners.country_id)
+    from partners
+    where partners.country_id is not null
+      and partners.statut_publication::text = 'published'::text
   ) as total_countries,
+
   (
-    select
-      count(*) as count
-    from
-      agreements
-    where
-      agreements.status::text = 'active'::text
+    select count(*)
+    from agreements
+    where agreements.status::text = 'active'::text
+      and agreements.statut_publication::text = 'published'::text
   ) as active_agreements,
+
   (
-    select
-      count(*) as count
-    from
-      agreements
-    where
-      agreements.status::text = 'expired'::text
+    select count(*)
+    from agreements
+    where agreements.status::text = 'expired'::text
+      and agreements.statut_publication::text = 'published'::text
   ) as expired_agreements,
+
   (
-    select
-      count(*) as count
-    from
-      agreements
-    where
-      agreements.end_date >= CURRENT_DATE
+    select count(*)
+    from agreements
+    where agreements.end_date >= CURRENT_DATE
       and agreements.end_date <= (CURRENT_DATE + '30 days'::interval)
+      and agreements.statut_publication::text = 'published'::text
   ) as expiring_soon,
+
   (
-    select
-      count(*) as count
-    from
-      projects
-    where
-      projects.status::text = 'ongoing'::text
+    select count(*)
+    from projects
+    where projects.status::text = 'ongoing'::text
+      and projects.statut_publication::text = 'published'::text
   ) as ongoing_projects,
+
   (
-    select
-      count(*) as count
-    from
-      projects
-    where
-      projects.status::text = 'proposed'::text
+    select count(*)
+    from projects
+    where projects.status::text = 'proposed'::text
+      and projects.statut_publication::text = 'published'::text
   ) as proposed_projects,
+
   (
-    select
-      count(*) as count
-    from
-      projects
-    where
-      projects.status::text = 'completed'::text
+    select count(*)
+    from projects
+    where projects.status::text = 'completed'::text
+      and projects.statut_publication::text = 'published'::text
   ) as completed_projects,
+
   (
-    select
-      count(*) as count
-    from
-      calls
-    where
-      calls.status::text = 'open'::text
+    select count(*)
+    from calls
+    where calls.status::text = 'open'::text
+      and calls.statut_publication::text = 'published'::text
   ) as open_calls,
+
   (
-    select
-      count(*) as count
-    from
-      calls
-    where
-      calls.status::text = 'closing_soon'::text
+    select count(*)
+    from calls
+    where calls.status::text = 'closing_soon'::text
+      and calls.statut_publication::text = 'published'::text
   ) as closing_soon_calls,
+
   (
-    select
-      count(*) as count
-    from
-      mobility
-    where
-      mobility.status::text = 'open'::text
+    select count(*)
+    from mobility
+    where mobility.status::text = 'open'::text
+      and mobility.statut_publication::text = 'published'::text
   ) as open_mobility,
+
   (
-    select
-      count(*) as count
-    from
-      documents
+    select count(*)
+    from documents
+    where documents.statut_publication::text = 'published'::text
   ) as total_documents,
+
   (
-    select
-      count(*) as count
-    from
-      news_events
-    where
-      news_events.statut_publication::text = 'published'::text
+    select count(*)
+    from news_events
+    where news_events.statut_publication::text = 'published'::text
   ) as published_news;
 create table public.document_access_logs (
   id serial not null,
