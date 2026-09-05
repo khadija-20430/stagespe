@@ -9,8 +9,10 @@ import { formatDate } from '../lib/utils.js';
 import { getAppels } from '../services/api.js';
 import { CALL_STATUS, callStatusTone } from '../lib/enums.js';
 
+const NUMBER_LOCALE = { fr: 'fr-FR', en: 'en-US', ar: 'ar-DZ' };
+
 export default function Appels() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [appels, setAppels] = useState(null);
   const [programme, setProgramme] = useState('Tous');
   const [pays, setPays] = useState('Tous');
@@ -37,7 +39,9 @@ export default function Appels() {
       (a) =>
         (programme === 'Tous' || a.programme === programme) &&
         (pays === 'Tous' || (a.paysEligibles ?? []).includes(pays)) &&
-        (statut === 'tous' || a.statut === statut)
+        // ⚠️ mapAppel() renvoie "status" (pas "statut"). L'ancienne version comparait
+        // a.statut, qui est toujours undefined -> le filtre par statut ne matchait jamais.
+        (statut === 'tous' || a.status === statut)
     );
   }, [appels, programme, pays, statut]);
 
@@ -53,6 +57,8 @@ export default function Appels() {
       </div>
     </div>
   );
+
+  const currencyLocale = NUMBER_LOCALE[i18n.language] || 'fr-FR';
 
   return (
     <div>
@@ -83,7 +89,9 @@ export default function Appels() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone="cobalt">{a.programme}</Badge>
-                    <Badge tone={callStatusTone(a.status)}>{t(`${a.status}`)}</Badge>
+                    {/* Avant : t(`${a.status}`) => cherchait la clé "open"/"closed"... au lieu de
+                        "enums.callStatus.open" comme partout ailleurs. Affichait la clé brute. */}
+                    <Badge tone={callStatusTone(a.status)}>{t(`enums.callStatus.${a.status}`)}</Badge>
                     <span className="text-xs text-slate-400 dark:text-slate-500">{(a.paysEligibles ?? []).join(', ')}</span>
                   </div>
                   <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
@@ -93,7 +101,7 @@ export default function Appels() {
                     <span className="mx-2 text-slate-300 dark:text-slate-600">•</span>
                     <span className="font-medium text-slate-700 dark:text-slate-200">{t('appels.budget')} :</span>{' '}
                     {a.budgetDisponible
-                      ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(a.budgetDisponible)
+                      ? new Intl.NumberFormat(currencyLocale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(a.budgetDisponible)
                       : '—'}
                   </p>
                 </div>

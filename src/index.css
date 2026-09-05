@@ -6,6 +6,16 @@
     color-scheme: light;
 }
 
+/* 🆕 FIX — c'était le bug de la capture d'écran.
+   body est stylé en CSS pur (background-color: #f8fafc en dur), donc il
+   ignorait totalement la classe .dark posée sur <html> par le switch de
+   thème. Résultat : les composants Tailwind (Card, Button, SectionHeading...)
+   passaient bien en mode sombre via leurs classes dark:, mais le fond de
+   page restait clair -> texte blanc invisible sur fond clair. */
+.dark {
+    color-scheme: dark;
+}
+
 html {
     scroll-behavior: smooth;
 }
@@ -19,6 +29,21 @@ body {
     background-color: #f8fafc;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* 🆕 transition douce quand on bascule le thème */
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* 🆕 FIX — variante sombre du body, jusqu'ici totalement absente du fichier. */
+.dark body {
+    background-color: #0f172a; /* même bleu nuit que le reste du dark mode (navy / slate-900) */
+    color: #e2e8f0;
+}
+
+/* 🆕 Filet de sécurité : si le body ne couvre pas 100% de la hauteur
+   (ex. contenu très court), on évite que le <html> laisse voir un fond
+   blanc résiduel derrière/au-dessus du body en dark mode. */
+.dark html {
+    background-color: #0f172a;
 }
 
 * {
@@ -276,10 +301,6 @@ textarea {
    TABLEAU
    ============================================================ */
 
-/* FIX : overflow-x: auto (au lieu de "hidden") pour que le contenu qui
-   dépasse (colonne Actions) soit accessible via scroll horizontal au
-   lieu d'être coupé/invisible. overflow-y reste "hidden" pour garder
-   les coins arrondis propres. */
 .table-wrapper {
     background: white;
     border-radius: 0.5rem;
@@ -288,9 +309,6 @@ textarea {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* FIX : min-width empêche les colonnes de s'écraser les unes sur les
-   autres ; le tableau va scroller horizontalement plutôt que de
-   comprimer la colonne Fichier/Actions jusqu'à les rendre illisibles. */
 .agreements-table {
     width: 100%;
     min-width: 1100px;
@@ -333,8 +351,6 @@ textarea {
     background-color: #fffbeb !important;
 }
 
-/* FIX : colonne Actions (dernière colonne) "collée" à droite, toujours
-   visible même quand on scroll horizontalement dans le tableau. */
 .agreements-table th:last-child,
 .agreements-table td.actions {
     position: sticky;
@@ -580,9 +596,9 @@ textarea {
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
-    align-items: flex-start; /* Aligné en haut pour permettre le scroll */
-    z-index: 9999; /* Force au-dessus de tout */
-    overflow-y: auto; /* Scroll la page si la modale est trop longue */
+    align-items: flex-start;
+    z-index: 9999;
+    overflow-y: auto;
     padding: 2rem 1rem;
 }
 
@@ -834,18 +850,12 @@ textarea {
 
 /* ============================================================
    DARK MODE — GESTION DES ACCORDS
-   Suppose une stratégie Tailwind "class" : une classe .dark est
-   posée sur <html> (ou <body>) par ton switch de thème. Si ton
-   projet utilise un autre mécanisme (media query, data-theme...),
-   remplace le sélecteur ".dark" ci-dessous par le bon.
    ============================================================ */
 
-/* Titre & header */
 .dark .manage-agreements h1 {
     color: #f1f5f9;
 }
 
-/* Filtres (select "Tous les partenaires" / "Tous les statuts") */
 .dark .filter-select {
     background-color: #1e293b;
     border-color: #334155;
@@ -862,7 +872,6 @@ textarea {
     color: #e2e8f0;
 }
 
-/* Tableau */
 .dark .table-wrapper {
     background: #0f172a;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
@@ -894,7 +903,6 @@ textarea {
     background-color: rgba(245, 158, 11, 0.12) !important;
 }
 
-/* Colonne Actions "sticky" : garder le même fond que la ligne survolée */
 .dark .agreements-table th:last-child,
 .dark .agreements-table td.actions {
     background: #0f172a;
@@ -918,7 +926,6 @@ textarea {
     color: #94a3b8;
 }
 
-/* Modale */
 .dark .modal-content {
     background: #0f172a;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
@@ -956,7 +963,6 @@ textarea {
     color: #4ade80;
 }
 
-/* Badges : légère opacité pour rester lisibles sur fond sombre */
 .dark .badge-active,
 .dark .badge-published {
     background-color: rgba(34, 197, 94, 0.15);

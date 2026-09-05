@@ -1,571 +1,584 @@
 {
-    "navbar": {
-        "homeAria": "Accueil ESI",
-        "brandLine1": "Coopération",
-        "brandLine2": "Internationale",
-        "home": "Accueil",
-        "consultationGroup": "Consultation",
-        "resourcesGroup": "Ressources",
+  "navbar": {
+    "homeAria": "Accueil ESI",
+    "brandLine1": "Coopération",
+    "brandLine2": "Internationale",
+    "home": "Accueil",
+    "consultationGroup": "Consultation",
+    "resourcesGroup": "Ressources",
+    "cooperation": "Coopération internationale",
+    "projets": "Projets",
+    "appels": "Appels à projets",
+    "mobilites": "Mobilités",
+    "actualites": "Actualités & événements",
+    "documents": "Bibliothèque de documents",
+    "agreements": "Accords",
+    "admin": "Espace admin",
+    "menuAria": "Menu",
+    "languageAria": "Changer la langue"
+  },
+  "footer": {
+    "brandName": "Coopération Internationale",
+    "description": "Portail institutionnel de l'École Supérieure en Informatique dédié à la coopération internationale : projets, mobilités, appels et partenariats académiques.",
+    "columns": {
+      "consultation": {
+        "title": "Consultation",
         "cooperation": "Coopération internationale",
         "projets": "Projets",
         "appels": "Appels à projets",
-        "mobilites": "Mobilités",
+        "mobilites": "Mobilités"
+      },
+      "resources": {
+        "title": "Ressources",
         "actualites": "Actualités & événements",
         "documents": "Bibliothèque de documents",
         "agreements": "Accords",
-        "admin": "Espace admin",
-        "menuAria": "Menu",
-        "languageAria": "Changer la langue"
+        "admin": "Espace administrateur"
+      }
     },
-    "footer": {
-        "brandName": "Coopération Internationale",
-        "description": "Portail institutionnel de l'École Supérieure en Informatique dédié à la coopération internationale : projets, mobilités, appels et partenariats académiques.",
-        "columns": {
-            "consultation": {
-                "title": "Consultation",
-                "cooperation": "Coopération internationale",
-                "projets": "Projets",
-                "appels": "Appels à projets",
-                "mobilites": "Mobilités"
-            },
-            "resources": {
-                "title": "Ressources",
-                "actualites": "Actualités & événements",
-                "documents": "Bibliothèque de documents",
-                "agreements": "Accords",
-                "admin": "Espace administrateur"
-            }
+    "copyright": "École Supérieure en Informatique — Tous droits réservés.",
+    "department": "Direction des Relations Internationales",
+    "location": {
+      "title": "Localisation",
+      "schoolName": "École Supérieure en Informatique",
+      "city": "Oued Smar, Alger",
+      "country": "Algérie",
+      "viewOnMaps": "Voir sur Maps"
+    },
+    "contact": {
+      "emailLabel": "Email :",
+      "phoneLabel": "Tél :"
+    },
+    "legal": {
+      "privacyPolicy": "Politique de confidentialité",
+      "termsOfUse": "Conditions d'utilisation"
+    }
+  },
+  "common": {
+    "all": "Tous",
+    "allFem": "Toutes",
+    "pays": "Pays",
+    "debut": "Début",
+    "fin": "Fin"
+  },
+  "appels": {
+    "eyebrow": "Financements",
+    "title": "Appels à projets",
+    "description": "Filtrez les appels à projets par programme, pays et statut pour trouver les opportunités adaptées.",
+    "filters": {
+      "programme": "Programme",
+      "country": "Pays / zone",
+      "status": "Statut"
+    },
+    "statuts": {
+      "tous": "Tous",
+      "ouvert": "Ouvert",
+      "bientot": "Bientôt",
+      "ferme": "Fermé"
+    },
+    "empty": "Aucun appel ne correspond aux filtres.",
+    "deadline": "Échéance",
+    "budget": "Dotation",
+    "apply": "Postuler"
+  },
+  "cooperation": {
+    "eyebrow": "À propos",
+    "title": "Coopération internationale",
+    "description": "L'École Supérieure en Informatique développe une politique active de coopération avec des institutions de recherche et d'enseignement du monde entier.",
+    "axesSection": {
+      "eyebrow": "Nos axes",
+      "title": "Axes de coopération",
+      "description": "Quatre grandes orientations structurent notre engagement international."
+    },
+    "axes": {
+      "research": {
+        "title": "Recherche collaborative",
+        "text": "Projets conjoints, co-encadrement de thèses et laboratoires communs avec nos partenaires académiques internationaux."
+      },
+      "mobility": {
+        "title": "Mobilité académique",
+        "text": "Programmes d'échange pour étudiants, doctorants et enseignants-chercheurs, dans le cadre d'Erasmus+ et d'accords bilatéraux."
+      },
+      "degrees": {
+        "title": "Doubles diplômes",
+        "text": "Cursus conjoints permettant l'obtention de diplômes reconnus par plusieurs établissements partenaires."
+      },
+      "networks": {
+        "title": "Réseaux & consortiums",
+        "text": "Participation à des consortiums européens et internationaux autour des grands défis numériques."
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "Réseau",
+      "title": "Établissements partenaires",
+      "description": "Universités et instituts de recherche liés à l'école par des accords formels."
+    },
+    "partnerFields": {
+      "type": "Type",
+      "agreement": "Accord",
+      "since": "Depuis"
+    },
+    "mapSection": {
+      "eyebrow": "Localisation",
+      "title": "Carte des partenaires",
+      "description": "Visualisez la répartition géographique de nos établissements partenaires à travers le monde."
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "École Supérieure en Informatique",
+      "title": "Portail de la coopération internationale",
+      "description": "Centralisez et découvrez l'ensemble des activités internationales de l'école : projets de recherche, appels à projets, opportunités de mobilité et partenariats académiques à travers le monde.",
+      "ctaCalls": "Voir les appels à projets",
+      "ctaMobility": "Explorer les mobilités",
+      "brandTitle": "ESI Coopération Internationale",
+      "slideAria": "Aller à la diapositive {{number}}",
+      "slides": [
+        {
+          "eyebrow": "Bienvenue",
+          "title": "Portail de la coopération internationale",
+          "description": "📋 Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle."
         },
-        "copyright": "École Supérieure en Informatique — Tous droits réservés.",
-        "department": "Direction des Relations Internationales",
-        "location": {
-            "title": "Localisation",
-            "schoolName": "École Supérieure en Informatique",
-            "city": "Oued Smar, Alger",
-            "country": "Algérie",
-            "viewOnMaps": "Voir sur Maps"
+        {
+          "eyebrow": "Opportunités",
+          "title": "Mobilités internationales",
+          "description": "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience."
         },
-        "contact": {
-            "emailLabel": "Email :",
-            "phoneLabel": "Tél :"
+        {
+          "eyebrow": "Partenaires",
+          "title": "Réseau mondial",
+          "description": "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables."
         },
-        "legal": {
-            "privacyPolicy": "Politique de confidentialité",
-            "termsOfUse": "Conditions d'utilisation"
+        {
+          "eyebrow": "Projets",
+          "title": "Recherche et innovation",
+          "description": "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise."
         }
+      ]
     },
-    "common": {
-        "all": "Tous",
-        "allFem": "Toutes",
-        "pays": "Pays",
-        "debut": "Début",
-        "fin": "Fin"
-    },
-    "appels": {
-        "eyebrow": "Financements",
-        "title": "Appels à projets",
-        "description": "Filtrez les appels à projets par programme, pays et statut pour trouver les opportunités adaptées.",
-        "filters": {
-            "programme": "Programme",
-            "country": "Pays / zone",
-            "status": "Statut"
-        },
-        "statuts": {
-            "tous": "Tous",
-            "ouvert": "Ouvert",
-            "bientot": "Bientôt",
-            "ferme": "Fermé"
-        },
-        "empty": "Aucun appel ne correspond aux filtres.",
-        "deadline": "Échéance",
-        "budget": "Dotation",
-        "apply": "Postuler"
-    },
-    "cooperation": {
-        "eyebrow": "À propos",
-        "title": "Coopération internationale",
-        "description": "L'École Supérieure en Informatique développe une politique active de coopération avec des institutions de recherche et d'enseignement du monde entier.",
-        "axesSection": {
-            "eyebrow": "Nos axes",
-            "title": "Axes de coopération",
-            "description": "Quatre grandes orientations structurent notre engagement international."
-        },
-        "axes": {
-            "research": {
-                "title": "Recherche collaborative",
-                "text": "Projets conjoints, co-encadrement de thèses et laboratoires communs avec nos partenaires académiques internationaux."
-            },
-            "mobility": {
-                "title": "Mobilité académique",
-                "text": "Programmes d'échange pour étudiants, doctorants et enseignants-chercheurs, dans le cadre d'Erasmus+ et d'accords bilatéraux."
-            },
-            "degrees": {
-                "title": "Doubles diplômes",
-                "text": "Cursus conjoints permettant l'obtention de diplômes reconnus par plusieurs établissements partenaires."
-            },
-            "networks": {
-                "title": "Réseaux & consortiums",
-                "text": "Participation à des consortiums européens et internationaux autour des grands défis numériques."
-            }
-        },
-        "partnersSection": {
-            "eyebrow": "Réseau",
-            "title": "Établissements partenaires",
-            "description": "Universités et instituts de recherche liés à l'école par des accords formels."
-        },
-        "partnerFields": {
-            "type": "Type",
-            "agreement": "Accord",
-            "since": "Depuis"
-        },
-        "mapSection": {
-            "eyebrow": "Localisation",
-            "title": "Carte des partenaires",
-            "description": "Visualisez la répartition géographique de nos établissements partenaires à travers le monde."
-        }
-    },
-    "home": {
-        "hero": {
-            "eyebrow": "École Supérieure en Informatique",
-            "title": "Portail de la coopération internationale",
-            "description": "Centralisez et découvrez l'ensemble des activités internationales de l'école : projets de recherche, appels à projets, opportunités de mobilité et partenariats académiques à travers le monde.",
-            "ctaCalls": "Voir les appels à projets",
-            "ctaMobility": "Explorer les mobilités",
-            "brandTitle": "ESI Coopération Internationale",
-"slideAria": "Aller à la diapositive {{number}}",
-"slides": [
-  {
-    "eyebrow": "Bienvenue",
-    "title": "Portail de la coopération internationale",
-    "description": "📋 Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle."
-  },
-  {
-    "eyebrow": "Opportunités",
-    "title": "Mobilités internationales",
-    "description": "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience."
-  },
-  {
-    "eyebrow": "Partenaires",
-    "title": "Réseau mondial",
-    "description": "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables."
-  },
-  {
-    "eyebrow": "Projets",
-    "title": "Recherche et innovation",
-    "description": "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise."
-  }
-]
-        },
-        "agreements": {
+    "agreements": {
       "eyebrow": "Conventions",
       "title": "Nos accords internationaux",
       "description": "Découvrez l'ensemble des conventions signées avec nos partenaires internationaux.",
       "cta": "Voir tous les accords"
     },
-        "stats": {
-            "partners": "Partenaires internationaux",
-            "projects": "Projets de recherche actifs",
-            "mobility": "Mobilités par an",
-            "countries": "Pays partenaires"
-        },
-        "calls": {
-            "eyebrow": "Opportunités",
-            "title": "Appels à projets ouverts",
-            "description": "Financements et programmes actuellement accessibles aux chercheurs et étudiants.",
-            "seeAll": "Tous les appels"
-        },
-        "mobility": {
-            "eyebrow": "Mobilité",
-            "title": "Opportunités de mobilité",
-            "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement à l'international.",
-            "seeAll": "Toutes les mobilités",
-            "spots": "{{count}} places disponibles"
-        },
-        "news": {
-            "eyebrow": "En ce moment",
-            "title": "Actualités & événements",
-            "description": "Les dernières nouvelles de la coopération internationale de l'école.",
-            "seeAll": "Toutes les actualités"
-        },
-        "partners": {
-            "eyebrow": "Réseau",
-            "title": "Nos partenaires internationaux",
-            "description": "Un réseau d'universités et d'instituts de recherche de premier plan."
-        }
+    "stats": {
+      "partners": "Partenaires internationaux",
+      "projects": "Projets de recherche actifs",
+      "mobility": "Mobilités par an",
+      "countries": "Pays partenaires"
     },
-    "projets": {
-        "eyebrow": "Recherche",
-        "title": "Projets de recherche",
-        "description": "Découvrez les projets de recherche internationaux portés ou co-portés par l'école.",
-        "filters": {
-            "programme": "Programme",
-            "status": "Statut"
-        },
-        "statuts": {
-            "tous": "Tous",
-            "en_cours": "En cours",
-            "termine": "Terminé"
-        },
-        "empty": "Aucun projet ne correspond aux filtres.",
-        "fields": {
-            "coordinator": "Coordinateur",
-            "budget": "Budget",
-            "period": "Période"
-        },
-        "featured": "À la une"
+    "calls": {
+      "eyebrow": "Opportunités",
+      "title": "Appels à projets ouverts",
+      "description": "Financements et programmes actuellement accessibles aux chercheurs et étudiants.",
+      "seeAll": "Tous les appels"
     },
-    "actualites": {
-        "eyebrow": "Actualités",
-        "title": "Actualités & événements",
-        "description": "Suivez l'actualité de la coopération internationale : partenariats, projets, événements et opportunités.",
-        "readMore": "Lire la suite",
-        "empty": "Aucun élément ne correspond à ce filtre."
+    "mobility": {
+      "eyebrow": "Mobilité",
+      "title": "Opportunités de mobilité",
+      "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement à l'international.",
+      "seeAll": "Toutes les mobilités",
+      "spots": "{{count}} places disponibles"
     },
-    "actualiteDetail": {
-        "notFoundTitle": "Actualité introuvable",
-        "notFoundText": "Cette actualité n'existe pas ou a été retirée.",
-        "backToList": "Toutes les actualités"
+    "news": {
+      "eyebrow": "En ce moment",
+      "title": "Actualités & événements",
+      "description": "Les dernières nouvelles de la coopération internationale de l'école.",
+      "seeAll": "Toutes les actualités"
     },
-    "documents": {
-        "eyebrow": "Ressources",
-        "title": "Bibliothèque de documents",
-        "description": "Guides, formulaires, conventions et rapports liés à la coopération internationale.",
-        "table": {
-            "name": "Document",
-            "category": "Catégorie",
-            "format": "Format",
-            "size": "Taille",
-            "updated": "Mis à jour",
-            "action": "Action"
-        },
-        "download": "Télécharger"
-    },
-    "mobilites": {
-        "eyebrow": "Mobilité",
-        "title": "Opportunités de mobilité",
-        "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement chez nos partenaires internationaux.",
-        "filters": {
-            "type": "Type de mobilité"
-        },
-        "spots": "{{count}} places",
-        "fields": {
-            "duration": "Durée",
-            "level": "Niveau",
-            "programme": "Programme",
-            "audience": "Public visé"
-        },
-        "apply": "Candidater"
-    },
-    "notFound": {
-        "title": "Page introuvable",
-        "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
-        "backHome": "Retour à l'accueil"
-    },
-    "admin": {
-        "title": "Administration",
-        "logout": "Se déconnecter",
-        "menuAria": "Menu",
-        "exit": "Quitter",
-        "dashboard": {
-            "title": "Tableau de bord",
-            "description": "Vue d'ensemble et gestion des contenus du portail.",
-            "about": {
-                "title": "À propos de cette interface",
-                "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
-            }
-        },
-        "login": {
-            "brand": "Espace administrateur",
-            "title": "Connexion",
-            "subtitle": "Authentification.",
-            "email": "Adresse e-mail",
-            "password": "Mot de passe",
-            "submit": "Se connecter",
-            "errorRequired": "Veuillez renseigner tous les champs."
-        },
-        "crud": {
-            "actions": "Actions",
-            "loading": "Chargement…",
-            "empty": "Aucun élément.",
-            "edit": "Modifier",
-            "delete": "Supprimer",
-            "add": "+ Ajouter",
-            "cancel": "Annuler",
-            "save": "Enregistrer",
-            "confirmDelete": "Supprimer cet élément ?",
-            "mockNotice": "gestion en mémoire",
-            "modalEdit": "Modifier",
-            "modalAdd": "Ajouter",
-            "listPlaceholder": "Séparés par des virgules",
-            "selectPlaceholder": "—",
-            "itemsCount_one": "{{count}} élément",
-            "itemsCount_other": "{{count}} éléments"
-        },
-        "nav": {
-            "menuAria": "Ouvrir le menu",
-            "admin": "Administration",
-            "title": "Panneau d'administration",
-            "dashboard": "Tableau de bord",
-            "partners": "Partenaires",
-            "projects": "Projets",
-            "calls": "Appels à projets",
-            "mobility": "Mobilités",
-            "news": "Actualités & événements",
-            "documents": "Documents",
-            "agreements": "Accords",
-            "users": "Utilisateurs",
-            "roles": "Rôles & permissions",
-            "school": "Présentation de l'école",
-            "testAccess": "Tester RBAC",
-            "audit": "Journal d'audit",
-            "settings": "Paramètres",
-            "changeLanguage": "Changer la langue",
-            "lightMode": "Mode clair",
-            "darkMode": "Mode sombre",
-            "user": "Utilisateur",
-            "logout": "Se déconnecter",
-            "administration": "Administration"
-        }
-    },
-    "school": {
-        "defaultTitle": "Présentation de l'école",
-        "defaultDescription": "Découvrez l'École Supérieure en Informatique, ses valeurs et sa mission.",
-        "download": "Télécharger la présentation",
-        "error": {
-            "loading": "Impossible de charger la présentation"
-        },
-        "noContent": "Aucune présentation détaillée n'est encore publiée.",
-        "about": {
-            "title": "À propos de l'ESI",
-            "description": "L'ESI est une institution dédiée à l'excellence en informatique et aux partenariats internationaux.",
-            "mission": {
-                "title": "Notre Mission",
-                "text": "Nous formons les meilleurs ingénieurs informatiques et favorisons la coopération internationale."
-            },
-            "values": {
-                "title": "Nos Valeurs",
-                "text": "Excellence, innovation, collaboration et responsabilité sociale sont au cœur de notre approche."
-            }
-        },
-        "values": {
-            "excellence": {
-                "title": "Excellence académique",
-                "text": "Des formations d'excellence reconnues internationalement."
-            },
-            "innovation": {
-                "title": "Innovation",
-                "text": "À la pointe des technologies et des méthodes pédagogiques."
-            },
-            "collaboration": {
-                "title": "Collaboration",
-                "text": "Un réseau de partenaires engagés dans la coopération internationale."
-            }
-        }
-    },
-    "enums": {
-        "projectStatus": {
-            "proposed": "Proposé",
-            "ongoing": "En cours",
-            "completed": "Terminé",
-            "suspended": "Suspendu"
-        },
-        "callStatus": {
-            "open": "Ouvert",
-            "closed": "Fermé",
-            "upcoming": "Bientôt",
-            "closing_soon": "Clôture proche"
-        },
-        "mobilityType": {
-            "student_outgoing": "Étudiante (sortante)",
-            "student_incoming": "Étudiante (entrante)",
-            "teaching": "Enseignante",
-            "research": "Recherche / doctorale",
-            "staff": "Personnel administratif",
-            "internship": "Stage",
-            "summer_school": "École d'été"
-        },
-        "newsType": {
-            "news": "Actualité",
-            "event": "Événement",
-            "workshop": "Atelier",
-            "meeting": "Rencontre",
-            "testimonial": "Témoignage"
-        },
-        "currentFile": "Fichier actuel",
-        "documentCategory": {
-            "institutionnel": "Institutionnel",
-            "template_projet": "Modèle de projet",
-            "formulaire_financier": "Formulaire financier",
-            "erasmus_mobilite": "Mobilité Erasmus+",
-            "horizon_msca": "Horizon Europe / MSCA",
-            "national": "Programme national",
-            "guide_faq": "Guide / FAQ",
-            "rapport": "Rapport",
-            "brochure": "Brochure",
-            "convention": "Convention"
-        },
-        "documentVisibility": {
-            "public": "Public",
-            "staff": "Personnel interne",
-            "admin": "Administrateurs"
-        },
-        "userRole": {
-            "super_admin": "Super administrateur",
-            "admin": "Administrateur",
-            "utilisateur": "Utilisateur"
-        }
-    },
-    "dashboard": "Tableau de bord",
-    "partners": "Partenaires",
-    "projects": "Projets",
-    "calls": "Appels à projets",
-    "mobility": "Mobilités",
-    "document": "Documents",
-    "newsEvents": "Actualités",
-    "nom": "Nom",
-    "nomOfficiel": "Nom officiel",
-    "pays": "Pays",
-    "ville": "Ville",
-    "typeEtablissement": "Type d'établissement",
-    "typePartenariat": "Type de partenariat",
-    "statutPartenariat": "Statut du partenariat",
-    "siteWeb": "Site web",
-    "domaines": "Domaines",
-    "description": "Description",
-    "logo": "Logo",
-    "statutPublication": "Statut de publication",
-    "titre": "Titre",
-    "title": "Titre",
-    "programme": "Programme",
-    "statut": "Statut",
-    "status": "Statut",
-    "budget": "Budget",
-    "coordinateur": "Coordinateur",
-    "acronyme": "Acronyme",
-    "codeReference": "Code référence",
-    "debut": "Date de début",
-    "fin": "Date de fin",
-    "resume": "Résumé",
-    "objectifs": "Objectifs",
-    "groupesCibles": "Groupes cibles",
-    "resultats": "Résultats",
-    "livrables": "Livrables",
-    "misEnAvant": "Mis en avant",
-    "yes": "Oui",
-    "no": "Non",
-    "type": "Type",
-    "duree": "Durée",
-    "periode": "Période",
-    "places": "Places",
-    "institutionAccueil": "Institution d'accueil",
-    "dateLimite": "Date limite",
-    "publicCible": "Public cible",
-    "conditions": "Conditions",
-    "financement": "Financement",
-    "lienCandidature": "Lien de candidature",
-    "personneContact": "Personne contact",
-    "emailContact": "E-mail contact",
-    "categorie": "Catégorie",
-    "date": "Date",
-    "dateExpiration": "Date d'expiration",
-    "fichier": "Fichier",
-    "format": "Format",
-    "langage": "Langue",
-    "taille": "Taille",
-    "version": "Version",
-    "visibilite": "Visibilité",
-    "eventDate": "Date de l'événement",
-    "endDate": "Date de fin",
-    "location": "Lieu",
-    "featured": "Mis en avant",
-    "summary": "Résumé",
-    "project": "Projet",
-    "imageUrl": "Image",
-    "authorName": "Nom de l'auteur",
-    "authorRole": "Fonction de l'auteur",
-    "authorPhotoUrl": "Photo de l'auteur",
-    "quoteText": "Citation",
-    "active": "Actif",
-    "pending": "En attente",
-    "ended": "Terminé",
-    "draft": "Brouillon",
-    "published": "Publié",
-    "archived": "Archivé",
-    "proposed": "Proposé",
-    "ongoing": "En cours",
-    "completed": "Terminé",
-    "suspended": "Suspendu",
-    "open": "Ouvert",
-    "closed": "Fermé",
-    "upcoming": "Bientôt",
-    "news": "Actualité",
-    "event": "Événement",
-    "workshop": "Atelier",
-    "meeting": "Rencontre",
-    "testimonial": "Témoignage",
-    "student_outgoing": "Étudiante (sortante)",
-    "student_incoming": "Étudiante (entrante)",
-    "teaching": "Enseignante",
-    "research": "Recherche",
-    "staff": "Personnel",
-    "internship": "Stage",
-    "summer_school": "École d'été",
-    "adresse": "Adresse",
-    "agreements": "Conventions",
-    "datePublication": "Date de publication",
-    "email": "E-mail",
-    "inactive": "Inactif",
-    "lastLogin": "Dernière connexion",
-    "lienOfficiel": "Lien officiel",
-    "organismeFinanceur": "Organisme financeur",
-    "password": "Mot de passe",
-    "presentationEcole": "Présentation de l'école",
-    "role": "Rôle",
-    "tauxFinancement": "Taux de financement",
-    "typeAction": "Type d'action",
-    "users": "Utilisateurs",
-    "adminRoles": "Rôles & permissions",
-    "adminTestAccess": "Tester RBAC",
-    "adminAuditLog": "Journal d'audit",
-    "agreementsList": {
-        "eyebrow": "Partenariats",
-        "title": "Nos accords de partenariat",
-        "description": "Conventions et accords signés avec nos partenaires internationaux.",
-        "empty": "Aucun accord disponible pour le moment.",
-        "partner": "Partenaire",
-        "period": "Période",
-        "viewPdf": "Consulter le PDF",
-        "linkedDocuments": "Documents liés",
-        "itemsCount": "accords"
-    },
-    "adminFallbackName": "Admin",
-    "adminSpaceTitle": "Espace Admin ESI",
-    "changeLanguageAria": "Changer la langue",
-    "lightMode": "Mode clair",
-    "darkMode": "Mode sombre",
-    "changeThemeAria": "Changer le thème",
-    "notifications": {
-        "title": "Notifications",
-        "unreadCount_one": "{{count}} non lue",
-        "unreadCount_other": "{{count}} non lues",
-        "empty": "Aucune notification",
-        "new": "Nouveau",
-        "confirmDelete": "Supprimer cette notification ?",
-        "close": "Fermer",
-        "time": {
-            "now": "À l'instant",
-            "secondsAgo_one": "Il y a {{count}} seconde",
-            "secondsAgo_other": "Il y a {{count}} secondes",
-            "oneMinuteAgo": "Il y a 1 minute",
-            "minutesAgo_one": "Il y a {{count}} minute",
-            "minutesAgo_other": "Il y a {{count}} minutes",
-            "oneHourAgo": "Il y a 1 heure",
-            "hoursAgo_one": "Il y a {{count}} heure",
-            "hoursAgo_other": "Il y a {{count}} heures",
-            "yesterday": "Hier",
-            "daysAgo_one": "Il y a {{count}} jour",
-            "daysAgo_other": "Il y a {{count}} jours"
-        }
+    "partners": {
+      "eyebrow": "Réseau",
+      "title": "Nos partenaires internationaux",
+      "description": "Un réseau d'universités et d'instituts de recherche de premier plan."
     }
-   
+  },
+  "projets": {
+    "eyebrow": "Recherche",
+    "title": "Projets de recherche",
+    "description": "Découvrez les projets de recherche internationaux portés ou co-portés par l'école.",
+    "filters": {
+      "programme": "Programme",
+      "status": "Statut"
+    },
+    "statuts": {
+      "tous": "Tous",
+      "en_cours": "En cours",
+      "termine": "Terminé"
+    },
+    "empty": "Aucun projet ne correspond aux filtres.",
+    "fields": {
+      "coordinator": "Coordinateur",
+      "budget": "Budget",
+      "period": "Période"
+    },
+    "featured": "À la une"
+  },
+  "actualites": {
+    "eyebrow": "Actualités",
+    "title": "Actualités & événements",
+    "description": "Suivez l'actualité de la coopération internationale : partenariats, projets, événements et opportunités.",
+    "readMore": "Lire la suite",
+    "empty": "Aucun élément ne correspond à ce filtre."
+  },
+  "actualiteDetail": {
+    "notFoundTitle": "Actualité introuvable",
+    "notFoundText": "Cette actualité n'existe pas ou a été retirée.",
+    "backToList": "Toutes les actualités"
+  },
+  "documents": {
+    "eyebrow": "Ressources",
+    "title": "Bibliothèque de documents",
+    "description": "Guides, formulaires, conventions et rapports liés à la coopération internationale.",
+    "table": {
+      "name": "Document",
+      "category": "Catégorie",
+      "format": "Format",
+      "size": "Taille",
+      "updated": "Mis à jour",
+      "action": "Action"
+    },
+    "download": "Télécharger",
+    "noResults": "Aucun document trouvé",
+    "downloading": "Téléchargement...",
+    "open": "Ouvrir",
+    "errors": {
+      "loadFailed": "Impossible de charger les documents",
+      "noUrl": "URL du document non disponible",
+      "generic": "Erreur : {{message}}"
+    }
+  },
+  "mobilites": {
+    "eyebrow": "Mobilité",
+    "title": "Opportunités de mobilité",
+    "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement chez nos partenaires internationaux.",
+    "filters": {
+      "type": "Type de mobilité"
+    },
+    "spots": "{{count}} places",
+    "fields": {
+      "duration": "Durée",
+      "level": "Niveau",
+      "programme": "Programme",
+      "audience": "Public visé"
+    },
+    "apply": "Candidater"
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
+    "backHome": "Retour à l'accueil"
+  },
+  "admin": {
+    "title": "Administration",
+    "logout": "Se déconnecter",
+    "menuAria": "Menu",
+    "exit": "Quitter",
+    "dashboard": {
+      "title": "Tableau de bord",
+      "description": "Vue d'ensemble et gestion des contenus du portail.",
+      "about": {
+        "title": "À propos de cette interface",
+        "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
+      }
+    },
+    "login": {
+      "brand": "Espace administrateur",
+      "title": "Connexion",
+      "subtitle": "Authentification.",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "errorRequired": "Veuillez renseigner tous les champs."
+    },
+    "crud": {
+      "actions": "Actions",
+      "loading": "Chargement…",
+      "empty": "Aucun élément.",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "add": "+ Ajouter",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "confirmDelete": "Supprimer cet élément ?",
+      "mockNotice": "gestion en mémoire",
+      "modalEdit": "Modifier",
+      "modalAdd": "Ajouter",
+      "listPlaceholder": "Séparés par des virgules",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "{{count}} élément",
+      "itemsCount_other": "{{count}} éléments"
+    },
+    "nav": {
+      "menuAria": "Ouvrir le menu",
+      "admin": "Administration",
+      "title": "Panneau d'administration",
+      "dashboard": "Tableau de bord",
+      "partners": "Partenaires",
+      "projects": "Projets",
+      "calls": "Appels à projets",
+      "mobility": "Mobilités",
+      "news": "Actualités & événements",
+      "documents": "Documents",
+      "agreements": "Accords",
+      "users": "Utilisateurs",
+      "roles": "Rôles & permissions",
+      "school": "Présentation de l'école",
+      "testAccess": "Tester RBAC",
+      "audit": "Journal d'audit",
+      "settings": "Paramètres",
+      "changeLanguage": "Changer la langue",
+      "lightMode": "Mode clair",
+      "darkMode": "Mode sombre",
+      "user": "Utilisateur",
+      "logout": "Se déconnecter",
+      "administration": "Administration"
+    }
+  },
+  "school": {
+    "defaultTitle": "Présentation de l'école",
+    "defaultDescription": "Découvrez l'École Supérieure en Informatique, ses valeurs et sa mission.",
+    "download": "Télécharger la présentation",
+    "error": {
+      "loading": "Impossible de charger la présentation"
+    },
+    "noContent": "Aucune présentation détaillée n'est encore publiée.",
+    "about": {
+      "title": "À propos de l'ESI",
+      "description": "L'ESI est une institution dédiée à l'excellence en informatique et aux partenariats internationaux.",
+      "mission": {
+        "title": "Notre Mission",
+        "text": "Nous formons les meilleurs ingénieurs informatiques et favorisons la coopération internationale."
+      },
+      "values": {
+        "title": "Nos Valeurs",
+        "text": "Excellence, innovation, collaboration et responsabilité sociale sont au cœur de notre approche."
+      }
+    },
+    "values": {
+      "excellence": {
+        "title": "Excellence académique",
+        "text": "Des formations d'excellence reconnues internationalement."
+      },
+      "innovation": {
+        "title": "Innovation",
+        "text": "À la pointe des technologies et des méthodes pédagogiques."
+      },
+      "collaboration": {
+        "title": "Collaboration",
+        "text": "Un réseau de partenaires engagés dans la coopération internationale."
+      }
+    }
+  },
+  "enums": {
+    "projectStatus": {
+      "proposed": "Proposé",
+      "ongoing": "En cours",
+      "completed": "Terminé",
+      "suspended": "Suspendu"
+    },
+    "callStatus": {
+      "open": "Ouvert",
+      "closed": "Fermé",
+      "upcoming": "Bientôt",
+      "closing_soon": "Clôture proche"
+    },
+    "mobilityType": {
+      "student_outgoing": "Étudiante (sortante)",
+      "student_incoming": "Étudiante (entrante)",
+      "teaching": "Enseignante",
+      "research": "Recherche / doctorale",
+      "staff": "Personnel administratif",
+      "internship": "Stage",
+      "summer_school": "École d'été"
+    },
+    "newsType": {
+      "news": "Actualité",
+      "event": "Événement",
+      "workshop": "Atelier",
+      "meeting": "Rencontre",
+      "testimonial": "Témoignage"
+    },
+    "currentFile": "Fichier actuel",
+    "documentCategory": {
+      "institutionnel": "Institutionnel",
+      "template_projet": "Modèle de projet",
+      "formulaire_financier": "Formulaire financier",
+      "erasmus_mobilite": "Mobilité Erasmus+",
+      "horizon_msca": "Horizon Europe / MSCA",
+      "national": "Programme national",
+      "guide_faq": "Guide / FAQ",
+      "rapport": "Rapport",
+      "brochure": "Brochure",
+      "convention": "Convention"
+    },
+    "documentVisibility": {
+      "public": "Public",
+      "staff": "Personnel interne",
+      "admin": "Administrateurs"
+    },
+    "userRole": {
+      "super_admin": "Super administrateur",
+      "admin": "Administrateur",
+      "utilisateur": "Utilisateur"
+    },
+    "agreementStatus": {
+      "active": "Actif",
+      "expired": "Expiré",
+      "pending": "En attente",
+      "negotiation": "En négociation"
+    }
+  },
+  "dashboard": "Tableau de bord",
+  "partners": "Partenaires",
+  "projects": "Projets",
+  "calls": "Appels à projets",
+  "mobility": "Mobilités",
+  "document": "Documents",
+  "newsEvents": "Actualités",
+  "nom": "Nom",
+  "nomOfficiel": "Nom officiel",
+  "pays": "Pays",
+  "ville": "Ville",
+  "typeEtablissement": "Type d'établissement",
+  "typePartenariat": "Type de partenariat",
+  "statutPartenariat": "Statut du partenariat",
+  "siteWeb": "Site web",
+  "domaines": "Domaines",
+  "description": "Description",
+  "logo": "Logo",
+  "statutPublication": "Statut de publication",
+  "titre": "Titre",
+  "title": "Titre",
+  "programme": "Programme",
+  "statut": "Statut",
+  "status": "Statut",
+  "budget": "Budget",
+  "coordinateur": "Coordinateur",
+  "acronyme": "Acronyme",
+  "codeReference": "Code référence",
+  "debut": "Date de début",
+  "fin": "Date de fin",
+  "resume": "Résumé",
+  "objectifs": "Objectifs",
+  "groupesCibles": "Groupes cibles",
+  "resultats": "Résultats",
+  "livrables": "Livrables",
+  "misEnAvant": "Mis en avant",
+  "yes": "Oui",
+  "no": "Non",
+  "type": "Type",
+  "duree": "Durée",
+  "periode": "Période",
+  "places": "Places",
+  "institutionAccueil": "Institution d'accueil",
+  "dateLimite": "Date limite",
+  "publicCible": "Public cible",
+  "conditions": "Conditions",
+  "financement": "Financement",
+  "lienCandidature": "Lien de candidature",
+  "personneContact": "Personne contact",
+  "emailContact": "E-mail contact",
+  "categorie": "Catégorie",
+  "date": "Date",
+  "dateExpiration": "Date d'expiration",
+  "fichier": "Fichier",
+  "format": "Format",
+  "langage": "Langue",
+  "taille": "Taille",
+  "version": "Version",
+  "visibilite": "Visibilité",
+  "eventDate": "Date de l'événement",
+  "endDate": "Date de fin",
+  "location": "Lieu",
+  "featured": "Mis en avant",
+  "summary": "Résumé",
+  "project": "Projet",
+  "imageUrl": "Image",
+  "authorName": "Nom de l'auteur",
+  "authorRole": "Fonction de l'auteur",
+  "authorPhotoUrl": "Photo de l'auteur",
+  "quoteText": "Citation",
+  "active": "Actif",
+  "pending": "En attente",
+  "ended": "Terminé",
+  "draft": "Brouillon",
+  "published": "Publié",
+  "archived": "Archivé",
+  "proposed": "Proposé",
+  "ongoing": "En cours",
+  "completed": "Terminé",
+  "suspended": "Suspendu",
+  "open": "Ouvert",
+  "closed": "Fermé",
+  "upcoming": "Bientôt",
+  "news": "Actualité",
+  "event": "Événement",
+  "workshop": "Atelier",
+  "meeting": "Rencontre",
+  "testimonial": "Témoignage",
+  "student_outgoing": "Étudiante (sortante)",
+  "student_incoming": "Étudiante (entrante)",
+  "teaching": "Enseignante",
+  "research": "Recherche",
+  "staff": "Personnel",
+  "internship": "Stage",
+  "summer_school": "École d'été",
+  "adresse": "Adresse",
+  "agreements": "Conventions",
+  "datePublication": "Date de publication",
+  "email": "E-mail",
+  "inactive": "Inactif",
+  "lastLogin": "Dernière connexion",
+  "lienOfficiel": "Lien officiel",
+  "organismeFinanceur": "Organisme financeur",
+  "password": "Mot de passe",
+  "presentationEcole": "Présentation de l'école",
+  "role": "Rôle",
+  "tauxFinancement": "Taux de financement",
+  "typeAction": "Type d'action",
+  "users": "Utilisateurs",
+  "adminRoles": "Rôles & permissions",
+  "adminTestAccess": "Tester RBAC",
+  "adminAuditLog": "Journal d'audit",
+  "agreementsList": {
+    "eyebrow": "Partenariats",
+    "title": "Nos accords de partenariat",
+    "description": "Conventions et accords signés avec nos partenaires internationaux.",
+    "empty": "Aucun accord disponible pour le moment.",
+    "partner": "Partenaire",
+    "period": "Période",
+    "viewPdf": "Consulter le PDF",
+    "linkedDocuments": "Documents liés",
+    "itemsCount": "accords"
+  },
+  "adminFallbackName": "Admin",
+  "adminSpaceTitle": "Espace Admin ESI",
+  "changeLanguageAria": "Changer la langue",
+  "lightMode": "Mode clair",
+  "darkMode": "Mode sombre",
+  "changeThemeAria": "Changer le thème",
+  "notifications": {
+    "title": "Notifications",
+    "unreadCount_one": "{{count}} non lue",
+    "unreadCount_other": "{{count}} non lues",
+    "empty": "Aucune notification",
+    "new": "Nouveau",
+    "confirmDelete": "Supprimer cette notification ?",
+    "close": "Fermer",
+    "time": {
+      "now": "À l'instant",
+      "secondsAgo_one": "Il y a {{count}} seconde",
+      "secondsAgo_other": "Il y a {{count}} secondes",
+      "oneMinuteAgo": "Il y a 1 minute",
+      "minutesAgo_one": "Il y a {{count}} minute",
+      "minutesAgo_other": "Il y a {{count}} minutes",
+      "oneHourAgo": "Il y a 1 heure",
+      "hoursAgo_one": "Il y a {{count}} heure",
+      "hoursAgo_other": "Il y a {{count}} heures",
+      "yesterday": "Hier",
+      "daysAgo_one": "Il y a {{count}} jour",
+      "daysAgo_other": "Il y a {{count}} jours"
+    }
+  }
 }

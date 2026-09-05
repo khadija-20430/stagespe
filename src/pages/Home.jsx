@@ -137,7 +137,9 @@ export default function Home() {
 
   useEffect(() => {
     getActualites().then((d) => setActualites(d.slice(0, 3)));
-    getAppels().then((d) => setAppels(d.filter((a) => a.statut === 'open').slice(0, 3)));
+    // ⚠️ mapAppel() renvoie "status" (pas "statut") : le filtre comparait
+    // a.statut, toujours undefined -> la section restait toujours vide.
+    getAppels().then((d) => setAppels(d.filter((a) => a.status === 'open').slice(0, 3)));
     getMobilites().then((d) => setMobilites(d.slice(0, 3)));
     getPartenaires().then(setPartenaires);
     getStats().then((s) =>
@@ -181,7 +183,8 @@ export default function Home() {
             <Card key={a.id} hover className="flex flex-col p-6">
               <div className="flex items-center justify-between">
                 <Badge tone="cobalt">{a.programme}</Badge>
-                <Badge tone={callStatusTone(a.statut)}>{t(`enums.callStatus.${a.statut}`)}</Badge>
+                {/* idem : "status", pas "statut" */}
+                <Badge tone={callStatusTone(a.status)}>{t(`enums.callStatus.${a.status}`)}</Badge>
               </div>
               <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
               <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{a.resume}</p>
@@ -234,17 +237,17 @@ export default function Home() {
           </Button>
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {/* news_events : titre/type/résumé/date_évènement/image_url (pas de colonne "catégorie" ni "extrait") */}
+          {/* mapActualite() renvoie title/imageUrl/summary/eventDate, pas titre/image/resume/date */}
           {actualites.map((n) => (
             <Card key={n.id} hover className="flex flex-col overflow-hidden">
-              <img src={n.imageUrl} alt="" className="h-44 w-full object-cover" />
+              {n.imageUrl && <img src={n.imageUrl} alt="" className="h-44 w-full object-cover" />}
               <div className="flex flex-1 flex-col p-6">
                 <div className="flex items-center justify-between text-xs">
                   <Badge tone="cobalt">{t(`enums.newsType.${n.type}`)}</Badge>
                   <span className="text-slate-400 dark:text-slate-500">{formatDate(n.eventDate)}</span>
                 </div>
-                <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{n.titre}</h3>
-                <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{n.resume}</p>
+                <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{n.title}</h3>
+                <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{n.summary}</p>
                 <Link to={`/actualites/${n.id}`} className="mt-4 text-sm font-semibold text-cobalt hover:underline dark:text-blue-400">
                   {t('actualites.readMore')} →
                 </Link>
@@ -285,20 +288,20 @@ export default function Home() {
         </div>
       </section>
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-  <div className="text-center">
-    <SectionHeading
-      center
-      eyebrow={t('home.agreements.eyebrow', 'Conventions')}
-      title={t('home.agreements.title', 'Nos accords internationaux')}
-      description={t('home.agreements.description', 'Découvrez l\'ensemble des conventions signées avec nos partenaires internationaux.')}
-    />
-    <div className="mt-8">
-      <Button as={Link} to="/agreements" size="lg" variant="primary">
-        {t('home.agreements.cta', 'Voir tous les accords')}
-      </Button>
-    </div>
-  </div>
-</section>
+        <div className="text-center">
+          <SectionHeading
+            center
+            eyebrow={t('home.agreements.eyebrow')}
+            title={t('home.agreements.title')}
+            description={t('home.agreements.description')}
+          />
+          <div className="mt-8">
+            <Button as={Link} to="/agreements" size="lg" variant="primary">
+              {t('home.agreements.cta')}
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

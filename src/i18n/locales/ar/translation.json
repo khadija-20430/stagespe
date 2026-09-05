@@ -1,590 +1,603 @@
 {
-    "navbar": {
-        "homeAria": "الرئيسية ESI",
-        "brandLine1": "التعاون",
-        "brandLine2": "الدولي",
-        "home": "الرئيسية",
-        "consultationGroup": "تصفح",
-        "resourcesGroup": "الموارد",
+  "navbar": {
+    "homeAria": "الرئيسية ESI",
+    "brandLine1": "التعاون",
+    "brandLine2": "الدولي",
+    "home": "الرئيسية",
+    "consultationGroup": "تصفح",
+    "resourcesGroup": "الموارد",
+    "cooperation": "التعاون الدولي",
+    "projets": "المشاريع",
+    "appels": "دعوات المشاريع",
+    "mobilites": "التنقل",
+    "actualites": "الأخبار والفعاليات",
+    "documents": "مكتبة الوثائق",
+    "agreements": "الاتفاقيات",
+    "admin": "فضاء الإدارة",
+    "menuAria": "القائمة",
+    "languageAria": "تغيير اللغة"
+  },
+  "footer": {
+    "brandName": "التعاون الدولي",
+    "description": "البوابة المؤسسية للمدرسة العليا للإعلام الآلي المخصصة للتعاون الدولي: المشاريع، التنقل، الدعوات والشراكات الأكاديمية.",
+    "columns": {
+      "consultation": {
+        "title": "تصفح",
         "cooperation": "التعاون الدولي",
         "projets": "المشاريع",
         "appels": "دعوات المشاريع",
-        "mobilites": "التنقل",
+        "mobilites": "التنقل"
+      },
+      "resources": {
+        "title": "الموارد",
         "actualites": "الأخبار والفعاليات",
         "documents": "مكتبة الوثائق",
         "agreements": "الاتفاقيات",
-        "admin": "فضاء الإدارة",
-        "menuAria": "القائمة",
-        "languageAria": "تغيير اللغة"
+        "admin": "فضاء الإدارة"
+      }
     },
-    "footer": {
-        "brandName": "التعاون الدولي",
-        "description": "البوابة المؤسسية للمدرسة العليا للإعلام الآلي المخصصة للتعاون الدولي: المشاريع، التنقل، الدعوات والشراكات الأكاديمية.",
-        "columns": {
-            "consultation": {
-                "title": "تصفح",
-                "cooperation": "التعاون الدولي",
-                "projets": "المشاريع",
-                "appels": "دعوات المشاريع",
-                "mobilites": "التنقل"
-            },
-            "resources": {
-                "title": "الموارد",
-                "actualites": "الأخبار والفعاليات",
-                "documents": "مكتبة الوثائق",
-                "agreements": "الاتفاقيات",
-                "admin": "فضاء الإدارة"
-            }
-        },
-        "copyright": "المدرسة العليا للإعلام الآلي — جميع الحقوق محفوظة.",
-        "department": "مديرية العلاقات الدولية",
-        "location": {
-            "title": "الموقع",
-            "schoolName": "المدرسة العليا للإعلام الآلي",
-            "city": "وادي السمار، الجزائر العاصمة",
-            "country": "الجزائر",
-            "viewOnMaps": "عرض على الخريطة"
-        },
-        "contact": {
-            "emailLabel": "البريد الإلكتروني:",
-            "phoneLabel": "الهاتف:"
-        },
-        "legal": {
-            "privacyPolicy": "سياسة الخصوصية",
-            "termsOfUse": "شروط الاستخدام"
-        }
+    "copyright": "المدرسة العليا للإعلام الآلي — جميع الحقوق محفوظة.",
+    "department": "مديرية العلاقات الدولية",
+    "location": {
+      "title": "الموقع",
+      "schoolName": "المدرسة العليا للإعلام الآلي",
+      "city": "وادي السمار، الجزائر العاصمة",
+      "country": "الجزائر",
+      "viewOnMaps": "عرض على الخريطة"
     },
-    "common": {
-        "all": "الكل",
-        "allFem": "الكل",
-        "pays": "البلد",
-        "debut": "البداية",
-        "fin": "النهاية"
+    "contact": {
+      "emailLabel": "البريد الإلكتروني:",
+      "phoneLabel": "الهاتف:"
     },
-    "appels": {
-        "eyebrow": "التمويل",
-        "title": "دعوات المشاريع",
-        "description": "قم بتصفية دعوات المشاريع حسب البرنامج والبلد والحالة لإيجاد الفرص المناسبة.",
-        "filters": {
-            "programme": "البرنامج",
-            "country": "البلد / المنطقة",
-            "status": "الحالة"
-        },
-        "statuts": {
-            "tous": "الكل",
-            "ouvert": "مفتوح",
-            "bientot": "قريبًا",
-            "ferme": "مغلق"
-        },
-        "empty": "لا توجد دعوات مطابقة للمرشحات المحددة.",
-        "deadline": "الموعد النهائي",
-        "budget": "التمويل",
-        "apply": "تقديم طلب"
-    },
-    "cooperation": {
-        "eyebrow": "حول",
-        "title": "التعاون الدولي",
-        "description": "تطوّر المدرسة العليا للإعلام الآلي سياسة تعاون نشطة مع مؤسسات البحث والتعليم في جميع أنحاء العالم.",
-        "axesSection": {
-            "eyebrow": "محاورنا",
-            "title": "محاور التعاون",
-            "description": "أربعة توجهات رئيسية تشكل التزامنا الدولي."
-        },
-        "axes": {
-            "research": {
-                "title": "البحث التعاوني",
-                "text": "مشاريع مشتركة، إشراف مشترك على الأطروحات ومخابر مشتركة مع شركائنا الأكاديميين الدوليين."
-            },
-            "mobility": {
-                "title": "التنقل الأكاديمي",
-                "text": "برامج تبادل للطلبة وطلبة الدكتوراه والأساتذة الباحثين، في إطار Erasmus+ والاتفاقيات الثنائية."
-            },
-            "degrees": {
-                "title": "الشهادات المزدوجة",
-                "text": "مناهج مشتركة تتيح الحصول على شهادات معترف بها من قبل عدة مؤسسات شريكة."
-            },
-            "networks": {
-                "title": "الشبكات والاتحادات",
-                "text": "المشاركة في اتحادات أوروبية ودولية حول التحديات الرقمية الكبرى."
-            }
-        },
-        "partnersSection": {
-            "eyebrow": "الشبكة",
-            "title": "المؤسسات الشريكة",
-            "description": "جامعات ومعاهد بحث مرتبطة بالمدرسة عبر اتفاقيات رسمية."
-        },
-        "partnerFields": {
-            "type": "النوع",
-            "agreement": "الاتفاقية",
-            "since": "منذ"
-        },
-        "mapSection": {
-            "eyebrow": "الموقع",
-            "title": "خريطة الشركاء",
-            "description": "استعرض التوزيع الجغرافي لمؤسساتنا الشريكة حول العالم."
-        }
-    },
-    "home": {
-        "hero": {
-            "eyebrow": "المدرسة العليا للإعلام الآلي",
-            "title": "بوابة التعاون الدولي",
-            "description": "اكتشف واطّلع على جميع الأنشطة الدولية للمدرسة: مشاريع البحث، دعوات المشاريع، فرص التنقل والشراكات الأكاديمية حول العالم.",
-            "ctaCalls": "عرض دعوات المشاريع",
-            "ctaMobility": "استكشاف فرص التنقل",
-            "brandTitle": "المدرسة العليا للإعلام الآلي - التعاون الدولي",
-"slideAria": "الانتقال إلى الشريحة {{number}}",
-"slides": [
-  {
-    "eyebrow": "مرحبًا بكم",
-    "title": "بوابة التعاون الدولي",
-    "description": "📋 اكتشف دعوات المشاريع وفرص التنقل الأكاديمي. اكتشف عالمًا من الإمكانيات لمسيرتك المهنية."
-  },
-  {
-    "eyebrow": "الفرص",
-    "title": "التنقل الدولي",
-    "description": "شارك في التبادلات الأكاديمية في أكثر من 50 دولة. ابنِ شبكتك الدولية وأثرِ تجربتك."
-  },
-  {
-    "eyebrow": "الشركاء",
-    "title": "شبكة عالمية",
-    "description": "تعاون مع أفضل الجامعات والمؤسسات في العالم. منصة لبناء صداقات دائمة."
-  },
-  {
-    "eyebrow": "المشاريع",
-    "title": "البحث والابتكار",
-    "description": "ساهم في مشاريع بحثية معترف بها دوليًا. اصنع الفرق في مجال تخصصك."
-  }
-]
-        },
-         "agreements": {
-  "eyebrow": "الاتفاقيات",
-  "title": "اتفاقياتنا الدولية",
-  "description": "اكتشف جميع الاتفاقيات الموقعة مع شركائنا الدوليين.",
-  "cta": "عرض جميع الاتفاقيات"
-},
-        "stats": {
-            "partners": "الشركاء الدوليون",
-            "projects": "مشاريع البحث النشطة",
-            "mobility": "عمليات التنقل سنويًا",
-            "countries": "البلدان الشريكة"
-        },
-        "calls": {
-            "eyebrow": "الفرص",
-            "title": "دعوات المشاريع المفتوحة",
-            "description": "التمويلات والبرامج المتاحة حاليًا للباحثين والطلبة.",
-            "seeAll": "جميع الدعوات"
-        },
-        "mobility": {
-            "eyebrow": "التنقل",
-            "title": "فرص التنقل",
-            "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس دولية.",
-            "seeAll": "جميع فرص التنقل",
-            "spots": "{{count}} مكان متاح"
-        },
-        "news": {
-            "eyebrow": "في الوقت الحالي",
-            "title": "الأخبار والفعاليات",
-            "description": "آخر أخبار التعاون الدولي للمدرسة.",
-            "seeAll": "جميع الأخبار"
-        },
-        "partners": {
-            "eyebrow": "الشبكة",
-            "title": "شركاؤنا الدوليون",
-            "description": "شبكة من الجامعات ومعاهد البحث الرائدة."
-        }
-    },
-    "projets": {
-        "eyebrow": "البحث",
-        "title": "مشاريع البحث",
-        "description": "اكتشف مشاريع البحث الدولية التي تقودها أو تشارك في قيادتها المدرسة.",
-        "filters": {
-            "programme": "البرنامج",
-            "status": "الحالة"
-        },
-        "statuts": {
-            "tous": "الكل",
-            "en_cours": "قيد الإنجاز",
-            "termine": "منتهٍ"
-        },
-        "empty": "لا توجد مشاريع مطابقة للمرشحات المحددة.",
-        "fields": {
-            "coordinator": "المنسق",
-            "budget": "الميزانية",
-            "period": "الفترة"
-        },
-        "featured": "مُبرز"
-    },
-    "actualites": {
-        "eyebrow": "الأخبار",
-        "title": "الأخبار والفعاليات",
-        "description": "تابع أخبار التعاون الدولي: الشراكات، المشاريع، الفعاليات والفرص.",
-        "readMore": "قراءة المزيد",
-        "empty": "لا يوجد خبر يطابق هذا الفلتر."
-    },
-    "actualiteDetail": {
-        "notFoundTitle": "الخبر غير موجود",
-        "notFoundText": "هذا الخبر غير موجود أو تم حذفه.",
-        "backToList": "جميع الأخبار"
-    },
-    "documents": {
-        "eyebrow": "الموارد",
-        "title": "مكتبة الوثائق",
-        "description": "أدلة، استمارات، اتفاقيات وتقارير متعلقة بالتعاون الدولي.",
-        "table": {
-            "name": "الوثيقة",
-            "category": "الفئة",
-            "format": "الصيغة",
-            "size": "الحجم",
-            "updated": "آخر تحديث",
-            "action": "إجراء"
-        },
-        "download": "تحميل"
-    },
-    "mobilites": {
-        "eyebrow": "التنقل",
-        "title": "فرص التنقل",
-        "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس لدى شركائنا الدوليين.",
-        "filters": {
-            "type": "نوع التنقل"
-        },
-        "spots": "{{count}} مكان",
-        "fields": {
-            "duration": "المدة",
-            "level": "المستوى",
-            "programme": "البرنامج",
-            "audience": "الفئة المستهدفة"
-        },
-        "apply": "تقديم طلب"
-    },
-    "notFound": {
-        "title": "الصفحة غير موجودة",
-        "text": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
-        "backHome": "العودة إلى الرئيسية"
-    },
-    "admin": {
-        "title": "الإدارة",
-        "logout": "تسجيل الخروج",
-        "menuAria": "القائمة",
-        "exit": "خروج",
-        "dashboard": {
-            "title": "لوحة التحكم",
-            "description": "نظرة عامة وإدارة محتوى البوابة (بيانات تجريبية).",
-            "about": {
-                "title": "حول هذه الواجهة",
-                "text": "تحاكي واجهة الإدارة هذه عمليات CRUD (إنشاء، قراءة، تعديل، حذف) في الذاكرة. لا يتم حفظ التغييرات بشكل دائم: تختفي عند إعادة تحميل الصفحة. طبقة الخدمات (<code>/src/services</code>) جاهزة للاتصال بواجهة برمجة REST خارجية."
-            }
-        },
-        "login": {
-            "brand": "فضاء الإدارة",
-            "title": "تسجيل الدخول",
-            "subtitle": "مصادقة تجريبية — استخدم أي بيانات اعتماد.",
-            "email": "البريد الإلكتروني",
-            "password": "كلمة المرور",
-            "submit": "تسجيل الدخول",
-            "errorRequired": "يرجى تعبئة جميع الحقول."
-        },
-        "crud": {
-            "actions": "إجراءات",
-            "loading": "جارٍ التحميل…",
-            "empty": "لا توجد عناصر.",
-            "edit": "تعديل",
-            "delete": "حذف",
-            "add": "+ إضافة",
-            "cancel": "إلغاء",
-            "save": "حفظ",
-            "confirmDelete": "هل تريد حذف هذا العنصر؟",
-            "mockNotice": "إدارة في الذاكرة (تجريبي)",
-            "modalEdit": "تعديل",
-            "modalAdd": "إضافة",
-            "listPlaceholder": "مفصولة بفواصل",
-            "selectPlaceholder": "—",
-            "itemsCount_one": "عنصر واحد",
-            "itemsCount_two": "عنصران",
-            "itemsCount_few": "{{count}} عناصر",
-            "itemsCount_many": "{{count}} عنصرًا",
-            "itemsCount_other": "{{count}} عنصر"
-        },
-        "nav": {
-            "menuAria": "فتح القائمة",
-            "admin": "الإدارة",
-            "title": "لوحة الإدارة",
-            "dashboard": "لوحة التحكم",
-            "partners": "الشركاء",
-            "projects": "المشاريع",
-            "calls": "دعوات المشاريع",
-            "mobility": "التنقل",
-            "news": "الأخبار والفعاليات",
-            "documents": "الوثائق",
-            "agreements": "الاتفاقيات",
-            "users": "المستخدمون",
-            "roles": "الأدوار والصلاحيات",
-            "school": "تقديم المدرسة",
-            "testAccess": "اختبار الصلاحيات",
-            "audit": "سجل التدقيق",
-            "settings": "الإعدادات",
-            "changeLanguage": "تغيير اللغة",
-            "lightMode": "الوضع الفاتح",
-            "darkMode": "الوضع الداكن",
-            "user": "مستخدم",
-            "logout": "تسجيل الخروج",
-            "administration": "الإدارة"
-        }
-    },
-    "school": {
-        "defaultTitle": "تقديم المدرسة",
-        "defaultDescription": "اكتشف المدرسة العليا للإعلام الآلي، قيمها ورسالتها.",
-        "download": "تحميل العرض التقديمي",
-        "error": {
-            "loading": "تعذر تحميل العرض التقديمي"
-        },
-        "noContent": "لم يتم نشر أي عرض تقديمي مفصل بعد.",
-        "about": {
-            "title": "عن المدرسة العليا للإعلام الآلي",
-            "description": "المدرسة العليا للإعلام الآلي مؤسسة مكرسة للتميز في علوم الحاسوب والشراكات الدولية.",
-            "mission": {
-                "title": "رسالتنا",
-                "text": "نحن نكوّن أفضل مهندسي الإعلام الآلي ونعزز التعاون الدولي."
-            },
-            "values": {
-                "title": "قيمنا",
-                "text": "التميز والابتكار والتعاون والمسؤولية الاجتماعية هي جوهر نهجنا."
-            }
-        },
-        "values": {
-            "excellence": {
-                "title": "التميز الأكاديمي",
-                "text": "تكوين متميز معترف به دولياً."
-            },
-            "innovation": {
-                "title": "الابتكار",
-                "text": "في طليعة التكنولوجيات وأساليب التعليم."
-            },
-            "collaboration": {
-                "title": "التعاون",
-                "text": "شبكة من الشركاء الملتزمين بالتعاون الدولي."
-            }
-        }
-    },
-    "enums": {
-        "projectStatus": {
-            "proposed": "مقترح",
-            "ongoing": "قيد الإنجاز",
-            "completed": "منتهٍ",
-            "suspended": "معلّق"
-        },
-        "callStatus": {
-            "open": "مفتوح",
-            "closed": "مغلق",
-            "upcoming": "قريبًا",
-            "closing_soon": "الإغلاق قريب"
-        },
-        "mobilityType": {
-            "student_outgoing": "طلابي (صادر)",
-            "student_incoming": "طلابي (وارد)",
-            "teaching": "تدريس",
-            "research": "بحث / دكتوراه",
-            "staff": "موظف إداري",
-            "internship": "تدريب",
-            "summer_school": "مدرسة صيفية"
-        },
-        "currentFile": "الملف الحالي",
-        "newsType": {
-            "news": "خبر",
-            "event": "فعالية",
-            "workshop": "ورشة عمل",
-            "meeting": "لقاء",
-            "testimonial": "شهادة"
-        },
-        "documentCategory": {
-            "institutionnel": "مؤسساتي",
-            "template_projet": "نموذج مشروع",
-            "formulaire_financier": "استمارة مالية",
-            "erasmus_mobilite": "تنقل Erasmus+",
-            "horizon_msca": "Horizon Europe / MSCA",
-            "national": "برنامج وطني",
-            "guide_faq": "دليل / أسئلة شائعة",
-            "rapport": "تقرير",
-            "brochure": "كتيب",
-            "convention": "اتفاقية"
-        },
-        "documentVisibility": {
-            "public": "عام",
-            "staff": "الموظفون فقط",
-            "admin": "المدراء فقط"
-        },
-        "userRole": {
-            "super_admin": "مدير عام",
-            "admin": "مدير",
-            "utilisateur": "مستخدم"
-        }
-    },
-    "dashboard": "لوحة التحكم",
-    "partners": "الشركاء",
-    "projects": "المشاريع",
-    "calls": "نداءات المشاريع",
-    "mobility": "التنقل",
-    "document": "الوثائق",
-    "newsEvents": "الأخبار والفعاليات",
-    "nom": "الاسم",
-    "nomOfficiel": "الاسم الرسمي",
-    "pays": "البلد",
-    "ville": "المدينة",
-    "typeEtablissement": "نوع المؤسسة",
-    "typePartenariat": "نوع الشراكة",
-    "statutPartenariat": "حالة الشراكة",
-    "siteWeb": "الموقع الإلكتروني",
-    "domaines": "المجالات",
-    "description": "الوصف",
-    "logo": "الشعار",
-    "statutPublication": "حالة النشر",
-    "titre": "العنوان",
-    "title": "العنوان",
-    "programme": "البرنامج",
-    "statut": "الحالة",
-    "status": "الحالة",
-    "budget": "الميزانية",
-    "coordinateur": "المنسق",
-    "acronyme": "الاختصار",
-    "codeReference": "الرمز المرجعي",
-    "debut": "تاريخ البدء",
-    "fin": "تاريخ الانتهاء",
-    "resume": "الملخص",
-    "objectifs": "الأهداف",
-    "groupesCibles": "الفئات المستهدفة",
-    "resultats": "النتائج",
-    "livrables": "المخرجات",
-    "misEnAvant": "مميز",
-    "yes": "نعم",
-    "no": "لا",
-    "type": "النوع",
-    "duree": "المدة",
-    "periode": "الفترة",
-    "places": "الأماكن",
-    "institutionAccueil": "المؤسسة المستضيفة",
-    "dateLimite": "الموعد النهائي",
-    "publicCible": "الجمهور المستهدف",
-    "conditions": "الشروط",
-    "financement": "التمويل",
-    "lienCandidature": "رابط الترشح",
-    "personneContact": "الشخص المسؤول",
-    "emailContact": "البريد الإلكتروني للتواصل",
-    "categorie": "الفئة",
-    "date": "التاريخ",
-    "dateExpiration": "تاريخ انتهاء الصلاحية",
-    "fichier": "الملف",
-    "format": "الصيغة",
-    "langage": "اللغة",
-    "taille": "الحجم",
-    "version": "الإصدار",
-    "visibilite": "الرؤية",
-    "eventDate": "تاريخ الفعالية",
-    "endDate": "تاريخ الانتهاء",
-    "location": "المكان",
-    "featured": "مميز",
-    "summary": "الملخص",
-    "project": "المشروع",
-    "imageUrl": "الصورة",
-    "authorName": "اسم الكاتب",
-    "authorRole": "وظيفة الكاتب",
-    "authorPhotoUrl": "صورة الكاتب",
-    "quoteText": "الاقتباس",
-    "active": "نشط",
-    "pending": "قيد الانتظار",
-    "ended": "منتهٍ",
-    "draft": "مسودة",
-    "published": "منشور",
-    "archived": "مؤرشف",
-    "proposed": "مقترح",
-    "ongoing": "قيد التنفيذ",
-    "completed": "مكتمل",
-    "suspended": "معلق",
-    "open": "مفتوح",
-    "closed": "مغلق",
-    "upcoming": "قريباً",
-    "news": "خبر",
-    "event": "فعالية",
-    "workshop": "ورشة عمل",
-    "meeting": "اجتماع",
-    "testimonial": "شهادة",
-    "student_outgoing": "تنقل طلابي (صادر)",
-    "student_incoming": "تنقل طلابي (وارد)",
-    "teaching": "تدريس",
-    "research": "بحث",
-    "staff": "موظف",
-    "internship": "تدريب",
-    "summer_school": "مدرسة صيفية",
-    "adresse": "العنوان",
-    "agreements": "الاتفاقيات",
-    "datePublication": "تاريخ النشر",
-    "email": "البريد الإلكتروني",
-    "inactive": "غير نشط",
-    "lastLogin": "آخر تسجيل دخول",
-    "lienOfficiel": "الرابط الرسمي",
-    "organismeFinanceur": "الجهة الممولة",
-    "password": "كلمة المرور",
-    "presentationEcole": "تقديم المدرسة",
-    "role": "الدور",
-    "tauxFinancement": "نسبة التمويل",
-    "typeAction": "نوع الإجراء",
-    "users": "المستخدمون",
-    "adminRoles": "الأدوار والصلاحيات",
-    "adminTestAccess": "اختبار الصلاحيات (RBAC)",
-    "adminAuditLog": "سجل التدقيق",
-    "agreementsList": {
-        "eyebrow": "الشراكات",
-        "title": "اتفاقياتنا مع الشركاء",
-        "description": "الاتفاقيات والمعاهدات الموقعة مع شركائنا الدوليين.",
-        "empty": "لا توجد اتفاقيات متاحة حاليًا.",
-        "partner": "الشريك",
-        "period": "الفترة",
-        "viewPdf": "عرض ملف PDF",
-        "linkedDocuments": "المستندات المرتبطة",
-        "itemsCount": "اتفاقية"
-    },
-    "adminFallbackName": "المدير",
-    "adminSpaceTitle": "مساحة إدارة ESI",
-    "changeLanguageAria": "تغيير اللغة",
-    "lightMode": "الوضع الفاتح",
-    "darkMode": "الوضع الداكن",
-    "changeThemeAria": "تغيير المظهر",
-    "notifications": {
-        "title": "الإشعارات",
-        "unreadCount_zero": "لا إشعارات غير مقروءة",
-        "unreadCount_one": "إشعار واحد غير مقروء",
-        "unreadCount_two": "إشعاران غير مقروءين",
-        "unreadCount_few": "{{count}} إشعارات غير مقروءة",
-        "unreadCount_many": "{{count}} إشعارًا غير مقروء",
-        "unreadCount_other": "{{count}} إشعار غير مقروء",
-        "empty": "لا توجد إشعارات",
-        "new": "جديد",
-        "confirmDelete": "هل تريد حذف هذا الإشعار؟",
-        "close": "إغلاق",
-        "time": {
-            "now": "الآن",
-            "secondsAgo_one": "منذ ثانية",
-            "secondsAgo_two": "منذ ثانيتين",
-            "secondsAgo_few": "منذ {{count}} ثوانٍ",
-            "secondsAgo_many": "منذ {{count}} ثانية",
-            "secondsAgo_other": "منذ {{count}} ثانية",
-            "oneMinuteAgo": "منذ دقيقة",
-            "minutesAgo_one": "منذ دقيقة",
-            "minutesAgo_two": "منذ دقيقتين",
-            "minutesAgo_few": "منذ {{count}} دقائق",
-            "minutesAgo_many": "منذ {{count}} دقيقة",
-            "minutesAgo_other": "منذ {{count}} دقيقة",
-            "oneHourAgo": "منذ ساعة",
-            "hoursAgo_one": "منذ ساعة",
-            "hoursAgo_two": "منذ ساعتين",
-            "hoursAgo_few": "منذ {{count}} ساعات",
-            "hoursAgo_many": "منذ {{count}} ساعة",
-            "hoursAgo_other": "منذ {{count}} ساعة",
-            "yesterday": "أمس",
-            "daysAgo_one": "منذ يوم",
-            "daysAgo_two": "منذ يومين",
-            "daysAgo_few": "منذ {{count}} أيام",
-            "daysAgo_many": "منذ {{count}} يومًا",
-            "daysAgo_other": "منذ {{count}} يوم"
-        }
+    "legal": {
+      "privacyPolicy": "سياسة الخصوصية",
+      "termsOfUse": "شروط الاستخدام"
     }
-   
+  },
+  "common": {
+    "all": "الكل",
+    "allFem": "الكل",
+    "pays": "البلد",
+    "debut": "البداية",
+    "fin": "النهاية"
+  },
+  "appels": {
+    "eyebrow": "التمويل",
+    "title": "دعوات المشاريع",
+    "description": "قم بتصفية دعوات المشاريع حسب البرنامج والبلد والحالة لإيجاد الفرص المناسبة.",
+    "filters": {
+      "programme": "البرنامج",
+      "country": "البلد / المنطقة",
+      "status": "الحالة"
+    },
+    "statuts": {
+      "tous": "الكل",
+      "ouvert": "مفتوح",
+      "bientot": "قريبًا",
+      "ferme": "مغلق"
+    },
+    "empty": "لا توجد دعوات مطابقة للمرشحات المحددة.",
+    "deadline": "الموعد النهائي",
+    "budget": "التمويل",
+    "apply": "تقديم طلب"
+  },
+  "cooperation": {
+    "eyebrow": "حول",
+    "title": "التعاون الدولي",
+    "description": "تطوّر المدرسة العليا للإعلام الآلي سياسة تعاون نشطة مع مؤسسات البحث والتعليم في جميع أنحاء العالم.",
+    "axesSection": {
+      "eyebrow": "محاورنا",
+      "title": "محاور التعاون",
+      "description": "أربعة توجهات رئيسية تشكل التزامنا الدولي."
+    },
+    "axes": {
+      "research": {
+        "title": "البحث التعاوني",
+        "text": "مشاريع مشتركة، إشراف مشترك على الأطروحات ومخابر مشتركة مع شركائنا الأكاديميين الدوليين."
+      },
+      "mobility": {
+        "title": "التنقل الأكاديمي",
+        "text": "برامج تبادل للطلبة وطلبة الدكتوراه والأساتذة الباحثين، في إطار Erasmus+ والاتفاقيات الثنائية."
+      },
+      "degrees": {
+        "title": "الشهادات المزدوجة",
+        "text": "مناهج مشتركة تتيح الحصول على شهادات معترف بها من قبل عدة مؤسسات شريكة."
+      },
+      "networks": {
+        "title": "الشبكات والاتحادات",
+        "text": "المشاركة في اتحادات أوروبية ودولية حول التحديات الرقمية الكبرى."
+      }
+    },
+    "partnersSection": {
+      "eyebrow": "الشبكة",
+      "title": "المؤسسات الشريكة",
+      "description": "جامعات ومعاهد بحث مرتبطة بالمدرسة عبر اتفاقيات رسمية."
+    },
+    "partnerFields": {
+      "type": "النوع",
+      "agreement": "الاتفاقية",
+      "since": "منذ"
+    },
+    "mapSection": {
+      "eyebrow": "الموقع",
+      "title": "خريطة الشركاء",
+      "description": "استعرض التوزيع الجغرافي لمؤسساتنا الشريكة حول العالم."
+    }
+  },
+  "home": {
+    "hero": {
+      "eyebrow": "المدرسة العليا للإعلام الآلي",
+      "title": "بوابة التعاون الدولي",
+      "description": "اكتشف واطّلع على جميع الأنشطة الدولية للمدرسة: مشاريع البحث، دعوات المشاريع، فرص التنقل والشراكات الأكاديمية حول العالم.",
+      "ctaCalls": "عرض دعوات المشاريع",
+      "ctaMobility": "استكشاف فرص التنقل",
+      "brandTitle": "المدرسة العليا للإعلام الآلي - التعاون الدولي",
+      "slideAria": "الانتقال إلى الشريحة {{number}}",
+      "slides": [
+        {
+          "eyebrow": "مرحبًا بكم",
+          "title": "بوابة التعاون الدولي",
+          "description": "📋 اكتشف دعوات المشاريع وفرص التنقل الأكاديمي. اكتشف عالمًا من الإمكانيات لمسيرتك المهنية."
+        },
+        {
+          "eyebrow": "الفرص",
+          "title": "التنقل الدولي",
+          "description": "شارك في التبادلات الأكاديمية في أكثر من 50 دولة. ابنِ شبكتك الدولية وأثرِ تجربتك."
+        },
+        {
+          "eyebrow": "الشركاء",
+          "title": "شبكة عالمية",
+          "description": "تعاون مع أفضل الجامعات والمؤسسات في العالم. منصة لبناء صداقات دائمة."
+        },
+        {
+          "eyebrow": "المشاريع",
+          "title": "البحث والابتكار",
+          "description": "ساهم في مشاريع بحثية معترف بها دوليًا. اصنع الفرق في مجال تخصصك."
+        }
+      ]
+    },
+    "agreements": {
+      "eyebrow": "الاتفاقيات",
+      "title": "اتفاقياتنا الدولية",
+      "description": "اكتشف جميع الاتفاقيات الموقعة مع شركائنا الدوليين.",
+      "cta": "عرض جميع الاتفاقيات"
+    },
+    "stats": {
+      "partners": "الشركاء الدوليون",
+      "projects": "مشاريع البحث النشطة",
+      "mobility": "عمليات التنقل سنويًا",
+      "countries": "البلدان الشريكة"
+    },
+    "calls": {
+      "eyebrow": "الفرص",
+      "title": "دعوات المشاريع المفتوحة",
+      "description": "التمويلات والبرامج المتاحة حاليًا للباحثين والطلبة.",
+      "seeAll": "جميع الدعوات"
+    },
+    "mobility": {
+      "eyebrow": "التنقل",
+      "title": "فرص التنقل",
+      "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس دولية.",
+      "seeAll": "جميع فرص التنقل",
+      "spots": "{{count}} مكان متاح"
+    },
+    "news": {
+      "eyebrow": "في الوقت الحالي",
+      "title": "الأخبار والفعاليات",
+      "description": "آخر أخبار التعاون الدولي للمدرسة.",
+      "seeAll": "جميع الأخبار"
+    },
+    "partners": {
+      "eyebrow": "الشبكة",
+      "title": "شركاؤنا الدوليون",
+      "description": "شبكة من الجامعات ومعاهد البحث الرائدة."
+    }
+  },
+  "projets": {
+    "eyebrow": "البحث",
+    "title": "مشاريع البحث",
+    "description": "اكتشف مشاريع البحث الدولية التي تقودها أو تشارك في قيادتها المدرسة.",
+    "filters": {
+      "programme": "البرنامج",
+      "status": "الحالة"
+    },
+    "statuts": {
+      "tous": "الكل",
+      "en_cours": "قيد الإنجاز",
+      "termine": "منتهٍ"
+    },
+    "empty": "لا توجد مشاريع مطابقة للمرشحات المحددة.",
+    "fields": {
+      "coordinator": "المنسق",
+      "budget": "الميزانية",
+      "period": "الفترة"
+    },
+    "featured": "مُبرز"
+  },
+  "actualites": {
+    "eyebrow": "الأخبار",
+    "title": "الأخبار والفعاليات",
+    "description": "تابع أخبار التعاون الدولي: الشراكات، المشاريع، الفعاليات والفرص.",
+    "readMore": "قراءة المزيد",
+    "empty": "لا يوجد خبر يطابق هذا الفلتر."
+  },
+  "actualiteDetail": {
+    "notFoundTitle": "الخبر غير موجود",
+    "notFoundText": "هذا الخبر غير موجود أو تم حذفه.",
+    "backToList": "جميع الأخبار"
+  },
+  "documents": {
+    "eyebrow": "الموارد",
+    "title": "مكتبة الوثائق",
+    "description": "أدلة، استمارات، اتفاقيات وتقارير متعلقة بالتعاون الدولي.",
+    "table": {
+      "name": "الوثيقة",
+      "category": "الفئة",
+      "format": "الصيغة",
+      "size": "الحجم",
+      "updated": "آخر تحديث",
+      "action": "إجراء"
+    },
+    "download": "تحميل",
+    "noResults": "لم يتم العثور على أي وثيقة",
+    "downloading": "جارٍ التحميل...",
+    "open": "فتح",
+    "errors": {
+      "loadFailed": "تعذر تحميل الوثائق",
+      "noUrl": "رابط الوثيقة غير متوفر",
+      "generic": "خطأ: {{message}}"
+    }
+  },
+  "mobilites": {
+    "eyebrow": "التنقل",
+    "title": "فرص التنقل",
+    "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس لدى شركائنا الدوليين.",
+    "filters": {
+      "type": "نوع التنقل"
+    },
+    "spots": "{{count}} مكان",
+    "fields": {
+      "duration": "المدة",
+      "level": "المستوى",
+      "programme": "البرنامج",
+      "audience": "الفئة المستهدفة"
+    },
+    "apply": "تقديم طلب"
+  },
+  "notFound": {
+    "title": "الصفحة غير موجودة",
+    "text": "الصفحة التي تبحث عنها غير موجودة أو تم نقلها.",
+    "backHome": "العودة إلى الرئيسية"
+  },
+  "admin": {
+    "title": "الإدارة",
+    "logout": "تسجيل الخروج",
+    "menuAria": "القائمة",
+    "exit": "خروج",
+    "dashboard": {
+      "title": "لوحة التحكم",
+      "description": "نظرة عامة وإدارة محتوى البوابة (بيانات تجريبية).",
+      "about": {
+        "title": "حول هذه الواجهة",
+        "text": "تحاكي واجهة الإدارة هذه عمليات CRUD (إنشاء، قراءة، تعديل، حذف) في الذاكرة. لا يتم حفظ التغييرات بشكل دائم: تختفي عند إعادة تحميل الصفحة. طبقة الخدمات (<code>/src/services</code>) جاهزة للاتصال بواجهة برمجة REST خارجية."
+      }
+    },
+    "login": {
+      "brand": "فضاء الإدارة",
+      "title": "تسجيل الدخول",
+      "subtitle": "مصادقة تجريبية — استخدم أي بيانات اعتماد.",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "تسجيل الدخول",
+      "errorRequired": "يرجى تعبئة جميع الحقول."
+    },
+    "crud": {
+      "actions": "إجراءات",
+      "loading": "جارٍ التحميل…",
+      "empty": "لا توجد عناصر.",
+      "edit": "تعديل",
+      "delete": "حذف",
+      "add": "+ إضافة",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "confirmDelete": "هل تريد حذف هذا العنصر؟",
+      "mockNotice": "إدارة في الذاكرة (تجريبي)",
+      "modalEdit": "تعديل",
+      "modalAdd": "إضافة",
+      "listPlaceholder": "مفصولة بفواصل",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "عنصر واحد",
+      "itemsCount_two": "عنصران",
+      "itemsCount_few": "{{count}} عناصر",
+      "itemsCount_many": "{{count}} عنصرًا",
+      "itemsCount_other": "{{count}} عنصر"
+    },
+    "nav": {
+      "menuAria": "فتح القائمة",
+      "admin": "الإدارة",
+      "title": "لوحة الإدارة",
+      "dashboard": "لوحة التحكم",
+      "partners": "الشركاء",
+      "projects": "المشاريع",
+      "calls": "دعوات المشاريع",
+      "mobility": "التنقل",
+      "news": "الأخبار والفعاليات",
+      "documents": "الوثائق",
+      "agreements": "الاتفاقيات",
+      "users": "المستخدمون",
+      "roles": "الأدوار والصلاحيات",
+      "school": "تقديم المدرسة",
+      "testAccess": "اختبار الصلاحيات",
+      "audit": "سجل التدقيق",
+      "settings": "الإعدادات",
+      "changeLanguage": "تغيير اللغة",
+      "lightMode": "الوضع الفاتح",
+      "darkMode": "الوضع الداكن",
+      "user": "مستخدم",
+      "logout": "تسجيل الخروج",
+      "administration": "الإدارة"
+    }
+  },
+  "school": {
+    "defaultTitle": "تقديم المدرسة",
+    "defaultDescription": "اكتشف المدرسة العليا للإعلام الآلي، قيمها ورسالتها.",
+    "download": "تحميل العرض التقديمي",
+    "error": {
+      "loading": "تعذر تحميل العرض التقديمي"
+    },
+    "noContent": "لم يتم نشر أي عرض تقديمي مفصل بعد.",
+    "about": {
+      "title": "عن المدرسة العليا للإعلام الآلي",
+      "description": "المدرسة العليا للإعلام الآلي مؤسسة مكرسة للتميز في علوم الحاسوب والشراكات الدولية.",
+      "mission": {
+        "title": "رسالتنا",
+        "text": "نحن نكوّن أفضل مهندسي الإعلام الآلي ونعزز التعاون الدولي."
+      },
+      "values": {
+        "title": "قيمنا",
+        "text": "التميز والابتكار والتعاون والمسؤولية الاجتماعية هي جوهر نهجنا."
+      }
+    },
+    "values": {
+      "excellence": {
+        "title": "التميز الأكاديمي",
+        "text": "تكوين متميز معترف به دولياً."
+      },
+      "innovation": {
+        "title": "الابتكار",
+        "text": "في طليعة التكنولوجيات وأساليب التعليم."
+      },
+      "collaboration": {
+        "title": "التعاون",
+        "text": "شبكة من الشركاء الملتزمين بالتعاون الدولي."
+      }
+    }
+  },
+  "enums": {
+    "projectStatus": {
+      "proposed": "مقترح",
+      "ongoing": "قيد الإنجاز",
+      "completed": "منتهٍ",
+      "suspended": "معلّق"
+    },
+    "callStatus": {
+      "open": "مفتوح",
+      "closed": "مغلق",
+      "upcoming": "قريبًا",
+      "closing_soon": "الإغلاق قريب"
+    },
+    "mobilityType": {
+      "student_outgoing": "طلابي (صادر)",
+      "student_incoming": "طلابي (وارد)",
+      "teaching": "تدريس",
+      "research": "بحث / دكتوراه",
+      "staff": "موظف إداري",
+      "internship": "تدريب",
+      "summer_school": "مدرسة صيفية"
+    },
+    "currentFile": "الملف الحالي",
+    "newsType": {
+      "news": "خبر",
+      "event": "فعالية",
+      "workshop": "ورشة عمل",
+      "meeting": "لقاء",
+      "testimonial": "شهادة"
+    },
+    "documentCategory": {
+      "institutionnel": "مؤسساتي",
+      "template_projet": "نموذج مشروع",
+      "formulaire_financier": "استمارة مالية",
+      "erasmus_mobilite": "تنقل Erasmus+",
+      "horizon_msca": "Horizon Europe / MSCA",
+      "national": "برنامج وطني",
+      "guide_faq": "دليل / أسئلة شائعة",
+      "rapport": "تقرير",
+      "brochure": "كتيب",
+      "convention": "اتفاقية"
+    },
+    "documentVisibility": {
+      "public": "عام",
+      "staff": "الموظفون فقط",
+      "admin": "المدراء فقط"
+    },
+    "userRole": {
+      "super_admin": "مدير عام",
+      "admin": "مدير",
+      "utilisateur": "مستخدم"
+    },
+    "agreementStatus": {
+      "active": "نشط",
+      "expired": "منتهي الصلاحية",
+      "pending": "قيد الانتظار",
+      "negotiation": "قيد التفاوض"
+    }
+  },
+  "dashboard": "لوحة التحكم",
+  "partners": "الشركاء",
+  "projects": "المشاريع",
+  "calls": "نداءات المشاريع",
+  "mobility": "التنقل",
+  "document": "الوثائق",
+  "newsEvents": "الأخبار والفعاليات",
+  "nom": "الاسم",
+  "nomOfficiel": "الاسم الرسمي",
+  "pays": "البلد",
+  "ville": "المدينة",
+  "typeEtablissement": "نوع المؤسسة",
+  "typePartenariat": "نوع الشراكة",
+  "statutPartenariat": "حالة الشراكة",
+  "siteWeb": "الموقع الإلكتروني",
+  "domaines": "المجالات",
+  "description": "الوصف",
+  "logo": "الشعار",
+  "statutPublication": "حالة النشر",
+  "titre": "العنوان",
+  "title": "العنوان",
+  "programme": "البرنامج",
+  "statut": "الحالة",
+  "status": "الحالة",
+  "budget": "الميزانية",
+  "coordinateur": "المنسق",
+  "acronyme": "الاختصار",
+  "codeReference": "الرمز المرجعي",
+  "debut": "تاريخ البدء",
+  "fin": "تاريخ الانتهاء",
+  "resume": "الملخص",
+  "objectifs": "الأهداف",
+  "groupesCibles": "الفئات المستهدفة",
+  "resultats": "النتائج",
+  "livrables": "المخرجات",
+  "misEnAvant": "مميز",
+  "yes": "نعم",
+  "no": "لا",
+  "type": "النوع",
+  "duree": "المدة",
+  "periode": "الفترة",
+  "places": "الأماكن",
+  "institutionAccueil": "المؤسسة المستضيفة",
+  "dateLimite": "الموعد النهائي",
+  "publicCible": "الجمهور المستهدف",
+  "conditions": "الشروط",
+  "financement": "التمويل",
+  "lienCandidature": "رابط الترشح",
+  "personneContact": "الشخص المسؤول",
+  "emailContact": "البريد الإلكتروني للتواصل",
+  "categorie": "الفئة",
+  "date": "التاريخ",
+  "dateExpiration": "تاريخ انتهاء الصلاحية",
+  "fichier": "الملف",
+  "format": "الصيغة",
+  "langage": "اللغة",
+  "taille": "الحجم",
+  "version": "الإصدار",
+  "visibilite": "الرؤية",
+  "eventDate": "تاريخ الفعالية",
+  "endDate": "تاريخ الانتهاء",
+  "location": "المكان",
+  "featured": "مميز",
+  "summary": "الملخص",
+  "project": "المشروع",
+  "imageUrl": "الصورة",
+  "authorName": "اسم الكاتب",
+  "authorRole": "وظيفة الكاتب",
+  "authorPhotoUrl": "صورة الكاتب",
+  "quoteText": "الاقتباس",
+  "active": "نشط",
+  "pending": "قيد الانتظار",
+  "ended": "منتهٍ",
+  "draft": "مسودة",
+  "published": "منشور",
+  "archived": "مؤرشف",
+  "proposed": "مقترح",
+  "ongoing": "قيد التنفيذ",
+  "completed": "مكتمل",
+  "suspended": "معلق",
+  "open": "مفتوح",
+  "closed": "مغلق",
+  "upcoming": "قريباً",
+  "news": "خبر",
+  "event": "فعالية",
+  "workshop": "ورشة عمل",
+  "meeting": "اجتماع",
+  "testimonial": "شهادة",
+  "student_outgoing": "تنقل طلابي (صادر)",
+  "student_incoming": "تنقل طلابي (وارد)",
+  "teaching": "تدريس",
+  "research": "بحث",
+  "staff": "موظف",
+  "internship": "تدريب",
+  "summer_school": "مدرسة صيفية",
+  "adresse": "العنوان",
+  "agreements": "الاتفاقيات",
+  "datePublication": "تاريخ النشر",
+  "email": "البريد الإلكتروني",
+  "inactive": "غير نشط",
+  "lastLogin": "آخر تسجيل دخول",
+  "lienOfficiel": "الرابط الرسمي",
+  "organismeFinanceur": "الجهة الممولة",
+  "password": "كلمة المرور",
+  "presentationEcole": "تقديم المدرسة",
+  "role": "الدور",
+  "tauxFinancement": "نسبة التمويل",
+  "typeAction": "نوع الإجراء",
+  "users": "المستخدمون",
+  "adminRoles": "الأدوار والصلاحيات",
+  "adminTestAccess": "اختبار الصلاحيات (RBAC)",
+  "adminAuditLog": "سجل التدقيق",
+  "agreementsList": {
+    "eyebrow": "الشراكات",
+    "title": "اتفاقياتنا مع الشركاء",
+    "description": "الاتفاقيات والمعاهدات الموقعة مع شركائنا الدوليين.",
+    "empty": "لا توجد اتفاقيات متاحة حاليًا.",
+    "partner": "الشريك",
+    "period": "الفترة",
+    "viewPdf": "عرض ملف PDF",
+    "linkedDocuments": "المستندات المرتبطة",
+    "itemsCount": "اتفاقية"
+  },
+  "adminFallbackName": "المدير",
+  "adminSpaceTitle": "مساحة إدارة ESI",
+  "changeLanguageAria": "تغيير اللغة",
+  "lightMode": "الوضع الفاتح",
+  "darkMode": "الوضع الداكن",
+  "changeThemeAria": "تغيير المظهر",
+  "notifications": {
+    "title": "الإشعارات",
+    "unreadCount_zero": "لا إشعارات غير مقروءة",
+    "unreadCount_one": "إشعار واحد غير مقروء",
+    "unreadCount_two": "إشعاران غير مقروءين",
+    "unreadCount_few": "{{count}} إشعارات غير مقروءة",
+    "unreadCount_many": "{{count}} إشعارًا غير مقروء",
+    "unreadCount_other": "{{count}} إشعار غير مقروء",
+    "empty": "لا توجد إشعارات",
+    "new": "جديد",
+    "confirmDelete": "هل تريد حذف هذا الإشعار؟",
+    "close": "إغلاق",
+    "time": {
+      "now": "الآن",
+      "secondsAgo_one": "منذ ثانية",
+      "secondsAgo_two": "منذ ثانيتين",
+      "secondsAgo_few": "منذ {{count}} ثوانٍ",
+      "secondsAgo_many": "منذ {{count}} ثانية",
+      "secondsAgo_other": "منذ {{count}} ثانية",
+      "oneMinuteAgo": "منذ دقيقة",
+      "minutesAgo_one": "منذ دقيقة",
+      "minutesAgo_two": "منذ دقيقتين",
+      "minutesAgo_few": "منذ {{count}} دقائق",
+      "minutesAgo_many": "منذ {{count}} دقيقة",
+      "minutesAgo_other": "منذ {{count}} دقيقة",
+      "oneHourAgo": "منذ ساعة",
+      "hoursAgo_one": "منذ ساعة",
+      "hoursAgo_two": "منذ ساعتين",
+      "hoursAgo_few": "منذ {{count}} ساعات",
+      "hoursAgo_many": "منذ {{count}} ساعة",
+      "hoursAgo_other": "منذ {{count}} ساعة",
+      "yesterday": "أمس",
+      "daysAgo_one": "منذ يوم",
+      "daysAgo_two": "منذ يومين",
+      "daysAgo_few": "منذ {{count}} أيام",
+      "daysAgo_many": "منذ {{count}} يومًا",
+      "daysAgo_other": "منذ {{count}} يوم"
+    }
+  }
 }

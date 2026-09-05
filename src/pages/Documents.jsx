@@ -33,9 +33,9 @@ export default function Documents() {
       .then(setDocuments)
       .catch((err) => {
         console.error('Erreur chargement:', err);
-        setError('Impossible de charger les documents');
+        setError(t('documents.errors.loadFailed'));
       });
-  }, []);
+  }, [t]);
 
   const categories = useMemo(
     () => ['toutes', ...new Set((documents ?? []).map((d) => d.categorie))],
@@ -57,7 +57,7 @@ export default function Documents() {
     const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);
 
     if (!url) {
-      setError('URL du document non disponible');
+      setError(t('documents.errors.noUrl'));
       return;
     }
 
@@ -84,7 +84,7 @@ export default function Documents() {
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error('❌ Erreur téléchargement:', err);
-      setError(`Erreur: ${err.message}`);
+      setError(t('documents.errors.generic', { message: err.message }));
     } finally {
       setDownloading(null);
     }
@@ -96,7 +96,7 @@ export default function Documents() {
     const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);
 
     if (!url) {
-      setError('URL du document non disponible');
+      setError(t('documents.errors.noUrl'));
       return;
     }
 
@@ -146,7 +146,7 @@ export default function Documents() {
                   {filtres.length === 0 ? (
                     <tr>
                       <td colSpan="6" className="text-center py-8 text-gray-500 dark:text-slate-400">
-                        Aucun document trouvé
+                        {t('documents.noResults')}
                       </td>
                     </tr>
                   ) : (
@@ -173,10 +173,10 @@ export default function Documents() {
                               variant="secondary"
                               disabled={downloading === d.id}
                             >
-                              {downloading === d.id ? '⏳ Téléchargement...' : '📥 Télécharger'}
+                              {downloading === d.id ? `⏳ ${t('documents.downloading')}` : `📥 ${t('documents.download')}`}
                             </Button>
                             <Button onClick={() => handleOpen(d)} size="sm" variant="outline">
-                              👁️ Ouvrir
+                              👁️ {t('documents.open')}
                             </Button>
                           </div>
                         </td>

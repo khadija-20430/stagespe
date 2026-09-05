@@ -35,7 +35,7 @@ export default function School() {
         } catch (fallbackErr) {
           console.error('Erreur chargement présentation (fallback):', fallbackErr);
           if (!cancelled) {
-            setError(fallbackErr.message || 'Impossible de charger la présentation');
+            setError(fallbackErr.message || 'unknown');
           }
         }
       } finally {
@@ -65,10 +65,11 @@ export default function School() {
   if (error) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
-        <h1 className="text-2xl font-bold text-navy dark:text-white">⚠️ {error}</h1>
-        <p className="mt-2 text-slate-600 dark:text-slate-400">
-          {t('school.error.loading') || 'Une erreur est survenue lors du chargement de la présentation.'}
-        </p>
+        {/* La clé "school.error.loading" existe déjà en fr/en/ar : i18next renvoie
+            la clé elle-même si elle est absente, jamais une chaîne vide/falsy,
+            donc le "|| fallback" précédent n'avait aucun effet. Supprimé. */}
+        <h1 className="text-2xl font-bold text-navy dark:text-white">⚠️ {t('school.error.loading')}</h1>
+        <p className="mt-2 text-slate-600 dark:text-slate-400">{error}</p>
       </section>
     );
   }

@@ -35,12 +35,35 @@ export default function ActualiteDetail() {
       </Link>
       <div className="mt-6 flex items-center gap-3">
         <Badge tone="cobalt">{t(`enums.newsType.${actualite.type}`)}</Badge>
-        <span className="text-sm text-slate-400 dark:text-slate-500">{formatDate(actualite.date)}</span>
+        {/* mapActualite() renvoie "eventDate", pas "date" */}
+        <span className="text-sm text-slate-400 dark:text-slate-500">{formatDate(actualite.eventDate)}</span>
       </div>
-      <h1 className="mt-4 text-3xl font-extrabold leading-tight text-navy dark:text-white">{actualite.titre}</h1>
-      <img src={actualite.image} alt="" className="mt-8 h-72 w-full rounded-card object-cover" />
-      <p className="mt-8 text-lg font-medium text-slate-700 dark:text-slate-300">{actualite.extrait}</p>
-      <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-400">{actualite.contenu}</p>
+      {/* mapActualite() renvoie "title", pas "titre" */}
+      <h1 className="mt-4 text-3xl font-extrabold leading-tight text-navy dark:text-white">{actualite.title}</h1>
+      {/* mapActualite() renvoie "imageUrl", pas "image" */}
+      {actualite.imageUrl && (
+        <img src={actualite.imageUrl} alt="" className="mt-8 h-72 w-full rounded-card object-cover" />
+      )}
+      {/* mapActualite() renvoie "summary" (résumé court) et "description" (contenu complet),
+          pas "extrait"/"contenu" */}
+      {actualite.summary && (
+        <p className="mt-8 text-lg font-medium text-slate-700 dark:text-slate-300">{actualite.summary}</p>
+      )}
+      <p className="mt-4 leading-relaxed text-slate-600 dark:text-slate-400">{actualite.description}</p>
+
+      {/* Champs spécifiques au type "testimonial" (author_name/quote_text...) exposés par le
+          mapper mais absents de la version précédente : affichés seulement s'ils existent. */}
+      {actualite.quoteText && (
+        <blockquote className="mt-8 border-l-4 border-cobalt pl-4 italic text-slate-700 dark:border-blue-400 dark:text-slate-300">
+          “{actualite.quoteText}”
+          {actualite.authorName && (
+            <footer className="mt-2 text-sm not-italic text-slate-500 dark:text-slate-400">
+              — {actualite.authorName}
+              {actualite.authorRole ? `, ${actualite.authorRole}` : ''}
+            </footer>
+          )}
+        </blockquote>
+      )}
     </article>
   );
 }

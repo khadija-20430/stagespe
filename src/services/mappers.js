@@ -30,27 +30,34 @@ export const mapPartner = (row) => ({
     projects: row.projects,
 });
 export const mapProjet = (row) => ({
-    id: row.id,
-    titre: row.title,
-    acronyme: row.acronym,
-    codeReference: row.reference_code,
-    programme: row.programme_name,
-    programmeId: row.programme_id,
-    statut: row.status,
-    budget: row.budget != null ? Number(row.budget) : null,
-    debut: row.start_date,
-    fin: row.end_date,
-    resume: row.description,
-    objectifs: row.objectives,
-    groupesCibles: row.target_groups,
-    siteWeb: row.official_website,
-    resultats: row.results,
-    livrables: row.deliverables,
-    coordinator_partner_id: row.coordinator_partner_id,
-    isFeatured: row.is_featured,
-    statut_publication: row.statut_publication,
-    news: row.news,
-    documents: row.documents,
+  id: row.id,
+  titre: row.title,
+  acronyme: row.acronym,
+  codeReference: row.reference_code,
+  programme: row.programme_name,
+  programmeId: row.programme_id,
+  statut: row.status,
+  budget: row.budget != null ? Number(row.budget) : null,
+  debut: row.start_date,
+  fin: row.end_date,
+  resume: row.description,
+  objectifs: row.objectives,
+  groupesCibles: row.target_groups,
+  siteWeb: row.official_website,
+  resultats: row.results,
+  livrables: row.deliverables,
+  coordinator_partner_id: row.coordinator_partner_id,
+  // 🆕 nom lisible du coordinateur — nécessite que le backend fasse le join
+  // vers partners.name et l'expose sous ce nom (ex: alias SQL "coordinator_partner_name")
+  coordinateurPartenaire: row.coordinator_partner_name || null,
+  // 🆕 liste des pays des partenaires liés au projet — nécessite que le
+  // backend agrège project_partners -> partners.country_id -> countries.name
+  // et l'expose (ex: alias SQL "countries" en tableau de noms)
+  pays: Array.isArray(row.countries) ? row.countries : [],
+  isFeatured: row.is_featured,
+  statut_publication: row.statut_publication,
+  news: row.news,
+  documents: row.documents,
 });
 
 export const mapAppel = (row) => ({
@@ -320,28 +327,30 @@ export const toUserPayload = (draft) => {
 // ============================================================
 // À AJOUTER À LA FIN DE: src/services/mappers.js
 // ============================================================
-
 export const mapAgreement = (row) => ({
-    id: row.id,
-    partnerId: row.partner_id,
-    partnerName: row.partner_name,
-    titre: row.title,
-    type: row.type,
-    description: row.description,
-    termes: row.terms_conditions,
-    fichierPdf: row.fichier_pdf,
-    dateSignature: row.signature_date,
-    dateDebut: row.start_date,
-    dateFin: row.end_date,
-    statut: row.status,
-    statutPublication: row.statut_publication,
-    creeePar: row.created_by,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    documents: row.documents || [],
-    daysRemaining: row.days_remaining,
-    urgencyLevel: row.urgency_level,
-    alertMessage: row.alert_message,
+  id: row.id,
+  partnerId: row.partner_id,
+  partnerName: row.partner_name,
+  // 🆕 pays du partenaire — nécessite que le backend fasse le join
+  // agreements -> partners -> countries et l'expose (ex: alias "partner_country")
+  partnerCountry: row.partner_country || null,
+  titre: row.title,
+  type: row.type,
+  description: row.description,
+  termes: row.terms_conditions,
+  fichierPdf: row.fichier_pdf,
+  dateSignature: row.signature_date,
+  dateDebut: row.start_date,
+  dateFin: row.end_date,
+  statut: row.status,
+  statutPublication: row.statut_publication,
+  creeePar: row.created_by,
+  createdAt: row.created_at,
+  updatedAt: row.updated_at,
+  documents: row.documents || [],
+  daysRemaining: row.days_remaining,
+  urgencyLevel: row.urgency_level,
+  alertMessage: row.alert_message,
 });
 
 export const toAgreementPayload = (draft) => ({
