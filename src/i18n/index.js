@@ -19,4 +19,24 @@ i18n
     interpolation: { escapeValue: false },
   });
 
+// ============================================================
+// GESTION GLOBALE DU SENS D'ÉCRITURE (RTL / LTR)
+// Cette logique s'applique automatiquement peu importe où la
+// langue est changée : navbar visiteur, sidebar admin, etc.
+// ============================================================
+const RTL_LANGUAGES = ["ar"];
+
+function applyDirection(lng) {
+  const dir = RTL_LANGUAGES.includes(lng) ? "rtl" : "ltr";
+  document.documentElement.dir = dir;
+  document.documentElement.lang = lng;
+}
+
+// Applique dès le chargement initial (utile si l'utilisateur revient
+// sur le site avec l'arabe déjà enregistré par le LanguageDetector)
+applyDirection(i18n.language);
+
+// Applique à CHAQUE changement de langue, où qu'il soit déclenché
+i18n.on("languageChanged", applyDirection);
+
 export default i18n;

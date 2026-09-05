@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { KeyRound } from 'lucide-react';
 import { getToken } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -140,7 +141,10 @@ export default function ManageRoles() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy dark:text-white">Rôles &amp; permissions</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
+        <KeyRound size={24} className="text-cobalt" />
+        Rôles &amp; permissions
+      </h1>
 
       {error ? (
         <div className="mt-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20 px-4 py-3 text-sm text-red-700 dark:text-red-400">

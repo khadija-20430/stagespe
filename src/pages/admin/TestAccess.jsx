@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { FlaskConical as TestTube } from 'lucide-react';
 import { getToken } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Badge from '../../components/ui/Badge.jsx';
@@ -70,7 +71,10 @@ export default function TestAccess() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy dark:text-white">Tester les accès RBAC</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
+        <TestTube size={24} className="text-cobalt" />
+        Tester les accès RBAC
+      </h1>
       
 
       <Card className="mt-6 p-5 dark:bg-slate-900">

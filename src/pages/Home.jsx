@@ -9,6 +9,7 @@ import { formatDate } from '../lib/utils.js';
 import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
+import { Megaphone, Globe } from 'lucide-react'; // Ajoute cet import en haut de ton fichier
 
 
 
@@ -97,23 +98,26 @@ function Hero() {
         {/* BOUTONS */}
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-2 gap-4">
-            <Button
-              as={Link}
-              to="/appels"
-              size="lg"
-              className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105"
-            >
-              📋 {t('home.hero.ctaCalls')}
-            </Button>
 
-            <Button
-              as={Link}
-              to="/mobilites"
-              size="lg"
-              className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all"
-            >
-              🌍 {t('home.hero.ctaMobility')}
-            </Button>
+
+
+<Button
+  as={Link}
+  to="/appels"
+  size="lg"
+  className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
+>
+  <Megaphone size={20} /> {t('home.hero.ctaCalls')}
+</Button>
+
+<Button
+  as={Link}
+  to="/mobilites"
+  size="lg"
+  className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
+>
+  <Globe size={20} /> {t('home.hero.ctaMobility')}
+</Button>
           </div>
         </div>
       </div>

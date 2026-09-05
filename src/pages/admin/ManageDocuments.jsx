@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FolderOpen, Eye, Download } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 
@@ -190,7 +191,7 @@ export default function ManageDocuments() {
   return (
     <CrudManager
       title={t('document')}
-      icon="📄"
+      icon={FolderOpen}
       idPrefix="doc"
 
       /* ======================================================
@@ -380,7 +381,7 @@ export default function ManageDocuments() {
                   "
                   title="Voir le document"
                 >
-                  👁️
+                  <Eye size={16} />
                   <span>Voir</span>
                 </a>
 
@@ -405,7 +406,7 @@ export default function ManageDocuments() {
                   "
                   title="Télécharger le document"
                 >
-                  ⬇️
+                  <Download size={16} />
                   <span>Télécharger</span>
                 </button>
 

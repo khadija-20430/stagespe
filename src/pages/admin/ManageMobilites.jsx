@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Plane } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -29,6 +30,7 @@ export default function ManageMobilites() {
   return (
     <CrudManager
       title={t('mobility')}
+      icon={Plane}
       idPrefix="mob"
       fetcher={getMobilitesAdmin}
       toPayload={toMobilitePayload}

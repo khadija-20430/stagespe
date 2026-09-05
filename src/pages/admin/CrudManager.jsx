@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
+import {
+  LayoutGrid, Loader2, AlertTriangle, Inbox, Pencil, Trash2, X, Plus,
+  Save, MapPin,
+} from 'lucide-react';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
@@ -27,7 +31,7 @@ export default function CrudManager({
   onDelete,
   onPublish,
   onArchive,
-  icon = '⏳',
+  icon: Icon = LayoutGrid,
 }) {
   const { t } = useTranslation();
 
@@ -305,7 +309,7 @@ const stats = getStats();
               gap-3
             "
           >
-            <span>{icon}</span>
+            <Icon size={28} className="text-cobalt shrink-0" />
             <span>{title}</span>
           </h1>
 
@@ -415,9 +419,13 @@ const stats = getStats();
             text-red-700
             dark:text-red-400
             text-sm
+            flex
+            items-center
+            gap-2
           "
         >
-          ⚠️ {error}
+          <AlertTriangle size={18} className="shrink-0" />
+          {error}
         </div>
       ) : null}
 
@@ -539,8 +547,8 @@ const stats = getStats();
                       "
                     >
 
-                      <div className="animate-spin text-4xl">
-                        {icon}
+                      <div className="text-cobalt">
+                        <Loader2 size={36} className="animate-spin" />
                       </div>
 
                       <p>
@@ -571,8 +579,9 @@ const stats = getStats();
                     "
                   >
 
-                    <p className="text-lg">
-                      📭 {t('admin.crud.empty')}
+                    <p className="text-lg flex items-center justify-center gap-2">
+                      <Inbox size={20} />
+                      {t('admin.crud.empty')}
                     </p>
 
                   </td>
@@ -662,7 +671,7 @@ const stats = getStats();
                           "
                           title={t('admin.crud.edit')}
                         >
-                          ✏️
+                          <Pencil size={18} />
                         </button>
 
 
@@ -845,7 +854,7 @@ const stats = getStats();
                           "
                           title={t('admin.crud.delete')}
                         >
-                          🗑️
+                          <Trash2 size={18} />
                         </button>
 
                       </div>
@@ -931,17 +940,22 @@ const stats = getStats();
                   font-bold
                   text-navy
                   dark:text-white
+                  flex
+                  items-center
+                  gap-2
                 "
               >
 
                 {editingId
-                  ? `✏️ ${t('admin.crud.modalEdit')}`
-                  : `➕ ${t('admin.crud.modalAdd')}`
+                  ? <Pencil size={20} className="text-cobalt shrink-0" />
+                  : <Plus size={20} className="text-cobalt shrink-0" />
                 }
 
-                {' — '}
-
-                {title}
+                <span>
+                  {editingId ? t('admin.crud.modalEdit') : t('admin.crud.modalAdd')}
+                  {' — '}
+                  {title}
+                </span>
 
               </h2>
 
@@ -962,7 +976,7 @@ const stats = getStats();
                   text-2xl
                 "
               >
-                ✕
+                <X size={22} />
               </button>
 
             </div>
@@ -1110,7 +1124,11 @@ const stats = getStats();
                       >
                         {geocoding
                           ? '...'
-                          : '📍 Localiser'}
+                          : (
+                            <span className="inline-flex items-center gap-1.5">
+                              <MapPin size={16} /> Localiser
+                            </span>
+                          )}
                       </Button>
 
 
@@ -1483,9 +1501,13 @@ const stats = getStats();
                     text-red-700
                     dark:text-red-400
                     text-sm
+                    flex
+                    items-center
+                    gap-2
                   "
                 >
-                  ⚠️ {error}
+                  <AlertTriangle size={16} className="shrink-0" />
+                  {error}
                 </div>
 
               ) : null}
@@ -1556,9 +1578,12 @@ const stats = getStats();
                 >
                   {saving
                     ? '...'
-                    : editingId
-                      ? '💾 Sauvegarder'
-                      : '➕ Créer'
+                    : (
+                      <span className="inline-flex items-center gap-1.5">
+                        {editingId ? <Save size={16} /> : <Plus size={16} />}
+                        {editingId ? 'Sauvegarder' : 'Créer'}
+                      </span>
+                    )
                   }
                 </Button>
 

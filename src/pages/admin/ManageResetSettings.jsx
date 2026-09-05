@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Settings } from 'lucide-react';
 import { getResetSettings, updateResetSettings } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -45,7 +46,10 @@ export default function SettingsResetPassword() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy dark:text-white">Réinitialisation de mot de passe</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
+        <Settings size={24} className="text-cobalt" />
+        Réinitialisation de mot de passe
+      </h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
         Ces réglages s'appliquent immédiatement, sans redéploiement.
       </p>

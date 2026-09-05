@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Eye, ExternalLink } from 'lucide-react'; // Icônes pro
+import {
+  Eye, ExternalLink, Handshake, FlaskConical, Megaphone, Plane,
+  Newspaper, FolderOpen, FileText, Users, LayoutDashboard, Sparkles,
+} from 'lucide-react'; // Icônes pro
 
 import Card from '../../components/ui/Card.jsx';
 
@@ -17,14 +20,14 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const config = [
-    { key: 'partenaires', label: t('partners'), fetch: getPartenairesAdmin, icon: '🤝' },
-    { key: 'projets', label: t('projects'), fetch: getProjetsAdmin, icon: '🔬' },
-    { key: 'appels', label: t('calls'), fetch: getAppelsAdmin, icon: '📢' },
-    { key: 'mobilites', label: t('mobility'), fetch: getMobilitesAdmin, icon: '✈️' },
-    { key: 'actualites', label: t('newsEvents'), fetch: getActualitesAdmin, icon: '📰' },
-    { key: 'documents', label: t('document'), fetch: getDocumentsAdmin, icon: '📚' },
-    { key: 'agreements', label: t('agreements', 'Accords'), fetch: getAgreementsAdmin, icon: '📄' },
-    { key: 'users', label: t('users', 'Utilisateurs'), fetch: getUsers, icon: '👤' },
+    { key: 'partenaires', label: t('partners'), fetch: getPartenairesAdmin, icon: Handshake },
+    { key: 'projets', label: t('projects'), fetch: getProjetsAdmin, icon: FlaskConical },
+    { key: 'appels', label: t('calls'), fetch: getAppelsAdmin, icon: Megaphone },
+    { key: 'mobilites', label: t('mobility'), fetch: getMobilitesAdmin, icon: Plane },
+    { key: 'actualites', label: t('newsEvents'), fetch: getActualitesAdmin, icon: Newspaper },
+    { key: 'documents', label: t('document'), fetch: getDocumentsAdmin, icon: FolderOpen },
+    { key: 'agreements', label: t('agreements', 'Accords'), fetch: getAgreementsAdmin, icon: FileText },
+    { key: 'users', label: t('users', 'Utilisateurs'), fetch: getUsers, icon: Users },
   ];
 
   useEffect(() => {
@@ -58,8 +61,9 @@ export default function Dashboard() {
       {/* HEADER + BOUTON RETOUR */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-navy dark:text-white">
-            📊 {t('admin.dashboard.title')}
+          <h1 className="text-3xl font-bold text-navy dark:text-white flex items-center gap-3">
+            <LayoutDashboard size={30} className="text-cobalt" />
+            {t('admin.dashboard.title')}
           </h1>
           <p className="mt-2 text-slate-600 dark:text-slate-400">
             {t('admin.dashboard.description')}
@@ -83,8 +87,8 @@ export default function Dashboard() {
             key={item.key}
             className="flex items-center gap-4 p-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:shadow-lg dark:hover:shadow-cobalt/20 transition-all group"
           >
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-cobalt/20 text-3xl group-hover:scale-110 transition-transform">
-              {item.icon}
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-cobalt/20 text-cobalt dark:text-blue-300 group-hover:scale-110 transition-transform">
+              <item.icon size={26} />
             </div>
             <div className="flex-1">
               <div className="text-4xl font-extrabold text-navy dark:text-white" translate="no">
@@ -102,8 +106,9 @@ export default function Dashboard() {
 
       {/* WELCOME */}
       <div className="mt-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-cobalt/20 dark:to-blue-900/20 p-8">
-        <h2 className="mb-3 text-2xl font-bold text-navy dark:text-white">
-          👋 Bienvenue dans l'espace admin !
+        <h2 className="mb-3 text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
+          <Sparkles size={24} className="text-cobalt" />
+          Bienvenue dans l'espace admin !
         </h2>
         <p className="leading-relaxed text-slate-700 dark:text-slate-300">
           Utilisez le menu de gauche pour gérer les partenaires, projets, appels à projets, mobilités,

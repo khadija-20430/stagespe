@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { KeyRound, Mail, AlertTriangle, CheckCircle2, Send, Loader2, ArrowLeft } from 'lucide-react';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 
@@ -35,7 +36,7 @@ export default function ForgotPassword() {
         throw new Error(data.error || 'Erreur lors de la demande');
       }
 
-      setSuccess('✅ Code envoyé! Vérifiez votre boîte de réception.');
+      setSuccess('Code envoyé ! Vérifiez votre boîte de réception.');
       const sentEmail = email.trim();
       setEmail('');
       setTimeout(() => {
@@ -67,7 +68,10 @@ export default function ForgotPassword() {
           </Link>
         </div>
 
-        <h1 className="text-2xl font-bold text-navy mb-2">🔑 Mot de passe oublié?</h1>
+        <h1 className="text-2xl font-bold text-navy mb-2 flex items-center gap-2">
+          <KeyRound size={24} className="text-cobalt" />
+          Mot de passe oublié?
+        </h1>
         <p className="text-slate-600 mb-8">
           Entrez votre email et nous vous enverrons un code à 6 chiffres pour réinitialiser votre mot de passe.
         </p>
@@ -75,8 +79,8 @@ export default function ForgotPassword() {
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email Input */}
           <div className="space-y-2 animate-fade-in">
-            <label className="block text-sm font-medium text-slate-700">
-              📧 Adresse email
+            <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+              <Mail size={15} /> Adresse email
             </label>
             <input
               type="email"
@@ -89,14 +93,16 @@ export default function ForgotPassword() {
 
           {/* Error */}
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in">
-              ⚠️ {error}
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in flex items-center gap-2">
+              <AlertTriangle size={16} className="shrink-0" />
+              {error}
             </div>
           )}
 
           {/* Success */}
           {success && (
-            <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm animate-bounce-in">
+            <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm animate-bounce-in flex items-center gap-2">
+              <CheckCircle2 size={16} className="shrink-0" />
               {success}
             </div>
           )}
@@ -105,17 +111,25 @@ export default function ForgotPassword() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105"
+            className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 inline-flex items-center justify-center gap-2"
           >
-            {loading ? '⏳ Envoi...' : '📤 Envoyer le code'}
+            {loading ? (
+              <>
+                <Loader2 size={18} className="animate-spin" /> Envoi...
+              </>
+            ) : (
+              <>
+                <Send size={18} /> Envoyer le code
+              </>
+            )}
           </Button>
 
           {/* Back to Login */}
           <Link
             to="/admin/login"
-            className="block text-center text-sm text-cobalt hover:text-blue-700 font-medium transition"
+            className="flex items-center justify-center gap-1.5 text-center text-sm text-cobalt hover:text-blue-700 font-medium transition"
           >
-            ← Retour à la connexion
+            <ArrowLeft size={14} /> Retour à la connexion
           </Link>
         </form>
       </Card>

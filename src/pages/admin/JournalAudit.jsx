@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { getToken } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Badge from '../../components/ui/Badge.jsx';
+import {
+  Plus, Pencil, Lock, Unlock, ShieldCheck, Trash2, KeyRound,
+  AlertTriangle, LogOut, CheckCircle2, Ban, Megaphone, Archive, RotateCw, Circle,
+} from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -42,22 +46,22 @@ const ACTION_TONE = {
 };
 
 const ACTION_ICON = {
-  create: '➕',
-  update: '✏️',
-  update_permissions: '🔐',
-  grant_permission: '🔓',
-  revoke_permission: '🔒',
-  update_role: '🛡️',
-  assign_role: '🛡️',
-  delete: '🗑️',
-  login_success: '🔑',
-  login_failed: '⚠️',
-  logout: '🚪',
-  activate_user: '✅',
-  deactivate_user: '⛔',
-  publish: '📢',
-  archive: '📦',
-  password_reset: '🔁',
+  create: Plus,
+  update: Pencil,
+  update_permissions: Lock,
+  grant_permission: Unlock,
+  revoke_permission: Lock,
+  update_role: ShieldCheck,
+  assign_role: ShieldCheck,
+  delete: Trash2,
+  login_success: KeyRound,
+  login_failed: AlertTriangle,
+  logout: LogOut,
+  activate_user: CheckCircle2,
+  deactivate_user: Ban,
+  publish: Megaphone,
+  archive: Archive,
+  password_reset: RotateCw,
 };
 
 function actionLabel(action) {
@@ -195,8 +199,11 @@ export default function JournalAudit() {
               const hasDetails = log.changes || log.old_data || log.new_data;
               return (
                 <li key={log.id} className="mb-5 last:mb-0">
-                  <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-[10px]">
-                    {ACTION_ICON[log.action] || '•'}
+                  <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400">
+                    {(() => {
+                      const ActionIcon = ACTION_ICON[log.action] || Circle;
+                      return <ActionIcon size={12} />;
+                    })()}
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
                     <Badge tone={ACTION_TONE[log.action] || 'slate'}>{actionLabel(log.action)}</Badge>

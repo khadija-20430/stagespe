@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Handshake } from 'lucide-react';
 
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
@@ -81,6 +82,7 @@ export default function ManagePartenaires() {
   return (
     <CrudManager
       title={t('partners')}
+      icon={Handshake}
       idPrefix="part"
 
       /* =========================

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Users } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -89,7 +90,7 @@ export default function ManageUsers() {
   return (
     <CrudManager
       title={t('users')}
-      icon="👤"
+      icon={Users}
       idPrefix="user"
 
       fetcher={fetchUsers}

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
+  FileSpreadsheet, AlertTriangle, CheckCircle2, Eye, Download, Loader2,
+  Pencil, Trash2, FileText, Plus,
+} from 'lucide-react';
+import {
     getAgreementsAdmin,
     createAgreement,
     updateAgreement,
@@ -374,11 +378,11 @@ const ManageAgreements = () => {
         const daysRemaining = Math.ceil((end - today) / (1000 * 60 * 60 * 24));
         
         if (daysRemaining < 0) {
-            return { type: 'danger', message: `Expiré depuis ${Math.abs(daysRemaining)} jours`, icon: '🔴' };
+            return { type: 'danger', message: `Expiré depuis ${Math.abs(daysRemaining)} jours` };
         } else if (daysRemaining <= 30) {
-            return { type: 'warning', message: `Expire dans ${daysRemaining} jour${daysRemaining > 1 ? 's' : ''} ⚠️`, icon: '🟡' };
+            return { type: 'warning', message: `Expire dans ${daysRemaining} jour${daysRemaining > 1 ? 's' : ''}` };
         } else if (daysRemaining <= 60) {
-            return { type: 'info', message: `Expire dans ${daysRemaining} jours`, icon: '🔵' };
+            return { type: 'info', message: `Expire dans ${daysRemaining} jours` };
         }
         return null;
     };
@@ -388,13 +392,16 @@ const ManageAgreements = () => {
         <div className="manage-agreements">
             <div className="header">
                 <div className="header-left">
-                    <h1>Gestion des Accords</h1>
+                    <h1 className="flex items-center gap-2">
+                        <FileText size={26} className="text-cobalt" />
+                        Gestion des Accords
+                    </h1>
                     <button className="btn-export" onClick={exportToExcel} title="Exporter vers Excel">
-                        📊 Exporter Excel
+                        <FileSpreadsheet size={16} className="inline mr-1.5 -mt-0.5" /> Exporter Excel
                     </button>
                 </div>
-                <button className="btn-primary" onClick={() => handleOpenModal()}>
-                    + Nouvel Accord
+                <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
+                    <Plus size={16} /> Nouvel Accord
                 </button>
             </div>
 
@@ -421,8 +428,9 @@ const ManageAgreements = () => {
 
             {/* ALERTES D'EXPIRATION GLOBALES */}
             {expiringAgreements.length > 0 && (
-                <div className="alert alert-warning">
-                    ⚠️ {expiringAgreements.length} accord(s) expirant dans 60 jours
+                <div className="alert alert-warning flex items-center gap-2">
+                    <AlertTriangle size={16} className="shrink-0" />
+                    {expiringAgreements.length} accord(s) expirant dans 60 jours
                 </div>
             )}
 
@@ -491,7 +499,7 @@ const ManageAgreements = () => {
                                     alert = {
                                         type: agreement.urgencyLevel === 'urgent' ? 'warning' : 
                                               agreement.urgencyLevel === 'expired' ? 'danger' : 'info',
-                                        message: agreement.alertMessage || `⚠️ ${agreement.daysRemaining} jours`
+                                        message: agreement.alertMessage || `${agreement.daysRemaining} jours`
                                     };
                                 } else {
                                     const calculated = getExpirationAlert(agreement.dateFin);
@@ -517,11 +525,14 @@ const ManageAgreements = () => {
                                         </td>
                                         <td>
                                             {alert ? (
-                                                <span className={`alert-badge alert-${alert.type}`}>
+                                                <span className={`alert-badge alert-${alert.type} inline-flex items-center gap-1`}>
+                                                    <AlertTriangle size={14} className="shrink-0" />
                                                     {alert.message}
                                                 </span>
                                             ) : (
-                                                <span className="alert-badge alert-ok">✅ OK</span>
+                                                <span className="alert-badge alert-ok inline-flex items-center gap-1">
+                                                    <CheckCircle2 size={14} /> OK
+                                                </span>
                                             )}
                                         </td>
                                         <td>
@@ -551,7 +562,7 @@ const ManageAgreements = () => {
                                                         className="inline-flex items-center gap-1 text-cobalt hover:text-blue-700 font-medium transition"
                                                         title="Voir le fichier PDF"
                                                     >
-                                                        👁️ <span>Voir</span>
+                                                        <Eye size={16} /> <span>Voir</span>
                                                     </a>
 
                                                     <button
@@ -561,7 +572,7 @@ const ManageAgreements = () => {
                                                         className="inline-flex items-center gap-1 text-green-600 hover:text-green-700 font-medium transition"
                                                         title="Télécharger le PDF"
                                                     >
-                                                        {downloadingFileId === agreement.id ? '⏳' : '⬇️'} 
+                                                        {downloadingFileId === agreement.id ? <Loader2 size={16} className="animate-spin" /> : <Download size={16} />}
                                                         <span>Télécharger</span>
                                                     </button>
                                                 </div>
@@ -577,7 +588,7 @@ const ManageAgreements = () => {
                                                 onClick={() => handleOpenModal(agreement)}
                                                 title="Modifier"
                                             >
-                                                ✎
+                                                <Pencil size={16} />
                                             </button>
                                             <button
                                                 type="button"
@@ -585,7 +596,7 @@ const ManageAgreements = () => {
                                                 onClick={() => handleDelete(agreement.id)}
                                                 title="Supprimer"
                                             >
-                                                🗑
+                                                <Trash2 size={16} />
                                             </button>
                                         </td>
                                     </tr>
@@ -723,8 +734,9 @@ const ManageAgreements = () => {
                                     onChange={handleFileUpload}
                                 />
                                 {uploadedFile && (
-                                    <div className="file-info">
-                                        ✓ Fichier: {uploadedFile.split('/').pop()}
+                                    <div className="file-info flex items-center gap-1.5">
+                                        <CheckCircle2 size={14} className="shrink-0" />
+                                        Fichier: {uploadedFile.split('/').pop()}
                                     </div>
                                 )}
                             </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FlaskConical } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -34,6 +35,7 @@ export default function ManageProjets() {
   return (
     <CrudManager
       title={t('projects')}
+      icon={FlaskConical}
       idPrefix="proj"
       fetcher={getProjetsAdmin}
       toPayload={toProjetPayload}

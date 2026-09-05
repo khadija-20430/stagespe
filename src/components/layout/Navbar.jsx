@@ -1,7 +1,13 @@
-import { useState } from 'react';
+import { useState , useRef} from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDarkMode } from '../../hooks/useDarkMode.js';
+// Import des icônes Lucide
+import { 
+  Home, School, Globe, Sun, Moon, Lock, Menu, X, 
+  ChevronDown, ArrowRight, Briefcase, FileText, Megaphone, 
+  Plane, Newspaper, FolderOpen, Landmark
+} from 'lucide-react';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
 
@@ -22,6 +28,7 @@ function Logo() {
     </Link>
   );
 }
+
 function LanguageSwitcher({ className = '' }) {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -42,12 +49,8 @@ function LanguageSwitcher({ className = '' }) {
         )}
         title={t('navbar.languageAria')}
       >
-        {/* Globe SVG */}
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <circle cx="12" cy="12" r="10" />
-          <path d="M2 12h20" />
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-        </svg>
+        {/* Remplacement du SVG par l'icône Globe */}
+        <Globe className="h-5 w-5" />
       </button>
 
       {open && (
@@ -87,23 +90,11 @@ function DarkModeToggle() {
       aria-label={t('changeThemeAria')}
     >
       {isDark ? (
-        // Soleil SVG
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <circle cx="12" cy="12" r="5" />
-          <line x1="12" y1="1" x2="12" y2="3" />
-          <line x1="12" y1="21" x2="12" y2="23" />
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-          <line x1="1" y1="12" x2="3" y2="12" />
-          <line x1="21" y1="12" x2="23" y2="12" />
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-        </svg>
+        // Soleil
+        <Sun className="h-5 w-5" />
       ) : (
-        // Lune SVG
-        <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
+        // Lune
+        <Moon className="h-5 w-5" />
       )}
     </button>
   );
@@ -111,13 +102,30 @@ function DarkModeToggle() {
 
 function Dropdown({ label, items, pathname, icon }) {
   const [open, setOpen] = useState(false);
+  const closeTimerRef = useRef(null); // Pour stocker le timer
   const isActive = items.some((i) => pathname.startsWith(i.to));
+
+  // Fonction pour ouvrir
+  const handleMouseEnter = () => {
+    if (closeTimerRef.current) {
+      clearTimeout(closeTimerRef.current); // Annule la fermeture
+      closeTimerRef.current = null;
+    }
+    setOpen(true);
+  };
+
+  // Fonction pour fermer avec un délai
+  const handleMouseLeave = () => {
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false);
+    }, 200); // Délai de 200ms pour laisser le temps de passer au menu
+  };
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <button
         type="button"
@@ -130,19 +138,10 @@ function Dropdown({ label, items, pathname, icon }) {
             : 'text-slate-700 dark:text-slate-300 hover:text-cobalt dark:hover:text-cobalt'
         )}
       >
-        <span>{icon}</span>
+        {/* Icône du dropdown */}
+        <span className="flex items-center">{icon}</span>
         <span>{label}</span>
-        <svg
-          className={cn('h-4 w-4 transition-transform duration-200', open && 'rotate-180')}
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-            clipRule="evenodd"
-          />
-        </svg>
+        <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', open && 'rotate-180')} />
       </button>
 
       {open && (
@@ -160,7 +159,7 @@ function Dropdown({ label, items, pathname, icon }) {
                 )
               }
             >
-              <span>→</span>
+              <ArrowRight className="h-4 w-4" />
               <span>{item.label}</span>
             </NavLink>
           ))}
@@ -176,17 +175,17 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const consultation = [
-    { to: '/cooperation', label: t('navbar.cooperation') },
-    { to: '/projets', label: t('navbar.projets') },
-    { to: '/appels', label: t('navbar.appels') },
-    { to: '/mobilites', label: t('navbar.mobilites') },
+    { to: '/cooperation', label: t('navbar.cooperation'), icon: <Landmark className="h-4 w-4" /> },
+    { to: '/projets', label: t('navbar.projets'), icon: <Briefcase className="h-4 w-4" /> },
+    { to: '/appels', label: t('navbar.appels'), icon: <Megaphone className="h-4 w-4" /> },
+    { to: '/mobilites', label: t('navbar.mobilites'), icon: <Plane className="h-4 w-4" /> },
   ];
 
   const ressources = [
-  { to: '/actualites', label: t('navbar.actualites') },
-  { to: '/documents', label: t('navbar.documents') },
-  { to: '/agreements', label: t('navbar.agreements') }, // AJOUTÉ
-];
+    { to: '/actualites', label: t('navbar.actualites'), icon: <Newspaper className="h-4 w-4" /> },
+    { to: '/documents', label: t('navbar.documents'), icon: <FolderOpen className="h-4 w-4" /> },
+    { to: '/agreements', label: t('navbar.agreements'), icon: <FileText className="h-4 w-4" /> },
+  ];
 
   const allLinks = [...consultation, ...ressources];
 
@@ -209,6 +208,8 @@ export default function Navbar() {
               )
             }
           >
+             {/* Icône Home */}
+             <Home className="h-4 w-4 mr-2" />
              {t('navbar.home')}
           </NavLink>
 
@@ -223,11 +224,13 @@ export default function Navbar() {
               )
             }
           >
+             {/* Icône School */}
+             <School className="h-4 w-4 mr-2" />
              {t('school.defaultTitle')}
           </NavLink>
 
-          <Dropdown label={t('navbar.consultationGroup')} items={consultation} pathname={pathname}  />
-          <Dropdown label={t('navbar.resourcesGroup')} items={ressources} pathname={pathname} />
+          <Dropdown label={t('navbar.consultationGroup')} items={consultation} pathname={pathname} icon={<Landmark className="h-4 w-4" />} />
+          <Dropdown label={t('navbar.resourcesGroup')} items={ressources} pathname={pathname} icon={<FolderOpen className="h-4 w-4" />} />
         </div>
 
         {/* Right side - Desktop */}
@@ -238,7 +241,9 @@ export default function Navbar() {
             to="/admin"
             className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 text-sm font-semibold text-navy dark:text-white transition-all hover:border-cobalt dark:hover:border-cobalt hover:text-cobalt hover:bg-blue-50 dark:hover:bg-slate-800 hover:shadow-md"
           >
-            🔐 {t('navbar.admin')}
+            {/* Icône Lock au lieu de l'emoji */}
+            <Lock className="h-4 w-4" />
+            {t('navbar.admin')}
           </Link>
         </div>
 
@@ -253,13 +258,8 @@ export default function Navbar() {
             aria-label={t('navbar.menuAria')}
             aria-expanded={mobileOpen}
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-              {mobileOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
+            {/* Icônes Menu / X */}
+            {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
       </div>
@@ -280,7 +280,7 @@ export default function Navbar() {
               )
             }
           >
-            🏠 {t('navbar.home')}
+            <Home className="h-4 w-4" /> {t('navbar.home')}
           </NavLink>
 
           <NavLink
@@ -295,13 +295,13 @@ export default function Navbar() {
               )
             }
           >
-            {t('school.defaultTitle')}
+            <School className="h-4 w-4" /> {t('school.defaultTitle')}
           </NavLink>
 
           <div className="my-3 border-t border-slate-200 dark:border-slate-700" />
 
           <div className="mb-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            📋 {t('navbar.consultationGroup')}
+            <Landmark className="h-3 w-3 inline mr-1" /> {t('navbar.consultationGroup')}
           </div>
           {consultation.map((item) => (
             <NavLink
@@ -317,14 +317,14 @@ export default function Navbar() {
                 )
               }
             >
-              → {item.label}
+              {item.icon} {item.label}
             </NavLink>
           ))}
 
           <div className="my-3 border-t border-slate-200 dark:border-slate-700" />
 
           <div className="mb-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-             {t('navbar.resourcesGroup')}
+             <FolderOpen className="h-3 w-3 inline mr-1" /> {t('navbar.resourcesGroup')}
           </div>
           {ressources.map((item) => (
             <NavLink
@@ -340,7 +340,7 @@ export default function Navbar() {
                 )
               }
             >
-              → {item.label}
+              {item.icon} {item.label}
             </NavLink>
           ))}
 
@@ -351,7 +351,7 @@ export default function Navbar() {
             onClick={() => setMobileOpen(false)}
             className="flex items-center justify-center gap-2 mt-3 rounded-lg bg-gradient-to-r from-navy to-slate-800 dark:from-cobalt dark:to-blue-600 px-4 py-3 text-sm font-semibold text-white hover:shadow-lg transition-all"
           >
-            🔐 {t('navbar.admin')}
+            <Lock className="h-4 w-4" /> {t('navbar.admin')}
           </Link>
         </div>
       )}

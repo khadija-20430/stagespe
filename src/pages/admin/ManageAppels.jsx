@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Megaphone } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -27,6 +28,7 @@ export default function ManageAppels() {
   return (
     <CrudManager
       title={t('admin.nav.calls')}
+      icon={Megaphone}
       idPrefix="app"
       fetcher={getAppelsAdmin}
       toPayload={toAppelPayload}

@@ -1,6 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Newspaper } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 
@@ -101,7 +102,7 @@ export default function ManageNewsEvents() {
   return (
     <CrudManager
       title={t('newsEvents')}
-      icon="📰"
+      icon={Newspaper}
       idPrefix="news-event"
 
       /* ======================================================

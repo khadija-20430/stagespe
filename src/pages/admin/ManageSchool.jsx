@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Eye, RotateCw, History, Trash2, School } from 'lucide-react';
 import Badge from '../../components/ui/Badge.jsx';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
@@ -223,7 +224,10 @@ export default function ManageSchool() {
     return (
         <div className="p-6">
             <div className="mb-6 flex items-center justify-between">
-                <h1 className="text-2xl font-bold text-navy"> {t('presentation_ecole') || "Présentation de l'école"}</h1>
+                <h1 className="text-2xl font-bold text-navy flex items-center gap-2">
+                    <School size={24} className="text-cobalt" />
+                    {t('presentation_ecole') || "Présentation de l'école"}
+                </h1>
 
                 {presentation && (
                     <div className="flex items-center gap-3">
@@ -346,12 +350,12 @@ export default function ManageSchool() {
                                 href={getFileUrl(currentTranslation.fichier_url)}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-cobalt hover:text-blue-700"
+                                className="inline-flex items-center gap-1.5 text-cobalt hover:text-blue-700"
                             >
-                                👁️ Voir
+                                <Eye size={16} /> Voir
                             </a>
-                            <label className="cursor-pointer text-green-600 hover:text-green-700">
-                                🔄 Remplacer le fichier
+                            <label className="inline-flex items-center gap-1.5 cursor-pointer text-green-600 hover:text-green-700">
+                                <RotateCw size={16} /> Remplacer le fichier
                                 <input
                                     type="file"
                                     accept=".pdf,.doc,.docx,.ppt,.pptx"
@@ -359,11 +363,11 @@ export default function ManageSchool() {
                                     onChange={(e) => handleReplaceFile(e.target.files[0])}
                                 />
                             </label>
-                            <button onClick={handleShowRevisions} className="text-slate-500 hover:text-slate-700">
-                                🕓 Historique
+                            <button onClick={handleShowRevisions} className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700">
+                                <History size={16} /> Historique
                             </button>
-                            <button onClick={handleDeleteTranslation} className="text-red-600 hover:text-red-700">
-                                🗑️ Supprimer cette traduction
+                            <button onClick={handleDeleteTranslation} className="inline-flex items-center gap-1.5 text-red-600 hover:text-red-700">
+                                <Trash2 size={16} /> Supprimer cette traduction
                             </button>
                         </div>
 

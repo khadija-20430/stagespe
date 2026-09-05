@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import {
+  KeyRound, Mail, Hash, Lock, CheckCircle2, AlertTriangle, ArrowLeft, Loader2, ShieldCheck,
+} from 'lucide-react';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 
@@ -82,7 +85,7 @@ export default function ResetPassword() {
         throw new Error(data.error || 'Erreur lors de la réinitialisation');
       }
 
-      setSuccess('✅ Mot de passe réinitialisé avec succès!');
+      setSuccess('Mot de passe réinitialisé avec succès !');
       setTimeout(() => navigate('/admin/login'), 2000);
     } catch (err) {
       setError(err.message);
@@ -102,15 +105,18 @@ export default function ResetPassword() {
       <Card className="relative w-full max-w-md p-8 shadow-2xl animate-slide-up">
         {step === 1 ? (
           <>
-            <h1 className="text-2xl font-bold text-navy mb-2">🔑 Vérification du code</h1>
+            <h1 className="text-2xl font-bold text-navy mb-2 flex items-center gap-2">
+              <KeyRound size={24} className="text-cobalt" />
+              Vérification du code
+            </h1>
             <p className="text-slate-600 mb-8">
               Entrez le code à 6 chiffres reçu par email pour continuer.
             </p>
 
             <form onSubmit={handleVerifyCode} className="space-y-5">
               <div className="space-y-2 animate-fade-in">
-                <label className="block text-sm font-medium text-slate-700">
-                  📧 Adresse email
+                <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                  <Mail size={15} /> Adresse email
                 </label>
                 <input
                   type="email"
@@ -122,8 +128,8 @@ export default function ResetPassword() {
               </div>
 
               <div className="space-y-2 animate-fade-in delay-100">
-                <label className="block text-sm font-medium text-slate-700">
-                  🔢 Code de vérification
+                <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                  <Hash size={15} /> Code de vérification
                 </label>
                 <input
                   type="text"
@@ -137,36 +143,48 @@ export default function ResetPassword() {
               </div>
 
               {error && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in">
-                  ⚠️ {error}
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in flex items-center gap-2">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  {error}
                 </div>
               )}
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 inline-flex items-center justify-center gap-2"
               >
-                {loading ? '⏳ Vérification...' : '✅ Vérifier le code'}
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Vérification...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={18} /> Vérifier le code
+                  </>
+                )}
               </Button>
 
               <Link
                 to="/admin/forgot-password"
-                className="block text-center text-sm text-cobalt hover:text-blue-700 font-medium transition"
+                className="flex items-center justify-center gap-1.5 text-center text-sm text-cobalt hover:text-blue-700 font-medium transition"
               >
-                ← Je n'ai pas reçu de code
+                <ArrowLeft size={14} /> Je n'ai pas reçu de code
               </Link>
             </form>
           </>
         ) : (
           <>
-            <h1 className="text-2xl font-bold text-navy mb-2">🔐 Nouveau mot de passe</h1>
+            <h1 className="text-2xl font-bold text-navy mb-2 flex items-center gap-2">
+              <Lock size={24} className="text-cobalt" />
+              Nouveau mot de passe
+            </h1>
             <p className="text-slate-600 mb-8">Créez un nouveau mot de passe sécurisé</p>
 
             <form onSubmit={handleResetPassword} className="space-y-5">
               <div className="space-y-2 animate-fade-in">
-                <label className="block text-sm font-medium text-slate-700">
-                  🔐 Nouveau mot de passe
+                <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                  <Lock size={15} /> Nouveau mot de passe
                 </label>
                 <input
                   type="password"
@@ -178,8 +196,8 @@ export default function ResetPassword() {
               </div>
 
               <div className="space-y-2 animate-fade-in delay-100">
-                <label className="block text-sm font-medium text-slate-700">
-                  ✓ Confirmer le mot de passe
+                <label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                  <ShieldCheck size={15} /> Confirmer le mot de passe
                 </label>
                 <input
                   type="password"
@@ -194,21 +212,24 @@ export default function ResetPassword() {
                 <div className="text-xs animate-fade-in">
                   <div className="flex items-center gap-2">
                     <div className={`h-1 flex-1 rounded-full ${password.length >= 8 ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
-                    <span className={password.length >= 8 ? 'text-green-600' : 'text-yellow-600'}>
-                      {password.length >= 8 ? '✓ Fort' : '⚠️ Faible'}
+                    <span className={`flex items-center gap-1 ${password.length >= 8 ? 'text-green-600' : 'text-yellow-600'}`}>
+                      {password.length >= 8 ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
+                      {password.length >= 8 ? 'Fort' : 'Faible'}
                     </span>
                   </div>
                 </div>
               )}
 
               {error && (
-                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in">
-                  ⚠️ {error}
+                <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-bounce-in flex items-center gap-2">
+                  <AlertTriangle size={16} className="shrink-0" />
+                  {error}
                 </div>
               )}
 
               {success && (
-                <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm animate-bounce-in">
+                <div className="p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm animate-bounce-in flex items-center gap-2">
+                  <CheckCircle2 size={16} className="shrink-0" />
                   {success}
                 </div>
               )}
@@ -216,9 +237,17 @@ export default function ResetPassword() {
               <Button
                 type="submit"
                 disabled={loading || !!success}
-                className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105"
+                className="w-full bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition transform hover:scale-105 inline-flex items-center justify-center gap-2"
               >
-                {loading ? '⏳ Réinitialisation...' : '✅ Réinitialiser'}
+                {loading ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" /> Réinitialisation...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 size={18} /> Réinitialiser
+                  </>
+                )}
               </Button>
             </form>
           </>
