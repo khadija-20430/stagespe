@@ -1044,3 +1044,16 @@ aside button svg {
 .animate-gentle-bounce {
   animation: gentle-bounce 2s ease-in-out infinite;
 }
+/* Animation de rebond pour la flèche du menu */
+@keyframes soft-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-soft-bounce {
+  animation: soft-bounce 2s ease-in-out infinite;
+}
+
+.animate-soft-bounce:hover {
+  animation: none; /* Stoppe l'animation quand on survole */
+}

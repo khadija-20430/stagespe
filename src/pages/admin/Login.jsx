@@ -209,7 +209,7 @@ export default function Login() {
 
           {/* Footer */}
           <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-            © 2024 ESI Coopération Internationale
+            © 2026 ESI Coopération Internationale
           </p>
         </div>
       </div>

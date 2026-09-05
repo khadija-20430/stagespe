@@ -9,7 +9,7 @@ import { formatDate } from '../lib/utils.js';
 import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
-import { Megaphone, Globe } from 'lucide-react'; // Ajoute cet import en haut de ton fichier
+import { Megaphone, Globe } from 'lucide-react'; 
 
 
 
