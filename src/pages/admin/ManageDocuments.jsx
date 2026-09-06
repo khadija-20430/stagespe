@@ -442,7 +442,7 @@ export default function ManageDocuments() {
 
         {
           key: 'statut_publication',
-          label: 'Statut',
+          label: t('statut'),
 
         render: (item) => {
   const status =
@@ -509,7 +509,7 @@ export default function ManageDocuments() {
                   title="Voir le document"
                 >
                   <Eye size={16} />
-                  <span>Voir</span>
+                  <span>{t('voir')}</span>
                 </a>
 
                 {/* TÉLÉCHARGER */}
@@ -534,7 +534,7 @@ export default function ManageDocuments() {
                   title="Télécharger le document"
                 >
                   <Download size={16} />
-                  <span>Télécharger</span>
+                  <span>{t('telecharger')}</span>
                 </button>
 
               </div>

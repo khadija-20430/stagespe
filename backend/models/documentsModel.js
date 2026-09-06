@@ -305,14 +305,16 @@ exports.create = async(data) => {
             fichier_url,
             file_size,
             file_format,
-            uploaded_by
+            uploaded_by,
+            categorie_id
         } = data;
 
         const query = `
             INSERT INTO documents (
                 titre, description, langage, version, statut_publication,
-                fichier_url, file_size, file_format, uploaded_by, created_at, updated_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+                fichier_url, file_size, file_format, uploaded_by, categorie_id,
+                created_at, updated_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
             RETURNING *
         `;
         const values = [
@@ -324,7 +326,8 @@ exports.create = async(data) => {
             fichier_url,
             file_size,
             file_format,
-            uploaded_by
+            uploaded_by,
+            categorie_id
         ];
         const result = await pool.query(query, values);
         return result.rows[0];

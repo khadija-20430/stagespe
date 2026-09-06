@@ -285,12 +285,20 @@
     },
     "login": {
       "brand": "Admin area",
-      "title": "Sign in",
-      "subtitle": "Simulated authentication — use any credentials.",
+      "title": "Administration Area",
+      "subtitle": "Sign in to access the dashboard",
       "email": "Email address",
       "password": "Password",
       "submit": "Sign in",
-      "errorRequired": "Please fill in all fields."
+      "errorRequired": "Please fill in all fields",
+      "emailPlaceholder": "admin@esi.dz",
+      "showPassword": "Show",
+      "hidePassword": "Hide",
+      "forgotPassword": "Forgot password?",
+      "errorInvalid": "Invalid credentials",
+      "loading": "Signing in...",
+      "secureConnection": "Secure connection",
+      "footer": "© {{year}} ESI International Cooperation"
     },
     "crud": {
       "actions": "Actions",
@@ -335,6 +343,114 @@
       "logout": "Log out",
       "administration": "Administration",
       "backToSite": "View site"
+    },
+    "agreementsPage": {
+      "title": "Manage Agreements",
+      "exportExcel": "Export to Excel",
+      "newAgreement": "New Agreement",
+      "previewLabel": "Translation preview:",
+      "stats": {
+        "total": "Total",
+        "published": "Published",
+        "drafts": "Drafts",
+        "archived": "Archived"
+      },
+      "expiringAlert_one": "{{count}} agreement expiring within 30 days",
+"expiringAlert_other": "{{count}} agreements expiring within 30 days",
+      "filters": {
+        "allPartners": "All partners",
+        "allStatuses": "All statuses",
+        "totalLabel": "Total: {{count}}",
+        "activeLabel": "Active: {{count}}"
+      },
+      "table": {
+        "titre": "Title",
+        "partenaire": "Partner",
+        "type": "Type",
+        "debut": "Start",
+        "fin": "End",
+        "joursRestants": "Days remaining",
+        "statut": "Status",
+        "publication": "Publication",
+        "fichier": "File",
+        "traductions": "Translations",
+        "actions": "Actions"
+      },
+      "alerts": {
+        "expiredSince_one": "Expired {{count}} day ago",
+        "expiredSince_other": "Expired {{count}} days ago",
+        "expiresIn_one": "Expires in {{count}} day",
+        "expiresIn_other": "Expires in {{count}} days",
+        "daysCount_one": "{{count}} day",
+        "daysCount_other": "{{count}} days",
+        "ok": "OK"
+      },
+      "file": {
+        "view": "View",
+        "viewTooltip": "View the PDF file",
+        "download": "Download",
+        "downloadTooltip": "Download the PDF",
+        "none": "No file"
+      },
+      "modal": {
+        "newTitle": "New agreement",
+        "editTitle": "Edit agreement",
+        "titre": "Title *",
+        "partner": "Partner *",
+        "selectPartner": "Select a partner",
+        "typePlaceholder": "E.g. Partnership agreement",
+        "dateSignature": "Signature date",
+        "dateDebut": "Start date",
+        "dateFin": "End date",
+        "terms": "Terms and conditions",
+        "filePdf": "PDF file",
+        "fileLabel": "File: {{name}}",
+        "publicationStatus": "Publication status",
+        "saving": "Saving..."
+      },
+      "translationsModal": {
+        "title": "Translations — {{titre}}",
+        "tooltip": "View / edit translations",
+        "saving": "..."
+      },
+      "messages": {
+        "noFileAvailable": "No file available",
+        "downloadFailed": "Unable to download ({{status}})",
+        "downloadError": "Error while downloading",
+        "translationsLoadError": "Error loading translations",
+        "translationsSaveError": "Error while saving",
+        "loadError": "Error loading data",
+        "noPdf": "No PDF file for agreement \"{{titre}}\"",
+        "downloadStarted": "Download of \"{{titre}}\" started",
+        "noAgreementsToExport": "No agreements to export",
+        "exportSuccess": "Excel export successful: {{fileName}}",
+        "exportError": "Export error: {{message}}",
+        "uploadSuccess": "File uploaded successfully",
+        "uploadError": "Upload error: {{message}}",
+        "titleRequired": "Title is required",
+        "partnerRequired": "Partner is required",
+        "endDateError": "End date must be later than start date",
+        "updateSuccess": "Agreement updated successfully",
+        "createSuccess": "Agreement created successfully",
+        "saveError": "Error while saving",
+        "deleteConfirm": "Are you sure you want to delete this agreement?",
+        "deleteSuccess": "Agreement deleted successfully",
+        "deleteError": "Error while deleting"
+      },
+      "emptyState": "No agreements found",
+      "excelExport": {
+        "id": "ID",
+        "titre": "Title",
+        "partenaire": "Partner",
+        "type": "Type",
+        "dateDebut": "Start date",
+        "dateFin": "End date",
+        "joursRestants": "Days remaining",
+        "statut": "Status",
+        "statutPublication": "Publication status",
+        "fichierPdf": "PDF file",
+        "description": "Description"
+      }
     }
   },
   "school": {
@@ -543,6 +659,24 @@
   "adminRoles": "Roles & permissions",
   "adminTestAccess": "Test RBAC",
   "adminAuditLog": "Audit log",
+    "statut_publie": "Published",
+    "statut_archive": "Archived",
+    "statut_brouillon": "Draft",
+    "voir": "View",
+    "voir_document": "View document",
+    "telecharger": "Download",
+    "telecharger_document": "Download document",
+    "traductions": "Translations",
+    "traductions_titre_modal": "Translations",
+    "voir_modifier_traductions": "View / edit translations",
+    "apercu_traduction": "Translation preview:",
+    "aucun_fichier": "No file",
+    "annuler": "Cancel",
+    "enregistrer": "Save",
+    "erreur_chargement_traductions": "Error loading translations",
+    "erreur_enregistrement_traductions": "Error while saving",
+    "erreur_upload": "Error during upload",
+    "date_expiration_help": "Format: DD/MM/YYYY — Example: 31/12/2027",
   "agreementsList": {
     "eyebrow": "Partnerships",
     "title": "Our Partnership Agreements",
@@ -568,6 +702,7 @@
     "new": "New",
     "confirmDelete": "Delete this notification?",
     "close": "Close",
+   
     "time": {
       "now": "Just now",
       "secondsAgo_one": "{{count}} second ago",
