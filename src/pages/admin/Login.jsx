@@ -32,7 +32,7 @@ export default function Login() {
       await login(email.trim(), password);
       navigate('/admin', { replace: true });
     } catch (err) {
-      setError(err.message || 'Identifiants incorrects');
+      setError(err.message || t('admin.login.errorInvalid'));
     } finally {
       setLoading(false);
     }
@@ -117,7 +117,7 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   onFocus={() => setFocusedField('email')}
                   onBlur={() => setFocusedField(null)}
-                  placeholder="admin@esi.dz"
+                  placeholder={t('admin.login.emailPlaceholder')}
                   className="w-full min-h-[44px] bg-transparent text-base text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none"
                 />
               </div>
@@ -155,7 +155,7 @@ export default function Login() {
                   onClick={() => setShowPassword((v) => !v)}
                   className="text-slate-400 hover:text-cobalt transition shrink-0"
                   tabIndex={-1}
-                  title={showPassword ? 'Masquer' : 'Afficher'}
+                  title={showPassword ? t('admin.login.hidePassword') : t('admin.login.showPassword')}
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -169,7 +169,7 @@ export default function Login() {
                 className="inline-flex items-center gap-1 text-sm text-cobalt hover:text-blue-700 font-medium transition"
               >
                 <KeyRound size={13} />
-                Mot de passe oublié?
+                {t('admin.login.forgotPassword')}
               </Link>
             </div>
 
@@ -190,12 +190,12 @@ export default function Login() {
               {loading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  Connexion en cours...
+                  {t('admin.login.loading')}
                 </>
               ) : (
                 <>
                   <LogIn size={18} className="transition-transform group-hover:translate-x-0.5" />
-                  Se connecter
+                  {t('admin.login.submit')}
                 </>
               )}
             </Button>
@@ -204,12 +204,12 @@ export default function Login() {
           {/* Trust badge */}
           <div className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400 dark:text-slate-500">
             <ShieldCheck size={13} />
-            Connexion sécurisée
+            {t('admin.login.secureConnection')}
           </div>
 
           {/* Footer */}
           <p className="text-xs text-slate-400 dark:text-slate-500 text-center mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-            © 2026 ESI Coopération Internationale
+            {t('admin.login.footer', { year: new Date().getFullYear() })}
           </p>
         </div>
       </div>

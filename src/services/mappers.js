@@ -127,7 +127,7 @@ export const toDocumentPayload = (draft) => ({
     titre: draft.titre,
     description: draft.description || null,
     fichier_url: draft.fichier_url,
-    categorie_id: draft.categorieId || null,
+categorie_id: draft.categorieId,
     langage: draft.langage || 'fr',
     version: draft.version || '1.0',
     file_size: draft.fileSize || null,
