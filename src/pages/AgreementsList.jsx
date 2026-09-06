@@ -24,20 +24,19 @@ const AGREEMENT_STATUS_TONE = {
 };
 
 const AgreementsList = () => {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const [agreements, setAgreements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
-  useEffect(() => {
+ useEffect(() => {
     fetchAgreements();
-  }, []);
+}, [i18n.language]);  // ← était [], donc jamais rechargé au changement de langue
 
-  const fetchAgreements = async () => {
+const fetchAgreements = async () => {
     try {
       setLoading(true);
-      const data = await getAgreements();
-      // Filtrer uniquement les accords publiés
+      const data = await getAgreements(i18n.language);  // ← passe la langue
       const published = data.filter((a) => a.statutPublication === 'published');
       setAgreements(published);
     } catch (error) {
@@ -45,8 +44,7 @@ const AgreementsList = () => {
     } finally {
       setLoading(false);
     }
-  };
-
+};
   const getStatusBadge = (status) => ({
     label: t(`enums.agreementStatus.${status}`, status),
     tone: AGREEMENT_STATUS_TONE[status] || 'default',

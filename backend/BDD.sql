@@ -1373,6 +1373,7 @@ create table public.agreement_translations (
   agreement_id integer not null,
   language_id integer not null,
   title character varying(255) not null,
+  type VARCHAR(100) not null,
   description text null,
   terms_conditions text null,
   created_at timestamp without time zone null default now(),

@@ -9,10 +9,13 @@ router.post('/upload', verifyToken, checkPermission('documents.upload'), documen
 
 router.get('/', documentsController.getAllPublic);
 router.get('/admin/all', verifyToken, checkPermission('documents.view'), documentsController.getAllAdmin);
+router.get('/admin/all/preview', verifyToken, checkPermission('documents.view'), documentsController.getAllAdminPreview);
 router.get('/expired', verifyToken, checkPermission('documents.view'), documentsController.getExpired);
 router.get('/:id', documentsController.getById);
 router.get('/:id/download', documentsController.download);
 router.get('/:id/revisions', verifyToken, checkPermission('documents.view'), documentsController.getRevisions);
+router.get('/:id/translations', verifyToken, checkPermission('documents.view'), documentsController.getTranslations);
+router.put('/:id/translations', verifyToken, checkPermission('documents.edit'), documentsController.updateTranslations);
 
 router.post('/', verifyToken, checkPermission('documents.upload'), documentsController.create);
 router.post('/:id/link', verifyToken, checkPermission('documents.edit'), documentsController.createLink);

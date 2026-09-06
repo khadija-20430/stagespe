@@ -8,34 +8,29 @@ const sendError = require('../middleware/errorResponse');
 
 const router = express.Router();
 
-// ============================================================
-// NOTE : ce routeur est supposé monté ainsi dans server.js :
-//   app.use('/api/agreements', agreementsRoutes);
-// (même convention que /api/projects, /api/calls, /api/mobility...)
-// Tous les chemins ci-dessous sont donc RELATIFS à '/agreements'.
-// Si ton server.js monte ce routeur autrement (ex: app.use('/api', ...)),
-// dis-le-moi et j'ajuste les chemins en conséquence.
-// ============================================================
-
 // ------------------------------------------------------------
 // Routes publiques
 // ------------------------------------------------------------
 router.get('/', agreementsController.getPublic);
-router.get('/:id', agreementsController.getById);
 
 // ------------------------------------------------------------
-// Routes protégées — admin
+// Routes à segments fixes — TOUJOURS avant '/:id'
 // ------------------------------------------------------------
 router.get('/admin/all', verifyToken, checkPermission('agreements.view'), agreementsController.getAdmin);
+router.get('/admin/all/preview', verifyToken, checkPermission('agreements.view'), agreementsController.getAllAdminPreview);
 router.get('/expiring-soon', verifyToken, checkPermission('agreements.view'), agreementsController.getExpiringSoon);
+
+// ------------------------------------------------------------
+// Routes avec :id
+// ------------------------------------------------------------
+router.get('/:id', agreementsController.getById);
+router.get('/:id/translations', verifyToken, checkPermission('agreements.view'), agreementsController.getTranslations);
+router.put('/:id/translations', verifyToken, checkPermission('agreements.edit'), agreementsController.updateTranslations);
 
 router.post('/', verifyToken, checkPermission('agreements.create'), upload.single('fichier_pdf'), agreementsController.create);
 router.put('/:id', verifyToken, checkPermission('agreements.edit'), upload.single('fichier_pdf'), agreementsController.update);
 router.delete('/:id', verifyToken, checkPermission('agreements.delete'), agreementsController.remove);
 
-// ------------------------------------------------------------
-// Publication (requête directe via le modèle, statut_publication uniquement)
-// ------------------------------------------------------------
 router.patch('/:id/publish', verifyToken, checkPermission('agreements.edit'), async (req, res) => {
     try {
         const agreement = await agreementsModel.update(

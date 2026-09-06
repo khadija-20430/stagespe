@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
+import AddressAutocomplete from '../../components/ui/AddressAutocomplete.jsx';
 import {
   LayoutGrid, Loader2, AlertTriangle, Inbox, Pencil, Trash2, X, Plus,
   Save, MapPin,
@@ -1025,7 +1026,26 @@ const stats = getStats();
                       TEXTAREA
                   ================================================== */}
 
-                  {f.type === 'textarea' ? (
+                  {f.type === 'address-autocomplete' ? (
+
+                    /* =================================================
+                       ADRESSE AVEC AUTOCOMPLÉTION (Nominatim)
+                       Sélectionner une suggestion remplit aussi
+                       automatiquement latitude/longitude.
+                    ================================================== */
+
+                    <AddressAutocomplete
+                      value={draft[f.name] ?? ''}
+                      onChange={(val) => setField(f.name, val)}
+                      onSelect={(result) => {
+                        setField('latitude', result.latitude);
+                        setField('longitude', result.longitude);
+                        setGeocodeMsg(`Trouvé : ${result.displayName}`);
+                      }}
+                      placeholder={f.placeholder}
+                    />
+
+                  ) : f.type === 'textarea' ? (
 
                     <textarea
                       value={

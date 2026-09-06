@@ -10,10 +10,11 @@ const TRANSLATION_CONFIG = {
   news: { table: 'news_translations', fk: 'news_id', fields: ['title', 'summary', 'description', 'quote_text'] },
   project_deliverable: { table: 'project_deliverable_translations', fk: 'deliverable_id', fields: ['description'] },
   project_result: { table: 'project_result_translations', fk: 'result_id', fields: ['description'] },
-agreement: { table: 'agreement_translations', fk: 'agreement_id', fields: ['title', 'description', 'terms_conditions'] },
+agreement: { table: 'agreement_translations', fk: 'agreement_id', fields: ['title', 'description', 'terms_conditions', 'type'] },document: { table: 'document_translations', fk: 'document_id', fields: ['titre', 'description'] },
 };
 
 const TARGET_LANGUAGES = ['en', 'ar']; // le français est déjà la langue de base, jamais traduit
+
 
 async function getLanguageId(langCode) {
   if (!langCode || langCode === 'fr') return null; // le français est déjà dans la table principale
@@ -56,6 +57,25 @@ async function translateOne(entityType, row, langCode) {
   return translated;
 }
 
+async function translateRelatedField(rows, langCode, { entityType, idField, nameField, sourceField = 'name' }) {
+  if (!langCode || langCode === 'fr' || rows.length === 0) return rows;
+
+  const ids = [...new Set(rows.map((r) => r[idField]).filter(Boolean))];
+  if (ids.length === 0) return rows;
+
+  // "Lignes" minimales portant juste l'id de l'entité liée, pour réutiliser translateList
+  const fakeRows = ids.map((id) => ({ id }));
+  const translated = await translateList(entityType, fakeRows, langCode);
+
+  const byId = {};
+  translated.forEach((r) => { byId[r.id] = r[sourceField]; });
+
+  return rows.map((row) => {
+    const translatedName = byId[row[idField]];
+    if (!translatedName) return row; 
+    return { ...row, [nameField]: translatedName };
+  });
+}
 // ÉCRITURE — enregistre les traductions (manuelles OU générées automatiquement)
 // attend : { en: { title: '...', description: '...' }, ar: { title: '...' } }
 async function upsertTranslations(entityType, entityId, translationsInput) {
@@ -143,9 +163,11 @@ async function deleteTranslations(entityType, entityId) {
   await pool.query(`DELETE FROM ${config.table} WHERE ${config.fk} = $1`, [entityId]);
 }
 
+
 module.exports = {
   translateList,
   translateOne,
+  translateRelatedField,
   upsertTranslations,
   autoTranslateAndSave,
   getAllTranslations,

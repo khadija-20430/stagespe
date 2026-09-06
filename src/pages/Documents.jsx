@@ -22,20 +22,20 @@ const formatBytes = (bytes) => {
 };
 
 export default function Documents() {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const [documents, setDocuments] = useState(null);
   const [categorie, setCategorie] = useState('toutes');
   const [downloading, setDownloading] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getDocuments()
+    getDocuments(i18n.language) 
       .then(setDocuments)
       .catch((err) => {
         console.error('Erreur chargement:', err);
         setError(t('documents.errors.loadFailed'));
       });
-  }, [t]);
+  }, [t, i18n.language]);  
 
   const categories = useMemo(
     () => ['toutes', ...new Set((documents ?? []).map((d) => d.categorie))],

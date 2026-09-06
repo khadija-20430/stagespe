@@ -3,6 +3,7 @@ const documentsModel = require('../models/documentsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { upload } = require('../middleware/upload');
+const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 exports.uploadFile = (req, res) => {
     upload.single('file')(req, res, (err) => {
@@ -19,7 +20,7 @@ exports.uploadFile = (req, res) => {
 exports.getAllPublic = async(req, res) => {
     try {
         const documents = await documentsModel.findAllPublic(req.query);
-        res.json(documents);
+        res.json(await translateList('document', documents, req.query.lang));
     } catch (err) { sendError(res, err); }
 };
 
@@ -27,6 +28,14 @@ exports.getAllAdmin = async(req, res) => {
     try {
         const documents = await documentsModel.findAllAdmin();
         res.json(documents);
+    } catch (err) { sendError(res, err); }
+};
+
+exports.getAllAdminPreview = async(req, res) => {
+    try {
+        const documents = await documentsModel.findAllAdmin();
+        const translated = await translateList('document', documents, req.query.lang);
+        res.json(translated);
     } catch (err) { sendError(res, err); }
 };
 
@@ -45,7 +54,22 @@ exports.getById = async(req, res) => {
         const links = await documentsModel.findLinksForDocument(req.params.id);
         await documentsModel.logAccess(req.params.id, null, req.ip, req.headers['user-agent'], 'view');
 
-        res.json({...doc, links });
+        const translated = await translateOne('document', doc, req.query.lang);
+        res.json({ ...translated, links });
+    } catch (err) { sendError(res, err); }
+};
+
+exports.getTranslations = async(req, res) => {
+    try {
+        res.json(await getAllTranslations('document', req.params.id));
+    } catch (err) { sendError(res, err); }
+};
+
+exports.updateTranslations = async(req, res) => {
+    try {
+        await upsertTranslations('document', req.params.id, req.body);
+        const updated = await getAllTranslations('document', req.params.id);
+        res.json(updated);
     } catch (err) { sendError(res, err); }
 };
 
@@ -71,6 +95,7 @@ exports.create = async(req, res) => {
     try {
         const doc = await documentsModel.create({...req.body, uploaded_by: req.user.id });
         await logAction(req.user.id, 'create', 'document', doc.id, null, req);
+        await autoTranslateAndSave('document', doc.id, req.body);
         res.status(201).json(doc);
     } catch (err) { sendError(res, err); }
 };
@@ -107,6 +132,7 @@ exports.update = async(req, res) => {
 
         const doc = await documentsModel.update(req.params.id, req.body);
         await logAction(req.user.id, 'update', 'document', req.params.id, { new_version: req.body.version }, req);
+        await autoTranslateAndSave('document', req.params.id, req.body);
         res.json(doc);
     } catch (err) { sendError(res, err); }
 };
@@ -115,10 +141,12 @@ exports.remove = async(req, res) => {
     try {
         const doc = await documentsModel.remove(req.params.id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
+        await deleteTranslations('document', req.params.id);
         await logAction(req.user.id, 'delete', 'document', req.params.id, null, req);
         res.json({ message: 'Document supprimé', deleted: doc });
     } catch (err) { sendError(res, err); }
 };
+
 exports.publish = async(req, res) => {
     try {
         const doc = await documentsModel.publish(req.params.id);

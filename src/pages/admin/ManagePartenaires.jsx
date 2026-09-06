@@ -22,6 +22,7 @@ import {
 } from '../../services/api.js';
 
 import { toPartnerPayload } from '../../services/mappers.js';
+import { geocodeAddress } from '../../lib/geocode.js';
 
 const PARTNERSHIP_STATUS = ['active', 'pending', 'ended'];
 
@@ -237,7 +238,10 @@ export default function ManagePartenaires() {
           { name: 'paysId', label: t('pays'), type: 'select',
             options: countries.map((c) => ({ value: c.id, label: c.name })) },
           { name: 'ville', label: t('ville'), type: 'text' },
-          { name: 'adresse', label: t('adresse'), type: 'text' },
+          { name: 'adresse', label: t('adresse'), type: 'address-autocomplete',
+            placeholder: 'Commencez à taper une adresse...' },
+          { name: 'geolocation', label: 'Localisation', type: 'geocode',
+            onGeocode: (draft) => geocodeAddress(`${draft.adresse || ''} ${draft.ville || ''}`.trim()) },
           { name: 'typeEtablissementId', label: t('typeEtablissement'), type: 'select',
             options: establishmentTypes.map((et) => ({ value: et.id, label: et.label })) },
           { name: 'typePartenariatId', label: t('typePartenariat'), type: 'select',

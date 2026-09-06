@@ -24,6 +24,8 @@ export const mapPartner = (row) => ({
 
     logo: row.logo_url,
     site: row.website,
+    latitude: row.latitude != null ? Number(row.latitude) : null,
+    longitude: row.longitude != null ? Number(row.longitude) : null,
     statut_publication: row.statut_publication,
     agreements: row.agreements,
     contacts: row.contacts,

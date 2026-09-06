@@ -1,12 +1,16 @@
 const mobilityModel = require('../models/mobilityModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 exports.getAll = async(req, res) => {
     try {
         const rows = await mobilityModel.findAllPublished(req.query);
-        res.json(await translateList('mobility', rows, req.query.lang));
+        const translated = await translateList('mobility', rows, req.query.lang);
+        const withPartner = await translateRelatedField(translated, req.query.lang, {
+            entityType: 'partner', idField: 'destination_partner_id', nameField: 'partner_name',
+        });
+        res.json(withPartner);
     } catch (err) { sendError(res, err); }
 };
 
@@ -32,7 +36,10 @@ exports.getOne = async(req, res) => {
 
         const languageRequirements = await mobilityModel.getLanguageRequirements(req.params.id);
         const translated = await translateOne('mobility', mobility, req.query.lang);
-        res.json({...translated, language_requirements: languageRequirements });
+        const [withPartner] = await translateRelatedField([translated], req.query.lang, {
+            entityType: 'partner', idField: 'destination_partner_id', nameField: 'partner_name',
+        });
+        res.json({ ...withPartner, language_requirements: languageRequirements });
     } catch (err) { sendError(res, err); }
 };
 

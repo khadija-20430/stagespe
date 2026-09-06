@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
 import {
   FileSpreadsheet, AlertTriangle, CheckCircle2, Eye, Download, Loader2,
-  Pencil, Trash2, FileText, Plus,
+  Pencil, Trash2, FileText, Plus, Languages, X, Save,
 } from 'lucide-react';
 import {
     getAgreementsAdmin,
@@ -11,10 +11,32 @@ import {
     deleteAgreement,
     getPartenairesAdmin,
     getAgreementsExpiringSoon,
+    getAgreementsAdminPreview,
+    getAgreementTranslations,
+    updateAgreementTranslations,
     uploadFile,
     getFileUrl,
 } from '../../services/api.js';
 import { toAgreementPayload } from '../../services/mappers.js';
+
+const PREVIEW_LANGS = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'ar', label: 'AR' },
+];
+
+// Champs traduisibles — noms de colonnes réels de agreement_translations
+const TRANSLATION_FIELDS = [
+  { name: 'title', label: 'Titre' },
+  { name: 'type', label: 'Type' },
+  { name: 'description', label: 'Description' },
+  { name: 'terms_conditions', label: 'Termes et conditions' },
+];
+
+const emptyTranslationSet = () => ({
+  en: { title: '', type: '', description: '', terms_conditions: '' },
+  ar: { title: '', type: '', description: '', terms_conditions: '' },
+});
 
 // ============================================================
 // FONCTION UTILITAIRE : TÉLÉCHARGEMENT SÉCURISÉ
@@ -52,6 +74,18 @@ const ManageAgreements = () => {
     const [success, setSuccess] = useState('');
     const [downloadingFileId, setDownloadingFileId] = useState(null);
 
+    // ===== APERÇU DE TRADUCTION (lecture seule, ne touche jamais au formulaire) =====
+    const [previewLang, setPreviewLang] = useState('fr');
+    const [previewData, setPreviewData] = useState({});
+
+    // ===== MODALE DE TRADUCTION MANUELLE =====
+    const [translationsItem, setTranslationsItem] = useState(null);
+    const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
+    const [translationsTab, setTranslationsTab] = useState('en');
+    const [translationsLoading, setTranslationsLoading] = useState(false);
+    const [translationsSaving, setTranslationsSaving] = useState(false);
+    const [translationsError, setTranslationsError] = useState('');
+
     // Modal states
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
@@ -83,6 +117,73 @@ const ManageAgreements = () => {
         fetchData();
         fetchExpiringAgreements();
     }, [filters]);
+
+    // ===== APERÇU DE TRADUCTION =====
+    const refreshPreview = () => {
+        if (previewLang === 'fr') return;
+        getAgreementsAdminPreview(previewLang).then((rows) => {
+            const map = {};
+            rows.forEach((r) => { map[r.id] = r; });
+            setPreviewData(map);
+        });
+    };
+
+    useEffect(() => {
+        if (previewLang === 'fr') {
+            setPreviewData({});
+            return;
+        }
+        refreshPreview();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [previewLang]);
+
+    // ===== MODALE DE TRADUCTION MANUELLE =====
+    const openTranslations = async (agreement) => {
+        setTranslationsItem(agreement);
+        setTranslationsTab('en');
+        setTranslationsError('');
+        setTranslationsLoading(true);
+        setTranslationsDraft(emptyTranslationSet());
+
+        try {
+            const existing = await getAgreementTranslations(agreement.id);
+            setTranslationsDraft((prev) => ({
+                en: { ...prev.en, ...(existing.en || {}) },
+                ar: { ...prev.ar, ...(existing.ar || {}) },
+            }));
+        } catch (err) {
+            setTranslationsError(err.message || 'Erreur de chargement des traductions');
+        } finally {
+            setTranslationsLoading(false);
+        }
+    };
+
+    const closeTranslations = () => {
+        if (translationsSaving) return;
+        setTranslationsItem(null);
+    };
+
+    const setTranslationField = (lang, field, value) => {
+        setTranslationsDraft((prev) => ({
+            ...prev,
+            [lang]: { ...prev[lang], [field]: value },
+        }));
+    };
+
+    const saveTranslations = async () => {
+        setTranslationsSaving(true);
+        setTranslationsError('');
+
+        try {
+            await updateAgreementTranslations(translationsItem.id, translationsDraft);
+            refreshPreview();
+            setTranslationsItem(null);
+        } catch (err) {
+            setTranslationsError(err.message || "Erreur lors de l'enregistrement");
+        } finally {
+            setTranslationsSaving(false);
+        }
+    };
 
     // ===== FETCH EXPIRING AGREEMENTS =====
     const fetchExpiringAgreements = async () => {
@@ -405,6 +506,28 @@ const ManageAgreements = () => {
                 </button>
             </div>
 
+            {/* Sélecteur d'aperçu — lecture seule, ne touche jamais aux données réelles éditées */}
+            <div className="mb-4 flex items-center gap-2">
+                <Languages size={16} className="text-slate-400" />
+                <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+                    Aperçu traduction :
+                </span>
+                {PREVIEW_LANGS.map((l) => (
+                    <button
+                        key={l.code}
+                        type="button"
+                        onClick={() => setPreviewLang(l.code)}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+                            previewLang === l.code
+                                ? 'bg-cobalt text-white'
+                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                    >
+                        {l.label}
+                    </button>
+                ))}
+            </div>
+
             {/* STATS CARDS */}
             <div className="grid gap-4 md:grid-cols-4">
                 <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-slate-800">
@@ -489,6 +612,7 @@ const ManageAgreements = () => {
                                 <th>Statut</th>
                                 <th>Publication</th>
                                 <th>Fichier</th>
+                                <th>Traductions</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -508,7 +632,7 @@ const ManageAgreements = () => {
 
                                 return (
                                     <tr key={agreement.id} className={alert?.type === 'danger' ? 'row-expired' : alert?.type === 'warning' ? 'row-warning' : ''}>
-                                        <td>{agreement.titre}</td>
+                                        <td>{previewData[agreement.id]?.titre || agreement.titre}</td>
                                         <td>{agreement.partnerName}</td>
                                         <td>{agreement.type || '-'}</td>
                                         <td>
@@ -579,6 +703,17 @@ const ManageAgreements = () => {
                                             ) : (
                                                 <span className="text-slate-400">Aucun fichier</span>
                                             )}
+                                        </td>
+
+                                        <td>
+                                            <button
+                                                type="button"
+                                                onClick={() => openTranslations(agreement)}
+                                                className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
+                                                title="Voir / modifier les traductions"
+                                            >
+                                                <Languages size={18} />
+                                            </button>
                                         </td>
 
                                         <td className="actions">
@@ -767,6 +902,90 @@ const ManageAgreements = () => {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* =========================================================
+                MODALE — TRADUCTIONS MANUELLES (EN / AR)
+                Indépendante de la modale d'édition ci-dessus.
+            ========================================================== */}
+            {translationsItem && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+                    <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+                            <h3 className="font-bold text-navy dark:text-white">
+                                Traductions — {translationsItem.titre}
+                            </h3>
+                            <button type="button" onClick={closeTranslations} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="px-6 pt-4">
+                            <div className="flex gap-2">
+                                {['en', 'ar'].map((lang) => (
+                                    <button
+                                        key={lang}
+                                        type="button"
+                                        onClick={() => setTranslationsTab(lang)}
+                                        className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
+                                            translationsTab === lang
+                                                ? 'bg-cobalt text-white'
+                                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                                        }`}
+                                    >
+                                        {lang.toUpperCase()}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="px-6 py-4 max-h-[60vh] overflow-y-auto space-y-4">
+                            {translationsLoading ? (
+                                <div className="flex justify-center py-8 text-cobalt">
+                                    <Loader2 size={28} className="animate-spin" />
+                                </div>
+                            ) : (
+                                TRANSLATION_FIELDS.map((f) => (
+                                    <div key={f.name}>
+                                        <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                                            {f.label}
+                                        </label>
+                                        <textarea
+                                            dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
+                                            rows={4}
+                                            value={translationsDraft[translationsTab][f.name] ?? ''}
+                                            onChange={(e) => setTranslationField(translationsTab, f.name, e.target.value)}
+                                            className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-cobalt focus:ring-1 focus:ring-cobalt/30 transition"
+                                        />
+                                    </div>
+                                ))
+                            )}
+
+                            {translationsError && (
+                                <p className="text-sm text-red-600 dark:text-red-400">{translationsError}</p>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+                            <button
+                                type="button"
+                                onClick={closeTranslations}
+                                disabled={translationsSaving}
+                                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
+                            >
+                                Annuler
+                            </button>
+                            <button
+                                type="button"
+                                onClick={saveTranslations}
+                                disabled={translationsSaving || translationsLoading}
+                                className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
+                            >
+                                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

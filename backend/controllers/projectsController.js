@@ -1,8 +1,7 @@
 const projectsModel = require('../models/projectsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
-
+const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 function isEndDateBeforeStartDate(start_date, end_date) {
     return start_date && end_date && new Date(end_date) < new Date(start_date);
 }
@@ -10,7 +9,11 @@ function isEndDateBeforeStartDate(start_date, end_date) {
 exports.getAll = async(req, res) => {
     try {
         const rows = await projectsModel.findAllPublished(req.query);
-        res.json(await translateList('project', rows, req.query.lang));
+        const translated = await translateList('project', rows, req.query.lang);
+        const withCoordinator = await translateRelatedField(translated, req.query.lang, {
+            entityType: 'partner', idField: 'coordinator_partner_id', nameField: 'coordinator_partner_name',
+        });
+        res.json(withCoordinator);
     } catch (err) { sendError(res, err); }
 };
 
@@ -28,6 +31,7 @@ exports.getAllAdminPreview = async(req, res) => {
         res.json(translated);
     } catch (err) { sendError(res, err); }
 };
+
 exports.getOne = async(req, res) => {
     try {
         const project = await projectsModel.findById(req.params.id);
@@ -41,8 +45,13 @@ exports.getOne = async(req, res) => {
             projectsModel.findDocumentsByProject(req.params.id),
         ]);
 
+        const translated = await translateOne('project', project, req.query.lang);
+        const [withCoordinator] = await translateRelatedField([translated], req.query.lang, {
+            entityType: 'partner', idField: 'coordinator_partner_id', nameField: 'coordinator_partner_name',
+        });
+
         res.json({
-            ...(await translateOne('project', project, req.query.lang)),
+            ...withCoordinator,
             partners,
             deliverables,
             results,

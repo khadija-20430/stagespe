@@ -780,13 +780,8 @@ export const archiveActualite = (
 // DOCUMENTS
 // ============================================================
 
-export const getDocuments = async() => {
-
-    const data =
-        await request(
-            '/documents'
-        );
-
+export const getDocuments = async(lang = 'fr') => {
+    const data = await request(`/documents?lang=${lang}`);
     return data.map(mapDocument);
 };
 
@@ -813,7 +808,21 @@ export const getDocumentById = async(
 
     return mapDocument(data);
 };
+export const getDocumentsAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/documents/admin/all/preview?lang=${lang}`);
+    return data.map(mapDocument);
+};
 
+export const getDocumentTranslations = async(id) => {
+    return authRequest(`/documents/${id}/translations`);
+};
+
+export const updateDocumentTranslations = async(id, payload) => {
+    return authRequest(`/documents/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 
 // ============================================================
 // UPLOAD FICHIER
@@ -1236,8 +1245,8 @@ export const deleteUser = (
 // ACCORDS / AGREEMENTS
 // ============================================================
 
-export const getAgreements = async() => {
-    const data = await request('/agreements');
+export const getAgreements = async(lang = 'fr') => {
+    const data = await request(`/agreements?lang=${lang}`);
     return data.map(mapAgreement);
 };
 
@@ -1260,6 +1269,21 @@ export const getAgreementsExpiringSoon = async() => {
     return data.map(mapAgreement);
 };
 
+export const getAgreementsAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/agreements/admin/all/preview?lang=${lang}`);
+    return data.map(mapAgreement);
+};
+
+export const getAgreementTranslations = async(id) => {
+    return authRequest(`/agreements/${id}/translations`);
+};
+
+export const updateAgreementTranslations = async(id, payload) => {
+    return authRequest(`/agreements/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 // CRUD
 
 export const createAgreement = (payload) =>
