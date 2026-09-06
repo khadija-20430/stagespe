@@ -190,12 +190,12 @@ async function runNotificationChecks() {
 }
 
 // ============================================================
-// NETTOYER LES NOTIFICATIONS ANCIENNES (30+ jours)
+// NETTOYER LES NOTIFICATIONS ANCIENNES (15+ jours)
 // ============================================================
 
 async function cleanupOldNotifications() {
     try {
-        const deleted = await notificationsModel.deleteOldNotifications(30);
+        const deleted = await notificationsModel.deleteOldNotifications(15);
         if (deleted.length > 0) {
             console.log(`[NOTIFICATIONS] ${deleted.length} notifications anciennes supprimées.`);
         }

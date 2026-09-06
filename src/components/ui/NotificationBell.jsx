@@ -78,10 +78,11 @@ export default function NotificationBell() {
 
             {isOpen && (
                 <div ref={dropdownRef} className="absolute right-0 top-full mt-2 z-50">
-                    <NotificationDropdown 
-                        onClose={() => setIsOpen(false)}
-                        onCountUpdate={loadUnreadCount}
-                    />
+                   <NotificationDropdown 
+                     onClose={() => setIsOpen(false)}
+                     onCountUpdate={loadUnreadCount}
+                     onMarkAllAsRead={handleMarkAllAsRead}
+/>
                 </div>
             )}
         </div>

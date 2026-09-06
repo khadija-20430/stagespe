@@ -24,7 +24,7 @@ const localeMap = {
     ar: 'ar-DZ',
 };
 
-export default function NotificationDropdown({ onClose, onCountUpdate }) {
+export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAllAsRead }) {
     const { t, i18n } = useTranslation();
     const { user } = useAuth();
     const [notifications, setNotifications] = useState([]);
@@ -203,12 +203,25 @@ export default function NotificationDropdown({ onClose, onCountUpdate }) {
     return (
         <div className="w-96 max-h-[500px] overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl animate-scale-up">
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-                <h3 className="font-bold text-navy dark:text-white">🔔 {t('notifications.title')}</h3>
-                <span className="text-xs text-slate-400">
-                    {t('notifications.unreadCount', { count: notifications.filter(n => !n.is_read).length })}
-                </span>
-            </div>
+           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+        <h3 className="font-bold text-navy dark:text-white">🔔 {t('notifications.title')}</h3>
+        <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400">
+                {t('notifications.unreadCount', { count: notifications.filter(n => !n.is_read).length })}
+            </span>
+            {notifications.some(n => !n.is_read) && (
+                <button
+                    onClick={async () => {
+                        await onMarkAllAsRead();
+                        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                    }}
+                    className="text-xs text-cobalt hover:underline font-medium"
+                >
+                    {t('notifications.markAllRead')}
+                </button>
+            )}
+        </div>
+    </div>
 
             {/* Liste */}
             <div className="overflow-y-auto max-h-[400px]">
