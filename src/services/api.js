@@ -224,6 +224,10 @@ export const getProjetsAdmin = async() => {
     return data.map(mapProjet);
 };
 
+export const getProjetsAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/projects/admin/all/preview?lang=${lang}`);
+    return data.map(mapProjet);
+};
 
 export const getProjetById = async(
     id,
@@ -237,7 +241,16 @@ export const getProjetById = async(
 
     return mapProjet(data);
 };
+export const getProjetTranslations = async(id) => {
+    return authRequest(`/projects/${id}/translations`);
+};
 
+export const updateProjetTranslations = async(id, payload) => {
+    return authRequest(`/projects/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 
 // CRUD
 
@@ -325,6 +338,11 @@ export const getAppelsAdmin = async(
     return data.map(mapAppel);
 };
 
+export const getAppelsAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/calls/admin/all/preview?lang=${lang}`);
+    return data.map(mapAppel);
+};
+
 
 export const getAppelById = async(
     id,
@@ -338,7 +356,16 @@ export const getAppelById = async(
 
     return mapAppel(data);
 };
+export const getCallTranslations = async(id) => {
+    return authRequest(`/calls/${id}/translations`);
+};
 
+export const updateCallTranslations = async(id, payload) => {
+    return authRequest(`/calls/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 
 // CRUD
 
@@ -425,7 +452,10 @@ export const getMobilitesAdmin = async(
 
     return data.map(mapMobilite);
 };
-
+export const getMobilitesAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/mobility/admin/all/preview?lang=${lang}`);
+    return data.map(mapMobilite);
+};
 
 export const getMobiliteById = async(
     id,
@@ -441,6 +471,16 @@ export const getMobiliteById = async(
 };
 
 
+export const getMobilitiesTranslations = async(id) => {
+    return authRequest(`/mobility/${id}/translations`);
+};
+
+export const updateMobilitiesTranslations = async(id, payload) => {
+    return authRequest(`/mobility/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 // CRUD
 
 export const createMobilite = (
@@ -526,7 +566,10 @@ export const getPartenairesAdmin = async(
 
     return data.map(mapPartner);
 };
-
+export const getPartenairesAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/partners/admin/all/preview?lang=${lang}`);
+    return data.map(mapPartner);
+};
 
 export const getPartenaireById = async(
     id,
@@ -541,6 +584,16 @@ export const getPartenaireById = async(
     return mapPartner(data);
 };
 
+export const getPartenaireTranslations = async(id) => {
+    return authRequest(`/partners/${id}/translations`);
+};
+
+export const updatePartenaireTranslations = async(id, payload) => {
+    return authRequest(`/partners/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 
 export const getPartenairesMap = async() =>
     request('/partners/map');
@@ -616,11 +669,13 @@ export const archivePARTNER = archivePartner;
 // ACTUALITÉS / ÉVÉNEMENTS
 // ============================================================
 
-export const getActualites = async() => {
+export const getActualites = async(
+    lang = 'fr'
+) => {
 
     const data =
         await request(
-            '/news-events'
+            `/news-events?lang=${lang}`
         );
 
     return data.map(mapActualite);
@@ -628,12 +683,13 @@ export const getActualites = async() => {
 
 
 export const getActualiteById = async(
-    id
+    id,
+    lang = 'fr'
 ) => {
 
     const data =
         await request(
-            `/news-events/${id}`
+            `/news-events/${id}?lang=${lang}`
         );
 
     return mapActualite(data);
@@ -649,10 +705,22 @@ export const getActualitesAdmin = async() => {
 
     return data.map(mapActualite);
 };
-
+export const getActualitesAdminPreview = async(lang = 'en') => {
+    const data = await authRequest(`/news-events/admin/all/preview?lang=${lang}`);
+    return data.map(mapActualite);
+};
 
 // CRUD
+export const getActualiteTranslations = async(id) => {
+    return authRequest(`/news-events/${id}/translations`);
+};
 
+export const updateActualiteTranslations = async(id, payload) => {
+    return authRequest(`/news-events/${id}/translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 export const createActualite = (
         payload
     ) =>

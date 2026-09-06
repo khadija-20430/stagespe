@@ -10,9 +10,10 @@ router.get('/', projectsController.getAll);
 router.get('/admin/all', verifyToken, checkPermission('projects.view'), projectsController.getAllAdmin);
 router.get('/:id', projectsController.getOne);
 router.get('/:id/translations', verifyToken, checkPermission('projects.view'), projectsController.getTranslations);
-
+router.get('/admin/all/preview', verifyToken, checkPermission('projects.view'), projectsController.getAllAdminPreview);
 router.post('/', verifyToken, checkPermission('projects.create'), upload.single('logo'), projectsController.create);
 router.put('/:id', verifyToken, checkPermission('projects.edit'), upload.single('logo'), projectsController.update);
+router.put('/:id/translations', verifyToken, checkPermission('projects.edit'), projectsController.updateTranslations);
 
 router.patch('/:id/publish', verifyToken, checkPermission('projects.publish'), projectsController.publish);
 router.patch('/:id/archive', verifyToken, checkPermission('projects.publish'), projectsController.archive);

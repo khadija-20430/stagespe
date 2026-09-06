@@ -1,7 +1,7 @@
 const callsModel = require('../models/callsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 exports.getAllPublished = async(req, res) => {
     try {
@@ -14,6 +14,14 @@ exports.getAllAdmin = async(req, res) => {
     try {
         const calls = await callsModel.findAllAdmin();
         res.json(calls);
+    } catch (err) { sendError(res, err); }
+};
+
+exports.getAllAdminPreview = async(req, res) => {
+    try {
+        const rows = await callsModel.findAllAdmin();
+        const translated = await translateList('call', rows, req.query.lang);
+        res.json(translated);
     } catch (err) { sendError(res, err); }
 };
 
@@ -38,6 +46,13 @@ exports.getTranslations = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.updateTranslations = async(req, res) => {
+    try {
+        await upsertTranslations('call', req.params.id, req.body);
+        const updated = await getAllTranslations('call', req.params.id);
+        res.json(updated);
+    } catch (err) { sendError(res, err); }
+};
 exports.create = async(req, res) => {
     try {
         const { publication_date, deadline } = req.body;
@@ -47,7 +62,7 @@ exports.create = async(req, res) => {
 
         const call = await callsModel.create(req.body, req.user.id);
         await logAction(req.user.id, 'create', 'call', call.id, null, req);
-        await upsertTranslations('call', call.id, req.body.translations);
+        await autoTranslateAndSave('call', call.id, req.body);
         res.status(201).json(call);
     } catch (err) { sendError(res, err); }
 };
@@ -61,7 +76,7 @@ exports.update = async(req, res) => {
 
         const call = await callsModel.update(req.params.id, req.body, req.user.id, req.ip);
         if (!call) return res.status(404).json({ error: 'Appel non trouvé' });
-        await upsertTranslations('call', req.params.id, req.body.translations);
+        await autoTranslateAndSave('call', req.params.id, req.body);
         res.json(call);
     } catch (err) { sendError(res, err); }
 };

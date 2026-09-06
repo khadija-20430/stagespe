@@ -18,8 +18,9 @@ export default function Projets() {
   const [statut, setStatut] = useState('tous');
 
   useEffect(() => {
-    getProjets().then(setProjets);
-  }, []);
+    setProjets(null);
+    getProjets(i18n.language).then(setProjets);
+  }, [i18n.language]);
 
   const programmes = useMemo(
     () => ['Tous', ...new Set((projets ?? []).map((p) => p.programme))],

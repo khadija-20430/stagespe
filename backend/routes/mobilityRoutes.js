@@ -8,6 +8,8 @@ const router = express.Router();
 router.get('/', mobilityController.getAll);
 router.get('/admin/all', verifyToken, checkPermission('mobility.view'), mobilityController.getAllAdmin);
 router.get('/:id', mobilityController.getOne);
+router.get('/admin/all/preview', verifyToken, checkPermission('mobility.view'), mobilityController.getAllAdminPreview);
+router.put('/:id/translations', verifyToken, checkPermission('mobility.edit'), mobilityController.updateTranslations);
 router.get('/:id/translations', verifyToken, checkPermission('mobility.view'), mobilityController.getTranslations);
 router.post('/', verifyToken, checkPermission('mobility.create'), mobilityController.create);
 router.put('/:id', verifyToken, checkPermission('mobility.edit'), mobilityController.update);

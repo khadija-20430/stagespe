@@ -1,7 +1,7 @@
 const partnersModel = require('../models/partnersModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 exports.getAll = async(req, res) => {
     try {
@@ -24,6 +24,13 @@ exports.getAllAdmin = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.getAllAdminPreview = async(req, res) => {
+    try {
+        const rows = await partnersModel.findAllAdmin();
+        const translated = await translateList('partner', rows, req.query.lang);
+        res.json(translated);
+    } catch (err) { sendError(res, err); }
+};
 exports.getOne = async(req, res) => {
     try {
         const partner = await partnersModel.findById(req.params.id);
@@ -50,6 +57,13 @@ exports.getTranslations = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.updateTranslations = async(req, res) => {
+    try {
+        await upsertTranslations('partner', req.params.id, req.body);
+        const updated = await getAllTranslations('partner', req.params.id);
+        res.json(updated);
+    } catch (err) { sendError(res, err); }
+};
 // upload.single('logo') : le champ du FormData envoyé par le frontend doit
 // s'appeler "logo". req.file contient les infos du fichier une fois uploadé,
 // req.body contient les autres champs texte (name, description, etc.).
@@ -58,7 +72,7 @@ exports.create = async(req, res) => {
         const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
         const partner = await partnersModel.create({...req.body, logo_url }, req.user.id);
         await logAction(req.user.id, 'create', 'partner', partner.id, null, req);
-        await upsertTranslations('partner', partner.id, req.body.translations);
+        await autoTranslateAndSave('partner', partner.id, req.body);
         res.status(201).json(partner);
     } catch (err) { sendError(res, err); }
 };
@@ -81,7 +95,7 @@ exports.update = async(req, res) => {
         );
 
         if (!partner) return res.status(404).json({ error: 'Partenaire non trouvé' });
-        await upsertTranslations('partner', req.params.id, req.body.translations);
+        await autoTranslateAndSave('partner', req.params.id, req.body);
         res.json(partner);
     } catch (err) { sendError(res, err); }
 };

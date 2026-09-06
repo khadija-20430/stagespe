@@ -9,13 +9,14 @@ import { getMobilites } from '../services/api.js';
 import { MOBILITY_TYPE } from '../lib/enums.js';
 
 export default function Mobilites() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [mobilites, setMobilites] = useState(null);
   const [type, setType] = useState('tous');
 
-  useEffect(() => {
-    getMobilites().then(setMobilites);
-  }, []);
+    useEffect(() => {
+      setMobilites(null);
+      getMobilites(i18n.language).then(setMobilites);
+    }, [i18n.language]);
 
   const types = useMemo(
     () => ['tous', ...new Set((mobilites ?? []).map((m) => m.type))],

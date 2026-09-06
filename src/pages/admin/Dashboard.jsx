@@ -105,17 +105,7 @@ export default function Dashboard() {
       </div>
 
       {/* WELCOME */}
-      <div className="mt-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-cobalt/20 dark:to-blue-900/20 p-8">
-        <h2 className="mb-3 text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
-          <Sparkles size={24} className="text-cobalt" />
-          Bienvenue dans l'espace admin !
-        </h2>
-        <p className="leading-relaxed text-slate-700 dark:text-slate-300">
-          Utilisez le menu de gauche pour gérer les partenaires, projets, appels à projets, mobilités,
-          actualités, documents, accords, utilisateurs, rôles et permissions.
-          Vous pouvez également changer la langue et le thème clair/sombre en haut à droite.
-        </p>
-      </div>
+     
     </div>
   );
 }

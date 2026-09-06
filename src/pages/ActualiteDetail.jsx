@@ -8,13 +8,13 @@ import { formatDate } from '../lib/utils.js';
 import { getActualiteById } from '../services/api.js';
 
 export default function ActualiteDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { id } = useParams();
   const [actualite, setActualite] = useState(undefined);
 
   useEffect(() => {
-    getActualiteById(id).then(setActualite);
-  }, [id]);
+    getActualiteById(id, i18n.language).then(setActualite);
+  }, [id, i18n.language]);
 
   if (actualite === undefined) return <Loader />;
 

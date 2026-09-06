@@ -10,7 +10,8 @@ router.get('/admin/all', verifyToken, checkPermission('calls.view'), callsContro
 router.get('/closing-soon', verifyToken, checkPermission('calls.view'), callsController.getClosingSoon);
 router.get('/:id', callsController.getById);
 router.get('/:id/translations', verifyToken, checkPermission('calls.view'), callsController.getTranslations);
-
+router.get('/admin/all/preview', verifyToken, checkPermission('calls.view'), callsController.getAllAdminPreview);
+router.put('/:id/translations', verifyToken, checkPermission('calls.edit'), callsController.updateTranslations);
 router.post('/', verifyToken, checkPermission('calls.create'), callsController.create);
 router.put('/:id', verifyToken, checkPermission('calls.edit'), callsController.update);
 router.patch('/:id/publish', verifyToken, checkPermission('calls.publish'), callsController.publish);

@@ -276,7 +276,7 @@
     "exit": "Exit",
     "dashboard": {
       "title": "Dashboard",
-      "description": "Overview and content management for the portal (mock data).",
+      "description": "Overview and content management for the portal.",
       "backToSite": "View visitor site",
       "about": {
         "title": "About this interface",

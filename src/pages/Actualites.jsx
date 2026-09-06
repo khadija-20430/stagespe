@@ -11,13 +11,14 @@ import { getActualites } from '../services/api.js';
 import { NEWS_TYPE } from '../lib/enums.js';
 
 export default function Actualites() {
-  const { t } = useTranslation();
+const { t, i18n } = useTranslation();
   const [actualites, setActualites] = useState(null);
   const [type, setType] = useState('tous');
 
-  useEffect(() => {
-    getActualites().then(setActualites);
-  }, []);
+   useEffect(() => {
+     setActualites(null);
+     getActualites(i18n.language).then(setActualites);
+   }, [i18n.language]);
 
   const types = useMemo(
     () => ['tous', ...new Set((actualites ?? []).map((a) => a.type))],

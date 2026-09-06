@@ -1,7 +1,7 @@
 const projectsModel = require('../models/projectsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 function isEndDateBeforeStartDate(start_date, end_date) {
     return start_date && end_date && new Date(end_date) < new Date(start_date);
@@ -21,6 +21,13 @@ exports.getAllAdmin = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.getAllAdminPreview = async(req, res) => {
+    try {
+        const rows = await projectsModel.findAllAdmin();
+        const translated = await translateList('project', rows, req.query.lang);
+        res.json(translated);
+    } catch (err) { sendError(res, err); }
+};
 exports.getOne = async(req, res) => {
     try {
         const project = await projectsModel.findById(req.params.id);
@@ -51,6 +58,13 @@ exports.getTranslations = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+exports.updateTranslations = async(req, res) => {
+    try {
+        await upsertTranslations('project', req.params.id, req.body);
+        const updated = await getAllTranslations('project', req.params.id);
+        res.json(updated);
+    } catch (err) { sendError(res, err); }
+};
 exports.create = async(req, res) => {
     try {
         const { start_date, end_date } = req.body;
@@ -62,7 +76,7 @@ exports.create = async(req, res) => {
         const project = await projectsModel.create({...req.body, logo_url }, req.user.id);
 
         await logAction(req.user.id, 'create', 'project', project.id, null, req);
-        await upsertTranslations('project', project.id, req.body.translations);
+        await autoTranslateAndSave('project', project.id, req.body);
         res.status(201).json(project);
     } catch (err) { sendError(res, err); }
 };
@@ -86,7 +100,7 @@ exports.update = async(req, res) => {
         );
         if (!project) return res.status(404).json({ error: 'Projet non trouvé' });
 
-        await upsertTranslations('project', req.params.id, req.body.translations);
+        await autoTranslateAndSave('project', req.params.id, req.body);
         res.json(project);
     } catch (err) { sendError(res, err); }
 };

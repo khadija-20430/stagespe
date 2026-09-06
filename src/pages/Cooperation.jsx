@@ -8,14 +8,18 @@ import { getPartenaires, getFileUrl, getPartenairesMap } from '../services/api.j
 import PartnersMap from '../components/PartnersMap.jsx';
 
 export default function Cooperation() {
-  const { t } = useTranslation();
-  const [partenaires, setPartenaires] = useState(null);
-  const [partenairesMap, setPartenairesMap] = useState(null);
+ const { t, i18n } = useTranslation();
+const [partenaires, setPartenaires] = useState(null);
+const [partenairesMap, setPartenairesMap] = useState(null);
 
-  useEffect(() => {
-    getPartenaires().then(setPartenaires);
-    getPartenairesMap().then(setPartenairesMap);
-  }, []);
+useEffect(() => {
+  setPartenaires(null);
+  getPartenaires(i18n.language).then(setPartenaires);
+}, [i18n.language]);
+
+useEffect(() => {
+  getPartenairesMap().then(setPartenairesMap);
+}, []);
 
   const axes = ['research', 'mobility', 'degrees', 'networks'].map((key) => ({
     key,

@@ -18,9 +18,10 @@ export default function Appels() {
   const [pays, setPays] = useState('Tous');
   const [statut, setStatut] = useState('tous');
 
-  useEffect(() => {
-    getAppels().then(setAppels);
-  }, []);
+   useEffect(() => {
+  setAppels(null);
+  getAppels(i18n.language).then(setAppels);
+}, [i18n.language]);
 
   const programmes = useMemo(
     () => ['Tous', ...new Set((appels ?? []).map((a) => a.programme))],

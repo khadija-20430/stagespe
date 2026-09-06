@@ -1,7 +1,7 @@
 const mobilityModel = require('../models/mobilityModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { translateList, translateOne, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 exports.getAll = async(req, res) => {
     try {
@@ -14,6 +14,14 @@ exports.getAllAdmin = async(req, res) => {
     try {
         const rows = await mobilityModel.findAllAdmin();
         res.json(rows);
+    } catch (err) { sendError(res, err); }
+};
+
+exports.getAllAdminPreview = async(req, res) => {
+    try {
+        const rows = await mobilityModel.findAllAdmin();
+        const translated = await translateList('mobility', rows, req.query.lang);
+        res.json(translated);
     } catch (err) { sendError(res, err); }
 };
 
@@ -34,11 +42,19 @@ exports.getTranslations = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+
+exports.updateTranslations = async(req, res) => {
+    try {
+        await upsertTranslations('mobility', req.params.id, req.body);
+        const updated = await getAllTranslations('mobility', req.params.id);
+        res.json(updated);
+    } catch (err) { sendError(res, err); }
+};
 exports.create = async(req, res) => {
     try {
         const mobility = await mobilityModel.create(req.body, req.user.id);
         await logAction(req.user.id, 'create', 'mobility', mobility.id, null, req);
-        await upsertTranslations('mobility', mobility.id, req.body.translations);
+        await autoTranslateAndSave('mobility', mobility.id, req.body);
         res.status(201).json(mobility);
     } catch (err) { sendError(res, err); }
 };
@@ -48,7 +64,7 @@ exports.update = async(req, res) => {
         const mobility = await mobilityModel.update(req.params.id, req.body);
         if (!mobility) return res.status(404).json({ error: 'Offre non trouvée' });
         await logAction(req.user.id, 'update', 'mobility', req.params.id, null, req);
-        await upsertTranslations('mobility', req.params.id, req.body.translations);
+        await autoTranslateAndSave('mobility', req.params.id, req.body);
         res.json(mobility);
     } catch (err) { sendError(res, err); }
 };

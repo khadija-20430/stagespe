@@ -12,21 +12,15 @@ const newsUpload = upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'author_photo', maxCount: 1 },
 ]);
-
-// =============== ROUTES PUBLIQUES ===============
 router.get('/', newsEventsController.getAll);
 router.get('/:id', newsEventsController.getOne);
-
-// =============== ROUTES ADMIN ===============
 router.get('/admin/all', verifyToken, checkPermission('news_events.view'), newsEventsController.getAllAdmin);
+router.get('/admin/all/preview', verifyToken, checkPermission('news_events.view'), newsEventsController.getAllAdminPreview);
 router.get('/:id/translations', verifyToken, checkPermission('news_events.view'), newsEventsController.getTranslations);
-
-// =============== CRUD ===============
 router.post('/', verifyToken, checkPermission('news_events.create'), newsUpload, newsEventsController.create);
 router.put('/:id', verifyToken, checkPermission('news_events.edit'), newsUpload, newsEventsController.update);
+router.put('/:id/translations', verifyToken, checkPermission('news_events.edit'), newsEventsController.updateTranslations);
 router.delete('/:id', verifyToken, checkPermission('news_events.delete'), newsEventsController.remove);
-
-// =============== PUBLICATION ===============
 router.patch('/:id/publish', verifyToken, checkPermission('news_events.edit'), newsEventsController.publish);
 router.patch('/:id/archive', verifyToken, checkPermission('news_events.edit'), newsEventsController.archive);
 router.put('/:id/restore', verifyToken, checkPermission('news_events.edit'), newsEventsController.restore);
