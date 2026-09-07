@@ -15,6 +15,7 @@
       "description": "Discover our excellence programs",
       "seeAll": "See all programs"
     },
+    
     "stats": {
       "partners": "International partners",
       "projects": "Active research projects",
@@ -86,6 +87,16 @@
     }
   },
   "admin": {
+      "homeSlides": {
+    "title": "Homepage Slides",
+    "create": "Add a slide",
+    "edit": "Edit slide",
+    "publish": "Publish",
+    "archive": "Archive",
+    "order": "Order",
+    "badge": "Badge",
+    "status": "Status"
+  },
     "title": "Administration",
     "logout": "Log out",
     "menuAria": "Menu",

@@ -12,7 +12,7 @@ import {
   LayoutDashboard, School, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FileText, FolderOpen, Users, KeyRound, FlaskConical as TestTube,
   ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, ChevronDown, ChevronUp,
-  GraduationCap // Ajout pour les programmes
+  GraduationCap, GalleryHorizontal // ✅ GalleryHorizontal remplace Image pour les slides d'accueil
 } from 'lucide-react';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -45,6 +45,13 @@ export default function AdminLayout() {
       icon: LayoutDashboard,
     },
     {
+      to: '/admin/home-slides', // ✅ Lien gestion des slides de la page d'accueil
+      label: t('admin.homeSlides.title'),
+      icon: GalleryHorizontal,
+      iconClassName: 'text-cobalt', // ✅ Icône bleue même à l'état inactif
+      //requiredPerm: 'reference_data.manage',
+    },
+    {
       to: '/admin/school-presentation',
       label: t('presentationEcole'),
       icon: School,
@@ -66,7 +73,7 @@ export default function AdminLayout() {
       to: '/admin/programmes', // ✅ Lien programmes
       label: t('programmes'),
       icon: GraduationCap,
-      //requiredPerm: 'programmes.view',
+     //requiredPerm: 'programmes.view',
     },
     {
       to: '/admin/appels',
@@ -192,8 +199,21 @@ export default function AdminLayout() {
           }
           title={link.label}
         >
-          <link.icon size={20} className="shrink-0" />
-          {!isMini && <span>{link.label}</span>}
+          {({ isActive }) => (
+            <>
+              <link.icon
+                size={20}
+                className={cn(
+                  'shrink-0',
+                  // L'icône garde sa couleur custom (ex: bleu) uniquement quand
+                  // le lien n'est pas actif — sinon le fond bleu + texte blanc
+                  // du lien actif suffisent et évitent le bleu-sur-bleu.
+                  !isActive && link.iconClassName
+                )}
+              />
+              {!isMini && <span>{link.label}</span>}
+            </>
+          )}
         </NavLink>
       ))}
     </nav>

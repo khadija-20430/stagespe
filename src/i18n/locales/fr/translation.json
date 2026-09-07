@@ -22,6 +22,7 @@
       "mobility": "Mobilités par an",
       "countries": "Pays partenaires"
     },
+    
     "hero": {
       "eyebrow": "École Supérieure en Informatique",
       "title": "Portail de la coopération internationale",
@@ -86,6 +87,16 @@
     }
   },
   "admin": {
+    "homeSlides": {
+    "title": "Slides de la page d'accueil",
+    "create": "Ajouter une slide",
+    "edit": "Modifier la slide",
+    "publish": "Publier",
+    "archive": "Archiver",
+    "order": "Ordre",
+    "badge": "Badge",
+    "status": "Statut"
+  },
     "title": "Administration",
     "logout": "Se déconnecter",
     "menuAria": "Menu",

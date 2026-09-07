@@ -25,5 +25,9 @@ router.put('/:id', verifyToken, checkPermission('reference_data.manage'),
   upload.single('logo'), ctrl.update);
 router.delete('/:id', verifyToken, checkPermission('reference_data.manage'), 
   ctrl.remove);
+   
+router.patch('/:id/publish', verifyToken, checkPermission('programmes.publish'), ctrl.publish);
+router.patch('/:id/archive', verifyToken, checkPermission('programmes.publish'), ctrl.archive);
+ 
 
 module.exports = router;

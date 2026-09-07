@@ -94,3 +94,18 @@ exports.updateTranslations = async (req, res) => {
     res.json({ success: true });
   } catch (err) { sendError(res, err); }
 };
+exports.publish = async (req, res) => {
+  try {
+    const programme = await programmesModel.updateStatutPublication(req.params.id, 'published');
+    if (!programme) return res.status(404).json({ error: 'Programme non trouvé' });
+    res.json(programme);
+  } catch (err) { sendError(res, err); }
+};
+ 
+exports.archive = async (req, res) => {
+  try {
+    const programme = await programmesModel.updateStatutPublication(req.params.id, 'archived');
+    if (!programme) return res.status(404).json({ error: 'Programme non trouvé' });
+    res.json(programme);
+  } catch (err) { sendError(res, err); }
+};

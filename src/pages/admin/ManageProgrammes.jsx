@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Layers, Languages, X, Save, Loader2 } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
+import Badge from '../../components/ui/Badge.jsx';
 import {
   getProgrammesAdmin, getProgrammesAdminPreview,
   createProgramme, updateProgramme, deleteProgramme,
   getProgrammeTranslations, updateProgrammeTranslations,
+  publishProgramme, archiveProgramme,
 } from '../../services/api.js';
 import { toProgrammePayload } from '../../services/mappers.js';
 
@@ -24,6 +26,36 @@ const emptyTranslationSet = () => ({
   en: { name: '', description: '' },
   ar: { name: '', description: '' },
 });
+
+/* ============================================================
+   STATUT PUBLICATION
+   IMPORTANT :
+   statut_publication = published | draft | archived
+   Même logique que ManageDocuments.jsx — couleur + libellé
+   traduits statiquement via les clés i18n racine.
+============================================================ */
+
+const publicationTone = (status) => {
+  const value = String(status || 'draft').toLowerCase().trim();
+
+  if (value === 'published' || value === 'publié') {
+    return 'green';
+  }
+
+  if (value === 'archived') {
+    return 'slate';
+  }
+
+  return 'amber';
+};
+
+const publicationLabel = (status, t) => {
+  const value = String(status || 'draft').toLowerCase().trim();
+
+  if (value === 'published' || value === 'publié') return t('published');
+  if (value === 'archived') return t('archived');
+  return t('draft');
+};
 
 export default function ManageProgrammes() {
   const { t } = useTranslation();
@@ -129,6 +161,20 @@ export default function ManageProgrammes() {
         onCreate={createProgramme}
         onUpdate={updateProgramme}
         onDelete={deleteProgramme}
+
+        /* ======================================================
+           PUBLICATION
+           Le bouton ● (rond coloré) est fourni automatiquement
+           par CrudManager dès que onPublish + onArchive existent.
+           Cliquer dessus ouvre le menu Publié / Archivé.
+        ====================================================== */
+        onPublish={publishProgramme}
+        onArchive={archiveProgramme}
+        createPermission="programmes.create"
+        updatePermission="programmes.edit"
+        deletePermission="programmes.delete"
+        publishPermission="programmes.publish"
+
         columns={[
           {
             key: 'name', label: t('nom'),
@@ -137,6 +183,19 @@ export default function ManageProgrammes() {
           { key: 'acronym', label: 'Acronyme', render: (i) => i.acronym || '—' },
           { key: 'organismeFinanceur', label: t('organismeFinanceur'), render: (i) => i.organismeFinanceur || '—' },
           { key: 'documentsCount', label: 'Documents', render: (i) => i.documentsCount ?? 0 },
+          {
+            key: 'statut_publication',
+            label: t('statut'),
+            render: (item) => {
+              const status = item.statutPublication || item.statut_publication || 'draft';
+
+              return (
+                <Badge tone={publicationTone(status)}>
+                  {publicationLabel(status, t)}
+                </Badge>
+              );
+            },
+          },
           {
             key: 'translations', label: t('traductions'),
             render: (i) => (

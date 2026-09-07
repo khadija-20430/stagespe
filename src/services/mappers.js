@@ -392,8 +392,7 @@ export const mapSchoolPresentation = (row) => {
         revisions: row.revisions || [],
     };
     
-};
-export const mapProgramme = (row) => ({
+};export const mapProgramme = (row) => ({
   id: row.id,
   name: row.name,
   nom: row.name,
@@ -403,6 +402,7 @@ export const mapProgramme = (row) => ({
   siteWeb: row.official_website || '',
   logo: row.logo_url || null,
   documentsCount: Number(row.documents_count) || 0,
+  statut_publication: row.statut_publication || 'draft', // ✅ ajouté
 });
 
 export const toProgrammePayload = (draft) => ({

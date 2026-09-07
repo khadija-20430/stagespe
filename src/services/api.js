@@ -1526,3 +1526,48 @@ export const updateProgramme = (id, payload) =>
 
 export const deleteProgramme = (id) =>
   authRequest(`/programmes/${id}`, { method: 'DELETE' });
+export const publishProgramme = (id) =>
+    authRequest(`/programmes/${id}/publish`, {
+        method: 'PATCH',
+    });
+
+export const archiveProgramme = (id) =>
+    authRequest(`/programmes/${id}/archive`, {
+        method: 'PATCH',
+    });
+// ============================================================
+// HOME SLIDES
+// ============================================================
+
+export const getHomeSlidesAdmin = (lang = 1) =>
+    authRequest(`/home-slides/admin/all?lang=${lang}`);
+export const getHomeSlides = (lang = 1) =>
+    request(`/home-slides?lang=${lang}`);
+export const createHomeSlide = (payload) =>
+    authRequest('/home-slides', {
+        method: 'POST',
+        body: payload,
+    });
+
+export const updateHomeSlide = (id, payload) =>
+    authRequest(`/home-slides/${id}`, {
+        method: 'PUT',
+        body: payload,
+    });
+
+export const deleteHomeSlide = (id) =>
+    authRequest(`/home-slides/${id}`, {
+        method: 'DELETE',
+    });
+
+export const updateHomeSlideStatus = (id, status) =>
+    authRequest(`/home-slides/${id}/status`, {
+        method: 'PUT',
+        body: { status },
+    });
+
+export const reorderHomeSlides = (slides) =>
+    authRequest('/home-slides/reorder', {
+        method: 'PUT',
+        body: { slides },
+    });

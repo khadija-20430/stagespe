@@ -115,3 +115,14 @@ exports.upsertTranslation = async (programmeId, languageId, data) => {
   `, [programmeId, languageId, data.name || '', data.description || null]);
   return result.rows[0];
 };
+
+exports.updateStatutPublication = async (id, statut) => {
+  const result = await pool.query(
+    `UPDATE programmes
+     SET statut_publication = $1, updated_at = now()
+     WHERE id = $2
+     RETURNING *`,
+    [statut, id]
+  );
+  return result.rows[0];
+};

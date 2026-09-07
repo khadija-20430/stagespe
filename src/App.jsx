@@ -36,8 +36,9 @@ import ManageAgreements from './pages/admin/ManageAgreements.jsx';
 import ManageSchool from './pages/admin/Manageschool.jsx';
 import AgreementsList from './pages/AgreementsList.jsx';
 import ManageProgrammes from "./pages/admin/ManageProgrammes.jsx";
-// ❌ SUPPRIMEZ CETTE LIGNE : import ProgrammeForm from "./pages/admin/ProgrammeForm.jsx";
 import Programmes from './pages/Programmes.jsx';
+import ManageHomeSlides from './pages/admin/ManageHomeSlides.jsx';
+
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -85,6 +86,7 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="partenaires" element={<ManagePartenaires />} />
+          <Route path="home-slides" element={<ManageHomeSlides />} />
           <Route path="programmes" element={<ManageProgrammes />} />
           <Route path="projets" element={<ManageProjets />} />
           <Route path="appels" element={<ManageAppels />} />

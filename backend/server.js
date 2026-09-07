@@ -10,7 +10,6 @@ const ensureSuperAdmin = require('./lib/bootstrapAdmin');
 const { runAllJobs } = require('./services/notificationScheduler');
 
 const app = express();
-
 app.set('trust proxy', 1);
 app.use(helmet({
     crossOriginResourcePolicy: { policy: 'cross-origin' },
@@ -56,6 +55,8 @@ app.use('/api/mobility', require('./routes/mobilityRoutes'));
 app.use('/api/news-events', require('./routes/newsEventsRoutes'));
 app.use('/api/document-categories', require('./routes/documentCategoriesRoutes'));
 app.use('/api/documents', require('./routes/documentsRoutes'));
+app.use('/api/home-slides', require('./routes/Homeslidesroutes'));
+
 
 // ============================================================
 // ROUTES SCHOOL PRESENTATION

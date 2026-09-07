@@ -6,28 +6,59 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl, getProgrammes } from '../services/api.js';
+import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl, getProgrammes,getHomeSlides } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
-import { Megaphone, Globe, GraduationCap } from 'lucide-react'; 
+import { Megaphone, Globe, GraduationCap, FlaskConical, Users, BookOpen } from 'lucide-react';
 
+// Map string -> composant icône Lucide (doit couvrir les mêmes valeurs que LUCIDE_ICONS côté admin)
+const ICON_MAP = { GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen };
 
+// FR=1, EN=2, AR=3 (correspond à la table `languages`)
+const LANG_ID_MAP = { fr: 1, en: 2, ar: 3 };
 
-function Hero() {
+function Hero({ slides, loading }) {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const slides = t('home.hero.slides', { returnObjects: true });
-
-  // Auto-play
+  // Reset l'index si la liste change (ex: changement de langue) pour éviter un index hors limites
   useEffect(() => {
+    setCurrentSlide(0);
+  }, [slides]);
+
+  useEffect(() => {
+    if (!slides.length) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
   }, [slides.length]);
 
+  // Pendant le chargement initial, ou s'il n'y a aucune slide publiée : ne rien casser visuellement
+  if (loading) {
+    return (
+      <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
+        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+          <div className="mb-12 flex flex-col items-center text-center">
+            <img src={esiLogo} alt="ESI" className="h-24 w-auto mb-4 animate-pulse-scale" />
+            <h2 className="text-4xl font-bold text-white">{t('home.hero.brandTitle')}</h2>
+          </div>
+          <div className="max-w-2xl mx-auto mb-8">
+            <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl animate-pulse">
+              <div className="h-6 w-32 rounded-full bg-slate-400/20 mb-6" />
+              <div className="h-8 w-3/4 rounded bg-slate-400/20 mb-4" />
+              <div className="h-4 w-full rounded bg-slate-400/10" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (!slides.length) return null;
+
   const currentSlideData = slides[currentSlide];
+  const IconComponent = ICON_MAP[currentSlideData.icon_value] || GraduationCap;
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
@@ -54,32 +85,42 @@ function Hero() {
         <div className="relative max-w-2xl mx-auto mb-8">
           <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl transition-all duration-500">
 
-            {/* Badge avec animation */}
+            {/* Badge avec icône, dynamique depuis la BDD */}
             <div className="mb-6 inline-block">
-              <p className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in">
-                {currentSlideData.eyebrow}
+              <p
+                key={`badge-${currentSlideData.id}`}
+                className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in"
+              >
+                <IconComponent size={14} />
+                {currentSlideData.badge}
               </p>
             </div>
 
             {/* Titre avec animation */}
             <div className="mb-6 min-h-[100px] overflow-hidden">
-              <h1 className="text-3xl font-extrabold leading-tight text-white animate-slide-up">
+              <h1
+                key={`title-${currentSlideData.id}`}
+                className="text-3xl font-extrabold leading-tight text-white animate-slide-up"
+              >
                 {currentSlideData.title}
               </h1>
             </div>
 
             {/* Description avec animation */}
             <div className="min-h-[90px] overflow-hidden">
-              <p className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light">
+              <p
+                key={`desc-${currentSlideData.id}`}
+                className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light"
+              >
                 {currentSlideData.description}
               </p>
             </div>
 
             {/* Indicateurs */}
             <div className="mt-10 flex justify-start gap-2">
-              {slides.map((_, index) => (
+              {slides.map((s, index) => (
                 <button
-                  key={index}
+                  key={s.id}
                   onClick={() => setCurrentSlide(index)}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                     index === currentSlide
@@ -99,23 +140,23 @@ function Hero() {
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-2 gap-4">
 
-<Button
-  as={Link}
-  to="/programmes"
-  size="lg"
-  className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
->
-  <GraduationCap size={20} /> {t('home.hero.ctaProgrammes')}
-</Button>
+            <Button
+              as={Link}
+              to="/programmes"
+              size="lg"
+              className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
+            >
+              <GraduationCap size={20} /> {t('home.hero.ctaProgrammes')}
+            </Button>
 
-<Button
-  as={Link}
-  to="/appels"
-  size="lg"
-  className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
->
-  <Megaphone size={20} /> {t('home.hero.ctaCalls')}
-</Button>
+            <Button
+              as={Link}
+              to="/appels"
+              size="lg"
+              className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
+            >
+              <Megaphone size={20} /> {t('home.hero.ctaCalls')}
+            </Button>
 
           </div>
         </div>
@@ -126,31 +167,50 @@ function Hero() {
 
 
 export default function Home() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
   const [actualites, setActualites] = useState([]);
   const [appels, setAppels] = useState([]);
   const [mobilites, setMobilites] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
-  const [programmes, setProgrammes] = useState([]); // Ajout des programmes
+  const [programmes, setProgrammes] = useState([]);
+  const [slides, setSlides] = useState([]);
+  const [slidesLoading, setSlidesLoading] = useState(true);
+
   const [stats, setStats] = useState([
     { key: 'partners', value: '—' },
     { key: 'projects', value: '—' },
-    { key: 'programmes', value: '—' }, // Ajout des programmes dans les stats
+    { key: 'programmes', value: '—' },
     { key: 'mobility', value: '—' },
     { key: 'countries', value: '—' },
   ]);
 
+  // Slides du hero — rechargées à chaque changement de langue
+ useEffect(() => {
+  const langId = LANG_ID_MAP[i18n.language] || 1;
+  setSlidesLoading(true);
+
+  getHomeSlides(langId)
+    .then((data) => setSlides(Array.isArray(data) ? data : []))
+    .catch((err) => {
+      console.error('Failed to fetch slides:', err);
+      setSlides([]);
+    })
+    .finally(() => setSlidesLoading(false));
+}, [i18n.language]);
+
+  // Reste des données de la page — chargées une seule fois
   useEffect(() => {
     getActualites().then((d) => setActualites(d.slice(0, 3)));
     getAppels().then((d) => setAppels(d.filter((a) => a.status === 'open').slice(0, 3)));
     getMobilites().then((d) => setMobilites(d.slice(0, 3)));
     getPartenaires().then(setPartenaires);
-    getProgrammes().then((d) => setProgrammes(d.slice(0, 3))); // Récupération des programmes
+    getProgrammes().then((d) => setProgrammes(d.slice(0, 3)));
     getStats().then((s) =>
       setStats([
         { key: 'partners', value: String(s.partners) },
         { key: 'projects', value: String(s.projects) },
-        { key: 'programmes', value: String(s.programmes || 0) }, // Ajout des programmes dans les stats
+        { key: 'programmes', value: String(s.programmes || 0) },
         { key: 'mobility', value: String(s.openMobility) },
         { key: 'countries', value: String(s.countries) },
       ])
@@ -159,7 +219,7 @@ export default function Home() {
 
   return (
     <div>
-      <Hero />
+      <Hero slides={slides} loading={slidesLoading} />
 
       <section className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
         <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-5">
@@ -172,7 +232,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION PROGRAMMES - AJOUTÉE */}
+      {/* SECTION PROGRAMMES */}
       <section className="bg-surface dark:bg-slate-800">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -196,13 +256,13 @@ export default function Home() {
                 <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{p.description}</p>
                 <div className="mt-4 flex items-center justify-between text-sm">
                   <span className="font-semibold text-cobalt dark:text-blue-400">
-                    {p.credits} {t('programmes.credits')}
+                    {p.credits} {t('programmesPage.credits')}
                   </span>
-                  <Link 
-                    to={`/programmes/${p.id}`} 
+                  <Link
+                    to={`/programmes/${p.id}`}
                     className="text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
                   >
-                    {t('programmes.learnMore')} →
+                    {t('programmesPage.learnMore')} →
                   </Link>
                 </div>
               </Card>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Eye, ExternalLink, Handshake, FlaskConical, Megaphone, Plane,
   Newspaper, FolderOpen, FileText, Users, LayoutDashboard, Sparkles,
-  GraduationCap // Ajout pour les programmes
+  GraduationCap, Image // Ajout pour les programmes + slides d'accueil
 } from 'lucide-react'; // Icônes pro
 
 import Card from '../../components/ui/Card.jsx';
@@ -12,7 +12,7 @@ import Card from '../../components/ui/Card.jsx';
 import {
   getAppelsAdmin, getDocumentsAdmin, getMobilitesAdmin,
   getPartenairesAdmin, getProjetsAdmin, getActualitesAdmin,
-  getAgreementsAdmin, getUsers, getProgrammesAdmin, // Ajout de getProgrammesAdmin
+  getAgreementsAdmin, getUsers, getProgrammesAdmin, getHomeSlidesAdmin, // Ajout de getProgrammesAdmin + getHomeSlidesAdmin
 } from '../../services/api.js';
 
 export default function Dashboard() {
@@ -21,6 +21,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const config = [
+    { key: 'homeSlides', label: t('admin.homeSlides.title'), fetch: getHomeSlidesAdmin, icon: Image }, // Ajout des slides d'accueil
     { key: 'partenaires', label: t('partners'), fetch: getPartenairesAdmin, icon: Handshake },
     { key: 'projets', label: t('projects'), fetch: getProjetsAdmin, icon: FlaskConical },
     { key: 'programmes', label: t('programmes'), fetch: getProgrammesAdmin, icon: GraduationCap }, // Ajout des programmes

@@ -1,4 +1,5 @@
 {
+  
   "programmes": "البرامج",
   "programmesPage": {
     "eyebrow": "التكوين",
@@ -86,6 +87,16 @@
     }
   },
   "admin": {
+     "homeSlides": {
+    "title": "شرائح الصفحة الرئيسية",
+    "create": "إضافة شريحة",
+    "edit": "تعديل الشريحة",
+    "publish": "نشر",
+    "archive": "أرشفة",
+    "order": "الترتيب",
+    "badge": "الشارة",
+    "status": "الحالة"
+  },
     "title": "الإدارة",
     "logout": "تسجيل الخروج",
     "menuAria": "القائمة",
