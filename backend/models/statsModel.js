@@ -1,26 +1,62 @@
-const pool = require('../db');
+const db = require('../db'); 
 
-exports.findBasic = async() => {
-    const result = await pool.query('SELECT * FROM dashboard_stats');
-    return result.rows[0];
-};
-
-exports.findFull = async() => {
-    const [basic, byCountry, expiring, closingSoon, byProgramme, expiredDocs] = await Promise.all([
-        pool.query('SELECT * FROM dashboard_stats'),
-        pool.query('SELECT * FROM partners_by_country'),
-        pool.query('SELECT * FROM agreements_expiring_soon'),
-        pool.query('SELECT * FROM calls_closing_soon'),
-        pool.query('SELECT * FROM projects_by_programme'),
-        pool.query('SELECT * FROM documents_expired'),
+exports.findBasic = async () => {
+    const [partners, projects, programmes, mobility, countries] = await Promise.all([
+        // Nombre de partenaires (tous, ou publiés selon votre logique)
+        db.query(`SELECT COUNT(*) FROM partners`), 
+        // Nombre de projets
+        db.query(`SELECT COUNT(*) FROM projects`),
+        // ⬇️ Compter UNIQUEMENT les programmes publiés
+        db.query(`SELECT COUNT(*) FROM programmes WHERE statut_publication = 'published'`),
+        // ⬇️ Compter les mobilités ouvertes
+        db.query(`SELECT COUNT(*) FROM mobility WHERE status = 'open'`),
+        // ⬇️ Compter les pays distincts (en utilisant country_id)
+        db.query(`SELECT COUNT(DISTINCT country_id) FROM partners`)
     ]);
 
     return {
-        ...basic.rows[0],
-        partners_by_country: byCountry.rows,
-        agreements_expiring_soon: expiring.rows,
-        calls_closing_soon: closingSoon.rows,
-        projects_by_programme: byProgramme.rows,
-        documents_expired: expiredDocs.rows,
+        partners: parseInt(partners.rows[0].count) || 0,
+        projects: parseInt(projects.rows[0].count) || 0,
+        programmes: parseInt(programmes.rows[0].count) || 0, 
+        openMobility: parseInt(mobility.rows[0].count) || 0, 
+        countries: parseInt(countries.rows[0].count) || 0,
+    };
+};
+
+exports.findFull = async () => {
+    const [partners, projects, ongoingProjects, proposedProjects, completedProjects, openCalls, closingSoonCalls, openMobility, totalDocuments, publishedNews, activeAgreements, expiredAgreements, expiringSoon, countries, programmes] = await Promise.all([
+        db.query(`SELECT COUNT(*) FROM partners`),
+        db.query(`SELECT COUNT(*) FROM projects`),
+        db.query(`SELECT COUNT(*) FROM projects WHERE status = 'ongoing'`),
+        db.query(`SELECT COUNT(*) FROM projects WHERE status = 'proposed'`),
+        db.query(`SELECT COUNT(*) FROM projects WHERE status = 'completed'`),
+        db.query(`SELECT COUNT(*) FROM calls WHERE status = 'open'`),
+        db.query(`SELECT COUNT(*) FROM calls WHERE status = 'open' AND deadline < NOW() + INTERVAL '30 days'`),
+        db.query(`SELECT COUNT(*) FROM mobility WHERE status = 'open'`),
+        db.query(`SELECT COUNT(*) FROM documents`),
+        db.query(`SELECT COUNT(*) FROM news_events WHERE type = 'news' AND statut_publication = 'published'`),
+        db.query(`SELECT COUNT(*) FROM agreements WHERE status = 'active'`),
+        db.query(`SELECT COUNT(*) FROM agreements WHERE status = 'expired'`),
+        db.query(`SELECT COUNT(*) FROM agreements WHERE status = 'active' AND end_date < NOW() + INTERVAL '60 days'`),
+        db.query(`SELECT COUNT(DISTINCT country_id) FROM partners`),
+        // ⬇️ Compter les programmes publiés pour le dashboard
+        db.query(`SELECT COUNT(*) FROM programmes WHERE statut_publication = 'published'`)
+    ]);
+
+    return {
+        total_active_partners: parseInt(partners.rows[0].count) || 0,
+        total_countries: parseInt(countries.rows[0].count) || 0,
+        ongoing_projects: parseInt(ongoingProjects.rows[0].count) || 0,
+        proposed_projects: parseInt(proposedProjects.rows[0].count) || 0,
+        completed_projects: parseInt(completedProjects.rows[0].count) || 0,
+        open_calls: parseInt(openCalls.rows[0].count) || 0,
+        closing_soon_calls: parseInt(closingSoonCalls.rows[0].count) || 0,
+        open_mobility: parseInt(openMobility.rows[0].count) || 0,
+        total_documents: parseInt(totalDocuments.rows[0].count) || 0,
+        published_news: parseInt(publishedNews.rows[0].count) || 0,
+        active_agreements: parseInt(activeAgreements.rows[0].count) || 0,
+        expired_agreements: parseInt(expiredAgreements.rows[0].count) || 0,
+        expiring_soon: parseInt(expiringSoon.rows[0].count) || 0,
+        programmes: parseInt(programmes.rows[0].count) || 0,
     };
 };

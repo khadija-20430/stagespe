@@ -12,7 +12,16 @@ export default function Programmes() {
 
   useEffect(() => {
     setProgrammes(null);
-    getProgrammesPublic(i18n.language).then(setProgrammes);
+    getProgrammesPublic(i18n.language)
+      .then((data) => {
+        // ✅ FILTRE ICI : On ne garde que les programmes publiés
+        const publishedOnly = data.filter((p) => p.statut_publication === 'published');
+        setProgrammes(publishedOnly);
+      })
+      .catch((err) => {
+        console.error('Erreur chargement programmes:', err);
+        setProgrammes([]);
+      });
   }, [i18n.language]);
 
   const filtered = useMemo(() => {
@@ -88,11 +97,11 @@ export default function Programmes() {
                 )}
 
                 <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  {p.documentsCount > 0 && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400">
-                      {p.documentsCount} document{p.documentsCount > 1 ? 's' : ''}
-                    </span>
-                  )}
+                  {/* ✅ AFFICHAGE DU NOMBRE DE PROJETS */}
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    {p.projectsCount || 0} projet{(p.projectsCount || 0) > 1 ? 's' : ''}
+                  </span>
+
                   {p.siteWeb && (
                     <a href={p.siteWeb} target="_blank" rel="noopener noreferrer"
                       className="text-xs font-medium text-cobalt hover:text-blue-700 transition ml-auto">

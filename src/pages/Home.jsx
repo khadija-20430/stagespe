@@ -6,22 +6,24 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl, getProgrammes,getHomeSlides } from '../services/api.js';
-import { callStatusTone } from '../lib/enums.js';
+import { getActualites, getAppels, getMobilites, getPartenaires, getFileUrl, getProgrammesPublic, getHomeSlides, getProjets } from '../services/api.js';
+import { callStatusTone, projectStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
 import { Megaphone, Globe, GraduationCap, FlaskConical, Users, BookOpen } from 'lucide-react';
 
-// Map string -> composant icône Lucide (doit couvrir les mêmes valeurs que LUCIDE_ICONS côté admin)
+// Map string -> composant icône Lucide
 const ICON_MAP = { GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen };
 
 // FR=1, EN=2, AR=3 (correspond à la table `languages`)
 const LANG_ID_MAP = { fr: 1, en: 2, ar: 3 };
 
+// Locale pour le formatage de la monnaie
+const NUMBER_LOCALE = { fr: 'fr-FR', en: 'en-US', ar: 'ar-DZ' };
+
 function Hero({ slides, loading }) {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Reset l'index si la liste change (ex: changement de langue) pour éviter un index hors limites
   useEffect(() => {
     setCurrentSlide(0);
   }, [slides]);
@@ -34,7 +36,6 @@ function Hero({ slides, loading }) {
     return () => clearInterval(interval);
   }, [slides.length]);
 
-  // Pendant le chargement initial, ou s'il n'y a aucune slide publiée : ne rien casser visuellement
   if (loading) {
     return (
       <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
@@ -62,61 +63,38 @@ function Hero({ slides, loading }) {
 
   return (
     <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
-      {/* Décoration de fond animée */}
       <div className="pointer-events-none absolute inset-0 opacity-30">
         <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-8 right-20 w-72 h-72 bg-cobalt/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-2000"></div>
       </div>
 
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-        {/* Logo et titre */}
         <div className="mb-12 flex flex-col items-center text-center">
-          <img
-            src={esiLogo}
-            alt="ESI"
-            className="h-24 w-auto mb-4 animate-pulse-scale"
-          />
-          <h2 className="text-4xl font-bold text-white">
-            {t('home.hero.brandTitle')}
-          </h2>
+          <img src={esiLogo} alt="ESI" className="h-24 w-auto mb-4 animate-pulse-scale" />
+          <h2 className="text-4xl font-bold text-white">{t('home.hero.brandTitle')}</h2>
         </div>
 
-        {/* CADRE ANIMÉ - CENTRÉ */}
         <div className="relative max-w-2xl mx-auto mb-8">
           <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl transition-all duration-500">
-
-            {/* Badge avec icône, dynamique depuis la BDD */}
             <div className="mb-6 inline-block">
-              <p
-                key={`badge-${currentSlideData.id}`}
-                className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in"
-              >
+              <p key={`badge-${currentSlideData.id}`} className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in">
                 <IconComponent size={14} />
                 {currentSlideData.badge}
               </p>
             </div>
 
-            {/* Titre avec animation */}
             <div className="mb-6 min-h-[100px] overflow-hidden">
-              <h1
-                key={`title-${currentSlideData.id}`}
-                className="text-3xl font-extrabold leading-tight text-white animate-slide-up"
-              >
+              <h1 key={`title-${currentSlideData.id}`} className="text-3xl font-extrabold leading-tight text-white animate-slide-up">
                 {currentSlideData.title}
               </h1>
             </div>
 
-            {/* Description avec animation */}
             <div className="min-h-[90px] overflow-hidden">
-              <p
-                key={`desc-${currentSlideData.id}`}
-                className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light"
-              >
+              <p key={`desc-${currentSlideData.id}`} className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light">
                 {currentSlideData.description}
               </p>
             </div>
 
-            {/* Indicateurs */}
             <div className="mt-10 flex justify-start gap-2">
               {slides.map((s, index) => (
                 <button
@@ -132,39 +110,22 @@ function Hero({ slides, loading }) {
               ))}
             </div>
           </div>
-
-          <div className="absolute -inset-4 bg-gradient-to-r from-slate-400/10 via-slate-300/10 to-transparent rounded-2xl blur-2xl -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
         </div>
 
-        {/* BOUTONS */}
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-2 gap-4">
-
-            <Button
-              as={Link}
-              to="/programmes"
-              size="lg"
-              className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
-            >
+            <Button as={Link} to="/programmes" size="lg" className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2">
               <GraduationCap size={20} /> {t('home.hero.ctaProgrammes')}
             </Button>
-
-            <Button
-              as={Link}
-              to="/appels"
-              size="lg"
-              className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
-            >
+            <Button as={Link} to="/appels" size="lg" className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2">
               <Megaphone size={20} /> {t('home.hero.ctaCalls')}
             </Button>
-
           </div>
         </div>
       </div>
     </section>
   );
 }
-
 
 export default function Home() {
   const { t, i18n } = useTranslation();
@@ -174,9 +135,11 @@ export default function Home() {
   const [mobilites, setMobilites] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
   const [programmes, setProgrammes] = useState([]);
+  const [projets, setProjets] = useState([]);
   const [slides, setSlides] = useState([]);
   const [slidesLoading, setSlidesLoading] = useState(true);
 
+  // AU DÉPART : les stats sont vides avec '—'
   const [stats, setStats] = useState([
     { key: 'partners', value: '—' },
     { key: 'projects', value: '—' },
@@ -185,37 +148,75 @@ export default function Home() {
     { key: 'countries', value: '—' },
   ]);
 
+  const currencyLocale = NUMBER_LOCALE[i18n.language] || 'fr-FR';
+
   // Slides du hero — rechargées à chaque changement de langue
- useEffect(() => {
-  const langId = LANG_ID_MAP[i18n.language] || 1;
-  setSlidesLoading(true);
-
-  getHomeSlides(langId)
-    .then((data) => setSlides(Array.isArray(data) ? data : []))
-    .catch((err) => {
-      console.error('Failed to fetch slides:', err);
-      setSlides([]);
-    })
-    .finally(() => setSlidesLoading(false));
-}, [i18n.language]);
-
-  // Reste des données de la page — chargées une seule fois
   useEffect(() => {
-    getActualites().then((d) => setActualites(d.slice(0, 3)));
-    getAppels().then((d) => setAppels(d.filter((a) => a.status === 'open').slice(0, 3)));
-    getMobilites().then((d) => setMobilites(d.slice(0, 3)));
-    getPartenaires().then(setPartenaires);
-    getProgrammes().then((d) => setProgrammes(d.slice(0, 3)));
-    getStats().then((s) =>
-      setStats([
-        { key: 'partners', value: String(s.partners) },
-        { key: 'projects', value: String(s.projects) },
-        { key: 'programmes', value: String(s.programmes || 0) },
-        { key: 'mobility', value: String(s.openMobility) },
-        { key: 'countries', value: String(s.countries) },
-      ])
-    );
-  }, []);
+    const langId = LANG_ID_MAP[i18n.language] || 1;
+    setSlidesLoading(true);
+
+    getHomeSlides(langId)
+      .then((data) => setSlides(Array.isArray(data) ? data : []))
+      .catch((err) => {
+        console.error('Failed to fetch slides:', err);
+        setSlides([]);
+      })
+      .finally(() => setSlidesLoading(false));
+  }, [i18n.language]);
+
+  // ⬇️ NOUVELLE LOGIQUE : On récupère les données publiques, puis on LES COMPTE nous-mêmes
+  useEffect(() => {
+    // Programmes
+    getProgrammesPublic(i18n.language)
+      .then((d) => {
+        const published = d.filter((p) => p.statut_publication === 'published');
+        setProgrammes(published.slice(0, 3));
+        setStats((prev) => prev.map(s => s.key === 'programmes' ? { ...s, value: String(published.length) } : s));
+      })
+      .catch((err) => console.error('Failed to fetch programmes:', err));
+
+    // Partenaires
+    getPartenaires()
+      .then((d) => {
+        const published = d.filter((p) => p.statut_publication === 'published');
+        setPartenaires(published);
+        setStats((prev) => prev.map(s => s.key === 'partners' ? { ...s, value: String(published.length) } : s));
+        
+        const uniqueCountries = new Set(published.map(p => p.pays)).size;
+        setStats((prev) => prev.map(s => s.key === 'countries' ? { ...s, value: String(uniqueCountries) } : s));
+      })
+      .catch((err) => console.error('Failed to fetch partenaires:', err));
+
+    // Mobilités ouvertes
+    getMobilites()
+      .then((d) => {
+        const open = d.filter((m) => m.status === 'open');
+        setMobilites(open.slice(0, 3));
+        setStats((prev) => prev.map(s => s.key === 'mobility' ? { ...s, value: String(open.length) } : s));
+      })
+      .catch((err) => console.error('Failed to fetch mobilites:', err));
+
+    // ✅ PROJETS (Affichage + Compteur)
+    getProjets()
+      .then((d) => {
+        const active = d.filter((p) => p.statut_publication === 'published');
+        setProjets(active.slice(0, 3));
+        setStats((prev) => prev.map(s => s.key === 'projects' ? { ...s, value: String(active.length) } : s));
+      })
+      .catch((err) => console.error('Failed to fetch projets:', err));
+
+    // Appels
+    getAppels()
+      .then((d) => {
+        const open = d.filter((a) => a.status === 'open');
+        setAppels(open.slice(0, 3));
+      })
+      .catch((err) => console.error('Failed to fetch appels:', err));
+
+    // Actualités
+    getActualites().then((d) => setActualites(d.slice(0, 3))).catch(() => {});
+    
+  }, [i18n.language]);
 
   return (
     <div>
@@ -249,14 +250,14 @@ export default function Home() {
             {programmes.map((p) => (
               <Card key={p.id} hover className="flex flex-col p-6">
                 <div className="flex items-center justify-between">
-                  <Badge tone="cobalt">{p.niveau}</Badge>
-                  <Badge tone="navy">{p.duree}</Badge>
+                  <Badge tone="cobalt">{p.acronym}</Badge>
+                  {p.logo && <img src={p.logo} alt={p.name} className="h-8 w-8 object-contain" />}
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{p.titre}</h3>
+                <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{p.name}</h3>
                 <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{p.description}</p>
                 <div className="mt-4 flex items-center justify-between text-sm">
                   <span className="font-semibold text-cobalt dark:text-blue-400">
-                    {p.credits} {t('programmesPage.credits')}
+                    {p.projectsCount || 0} {t('programmesPage.credits')}
                   </span>
                   <Link
                     to={`/programmes/${p.id}`}
@@ -270,6 +271,78 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* SECTION PROJETS (Utilise les vraies clés de traduction de Projets.jsx) */}
+      {projets.length > 0 && (
+        <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
+          <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <SectionHeading
+                eyebrow={t('projets.eyebrow')}
+                title={t('projets.title')}
+                description={t('projets.description')}
+              />
+              <Button as={Link} to="/projets" variant="secondary" size="sm">
+                {t('projets.seeAll') || 'Voir tous les projets'}
+              </Button>
+            </div>
+            <div className="mt-8 grid gap-6 md:grid-cols-3">
+              {projets.map((proj) => (
+                <Card key={proj.id} hover className="flex flex-col p-6">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge tone="cobalt">{proj.programme}</Badge>
+                    <Badge tone={projectStatusTone(proj.statut)}>{t(`enums.projectStatus.${proj.status}`)}</Badge>
+                    {proj.isFeatured ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
+                  </div>
+                  <h3 className="mt-4 text-xl font-bold text-navy dark:text-white">{proj.titre}</h3>
+                  <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{proj.resume}</p>
+                  
+                  <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-slate-100 dark:border-slate-800 pt-4 text-sm">
+                    {proj.coordinateurPartenaire && (
+                      <>
+                        <dt className="text-slate-400 dark:text-slate-500">{t('projets.fields.coordinator')}</dt>
+                        <dd className="text-right font-medium text-slate-700 dark:text-slate-200">{proj.coordinateurPartenaire}</dd>
+                      </>
+                    )}
+                    <dt className="text-slate-400 dark:text-slate-500">{t('projets.fields.budget')}</dt>
+                    <dd className="text-right font-medium text-slate-700 dark:text-slate-200">
+                      {proj.budget != null
+                        ? new Intl.NumberFormat(currencyLocale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(proj.budget)
+                        : '—'}
+                    </dd>
+                    <dt className="text-slate-400 dark:text-slate-500">{t('projets.fields.period')}</dt>
+                    <dd className="text-right font-medium text-slate-700 dark:text-slate-200">
+                      {formatDate(proj.debut)} — {formatDate(proj.fin)}
+                    </dd>
+                  </dl>
+
+                  {Array.isArray(proj.pays) && proj.pays.length > 0 && (
+                    <div className="mt-4 flex flex-wrap gap-1.5">
+                      {proj.pays.map((c) => (
+                        <span key={c} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span className="text-xs text-slate-500 dark:text-slate-400">
+                      {proj.programme}
+                    </span>
+                    <Link
+                      to={`/projets/${proj.id}`}
+                      className="text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
+                    >
+                      {t('projets.learnMore') || 'En savoir plus'} →
+                    </Link>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">

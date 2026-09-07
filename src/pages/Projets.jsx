@@ -80,7 +80,7 @@ export default function Projets() {
               <Card key={p.id} hover className="flex flex-col p-6">
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone="cobalt">{p.programme}</Badge>
-                  <Badge tone={projectStatusTone(p.statut)}>{t(`enums.projectStatus.${p.statut}`)}</Badge>
+                  <Badge tone={projectStatusTone(p.statut)}>{t(`enums.projectStatus.${p.status}`)}</Badge>
                   {/* mapProjet() renvoie "isFeatured", pas "misEnAvant" */}
                   {p.isFeatured ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
                 </div>
