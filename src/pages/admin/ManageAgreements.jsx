@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import * as XLSX from 'xlsx';
+import { usePermissions } from '../../context/PermissionsContext.jsx';
 import { useTranslation } from 'react-i18next';
 import {
   FileSpreadsheet, AlertTriangle, CheckCircle2, Eye, Download, Loader2,
@@ -69,6 +70,7 @@ const downloadFileSecure = async (path, fallbackName, t) => {
 
 const ManageAgreements = () => {
     const { t } = useTranslation();
+    const { hasPermission } = usePermissions();
 
     // ===== STATE =====
     const [agreements, setAgreements] = useState([]);
@@ -484,9 +486,11 @@ const ManageAgreements = () => {
                         <FileText size={26} className="text-cobalt" />
                         {t('admin.agreementsPage.title')}
                     </h1>
-                    <button className="btn-export" onClick={exportToExcel} title={t('admin.agreementsPage.exportExcel')}>
-                        <FileSpreadsheet size={16} className="inline mr-1.5 -mt-0.5" /> {t('admin.agreementsPage.exportExcel')}
-                    </button>
+                {hasPermission('agreements.create') && (
+    <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
+        <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
+    </button>
+)}
                 </div>
                 <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
                     <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
@@ -698,23 +702,27 @@ const ManageAgreements = () => {
                                         </td>
 
                                         <td className="actions">
-                                            <button
-                                                type="button"
-                                                className="btn-edit"
-                                                onClick={() => handleOpenModal(agreement)}
-                                                title={t('admin.crud.edit')}
-                                            >
-                                                <Pencil size={16} />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="btn-delete"
-                                                onClick={() => handleDelete(agreement.id)}
-                                                title={t('admin.crud.delete')}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </td>
+    {hasPermission('agreements.edit') && (
+        <button
+            type="button"
+            className="btn-edit"
+            onClick={() => handleOpenModal(agreement)}
+            title={t('admin.crud.edit')}
+        >
+            <Pencil size={16} />
+        </button>
+    )}
+    {hasPermission('agreements.delete') && (
+        <button
+            type="button"
+            className="btn-delete"
+            onClick={() => handleDelete(agreement.id)}
+            title={t('admin.crud.delete')}
+        >
+            <Trash2 size={16} />
+        </button>
+    )}
+</td>
                                     </tr>
                                 );
                             })}

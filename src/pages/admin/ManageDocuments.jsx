@@ -336,7 +336,10 @@ export default function ManageDocuments() {
       onPublish={publishDocument}
 
       onArchive={archiveDocument}
-
+  createPermission="documents.upload"
+  updatePermission="documents.edit"
+  deletePermission="documents.delete"
+  publishPermission="documents.edit"
       /* ======================================================
          COLONNES
       ====================================================== */

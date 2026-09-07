@@ -1416,3 +1416,12 @@ create table public.document_translations (
 
 create index if not exists idx_document_translations_document
   on public.document_translations using btree (document_id) tablespace pg_default;
+
+  CREATE TABLE notification_milestones (
+    id serial PRIMARY KEY,
+    entity_type varchar(30) NOT NULL,
+    entity_id integer NOT NULL,
+    milestone varchar(20) NOT NULL,
+    sent_at timestamp without time zone DEFAULT now(),
+    UNIQUE (entity_type, entity_id, milestone)
+);

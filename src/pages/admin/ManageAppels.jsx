@@ -154,6 +154,10 @@ export default function ManageAppels() {
         onDelete={deleteAppel}
         onPublish={publishAppel}
         onArchive={archiveAppel}
+        createPermission="calls.create"
+  updatePermission="calls.edit"
+  deletePermission="calls.delete"
+  publishPermission="calls.publish"
         columns={[
           { key: 'titre', label: t('titre'), required: true,
             render: (i) => previewData[i.id]?.titre || i.titre },

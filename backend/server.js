@@ -86,6 +86,38 @@ app.use((err, req, res, next) => {
 });
 
 // ============================================================
+// 🕐 CRON JOB : EXÉCUTER TOUS LES JOURS À 1H DU MATIN
+// ============================================================
+
+function scheduleDailyJobAt1AM() {
+    const now = new Date();
+    const next1AM = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate(),
+        1, 0, 0, 0
+    );
+
+    // Si 1h du matin est déjà passé aujourd'hui, on programme pour demain
+    if (now >= next1AM) {
+        next1AM.setDate(next1AM.getDate() + 1);
+    }
+
+    const delayMs = next1AM - now;
+    console.log(`[NOTIFICATIONS] Prochaine exécution planifiée : ${next1AM.toLocaleString('fr-FR')}`);
+
+    setTimeout(() => {
+        runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
+
+        // Une fois déclenché à 1h, on répète toutes les 24h à partir de là
+        setInterval(() => {
+            runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
+        }, 24 * 60 * 60 * 1000);
+
+    }, delayMs);
+}
+
+// ============================================================
 // DÉMARRAGE
 // ============================================================
 const PORT = process.env.PORT || 5000;
@@ -93,16 +125,7 @@ const PORT = process.env.PORT || 5000;
 ensureSuperAdmin().finally(() => {
     app.listen(PORT, () => {
         console.log(`Serveur backend lancé sur le port ${PORT}`);
-
-        // Exécuter les jobs de notification au démarrage
-        runAllJobs().catch(err => console.error('[INIT] Erreur jobs notifications:', err));
     });
 });
 
-// ============================================================
-// 🕐 CRON JOB : EXÉCUTER UNE FOIS PAR JOUR
-// ============================================================
-console.log('[NOTIFICATIONS] Exécution planifiée toutes les 24 heures');
-setInterval(() => {
-    runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
-}, 24 * 60 * 60 * 1000); // 24 heures
+scheduleDailyJobAt1AM();

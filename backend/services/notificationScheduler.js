@@ -2,118 +2,157 @@ const pool = require('../db');
 const notificationsModel = require('../models/notificationsModel');
 
 // ============================================================
-// JOB : VÉRIFIER LES ALERTES ET CRÉER DES NOTIFICATIONS
+// TRAITE UNE CATÉGORIE : ENVOIE "SOON" (J-5) ET "EXPIRED" (J-0)
+// ============================================================
+
+async function processMilestones({
+    entityType,       // 'agreement' | 'call' | 'mobility'
+    query,            // SQL retournant id, title/nom, date de référence, extra (ex: partner_name)
+    viewerIds,
+    soonDaysBefore,   // 5
+    buildSoonMessage,
+    buildExpiredMessage
+}) {
+    if (viewerIds.length === 0) return 0;
+
+    let count = 0;
+    const result = await pool.query(query);
+
+    for (const row of result.rows) {
+        const refDate = new Date(row.ref_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        refDate.setHours(0, 0, 0, 0);
+
+        const daysLeft = Math.round((refDate - today) / (1000 * 60 * 60 * 24));
+
+        // --- Jalon "bientôt expiré" : dès qu'on est à J-5 ou moins (mais pas encore expiré)
+        if (daysLeft >= 0 && daysLeft <= soonDaysBefore) {
+            const already = await notificationsModel.wasMilestoneSent(entityType, row.id, 'soon');
+            if (!already) {
+                const { title, message } = buildSoonMessage(row, daysLeft);
+                await notificationsModel.createForUsers(viewerIds, title, message, 'warning');
+                await notificationsModel.markMilestoneSent(entityType, row.id, 'soon');
+                count++;
+            }
+        }
+
+        // --- Jalon "expiré" : dès que la date est dépassée
+        if (daysLeft < 0) {
+            const already = await notificationsModel.wasMilestoneSent(entityType, row.id, 'expired');
+            if (!already) {
+                const { title, message } = buildExpiredMessage(row);
+                await notificationsModel.createForUsers(viewerIds, title, message, 'error');
+                await notificationsModel.markMilestoneSent(entityType, row.id, 'expired');
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
+// ============================================================
+// JOB PRINCIPAL
 // ============================================================
 
 async function runNotificationChecks() {
     console.log('[NOTIFICATIONS] Exécution des vérifications...');
-
     try {
         let notificationsCreated = 0;
 
-        // 1️⃣ Conventions bientôt expirées (60 jours) — visible par agreements.view
+        // 1️⃣ Conventions
         const agreementViewers = await notificationsModel.getUsersWithPermission('agreements.view');
-        const agreementViewerIds = agreementViewers.map(u => u.id);
-
-        if (agreementViewerIds.length > 0) {
-            const expiringAgreements = await pool.query(`
-                SELECT a.*, p.name AS partner_name
+        notificationsCreated += await processMilestones({
+            entityType: 'agreement',
+            viewerIds: agreementViewers.map(u => u.id),
+            soonDaysBefore: 5,
+            query: `
+                SELECT a.id, a.title, a.end_date AS ref_date, p.name AS partner_name
                 FROM agreements a
                 JOIN partners p ON a.partner_id = p.id
-                WHERE a.status = 'active'
-                  AND a.end_date IS NOT NULL
-                  AND a.end_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '60 days'
-                ORDER BY a.end_date ASC
-            `);
+                WHERE a.status = 'active' AND a.end_date IS NOT NULL
+            `,
+            buildSoonMessage: (row, daysLeft) => ({
+                title: 'Convention bientôt expirée',
+                message: `La convention "${row.title}" avec ${row.partner_name} expire dans ${daysLeft} jour(s).`
+            }),
+            buildExpiredMessage: (row) => ({
+                title: 'Convention expirée',
+                message: `La convention "${row.title}" avec ${row.partner_name} a expiré.`
+            })
+        });
 
-            for (const agreement of expiringAgreements.rows) {
-                const daysLeft = Math.ceil((new Date(agreement.end_date) - new Date()) / (1000 * 60 * 60 * 24));
-                const title = `Convention bientôt expirée`;
-                const message = `La convention "${agreement.title}" avec ${agreement.partner_name} expire dans ${daysLeft} jours.`;
-
-                const existing = await pool.query(
-                    `SELECT id FROM notifications 
-                     WHERE user_id = ANY($1) 
-                     AND title = $2 
-                     AND message LIKE $3
-                     AND created_at > NOW() - INTERVAL '1 hour'`, [agreementViewerIds, title, `%${agreement.title}%`]
-                );
-
-                if (existing.rows.length === 0) {
-                    await notificationsModel.createForUsers(agreementViewerIds, title, message, 'warning');
-                    notificationsCreated++;
-                }
-            }
-        }
-
-        // 2️⃣ Appels bientôt clos (15 jours) — visible par calls.view
+        // 2️⃣ Appels à projets
         const callViewers = await notificationsModel.getUsersWithPermission('calls.view');
         const callViewerIds = callViewers.map(u => u.id);
+        notificationsCreated += await processMilestones({
+            entityType: 'call',
+            viewerIds: callViewerIds,
+            soonDaysBefore: 5,
+            query: `
+                SELECT id, title, deadline AS ref_date
+                FROM calls
+                WHERE status = 'open' AND deadline IS NOT NULL
+            `,
+            buildSoonMessage: (row, daysLeft) => ({
+                title: 'Appel à projets bientôt clos',
+                message: `L'appel à projets "${row.title}" se clôture dans ${daysLeft} jour(s).`
+            }),
+            buildExpiredMessage: (row) => ({
+                title: 'Appel à projets clos',
+                message: `L'appel à projets "${row.title}" est clôturé.`
+            })
+        });
 
-        if (callViewerIds.length > 0) {
-            const closingCalls = await pool.query(`
-                SELECT * FROM calls
-                WHERE status = 'open'
-                  AND deadline BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '15 days'
-                ORDER BY deadline ASC
-            `);
+        // 3️⃣ Mobilités
+        const mobilityViewers = await notificationsModel.getUsersWithPermission('mobility.view');
+        notificationsCreated += await processMilestones({
+            entityType: 'mobility',
+            viewerIds: mobilityViewers.map(u => u.id),
+            soonDaysBefore: 5,
+            query: `
+                SELECT id, title, deadline AS ref_date
+                FROM mobility
+                WHERE status = 'open' AND deadline IS NOT NULL
+            `,
+            buildSoonMessage: (row, daysLeft) => ({
+                title: 'Mobilité bientôt clôturée',
+                message: `La mobilité "${row.title}" se clôture dans ${daysLeft} jour(s).`
+            }),
+            buildExpiredMessage: (row) => ({
+                title: 'Mobilité clôturée',
+                message: `La mobilité "${row.title}" est clôturée.`
+            })
+        });
 
-            for (const call of closingCalls.rows) {
-                const daysLeft = Math.ceil((new Date(call.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-                const title = `Appel à projets bientôt clos`;
-                const message = `L'appel à projets "${call.title}" se clôture dans ${daysLeft} jours.`;
-
-                const existing = await pool.query(
-                    `SELECT id FROM notifications 
-                     WHERE user_id = ANY($1) 
-                     AND title = $2 
-                     AND message LIKE $3
-                     AND created_at > NOW() - INTERVAL '1 hour'`, [callViewerIds, title, `%${call.title}%`]
-                );
-
-                if (existing.rows.length === 0) {
-                    await notificationsModel.createForUsers(callViewerIds, title, message, 'warning');
-                    notificationsCreated++;
-                }
-            }
-        }
-
-        // 3️⃣ Documents expirés — visible par documents.view
+        // 4️⃣ Documents expirés (jalon "expired" uniquement, pas de "soon" demandé)
         const documentViewers = await notificationsModel.getUsersWithPermission('documents.view');
         const documentViewerIds = documentViewers.map(u => u.id);
 
         if (documentViewerIds.length > 0) {
             const expiredDocs = await pool.query(`
                 SELECT * FROM documents
-                WHERE date_expiration IS NOT NULL 
+                WHERE date_expiration IS NOT NULL
                   AND date_expiration < CURRENT_DATE
                   AND statut_publication != 'archived'
             `);
 
             for (const doc of expiredDocs.rows) {
-                const title = `Document expiré`;
-                const message = `Le document "${doc.titre}" a expiré le ${new Date(doc.date_expiration).toLocaleDateString('fr-FR')}.`;
-
-                const existing = await pool.query(
-                    `SELECT id FROM notifications 
-                     WHERE user_id = ANY($1) 
-                     AND title = $2 
-                     AND message LIKE $3
-                     AND created_at > NOW() - INTERVAL '1 hour'`, [documentViewerIds, title, `%${doc.titre}%`]
-                );
-
-                if (existing.rows.length === 0) {
+                const already = await notificationsModel.wasMilestoneSent('document', doc.id, 'expired');
+                if (!already) {
+                    const title = 'Document expiré';
+                    const message = `Le document "${doc.titre}" a expiré le ${new Date(doc.date_expiration).toLocaleDateString('fr-FR')}.`;
                     await notificationsModel.createForUsers(documentViewerIds, title, message, 'error');
+                    await notificationsModel.markMilestoneSent('document', doc.id, 'expired');
                     notificationsCreated++;
                 }
             }
         }
 
-        // 4️⃣ Brouillons oubliés (30+ jours) — projets/appels/partenaires,
-        //     chaque type notifie ses propres viewers (projects.view / calls.view / partners.view)
+        // 5️⃣ Brouillons oubliés — inchangé (pas concerné par ta demande)
         const projectViewers = await notificationsModel.getUsersWithPermission('projects.view');
         const partnerViewers = await notificationsModel.getUsersWithPermission('partners.view');
-
         const viewersByType = {
             projet: projectViewers.map(u => u.id),
             appel: callViewerIds,
@@ -132,66 +171,22 @@ async function runNotificationChecks() {
             const recipientIds = viewersByType[draft.type] || [];
             if (recipientIds.length === 0) continue;
 
-            const typeLabel = { projet: 'Projet', appel: "Appel à projets", partenaire: 'Partenaire' }[draft.type] || draft.type;
-            const title = `Brouillon ancien (${typeLabel})`;
-            const message = `Le ${typeLabel.toLowerCase()} "${draft.title}" est en brouillon depuis plus de 30 jours (${new Date(draft.created_at).toLocaleDateString('fr-FR')}).`;
-
-            const existing = await pool.query(
-                `SELECT id FROM notifications 
-                 WHERE user_id = ANY($1) 
-                 AND title = $2 
-                 AND message LIKE $3
-                 AND created_at > NOW() - INTERVAL '3 days'`, [recipientIds, title, `%${draft.title}%`]
-            );
-
-            if (existing.rows.length === 0) {
+            const already = await notificationsModel.wasMilestoneSent(draft.type, draft.id, 'stale_draft');
+            if (!already) {
+                const typeLabel = { projet: 'Projet', appel: "Appel à projets", partenaire: 'Partenaire' }[draft.type] || draft.type;
+                const title = `Brouillon ancien (${typeLabel})`;
+                const message = `Le ${typeLabel.toLowerCase()} "${draft.title}" est en brouillon depuis plus de 30 jours.`;
                 await notificationsModel.createForUsers(recipientIds, title, message, 'info');
+                await notificationsModel.markMilestoneSent(draft.type, draft.id, 'stale_draft');
                 notificationsCreated++;
             }
         }
 
-        // 5️⃣ Mobilités bientôt clôturées — visible par mobility.view
-        const mobilityViewers = await notificationsModel.getUsersWithPermission('mobility.view');
-        const mobilityViewerIds = mobilityViewers.map(u => u.id);
-
-        if (mobilityViewerIds.length > 0) {
-            const expiringMobility = await pool.query(`
-                SELECT * FROM mobility
-                WHERE status = 'open'
-                  AND deadline BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '15 days'
-                ORDER BY deadline ASC
-            `);
-
-            for (const mobility of expiringMobility.rows) {
-                const daysLeft = Math.ceil((new Date(mobility.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-                const title = `Mobilité bientôt clôturée`;
-                const message = `La mobilité "${mobility.title}" se clôture dans ${daysLeft} jours.`;
-
-                const existing = await pool.query(
-                    `SELECT id FROM notifications 
-                     WHERE user_id = ANY($1) 
-                     AND title = $2 
-                     AND message LIKE $3
-                     AND created_at > NOW() - INTERVAL '1 hour'`, [mobilityViewerIds, title, `%${mobility.title}%`]
-                );
-
-                if (existing.rows.length === 0) {
-                    await notificationsModel.createForUsers(mobilityViewerIds, title, message, 'warning');
-                    notificationsCreated++;
-                }
-            }
-        }
-
         console.log(`[NOTIFICATIONS] ${notificationsCreated} nouvelles notifications créées.`);
-
     } catch (error) {
         console.error('[NOTIFICATIONS] Erreur:', error);
     }
 }
-
-// ============================================================
-// NETTOYER LES NOTIFICATIONS ANCIENNES (15+ jours)
-// ============================================================
 
 async function cleanupOldNotifications() {
     try {
@@ -204,17 +199,9 @@ async function cleanupOldNotifications() {
     }
 }
 
-// ============================================================
-// EXÉCUTER TOUS LES JOBS
-// ============================================================
-
 async function runAllJobs() {
     await runNotificationChecks();
     await cleanupOldNotifications();
 }
 
-module.exports = {
-    runNotificationChecks,
-    cleanupOldNotifications,
-    runAllJobs
-};
+module.exports = { runNotificationChecks, cleanupOldNotifications, runAllJobs };

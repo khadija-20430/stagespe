@@ -187,6 +187,10 @@ export default function ManagePartenaires() {
         onDelete={deletePartenaire}
         onPublish={publishPartner}
         onArchive={archivePartner}
+         createPermission="partners.create"
+  updatePermission="partners.edit"
+  deletePermission="partners.delete"
+  publishPermission="partners.publish"
         columns={[
           {
             key: 'nom',

@@ -199,6 +199,10 @@ export default function ManageNewsEvents() {
         onDelete={deleteActualite}
         onPublish={publishActualite}
         onArchive={archiveActualite}
+         createPermission="news_events.create"
+  updatePermission="news_events.edit"
+  deletePermission="news_events.delete"
+  publishPermission="news_events.publish"
         columns={[
           {
             key: 'title',

@@ -167,5 +167,21 @@ exports.deleteOldNotifications = async(days = 30) => {
     );
     return result.rows;
 };
+exports.wasMilestoneSent = async(entityType, entityId, milestone) => {
+    const result = await pool.query(
+        `SELECT id FROM notification_milestones 
+         WHERE entity_type = $1 AND entity_id = $2 AND milestone = $3`,
+        [entityType, entityId, milestone]
+    );
+    return result.rows.length > 0;
+};
 
+exports.markMilestoneSent = async(entityType, entityId, milestone) => {
+    await pool.query(
+        `INSERT INTO notification_milestones (entity_type, entity_id, milestone)
+         VALUES ($1, $2, $3)
+         ON CONFLICT DO NOTHING`,
+        [entityType, entityId, milestone]
+    );
+};
 module.exports = exports;

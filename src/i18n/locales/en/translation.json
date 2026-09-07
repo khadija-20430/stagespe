@@ -702,6 +702,7 @@
     "new": "New",
     "confirmDelete": "Delete this notification?",
     "close": "Close",
+    "markAllRead": "Mark all as read",
    
     "time": {
       "now": "Just now",

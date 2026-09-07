@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
+import { usePermissions } from '../../context/PermissionsContext.jsx';
 import AddressAutocomplete from '../../components/ui/AddressAutocomplete.jsx';
 import {
   LayoutGrid, Loader2, AlertTriangle, Inbox, Pencil, Trash2, X, Plus,
@@ -32,10 +33,20 @@ export default function CrudManager({
   onDelete,
   onPublish,
   onArchive,
+  createPermission,  
+  updatePermission,   
+  deletePermission,   
+  publishPermission,
   icon: Icon = LayoutGrid,
+
 }) {
   const { t } = useTranslation();
+  const { hasPermission } = usePermissions();
 
+    const canCreate = !createPermission || hasPermission(createPermission);
+  const canUpdate = !updatePermission || hasPermission(updatePermission);
+  const canDelete = !deletePermission || hasPermission(deletePermission);
+  const canPublish = !publishPermission || hasPermission(publishPermission);
   // =========================================================
   // STATE — LOGIQUE ORIGINALE
   // =========================================================
@@ -359,23 +370,25 @@ const stats = getStats();
             AJOUTER
         ==================================================== */}
 
-        <Button
-          onClick={openCreate}
-          className="
-            bg-cobalt
-            hover:bg-blue-700
-            text-white
-            font-semibold
-            px-6
-            py-3
-            rounded-lg
-            shadow-md
-            hover:shadow-lg
-            transition
-          "
-        >
-          {t('admin.crud.add')}
-        </Button>
+        {canCreate && (
+          <Button
+            onClick={openCreate}
+            className="
+              bg-cobalt
+              hover:bg-blue-700
+              text-white
+              font-semibold
+              px-6
+              py-3
+              rounded-lg
+              shadow-md
+              hover:shadow-lg
+              transition
+            "
+          >
+            {t('admin.crud.add')}
+          </Button>
+        )}
 
       </div>
 
@@ -657,23 +670,23 @@ const stats = getStats();
                             MODIFIER
                         ============================================== */}
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            openEdit(item)
-                          }
-                          className="
-                            text-slate-600
-                            dark:text-slate-400
-                            hover:text-cobalt
-                            dark:hover:text-cobalt
-                            transition
-                            text-lg
-                          "
-                          title={t('admin.crud.edit')}
-                        >
-                          <Pencil size={18} />
-                        </button>
+                        {canUpdate && (
+  <button
+    type="button"
+    onClick={() => openEdit(item)}
+    className="
+      text-slate-600
+      dark:text-slate-400
+      hover:text-cobalt
+      dark:hover:text-cobalt
+      transition
+      text-lg
+    "
+    title={t('admin.crud.edit')}
+  >
+    <Pencil size={18} />
+  </button>
+)}
 
 
                         {/* =============================================
@@ -684,7 +697,7 @@ const stats = getStats();
                             onPublish + onArchive existent.
                         ============================================== */}
 
-                        {onPublish && onArchive ? (
+{onPublish && onArchive && canPublish ? (
 
                           <div className="relative">
 
@@ -840,23 +853,23 @@ const stats = getStats();
                             SUPPRIMER
                         ============================================== */}
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            remove(item.id)
-                          }
-                          className="
-                            text-red-600
-                            dark:text-red-400
-                            hover:text-red-700
-                            dark:hover:text-red-300
-                            transition
-                            text-lg
-                          "
-                          title={t('admin.crud.delete')}
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                       {canDelete && (
+  <button
+    type="button"
+    onClick={() => remove(item.id)}
+    className="
+      text-red-600
+      dark:text-red-400
+      hover:text-red-700
+      dark:hover:text-red-300
+      transition
+      text-lg
+    "
+    title={t('admin.crud.delete')}
+  >
+    <Trash2 size={18} />
+  </button>
+)}
 
                       </div>
 

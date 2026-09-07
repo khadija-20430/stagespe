@@ -158,6 +158,10 @@ export default function ManageProjets() {
         onDelete={deleteProjet}
         onPublish={publishProjet}
         onArchive={archiveProjet}
+        createPermission="projects.create"
+        updatePermission="projects.edit"       
+        deletePermission="projects.delete"
+        publishPermission="projects.publish"
         columns={[
           { key: 'titre', label: t('titre'), required: true,
             render: (i) => previewData[i.id]?.titre || i.titre },

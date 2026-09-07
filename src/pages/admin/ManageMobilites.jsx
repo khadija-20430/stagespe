@@ -157,6 +157,10 @@ export default function ManageMobilites() {
         onDelete={deleteMobilite}
         onPublish={publishMobilite}
         onArchive={archiveMobilite}
+         createPermission="mobility.create"
+  updatePermission="mobility.edit"
+  deletePermission="mobility.delete"
+  publishPermission="mobility.publish"
         columns={[
           { key: 'title', label: t('title'),
             render: (i) => previewData[i.id]?.title || i.title },
