@@ -180,7 +180,7 @@ export default function AdminLayout() {
      NAVIGATION (Adaptée au mode mini)
   ========================================================= */
 
-  const Nav = () => (
+    const Nav = () => (
     <nav className={`space-y-1 ${isMini ? 'px-0' : ''}`}>
       {visibleLinks.map((link) => (
         <NavLink
@@ -194,6 +194,7 @@ export default function AdminLayout() {
               isMini ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
               isActive
                 ? 'bg-cobalt text-white'
+                // ✅ AJOUTEZ ICI : text-cobalt pour TOUS les liens inactifs
                 : 'text-slate-300 hover:bg-white/5 hover:text-white'
             )
           }
@@ -203,12 +204,12 @@ export default function AdminLayout() {
             <>
               <link.icon
                 size={20}
+                // ✅ REMPLACEZ CECI :
                 className={cn(
                   'shrink-0',
-                  // L'icône garde sa couleur custom (ex: bleu) uniquement quand
-                  // le lien n'est pas actif — sinon le fond bleu + texte blanc
-                  // du lien actif suffisent et évitent le bleu-sur-bleu.
-                  !isActive && link.iconClassName
+                  // Avant : !isActive && link.iconClassName
+                  // Après : Mettez la couleur ici !
+                  !isActive && 'text-cobalt'
                 )}
               />
               {!isMini && <span>{link.label}</span>}
