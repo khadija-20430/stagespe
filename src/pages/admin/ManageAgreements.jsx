@@ -21,12 +21,6 @@ import {
 } from '../../services/api.js';
 import { toAgreementPayload } from '../../services/mappers.js';
 
-const PREVIEW_LANGS = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ar', label: 'AR' },
-];
-
 // Champs traduisibles — noms de colonnes réels de agreement_translations
 // (les labels de CES champs restent en dur intentionnellement : ce sont les noms
 // des colonnes de la table de traduction elle-même, indépendants de la langue de l'UI)
@@ -69,7 +63,8 @@ const downloadFileSecure = async (path, fallbackName, t) => {
 };
 
 const ManageAgreements = () => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
+    const previewLang = i18n.language;
     const { hasPermission } = usePermissions();
 
     // ===== STATE =====
@@ -81,8 +76,7 @@ const ManageAgreements = () => {
     const [success, setSuccess] = useState('');
     const [downloadingFileId, setDownloadingFileId] = useState(null);
 
-    // ===== APERÇU DE TRADUCTION (lecture seule, ne touche jamais au formulaire) =====
-    const [previewLang, setPreviewLang] = useState('fr');
+    // ===== APERÇU DE TRADUCTION (lecture seule, suit la langue globale du site) =====
     const [previewData, setPreviewData] = useState({});
 
     // ===== MODALE DE TRADUCTION MANUELLE =====
@@ -495,28 +489,6 @@ const ManageAgreements = () => {
                 <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
                     <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
                 </button>
-            </div>
-
-            {/* Sélecteur d'aperçu — lecture seule, ne touche jamais aux données réelles éditées */}
-            <div className="mb-4 flex items-center gap-2">
-                <Languages size={16} className="text-slate-400" />
-                <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-                    {t('admin.agreementsPage.previewLabel')}
-                </span>
-                {PREVIEW_LANGS.map((l) => (
-                    <button
-                        key={l.code}
-                        type="button"
-                        onClick={() => setPreviewLang(l.code)}
-                        className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-                            previewLang === l.code
-                                ? 'bg-cobalt text-white'
-                                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                        }`}
-                    >
-                        {l.label}
-                    </button>
-                ))}
             </div>
 
             {/* STATS CARDS */}

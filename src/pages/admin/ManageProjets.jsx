@@ -13,12 +13,6 @@ import { PROJECT_STATUS, projectStatusTone } from '../../lib/enums.js';
 
 const publicationStatusTone = (s) => (s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber');
 
-const PREVIEW_LANGS = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ar', label: 'AR' },
-];
-
 const TRANSLATION_FIELDS = [
   { name: 'title', label: 'Titre' },
   { name: 'description', label: 'Description' },
@@ -32,10 +26,10 @@ const emptyTranslationSet = () => ({
 });
 
 export default function ManageProjets() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const previewLang = i18n.language;
   const [programmes, setProgrammes] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
-  const [previewLang, setPreviewLang] = useState('fr');
   const [previewData, setPreviewData] = useState({});
 
   // ---- Modale de traduction manuelle ----
@@ -125,28 +119,6 @@ export default function ManageProjets() {
 
   return (
     <div>
-      {/* Sélecteur d'aperçu — lecture seule, ne touche jamais aux données réelles éditées */}
-      <div className="mb-4 flex items-center gap-2">
-        <Languages size={16} className="text-slate-400" />
-        <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-          Aperçu traduction :
-        </span>
-        {PREVIEW_LANGS.map((l) => (
-          <button
-            key={l.code}
-            type="button"
-            onClick={() => setPreviewLang(l.code)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-              previewLang === l.code
-                ? 'bg-cobalt text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-            }`}
-          >
-            {l.label}
-          </button>
-        ))}
-      </div>
-
       <CrudManager
         title={t('projects')}
         icon={FlaskConical}
@@ -166,8 +138,8 @@ export default function ManageProjets() {
           { key: 'titre', label: t('titre'), required: true,
             render: (i) => previewData[i.id]?.titre || i.titre },
           { key: 'programme', label: t('programme'), render: (i) => <Badge tone="cobalt">{i.programme}</Badge> },
-          { key: 'statut', label: t('statut'),
-            render: (i) => <Badge tone={projectStatusTone(i.statut)}>{t(`${i.statut}`)}</Badge> },
+          { key: 'status', label: t('status'),
+            render: (i) => <Badge tone={projectStatusTone(i.status)}>{t(`${i.status}`)}</Badge> },
           { key: 'budget', label: t('budget'),
             render: (i) => i.budget != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(i.budget) : '—' },
           { key: 'coordinator_partner_id', label: t('coordinateur'),
@@ -192,7 +164,7 @@ export default function ManageProjets() {
           { name: 'codeReference', label: t('codeReference'), type: 'text' },
           { name: 'programmeId', label: t('programme'), type: 'select',
             options: programmes.map((p) => ({ value: p.id, label: p.name })) },
-          { name: 'statut', label: t('statut'), type: 'select',
+          { name: 'status', label: t('status'), type: 'select',
             options: PROJECT_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
           { name: 'budget', label: t('budget'), type: 'number' },
           { name: 'debut', label: t('debut'), type: 'date' },

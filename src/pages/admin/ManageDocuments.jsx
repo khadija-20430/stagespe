@@ -27,12 +27,6 @@ const LANGUAGES = [
   { value: 'ar', label: 'العربية' },
 ];
 
-const PREVIEW_LANGS = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ar', label: 'AR' },
-];
-
 // Champs traduisibles — noms de colonnes réels de document_translations
 const TRANSLATION_FIELDS = [
   { name: 'titre', label: 'Titre' },
@@ -178,12 +172,12 @@ const publicationLabel = (status, t) => {
 ============================================================ */
 
 export default function ManageDocuments() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const previewLang = i18n.language;
 
   const [categories, setCategories] = useState([]);
 
-  // ===== APERÇU DE TRADUCTION (lecture seule) =====
-  const [previewLang, setPreviewLang] = useState('fr');
+  // ===== APERÇU DE TRADUCTION (lecture seule, suit la langue globale du site) =====
   const [previewData, setPreviewData] = useState({});
 
   // ===== MODALE DE TRADUCTION MANUELLE =====
@@ -278,28 +272,6 @@ export default function ManageDocuments() {
 
   return (
     <div>
-      {/* Sélecteur d'aperçu — lecture seule, ne touche jamais aux données réelles éditées */}
-      <div className="mb-4 flex items-center gap-2">
-        <Languages size={16} className="text-slate-400" />
-        <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-          Aperçu traduction :
-        </span>
-        {PREVIEW_LANGS.map((l) => (
-          <button
-            key={l.code}
-            type="button"
-            onClick={() => setPreviewLang(l.code)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-              previewLang === l.code
-                ? 'bg-cobalt text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-            }`}
-          >
-            {l.label}
-          </button>
-        ))}
-      </div>
-
       <CrudManager
       title={t('document')}
       icon={FolderOpen}

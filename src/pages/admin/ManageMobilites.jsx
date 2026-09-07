@@ -16,12 +16,6 @@ const MOBILITY_STATUS = ['open', 'closed', 'upcoming'];
 const mobilityStatusTone = (s) => (s === 'open' ? 'green' : s === 'upcoming' ? 'amber' : 'slate');
 const publicationStatusTone = (s) => (s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber');
 
-const PREVIEW_LANGS = [
-  { code: 'fr', label: 'FR' },
-  { code: 'en', label: 'EN' },
-  { code: 'ar', label: 'AR' },
-];
-
 const TRANSLATION_FIELDS = [
   { name: 'title', label: 'Titre' },
   { name: 'description', label: 'Description' },
@@ -37,11 +31,11 @@ const emptyTranslationSet = () => ({
 });
 
 export default function ManageMobilites() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const previewLang = i18n.language;
   const [programmes, setProgrammes] = useState([]);
   const [countries, setCountries] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
-  const [previewLang, setPreviewLang] = useState('fr');
   const [previewData, setPreviewData] = useState({});
 
   // ---- Modale de traduction manuelle ----
@@ -125,27 +119,6 @@ export default function ManageMobilites() {
 
   return (
     <div>
-      <div className="mb-4 flex items-center gap-2">
-        <Languages size={16} className="text-slate-400" />
-        <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-          Aperçu traduction :
-        </span>
-        {PREVIEW_LANGS.map((l) => (
-          <button
-            key={l.code}
-            type="button"
-            onClick={() => setPreviewLang(l.code)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
-              previewLang === l.code
-                ? 'bg-cobalt text-white'
-                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-            }`}
-          >
-            {l.label}
-          </button>
-        ))}
-      </div>
-
       <CrudManager
         title={t('mobility')}
         icon={Plane}
