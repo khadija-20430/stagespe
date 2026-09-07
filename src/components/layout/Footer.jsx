@@ -41,6 +41,7 @@ export default function Footer() {
         { to: '/projets', labelKey: 'footer.columns.consultation.projets' },
         { to: '/appels', labelKey: 'footer.columns.consultation.appels' },
         { to: '/mobilites', labelKey: 'footer.columns.consultation.mobilites' },
+        { to: '/programmes', labelKey: 'programmes' }, // AJOUT: Lien vers les programmes
       ],
     },
     {

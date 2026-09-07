@@ -6,7 +6,8 @@ import { useAuth } from '../../context/AuthContext.jsx';
 import { 
   LayoutDashboard, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FolderOpen, FileText, Users, KeyRound, School, FlaskConical as TestTube,
-  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, PanelLeftClose, PanelLeftOpen
+  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, PanelLeftClose, PanelLeftOpen,
+  GraduationCap // AJOUT pour les programmes
 } from 'lucide-react';
 
 export default function AdminNavbar() {
@@ -28,6 +29,7 @@ export default function AdminNavbar() {
     { path: '/admin', icon: LayoutDashboard, label: t('admin.nav.dashboard') },
     { path: '/admin/partenaires', icon: Handshake, label: t('admin.nav.partners') },
     { path: '/admin/projets', icon: FlaskConical, label: t('admin.nav.projects') },
+    { path: '/admin/programmes', icon: GraduationCap, label: t('programmes') }, // AJOUT
     { path: '/admin/appels', icon: Megaphone, label: t('admin.nav.calls') },
     { path: '/admin/mobilites', icon: Plane, label: t('admin.nav.mobility') },
     { path: '/admin/news-events', icon: Newspaper, label: t('admin.nav.news') },

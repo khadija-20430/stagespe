@@ -6,10 +6,10 @@ import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl } from '../services/api.js';
+import { getActualites, getAppels, getMobilites, getPartenaires, getStats, getFileUrl, getProgrammes } from '../services/api.js';
 import { callStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
-import { Megaphone, Globe } from 'lucide-react'; 
+import { Megaphone, Globe, GraduationCap } from 'lucide-react'; 
 
 
 
@@ -99,25 +99,24 @@ function Hero() {
         <div className="max-w-2xl mx-auto">
           <div className="grid grid-cols-2 gap-4">
 
-
+<Button
+  as={Link}
+  to="/programmes"
+  size="lg"
+  className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
+>
+  <GraduationCap size={20} /> {t('home.hero.ctaProgrammes')}
+</Button>
 
 <Button
   as={Link}
   to="/appels"
   size="lg"
-  className="bg-gradient-to-r from-cobalt to-blue-600 hover:from-cobalt hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-2xl transition-all transform hover:scale-105 inline-flex items-center justify-center gap-2"
+  className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
 >
   <Megaphone size={20} /> {t('home.hero.ctaCalls')}
 </Button>
 
-<Button
-  as={Link}
-  to="/mobilites"
-  size="lg"
-  className="border-2 border-white/30 bg-white/5 backdrop-blur text-white font-semibold py-4 rounded-xl hover:bg-white/10 hover:border-white/50 transition-all inline-flex items-center justify-center gap-2"
->
-  <Globe size={20} /> {t('home.hero.ctaMobility')}
-</Button>
           </div>
         </div>
       </div>
@@ -132,24 +131,26 @@ export default function Home() {
   const [appels, setAppels] = useState([]);
   const [mobilites, setMobilites] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
+  const [programmes, setProgrammes] = useState([]); // Ajout des programmes
   const [stats, setStats] = useState([
     { key: 'partners', value: '—' },
     { key: 'projects', value: '—' },
+    { key: 'programmes', value: '—' }, // Ajout des programmes dans les stats
     { key: 'mobility', value: '—' },
     { key: 'countries', value: '—' },
   ]);
 
   useEffect(() => {
     getActualites().then((d) => setActualites(d.slice(0, 3)));
-    // ⚠️ mapAppel() renvoie "status" (pas "statut") : le filtre comparait
-    // a.statut, toujours undefined -> la section restait toujours vide.
     getAppels().then((d) => setAppels(d.filter((a) => a.status === 'open').slice(0, 3)));
     getMobilites().then((d) => setMobilites(d.slice(0, 3)));
     getPartenaires().then(setPartenaires);
+    getProgrammes().then((d) => setProgrammes(d.slice(0, 3))); // Récupération des programmes
     getStats().then((s) =>
       setStats([
         { key: 'partners', value: String(s.partners) },
         { key: 'projects', value: String(s.projects) },
+        { key: 'programmes', value: String(s.programmes || 0) }, // Ajout des programmes dans les stats
         { key: 'mobility', value: String(s.openMobility) },
         { key: 'countries', value: String(s.countries) },
       ])
@@ -161,13 +162,52 @@ export default function Home() {
       <Hero />
 
       <section className="border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-4">
+        <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 px-4 py-10 sm:px-6 md:grid-cols-5">
           {stats.map((s) => (
             <div key={s.key} className="text-center md:text-left">
               <div className="text-3xl font-extrabold text-navy dark:text-white">{s.value}</div>
               <div className="mt-1 text-sm text-slate-500 dark:text-slate-400">{t(`home.stats.${s.key}`)}</div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* SECTION PROGRAMMES - AJOUTÉE */}
+      <section className="bg-surface dark:bg-slate-800">
+        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <SectionHeading
+              eyebrow={t('home.programmes.eyebrow')}
+              title={t('home.programmes.title')}
+              description={t('home.programmes.description')}
+            />
+            <Button as={Link} to="/programmes" variant="secondary" size="sm">
+              {t('home.programmes.seeAll')}
+            </Button>
+          </div>
+          <div className="mt-8 grid gap-6 md:grid-cols-3">
+            {programmes.map((p) => (
+              <Card key={p.id} hover className="flex flex-col p-6">
+                <div className="flex items-center justify-between">
+                  <Badge tone="cobalt">{p.niveau}</Badge>
+                  <Badge tone="navy">{p.duree}</Badge>
+                </div>
+                <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{p.titre}</h3>
+                <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{p.description}</p>
+                <div className="mt-4 flex items-center justify-between text-sm">
+                  <span className="font-semibold text-cobalt dark:text-blue-400">
+                    {p.credits} {t('programmes.credits')}
+                  </span>
+                  <Link 
+                    to={`/programmes/${p.id}`} 
+                    className="text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
+                  >
+                    {t('programmes.learnMore')} →
+                  </Link>
+                </div>
+              </Card>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -187,7 +227,6 @@ export default function Home() {
             <Card key={a.id} hover className="flex flex-col p-6">
               <div className="flex items-center justify-between">
                 <Badge tone="cobalt">{a.programme}</Badge>
-                {/* idem : "status", pas "statut" */}
                 <Badge tone={callStatusTone(a.status)}>{t(`enums.callStatus.${a.status}`)}</Badge>
               </div>
               <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{a.titre}</h3>
@@ -216,7 +255,6 @@ export default function Home() {
             {mobilites.map((m) => (
               <Card key={m.id} hover className="flex flex-col p-6">
                 <Badge tone="navy">{t(`enums.mobilityType.${m.type}`)}</Badge>
-                {/* destination_partner / host_institution + host_city, remplace l'ancien champ libre "destination" */}
                 <h3 className="mt-4 text-lg font-bold text-navy dark:text-white">{m.institutionAccueil}</h3>
                 <p className="text-sm text-slate-500 dark:text-slate-400">{m.paysDestination} · {m.villeAccueil}</p>
                 <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{m.description}</p>
@@ -241,7 +279,6 @@ export default function Home() {
           </Button>
         </div>
         <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {/* mapActualite() renvoie title/imageUrl/summary/eventDate, pas titre/image/resume/date */}
           {actualites.map((n) => (
             <Card key={n.id} hover className="flex flex-col overflow-hidden">
               {n.imageUrl && <img src={n.imageUrl} alt="" className="h-44 w-full object-cover" />}

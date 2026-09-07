@@ -1,0 +1,224 @@
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Layers, Languages, X, Save, Loader2 } from 'lucide-react';
+import CrudManager from './CrudManager.jsx';
+import {
+  getProgrammesAdmin, getProgrammesAdminPreview,
+  createProgramme, updateProgramme, deleteProgramme,
+  getProgrammeTranslations, updateProgrammeTranslations,
+} from '../../services/api.js';
+import { toProgrammePayload } from '../../services/mappers.js';
+
+const PREVIEW_LANGS = [
+  { code: 'fr', label: 'FR' },
+  { code: 'en', label: 'EN' },
+  { code: 'ar', label: 'AR' },
+];
+
+const TRANSLATION_FIELDS = [
+  { name: 'name', label: 'Nom' },
+  { name: 'description', label: 'Description' },
+];
+
+const emptyTranslationSet = () => ({
+  en: { name: '', description: '' },
+  ar: { name: '', description: '' },
+});
+
+export default function ManageProgrammes() {
+  const { t } = useTranslation();
+  const [previewLang, setPreviewLang] = useState('fr');
+  const [previewData, setPreviewData] = useState({});
+
+  const [translationsItem, setTranslationsItem] = useState(null);
+  const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
+  const [translationsTab, setTranslationsTab] = useState('en');
+  const [translationsLoading, setTranslationsLoading] = useState(false);
+  const [translationsSaving, setTranslationsSaving] = useState(false);
+  const [translationsError, setTranslationsError] = useState('');
+
+  const refreshPreview = () => {
+    if (previewLang === 'fr') return;
+    getProgrammesAdminPreview(previewLang).then((rows) => {
+      const map = {};
+      rows.forEach((r) => { map[r.id] = r; });
+      setPreviewData(map);
+    });
+  };
+
+  // ⚡ FIX : déclenche le chargement de l'aperçu quand la langue change
+  useEffect(() => {
+    if (previewLang === 'fr') {
+      setPreviewData({});
+      return;
+    }
+    refreshPreview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [previewLang]);
+
+  const openTranslations = async (item) => {
+    setTranslationsItem(item);
+    setTranslationsTab('en');
+    setTranslationsError('');
+    setTranslationsLoading(true);
+    setTranslationsDraft(emptyTranslationSet());
+    try {
+      const existing = await getProgrammeTranslations(item.id);
+      setTranslationsDraft((prev) => ({
+        en: { ...prev.en, ...(existing.en || {}) },
+        ar: { ...prev.ar, ...(existing.ar || {}) },
+      }));
+    } catch (err) {
+      setTranslationsError(err.message || 'Erreur de chargement');
+    } finally {
+      setTranslationsLoading(false);
+    }
+  };
+
+  const closeTranslations = () => {
+    if (translationsSaving) return;
+    setTranslationsItem(null);
+  };
+
+  const setTranslationField = (lang, field, value) => {
+    setTranslationsDraft((prev) => ({
+      ...prev,
+      [lang]: { ...prev[lang], [field]: value },
+    }));
+  };
+
+  const saveTranslations = async () => {
+    setTranslationsSaving(true);
+    setTranslationsError('');
+    try {
+      await updateProgrammeTranslations(translationsItem.id, translationsDraft);
+      refreshPreview();
+      setTranslationsItem(null);
+    } catch (err) {
+      setTranslationsError(err.message || "Erreur lors de l'enregistrement");
+    } finally {
+      setTranslationsSaving(false);
+    }
+  };
+
+  return (
+    <div>
+      <div className="mb-4 flex items-center gap-2">
+        <Languages size={16} className="text-slate-400" />
+        <span className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
+          {t('apercu_traduction')}
+        </span>
+        {PREVIEW_LANGS.map((l) => (
+          <button key={l.code} type="button" onClick={() => setPreviewLang(l.code)}
+            className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+              previewLang === l.code
+                ? 'bg-cobalt text-white'
+                : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+            }`}>
+            {l.label}
+          </button>
+        ))}
+      </div>
+
+      <CrudManager
+        title={t('admin.nav.programmes') || 'Programmes'}
+        icon={Layers}
+        idPrefix="prog"
+        fetcher={getProgrammesAdmin}
+        toPayload={toProgrammePayload}
+        onCreate={createProgramme}
+        onUpdate={updateProgramme}
+        onDelete={deleteProgramme}
+        columns={[
+          {
+            key: 'name', label: t('nom'),
+            render: (i) => previewData[i.id]?.name || i.name,
+          },
+          { key: 'acronym', label: 'Acronyme', render: (i) => i.acronym || '—' },
+          { key: 'organismeFinanceur', label: t('organismeFinanceur'), render: (i) => i.organismeFinanceur || '—' },
+          { key: 'documentsCount', label: 'Documents', render: (i) => i.documentsCount ?? 0 },
+          {
+            key: 'translations', label: t('traductions'),
+            render: (i) => (
+              <button type="button" onClick={() => openTranslations(i)}
+                className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
+                title="Voir / modifier les traductions">
+                <Languages size={18} />
+              </button>
+            ),
+          },
+        ]}
+        fields={[
+          { name: 'name', label: t('nom'), type: 'text', required: true },
+          { name: 'acronym', label: 'Acronyme', type: 'text' },
+          { name: 'organismeFinanceur', label: t('organismeFinanceur'), type: 'text' },
+          { name: 'description', label: t('description'), type: 'textarea' },
+          { name: 'siteWeb', label: t('siteWeb'), type: 'text' },
+        ]}
+      />
+
+      {/* MODALE TRADUCTIONS */}
+      {translationsItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
+              <h3 className="font-bold text-navy dark:text-white">
+                {t('traductions_titre_modal')} — {translationsItem.name}
+              </h3>
+              <button type="button" onClick={closeTranslations} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="px-6 pt-4">
+              <div className="flex gap-2">
+                {['en', 'ar'].map((lang) => (
+                  <button key={lang} type="button" onClick={() => setTranslationsTab(lang)}
+                    className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
+                      translationsTab === lang ? 'bg-cobalt text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                    }`}>
+                    {lang.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="px-6 py-4 max-h-[60vh] overflow-y-auto space-y-4">
+              {translationsLoading ? (
+                <div className="flex justify-center py-8 text-cobalt">
+                  <Loader2 size={28} className="animate-spin" />
+                </div>
+              ) : (
+                TRANSLATION_FIELDS.map((f) => (
+                  <div key={f.name}>
+                    <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
+                      {f.label}
+                    </label>
+                    <textarea
+                      dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
+                      rows={f.name === 'name' ? 2 : 4}
+                      value={translationsDraft[translationsTab][f.name] ?? ''}
+                      onChange={(e) => setTranslationField(translationsTab, f.name, e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-cobalt focus:ring-1 focus:ring-cobalt/30 transition"
+                    />
+                  </div>
+                ))
+              )}
+              {translationsError && (
+                <p className="text-sm text-red-600 dark:text-red-400">{translationsError}</p>
+              )}
+            </div>
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
+              <button type="button" onClick={closeTranslations} disabled={translationsSaving}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium">
+                {t('annuler')}
+              </button>
+              <button type="button" onClick={saveTranslations} disabled={translationsSaving || translationsLoading}
+                className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5">
+                {translationsSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

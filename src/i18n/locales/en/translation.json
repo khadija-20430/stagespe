@@ -1,4 +1,291 @@
 {
+  "programmes": "Programs",
+  "programmesPage": {
+    "eyebrow": "Training",
+    "title": "Our Programs",
+    "description": "Discover all our training programs",
+    "empty": "No programs available",
+    "learnMore": "Learn more",
+    "credits": "ECTS Credits"
+  },
+  "home": {
+    "programmes": {
+      "eyebrow": "Training",
+      "title": "Our Programs",
+      "description": "Discover our excellence programs",
+      "seeAll": "See all programs"
+    },
+    "stats": {
+      "partners": "International partners",
+      "projects": "Active research projects",
+      "programmes": "Programs",
+      "mobility": "Mobility placements per year",
+      "countries": "Partner countries"
+    },
+    "hero": {
+      "eyebrow": "École Supérieure en Informatique",
+      "title": "International Cooperation Portal",
+      "description": "Discover and centralize all of the school's international activities: research projects, calls for projects, mobility opportunities, and academic partnerships worldwide.",
+      "ctaProgrammes": "Our Programs",
+      "ctaCalls": "View calls for projects",
+      "ctaMobility": "Explore mobility",
+      "brandTitle": "ESI International Cooperation",
+      "slideAria": "Go to slide {{number}}",
+      "slides": [
+        {
+          "eyebrow": "Welcome",
+          "title": "International Cooperation Portal",
+          "description": "📋 Explore calls for projects and academic mobility opportunities. Discover a world of possibilities for your professional career."
+        },
+        {
+          "eyebrow": "Opportunities",
+          "title": "International Mobility",
+          "description": "Take part in academic exchanges in over 50 countries. Build your international network and enrich your experience."
+        },
+        {
+          "eyebrow": "Partners",
+          "title": "Global Network",
+          "description": "Collaborate with the world's leading universities and institutions. A platform for building lasting friendships."
+        },
+        {
+          "eyebrow": "Projects",
+          "title": "Research and Innovation",
+          "description": "Contribute to internationally recognized research projects. Make a difference in your field of expertise."
+        }
+      ]
+    },
+    "agreements": {
+      "eyebrow": "Agreements",
+      "title": "Our International Agreements",
+      "description": "Explore all the agreements signed with our international partners.",
+      "cta": "View all agreements"
+    },
+    "calls": {
+      "eyebrow": "Opportunities",
+      "title": "Open Calls for Projects",
+      "description": "Funding and programs currently open to researchers and students.",
+      "seeAll": "All calls"
+    },
+    "mobility": {
+      "eyebrow": "Mobility",
+      "title": "Mobility Opportunities",
+      "description": "Student exchanges, doctoral placements, and international teaching assignments.",
+      "seeAll": "All mobility opportunities",
+      "spots": "{{count}} spots available"
+    },
+    "news": {
+      "eyebrow": "Right now",
+      "title": "News & Events",
+      "description": "The latest news on the school's international cooperation.",
+      "seeAll": "All news"
+    },
+    "partners": {
+      "eyebrow": "Network",
+      "title": "Our International Partners",
+      "description": "A network of leading universities and research institutes."
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "logout": "Log out",
+    "menuAria": "Menu",
+    "exit": "Exit",
+    "programmes": {
+      "title": "Program Management",
+      "description": "Manage training programs",
+      "create": "Create program",
+      "edit": "Edit program",
+      "delete": "Delete program",
+      "confirmDelete": "Are you sure you want to delete this program?",
+      "noData": "No programs available",
+      "fields": {
+        "titre": "Title",
+        "description": "Description",
+        "niveau": "Level",
+        "duree": "Duration",
+        "credits": "ECTS Credits"
+      }
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "description": "Overview and content management for the portal.",
+      "backToSite": "View visitor site",
+      "about": {
+        "title": "About this interface",
+        "text": "This admin interface simulates CRUD operations (create, read, update, delete) in memory. Changes are not persisted: they disappear on page reload. The services layer (<code>/src/services</code>) is ready to connect to an external REST API."
+      }
+    },
+    "login": {
+      "brand": "Admin area",
+      "title": "Administration Area",
+      "subtitle": "Sign in to access the dashboard",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Sign in",
+      "errorRequired": "Please fill in all fields",
+      "emailPlaceholder": "admin@esi.dz",
+      "showPassword": "Show",
+      "hidePassword": "Hide",
+      "forgotPassword": "Forgot password?",
+      "errorInvalid": "Invalid credentials",
+      "loading": "Signing in...",
+      "secureConnection": "Secure connection",
+      "footer": "© {{year}} ESI International Cooperation"
+    },
+    "crud": {
+      "actions": "Actions",
+      "loading": "Loading…",
+      "empty": "No items.",
+      "edit": "Edit",
+      "delete": "Delete",
+      "add": "+ Add",
+      "cancel": "Cancel",
+      "save": "Save",
+      "confirmDelete": "Delete this item?",
+      "mockNotice": "in-memory management (mock)",
+      "modalEdit": "Edit",
+      "modalAdd": "Add",
+      "listPlaceholder": "Comma-separated",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "{{count}} item",
+      "itemsCount_other": "{{count}} items"
+    },
+    "nav": {
+      "menuAria": "Open menu",
+      "admin": "Administration",
+      "title": "Admin Panel",
+      "dashboard": "Dashboard",
+      "partners": "Partners",
+      "projects": "Projects",
+      "programmes": "Programs",
+      "calls": "Calls for Projects",
+      "mobility": "Mobility",
+      "news": "News & Events",
+      "documents": "Documents",
+      "agreements": "Agreements",
+      "users": "Users",
+      "roles": "Roles & Permissions",
+      "school": "School Presentation",
+      "testAccess": "Test RBAC",
+      "audit": "Audit Log",
+      "settings": "Settings",
+      "changeLanguage": "Change language",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "user": "User",
+      "logout": "Log out",
+      "administration": "Administration",
+      "backToSite": "View site"
+    },
+    "agreementsPage": {
+      "title": "Manage Agreements",
+      "exportExcel": "Export to Excel",
+      "newAgreement": "New Agreement",
+      "previewLabel": "Translation preview:",
+      "stats": {
+        "total": "Total",
+        "published": "Published",
+        "drafts": "Drafts",
+        "archived": "Archived"
+      },
+      "expiringAlert_one": "{{count}} agreement expiring within 30 days",
+      "expiringAlert_other": "{{count}} agreements expiring within 30 days",
+      "filters": {
+        "allPartners": "All partners",
+        "allStatuses": "All statuses",
+        "totalLabel": "Total: {{count}}",
+        "activeLabel": "Active: {{count}}"
+      },
+      "table": {
+        "titre": "Title",
+        "partenaire": "Partner",
+        "type": "Type",
+        "debut": "Start",
+        "fin": "End",
+        "joursRestants": "Days remaining",
+        "statut": "Status",
+        "publication": "Publication",
+        "fichier": "File",
+        "traductions": "Translations",
+        "actions": "Actions"
+      },
+      "alerts": {
+        "expiredSince_one": "Expired {{count}} day ago",
+        "expiredSince_other": "Expired {{count}} days ago",
+        "expiresIn_one": "Expires in {{count}} day",
+        "expiresIn_other": "Expires in {{count}} days",
+        "daysCount_one": "{{count}} day",
+        "daysCount_other": "{{count}} days",
+        "ok": "OK"
+      },
+      "file": {
+        "view": "View",
+        "viewTooltip": "View the PDF file",
+        "download": "Download",
+        "downloadTooltip": "Download the PDF",
+        "none": "No file"
+      },
+      "modal": {
+        "newTitle": "New agreement",
+        "editTitle": "Edit agreement",
+        "titre": "Title *",
+        "partner": "Partner *",
+        "selectPartner": "Select a partner",
+        "typePlaceholder": "E.g. Partnership agreement",
+        "dateSignature": "Signature date",
+        "dateDebut": "Start date",
+        "dateFin": "End date",
+        "terms": "Terms and conditions",
+        "filePdf": "PDF file",
+        "fileLabel": "File: {{name}}",
+        "publicationStatus": "Publication status",
+        "saving": "Saving..."
+      },
+      "translationsModal": {
+        "title": "Translations — {{titre}}",
+        "tooltip": "View / edit translations",
+        "saving": "..."
+      },
+      "messages": {
+        "noFileAvailable": "No file available",
+        "downloadFailed": "Unable to download ({{status}})",
+        "downloadError": "Error while downloading",
+        "translationsLoadError": "Error loading translations",
+        "translationsSaveError": "Error while saving",
+        "loadError": "Error loading data",
+        "noPdf": "No PDF file for agreement \"{{titre}}\"",
+        "downloadStarted": "Download of \"{{titre}}\" started",
+        "noAgreementsToExport": "No agreements to export",
+        "exportSuccess": "Excel export successful: {{fileName}}",
+        "exportError": "Export error: {{message}}",
+        "uploadSuccess": "File uploaded successfully",
+        "uploadError": "Upload error: {{message}}",
+        "titleRequired": "Title is required",
+        "partnerRequired": "Partner is required",
+        "endDateError": "End date must be later than start date",
+        "updateSuccess": "Agreement updated successfully",
+        "createSuccess": "Agreement created successfully",
+        "saveError": "Error while saving",
+        "deleteConfirm": "Are you sure you want to delete this agreement?",
+        "deleteSuccess": "Agreement deleted successfully",
+        "deleteError": "Error while deleting"
+      },
+      "emptyState": "No agreements found",
+      "excelExport": {
+        "id": "ID",
+        "titre": "Title",
+        "partenaire": "Partner",
+        "type": "Type",
+        "dateDebut": "Start date",
+        "dateFin": "End date",
+        "joursRestants": "Days remaining",
+        "statut": "Status",
+        "statutPublication": "Publication status",
+        "fichierPdf": "PDF file",
+        "description": "Description"
+      }
+    }
+  },
   "navbar": {
     "homeAria": "ESI Home",
     "brandLine1": "International",
@@ -124,75 +411,6 @@
       "description": "Visualize the geographical distribution of our partner institutions across the world."
     }
   },
-  "home": {
-    "hero": {
-      "eyebrow": "École Supérieure en Informatique",
-      "title": "International Cooperation Portal",
-      "description": "Discover and centralize all of the school's international activities: research projects, calls for projects, mobility opportunities, and academic partnerships worldwide.",
-      "ctaCalls": "View calls for projects",
-      "ctaMobility": "Explore mobility",
-      "brandTitle": "ESI International Cooperation",
-      "slideAria": "Go to slide {{number}}",
-      "slides": [
-        {
-          "eyebrow": "Welcome",
-          "title": "International Cooperation Portal",
-          "description": "📋 Explore calls for projects and academic mobility opportunities. Discover a world of possibilities for your professional career."
-        },
-        {
-          "eyebrow": "Opportunities",
-          "title": "International Mobility",
-          "description": "Take part in academic exchanges in over 50 countries. Build your international network and enrich your experience."
-        },
-        {
-          "eyebrow": "Partners",
-          "title": "Global Network",
-          "description": "Collaborate with the world's leading universities and institutions. A platform for building lasting friendships."
-        },
-        {
-          "eyebrow": "Projects",
-          "title": "Research and Innovation",
-          "description": "Contribute to internationally recognized research projects. Make a difference in your field of expertise."
-        }
-      ]
-    },
-    "agreements": {
-      "eyebrow": "Agreements",
-      "title": "Our International Agreements",
-      "description": "Explore all the agreements signed with our international partners.",
-      "cta": "View all agreements"
-    },
-    "stats": {
-      "partners": "International partners",
-      "projects": "Active research projects",
-      "mobility": "Mobility placements per year",
-      "countries": "Partner countries"
-    },
-    "calls": {
-      "eyebrow": "Opportunities",
-      "title": "Open Calls for Projects",
-      "description": "Funding and programs currently open to researchers and students.",
-      "seeAll": "All calls"
-    },
-    "mobility": {
-      "eyebrow": "Mobility",
-      "title": "Mobility Opportunities",
-      "description": "Student exchanges, doctoral placements, and international teaching assignments.",
-      "seeAll": "All mobility opportunities",
-      "spots": "{{count}} spots available"
-    },
-    "news": {
-      "eyebrow": "Right now",
-      "title": "News & Events",
-      "description": "The latest news on the school's international cooperation.",
-      "seeAll": "All news"
-    },
-    "partners": {
-      "eyebrow": "Network",
-      "title": "Our International Partners",
-      "description": "A network of leading universities and research institutes."
-    }
-  },
   "projets": {
     "eyebrow": "Research",
     "title": "Research Projects",
@@ -268,190 +486,6 @@
     "title": "Page not found",
     "text": "The page you're looking for doesn't exist or has been moved.",
     "backHome": "Back to home"
-  },
-  "admin": {
-    "title": "Administration",
-    "logout": "Log out",
-    "menuAria": "Menu",
-    "exit": "Exit",
-    "dashboard": {
-      "title": "Dashboard",
-      "description": "Overview and content management for the portal.",
-      "backToSite": "View visitor site",
-      "about": {
-        "title": "About this interface",
-        "text": "This admin interface simulates CRUD operations (create, read, update, delete) in memory. Changes are not persisted: they disappear on page reload. The services layer (<code>/src/services</code>) is ready to connect to an external REST API."
-      }
-    },
-    "login": {
-      "brand": "Admin area",
-      "title": "Administration Area",
-      "subtitle": "Sign in to access the dashboard",
-      "email": "Email address",
-      "password": "Password",
-      "submit": "Sign in",
-      "errorRequired": "Please fill in all fields",
-      "emailPlaceholder": "admin@esi.dz",
-      "showPassword": "Show",
-      "hidePassword": "Hide",
-      "forgotPassword": "Forgot password?",
-      "errorInvalid": "Invalid credentials",
-      "loading": "Signing in...",
-      "secureConnection": "Secure connection",
-      "footer": "© {{year}} ESI International Cooperation"
-    },
-    "crud": {
-      "actions": "Actions",
-      "loading": "Loading…",
-      "empty": "No items.",
-      "edit": "Edit",
-      "delete": "Delete",
-      "add": "+ Add",
-      "cancel": "Cancel",
-      "save": "Save",
-      "confirmDelete": "Delete this item?",
-      "mockNotice": "in-memory management (mock)",
-      "modalEdit": "Edit",
-      "modalAdd": "Add",
-      "listPlaceholder": "Comma-separated",
-      "selectPlaceholder": "—",
-      "itemsCount_one": "{{count}} item",
-      "itemsCount_other": "{{count}} items"
-    },
-    "nav": {
-      "menuAria": "Open menu",
-      "admin": "Administration",
-      "title": "Admin Panel",
-      "dashboard": "Dashboard",
-      "partners": "Partners",
-      "projects": "Projects",
-      "calls": "Calls for Projects",
-      "mobility": "Mobility",
-      "news": "News & Events",
-      "documents": "Documents",
-      "agreements": "Agreements",
-      "users": "Users",
-      "roles": "Roles & Permissions",
-      "school": "School Presentation",
-      "testAccess": "Test RBAC",
-      "audit": "Audit Log",
-      "settings": "Settings",
-      "changeLanguage": "Change language",
-      "lightMode": "Light Mode",
-      "darkMode": "Dark Mode",
-      "user": "User",
-      "logout": "Log out",
-      "administration": "Administration",
-      "backToSite": "View site"
-    },
-    "agreementsPage": {
-      "title": "Manage Agreements",
-      "exportExcel": "Export to Excel",
-      "newAgreement": "New Agreement",
-      "previewLabel": "Translation preview:",
-      "stats": {
-        "total": "Total",
-        "published": "Published",
-        "drafts": "Drafts",
-        "archived": "Archived"
-      },
-      "expiringAlert_one": "{{count}} agreement expiring within 30 days",
-"expiringAlert_other": "{{count}} agreements expiring within 30 days",
-      "filters": {
-        "allPartners": "All partners",
-        "allStatuses": "All statuses",
-        "totalLabel": "Total: {{count}}",
-        "activeLabel": "Active: {{count}}"
-      },
-      "table": {
-        "titre": "Title",
-        "partenaire": "Partner",
-        "type": "Type",
-        "debut": "Start",
-        "fin": "End",
-        "joursRestants": "Days remaining",
-        "statut": "Status",
-        "publication": "Publication",
-        "fichier": "File",
-        "traductions": "Translations",
-        "actions": "Actions"
-      },
-      "alerts": {
-        "expiredSince_one": "Expired {{count}} day ago",
-        "expiredSince_other": "Expired {{count}} days ago",
-        "expiresIn_one": "Expires in {{count}} day",
-        "expiresIn_other": "Expires in {{count}} days",
-        "daysCount_one": "{{count}} day",
-        "daysCount_other": "{{count}} days",
-        "ok": "OK"
-      },
-      "file": {
-        "view": "View",
-        "viewTooltip": "View the PDF file",
-        "download": "Download",
-        "downloadTooltip": "Download the PDF",
-        "none": "No file"
-      },
-      "modal": {
-        "newTitle": "New agreement",
-        "editTitle": "Edit agreement",
-        "titre": "Title *",
-        "partner": "Partner *",
-        "selectPartner": "Select a partner",
-        "typePlaceholder": "E.g. Partnership agreement",
-        "dateSignature": "Signature date",
-        "dateDebut": "Start date",
-        "dateFin": "End date",
-        "terms": "Terms and conditions",
-        "filePdf": "PDF file",
-        "fileLabel": "File: {{name}}",
-        "publicationStatus": "Publication status",
-        "saving": "Saving..."
-      },
-      "translationsModal": {
-        "title": "Translations — {{titre}}",
-        "tooltip": "View / edit translations",
-        "saving": "..."
-      },
-      "messages": {
-        "noFileAvailable": "No file available",
-        "downloadFailed": "Unable to download ({{status}})",
-        "downloadError": "Error while downloading",
-        "translationsLoadError": "Error loading translations",
-        "translationsSaveError": "Error while saving",
-        "loadError": "Error loading data",
-        "noPdf": "No PDF file for agreement \"{{titre}}\"",
-        "downloadStarted": "Download of \"{{titre}}\" started",
-        "noAgreementsToExport": "No agreements to export",
-        "exportSuccess": "Excel export successful: {{fileName}}",
-        "exportError": "Export error: {{message}}",
-        "uploadSuccess": "File uploaded successfully",
-        "uploadError": "Upload error: {{message}}",
-        "titleRequired": "Title is required",
-        "partnerRequired": "Partner is required",
-        "endDateError": "End date must be later than start date",
-        "updateSuccess": "Agreement updated successfully",
-        "createSuccess": "Agreement created successfully",
-        "saveError": "Error while saving",
-        "deleteConfirm": "Are you sure you want to delete this agreement?",
-        "deleteSuccess": "Agreement deleted successfully",
-        "deleteError": "Error while deleting"
-      },
-      "emptyState": "No agreements found",
-      "excelExport": {
-        "id": "ID",
-        "titre": "Title",
-        "partenaire": "Partner",
-        "type": "Type",
-        "dateDebut": "Start date",
-        "dateFin": "End date",
-        "joursRestants": "Days remaining",
-        "statut": "Status",
-        "statutPublication": "Publication status",
-        "fichierPdf": "PDF file",
-        "description": "Description"
-      }
-    }
   },
   "school": {
     "defaultTitle": "School Presentation",
@@ -659,24 +693,24 @@
   "adminRoles": "Roles & permissions",
   "adminTestAccess": "Test RBAC",
   "adminAuditLog": "Audit log",
-    "statut_publie": "Published",
-    "statut_archive": "Archived",
-    "statut_brouillon": "Draft",
-    "voir": "View",
-    "voir_document": "View document",
-    "telecharger": "Download",
-    "telecharger_document": "Download document",
-    "traductions": "Translations",
-    "traductions_titre_modal": "Translations",
-    "voir_modifier_traductions": "View / edit translations",
-    "apercu_traduction": "Translation preview:",
-    "aucun_fichier": "No file",
-    "annuler": "Cancel",
-    "enregistrer": "Save",
-    "erreur_chargement_traductions": "Error loading translations",
-    "erreur_enregistrement_traductions": "Error while saving",
-    "erreur_upload": "Error during upload",
-    "date_expiration_help": "Format: DD/MM/YYYY — Example: 31/12/2027",
+  "statut_publie": "Published",
+  "statut_archive": "Archived",
+  "statut_brouillon": "Draft",
+  "voir": "View",
+  "voir_document": "View document",
+  "telecharger": "Download",
+  "telecharger_document": "Download document",
+  "traductions": "Translations",
+  "traductions_titre_modal": "Translations",
+  "voir_modifier_traductions": "View / edit translations",
+  "apercu_traduction": "Translation preview:",
+  "aucun_fichier": "No file",
+  "annuler": "Cancel",
+  "enregistrer": "Save",
+  "erreur_chargement_traductions": "Error loading translations",
+  "erreur_enregistrement_traductions": "Error while saving",
+  "erreur_upload": "Error during upload",
+  "date_expiration_help": "Format: DD/MM/YYYY — Example: 31/12/2027",
   "agreementsList": {
     "eyebrow": "Partnerships",
     "title": "Our Partnership Agreements",
@@ -703,7 +737,6 @@
     "confirmDelete": "Delete this notification?",
     "close": "Close",
     "markAllRead": "Mark all as read",
-   
     "time": {
       "now": "Just now",
       "secondsAgo_one": "{{count}} second ago",

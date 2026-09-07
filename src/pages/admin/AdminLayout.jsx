@@ -11,7 +11,8 @@ import NotificationBell from '../../components/ui/NotificationBell.jsx';
 import { 
   LayoutDashboard, School, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FileText, FolderOpen, Users, KeyRound, FlaskConical as TestTube,
-  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, ChevronDown, ChevronUp
+  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, ChevronDown, ChevronUp,
+  GraduationCap // Ajout pour les programmes
 } from 'lucide-react';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -28,7 +29,7 @@ export default function AdminLayout() {
 
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [isMini, setIsMini] = useState(false); // État pour réduire la sidebar
+  const [isMini, setIsMini] = useState(false);
 
   const [isDark, setIsDark] = useDarkMode();
 
@@ -60,6 +61,12 @@ export default function AdminLayout() {
       label: t('projects'),
       icon: FlaskConical,
       requiredPerm: 'projects.view',
+    },
+    {
+      to: '/admin/programmes', // ✅ Lien programmes
+      label: t('programmes'),
+      icon: GraduationCap,
+      //requiredPerm: 'programmes.view',
     },
     {
       to: '/admin/appels',

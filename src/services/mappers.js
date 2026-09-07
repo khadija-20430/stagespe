@@ -391,4 +391,24 @@ export const mapSchoolPresentation = (row) => {
         updatedAt: row.updated_at,
         revisions: row.revisions || [],
     };
+    
 };
+export const mapProgramme = (row) => ({
+  id: row.id,
+  name: row.name,
+  nom: row.name,
+  acronym: row.acronym || '',
+  organismeFinanceur: row.organisme_financeur || '',
+  description: row.description || '',
+  siteWeb: row.official_website || '',
+  logo: row.logo_url || null,
+  documentsCount: Number(row.documents_count) || 0,
+});
+
+export const toProgrammePayload = (draft) => ({
+  name: draft.name || draft.nom,
+  acronym: draft.acronym || null,
+  organisme_financeur: draft.organismeFinanceur || null,
+  description: draft.description || null,
+  official_website: draft.siteWeb || null,
+});

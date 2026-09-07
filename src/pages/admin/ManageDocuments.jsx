@@ -164,23 +164,13 @@ const publicationTone = (status) => {
   return 'amber';
 };
 
-const publicationLabel = (status) => {
-  const value = String(status || 'draft')
-    .toLowerCase()
-    .trim();
+// APRÈS — utilise les clés i18n racine comme ManageAppels
+const publicationLabel = (status, t) => {
+  const value = String(status || 'draft').toLowerCase().trim();
 
-  if (
-    value === 'published' ||
-    value === 'publié'
-  ) {
-    return 'Publié';
-  }
-
-  if (value === 'archived') {
-    return 'Archivé';
-  }
-
-  return 'Brouillon';
+  if (value === 'published' || value === 'publié') return t('published');
+  if (value === 'archived') return t('archived');
+  return t('draft');
 };
 
 /* ============================================================
@@ -364,20 +354,21 @@ export default function ManageDocuments() {
            CATEGORIE
         ----------------------------------------------------- */
 
-        {
-          key: 'categorieLabel',
-          label: t('categorie'),
+      {
+  key: 'categorieLabel',
+  label: t('categorie'),
+  render: (item) => {
+  
+    const code = item.categorie;
+    const label = item.categorieLabel || item.categorie || '—';
 
-          render: (item) => (
-            <Badge tone="cobalt">
-              {item.categorieLabel ||
-                item.categorie_label ||
-                item.categorie ||
-                '—'}
-            </Badge>
-          ),
-        },
-
+    return (
+      <Badge tone="cobalt">
+        {t(`enums.documentCategory.${code}`, { defaultValue: label })}
+      </Badge>
+    );
+  },
+},
         /* ----------------------------------------------------
            FORMAT
         ----------------------------------------------------- */
@@ -457,7 +448,7 @@ export default function ManageDocuments() {
     <Badge
       tone={publicationTone(status)}
     >
-      {publicationLabel(status)}
+      {publicationLabel(status, t)}
     </Badge>
   );
 },

@@ -21,9 +21,11 @@ import {
     toActualitePayload,
     toPartnerPayload,
     toDocumentPayload,
-    toAgreementPayload, // ← AJOUTER
+    toAgreementPayload,
+    mapProgramme, // ← AJOUTER
 
 } from './mappers.js';
+
 
 
 // ============================================================
@@ -1492,3 +1494,35 @@ export const deleteAllNotifications = async () => {
     const data = await authRequest('/notifications', { method: 'DELETE' });
     return data;
 };
+
+// PROGRAMMES — PUBLIC
+export const getProgrammesPublic = async (lang = 'fr') => {
+  const data = await request(`/programmes?lang=${lang}`);
+  return data.map(mapProgramme);
+};
+
+// PROGRAMMES — ADMIN
+export const getProgrammesAdmin = async () => {
+  const data = await authRequest('/programmes/admin/all');
+  return data.map(mapProgramme);
+};
+
+export const getProgrammesAdminPreview = async (lang = 'en') => {
+  const data = await authRequest(`/programmes/admin/all/preview?lang=${lang}`);
+  return data.map(mapProgramme);
+};
+
+export const getProgrammeTranslations = async (id) =>
+  authRequest(`/programmes/${id}/translations`);
+
+export const updateProgrammeTranslations = async (id, payload) =>
+  authRequest(`/programmes/${id}/translations`, { method: 'PUT', body: payload });
+
+export const createProgramme = (payload) =>
+  authRequest('/programmes', { method: 'POST', body: payload });
+
+export const updateProgramme = (id, payload) =>
+  authRequest(`/programmes/${id}`, { method: 'PUT', body: payload });
+
+export const deleteProgramme = (id) =>
+  authRequest(`/programmes/${id}`, { method: 'DELETE' });

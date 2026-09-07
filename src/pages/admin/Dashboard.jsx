@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import {
   Eye, ExternalLink, Handshake, FlaskConical, Megaphone, Plane,
   Newspaper, FolderOpen, FileText, Users, LayoutDashboard, Sparkles,
+  GraduationCap // Ajout pour les programmes
 } from 'lucide-react'; // Icônes pro
 
 import Card from '../../components/ui/Card.jsx';
@@ -11,7 +12,7 @@ import Card from '../../components/ui/Card.jsx';
 import {
   getAppelsAdmin, getDocumentsAdmin, getMobilitesAdmin,
   getPartenairesAdmin, getProjetsAdmin, getActualitesAdmin,
-  getAgreementsAdmin, getUsers,
+  getAgreementsAdmin, getUsers, getProgrammesAdmin, // Ajout de getProgrammesAdmin
 } from '../../services/api.js';
 
 export default function Dashboard() {
@@ -22,6 +23,7 @@ export default function Dashboard() {
   const config = [
     { key: 'partenaires', label: t('partners'), fetch: getPartenairesAdmin, icon: Handshake },
     { key: 'projets', label: t('projects'), fetch: getProjetsAdmin, icon: FlaskConical },
+    { key: 'programmes', label: t('programmes'), fetch: getProgrammesAdmin, icon: GraduationCap }, // Ajout des programmes
     { key: 'appels', label: t('calls'), fetch: getAppelsAdmin, icon: Megaphone },
     { key: 'mobilites', label: t('mobility'), fetch: getMobilitesAdmin, icon: Plane },
     { key: 'actualites', label: t('newsEvents'), fetch: getActualitesAdmin, icon: Newspaper },

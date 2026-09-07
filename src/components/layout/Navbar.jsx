@@ -6,7 +6,7 @@ import { useDarkMode } from '../../hooks/useDarkMode.js';
 import { 
   Home, School, Globe, Sun, Moon, Lock, Menu, X, 
   ChevronDown, ArrowRight, Briefcase, FileText, Megaphone, 
-  Plane, Newspaper, FolderOpen, Landmark
+  Plane, Newspaper, FolderOpen, Landmark, GraduationCap // Ajout de GraduationCap
 } from 'lucide-react';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
@@ -49,7 +49,6 @@ function LanguageSwitcher({ className = '' }) {
         )}
         title={t('navbar.languageAria')}
       >
-        {/* Remplacement du SVG par l'icône Globe */}
         <Globe className="h-5 w-5" />
       </button>
 
@@ -90,10 +89,8 @@ function DarkModeToggle() {
       aria-label={t('changeThemeAria')}
     >
       {isDark ? (
-        // Soleil
         <Sun className="h-5 w-5" />
       ) : (
-        // Lune
         <Moon className="h-5 w-5" />
       )}
     </button>
@@ -102,23 +99,21 @@ function DarkModeToggle() {
 
 function Dropdown({ label, items, pathname, icon }) {
   const [open, setOpen] = useState(false);
-  const closeTimerRef = useRef(null); // Pour stocker le timer
+  const closeTimerRef = useRef(null);
   const isActive = items.some((i) => pathname.startsWith(i.to));
 
-  // Fonction pour ouvrir
   const handleMouseEnter = () => {
     if (closeTimerRef.current) {
-      clearTimeout(closeTimerRef.current); // Annule la fermeture
+      clearTimeout(closeTimerRef.current);
       closeTimerRef.current = null;
     }
     setOpen(true);
   };
 
-  // Fonction pour fermer avec un délai
   const handleMouseLeave = () => {
     closeTimerRef.current = setTimeout(() => {
       setOpen(false);
-    }, 200); // Délai de 200ms pour laisser le temps de passer au menu
+    }, 200);
   };
 
   return (
@@ -138,7 +133,6 @@ function Dropdown({ label, items, pathname, icon }) {
             : 'text-slate-700 dark:text-slate-300 hover:text-cobalt dark:hover:text-cobalt'
         )}
       >
-        {/* Icône du dropdown */}
         <span className="flex items-center">{icon}</span>
         <span>{label}</span>
         <ChevronDown className={cn('h-4 w-4 transition-transform duration-200', open && 'rotate-180')} />
@@ -179,6 +173,7 @@ export default function Navbar() {
     { to: '/projets', label: t('navbar.projets'), icon: <Briefcase className="h-4 w-4" /> },
     { to: '/appels', label: t('navbar.appels'), icon: <Megaphone className="h-4 w-4" /> },
     { to: '/mobilites', label: t('navbar.mobilites'), icon: <Plane className="h-4 w-4" /> },
+    { to: '/programmes', label: t('programmes'), icon: <GraduationCap className="h-4 w-4" /> }, // AJOUT
   ];
 
   const ressources = [
@@ -208,9 +203,8 @@ export default function Navbar() {
               )
             }
           >
-             {/* Icône Home */}
-             <Home className="h-4 w-4 mr-2" />
-             {t('navbar.home')}
+            <Home className="h-4 w-4 mr-2" />
+            {t('navbar.home')}
           </NavLink>
 
           <NavLink
@@ -224,9 +218,8 @@ export default function Navbar() {
               )
             }
           >
-             {/* Icône School */}
-             <School className="h-4 w-4 mr-2" />
-             {t('school.defaultTitle')}
+            <School className="h-4 w-4 mr-2" />
+            {t('school.defaultTitle')}
           </NavLink>
 
           <Dropdown label={t('navbar.consultationGroup')} items={consultation} pathname={pathname} icon={<Landmark className="h-4 w-4" />} />
@@ -241,7 +234,6 @@ export default function Navbar() {
             to="/admin"
             className="inline-flex min-h-[44px] items-center gap-2 rounded-lg border border-slate-300 dark:border-slate-600 px-4 text-sm font-semibold text-navy dark:text-white transition-all hover:border-cobalt dark:hover:border-cobalt hover:text-cobalt hover:bg-blue-50 dark:hover:bg-slate-800 hover:shadow-md"
           >
-            {/* Icône Lock au lieu de l'emoji */}
             <Lock className="h-4 w-4" />
             {t('navbar.admin')}
           </Link>
@@ -258,7 +250,6 @@ export default function Navbar() {
             aria-label={t('navbar.menuAria')}
             aria-expanded={mobileOpen}
           >
-            {/* Icônes Menu / X */}
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
         </div>
@@ -324,7 +315,7 @@ export default function Navbar() {
           <div className="my-3 border-t border-slate-200 dark:border-slate-700" />
 
           <div className="mb-3 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-             <FolderOpen className="h-3 w-3 inline mr-1" /> {t('navbar.resourcesGroup')}
+            <FolderOpen className="h-3 w-3 inline mr-1" /> {t('navbar.resourcesGroup')}
           </div>
           {ressources.map((item) => (
             <NavLink

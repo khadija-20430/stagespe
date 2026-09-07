@@ -35,6 +35,9 @@ import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
 import ManageSchool from './pages/admin/Manageschool.jsx';
 import AgreementsList from './pages/AgreementsList.jsx';
+import ManageProgrammes from "./pages/admin/ManageProgrammes.jsx";
+// ❌ SUPPRIMEZ CETTE LIGNE : import ProgrammeForm from "./pages/admin/ProgrammeForm.jsx";
+import Programmes from './pages/Programmes.jsx';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -53,6 +56,7 @@ export default function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/cooperation" element={<Cooperation />} />
+          <Route path="/programmes" element={<Programmes />} />
           <Route path="/projets" element={<Projets />} />
           <Route path="/appels" element={<Appels />} />
           <Route path="/mobilites" element={<Mobilites />} />
@@ -81,6 +85,7 @@ export default function App() {
         >
           <Route index element={<Dashboard />} />
           <Route path="partenaires" element={<ManagePartenaires />} />
+          <Route path="programmes" element={<ManageProgrammes />} />
           <Route path="projets" element={<ManageProjets />} />
           <Route path="appels" element={<ManageAppels />} />
           <Route path="mobilites" element={<ManageMobilites />} />

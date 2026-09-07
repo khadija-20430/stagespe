@@ -1,4 +1,291 @@
 {
+  "programmes": "Programmes",
+  "programmesPage": {
+    "eyebrow": "Formations",
+    "title": "Nos Programmes",
+    "description": "Découvrez l'ensemble de nos programmes de formation",
+    "empty": "Aucun programme disponible",
+    "learnMore": "En savoir plus",
+    "credits": "Crédits ECTS"
+  },
+  "home": {
+    "programmes": {
+      "eyebrow": "Formations",
+      "title": "Nos Programmes",
+      "description": "Découvrez nos formations d'excellence",
+      "seeAll": "Voir tous les programmes"
+    },
+    "stats": {
+      "partners": "Partenaires internationaux",
+      "projects": "Projets de recherche actifs",
+      "programmes": "Programmes",
+      "mobility": "Mobilités par an",
+      "countries": "Pays partenaires"
+    },
+    "hero": {
+      "eyebrow": "École Supérieure en Informatique",
+      "title": "Portail de la coopération internationale",
+      "description": "Centralisez et découvrez l'ensemble des activités internationales de l'école : projets de recherche, appels à projets, opportunités de mobilité et partenariats académiques à travers le monde.",
+      "ctaProgrammes": "Nos Programmes",
+      "ctaCalls": "Voir les appels à projets",
+      "ctaMobility": "Explorer les mobilités",
+      "brandTitle": "ESI Coopération Internationale",
+      "slideAria": "Aller à la diapositive {{number}}",
+      "slides": [
+        {
+          "eyebrow": "Bienvenue",
+          "title": "Portail de la coopération internationale",
+          "description": "📋 Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle."
+        },
+        {
+          "eyebrow": "Opportunités",
+          "title": "Mobilités internationales",
+          "description": "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience."
+        },
+        {
+          "eyebrow": "Partenaires",
+          "title": "Réseau mondial",
+          "description": "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables."
+        },
+        {
+          "eyebrow": "Projets",
+          "title": "Recherche et innovation",
+          "description": "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise."
+        }
+      ]
+    },
+    "agreements": {
+      "eyebrow": "Conventions",
+      "title": "Nos accords internationaux",
+      "description": "Découvrez l'ensemble des conventions signées avec nos partenaires internationaux.",
+      "cta": "Voir tous les accords"
+    },
+    "calls": {
+      "eyebrow": "Opportunités",
+      "title": "Appels à projets ouverts",
+      "description": "Financements et programmes actuellement accessibles aux chercheurs et étudiants.",
+      "seeAll": "Tous les appels"
+    },
+    "mobility": {
+      "eyebrow": "Mobilité",
+      "title": "Opportunités de mobilité",
+      "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement à l'international.",
+      "seeAll": "Toutes les mobilités",
+      "spots": "{{count}} places disponibles"
+    },
+    "news": {
+      "eyebrow": "En ce moment",
+      "title": "Actualités & événements",
+      "description": "Les dernières nouvelles de la coopération internationale de l'école.",
+      "seeAll": "Toutes les actualités"
+    },
+    "partners": {
+      "eyebrow": "Réseau",
+      "title": "Nos partenaires internationaux",
+      "description": "Un réseau d'universités et d'instituts de recherche de premier plan."
+    }
+  },
+  "admin": {
+    "title": "Administration",
+    "logout": "Se déconnecter",
+    "menuAria": "Menu",
+    "exit": "Quitter",
+    "programmes": {
+      "title": "Gestion des Programmes",
+      "description": "Gérez les programmes de formation",
+      "create": "Créer un programme",
+      "edit": "Modifier le programme",
+      "delete": "Supprimer le programme",
+      "confirmDelete": "Êtes-vous sûr de vouloir supprimer ce programme ?",
+      "noData": "Aucun programme disponible",
+      "fields": {
+        "titre": "Titre",
+        "description": "Description",
+        "niveau": "Niveau",
+        "duree": "Durée",
+        "credits": "Crédits ECTS"
+      }
+    },
+    "dashboard": {
+      "title": "Tableau de bord",
+      "description": "Vue d'ensemble et gestion des contenus du portail.",
+      "backToSite": "Voir le site visiteur",
+      "about": {
+        "title": "À propos de cette interface",
+        "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
+      }
+    },
+    "login": {
+      "brand": "Espace administrateur",
+      "title": "Espace Administration",
+      "subtitle": "Connectez-vous pour accéder au tableau de bord",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "submit": "Se connecter",
+      "errorRequired": "Veuillez remplir tous les champs",
+      "emailPlaceholder": "admin@esi.dz",
+      "showPassword": "Afficher",
+      "hidePassword": "Masquer",
+      "forgotPassword": "Mot de passe oublié ?",
+      "errorInvalid": "Identifiants incorrects",
+      "loading": "Connexion en cours...",
+      "secureConnection": "Connexion sécurisée",
+      "footer": "© {{year}} ESI Coopération Internationale"
+    },
+    "crud": {
+      "actions": "Actions",
+      "loading": "Chargement…",
+      "empty": "Aucun élément.",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "add": "+ Ajouter",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "confirmDelete": "Supprimer cet élément ?",
+      "mockNotice": "gestion en mémoire",
+      "modalEdit": "Modifier",
+      "modalAdd": "Ajouter",
+      "listPlaceholder": "Séparés par des virgules",
+      "selectPlaceholder": "—",
+      "itemsCount_one": "{{count}} élément",
+      "itemsCount_other": "{{count}} éléments"
+    },
+    "nav": {
+      "menuAria": "Ouvrir le menu",
+      "admin": "Administration",
+      "title": "Panneau d'administration",
+      "dashboard": "Tableau de bord",
+      "partners": "Partenaires",
+      "projects": "Projets",
+      "programmes": "Programmes",
+      "calls": "Appels à projets",
+      "mobility": "Mobilités",
+      "news": "Actualités & événements",
+      "documents": "Documents",
+      "agreements": "Accords",
+      "users": "Utilisateurs",
+      "roles": "Rôles & permissions",
+      "school": "Présentation de l'école",
+      "testAccess": "Tester RBAC",
+      "audit": "Journal d'audit",
+      "settings": "Paramètres",
+      "changeLanguage": "Changer la langue",
+      "lightMode": "Mode clair",
+      "darkMode": "Mode sombre",
+      "user": "Utilisateur",
+      "logout": "Se déconnecter",
+      "administration": "Administration",
+      "backToSite": "Voir le site"
+    },
+    "agreementsPage": {
+      "title": "Gestion des Accords",
+      "exportExcel": "Exporter Excel",
+      "newAgreement": "Nouvel Accord",
+      "previewLabel": "Aperçu traduction :",
+      "stats": {
+        "total": "Total",
+        "published": "Publiés",
+        "drafts": "Brouillons",
+        "archived": "Archivés"
+      },
+      "expiringAlert_one": "{{count}} accord expirant dans 30 jours",
+      "expiringAlert_other": "{{count}} accords expirant dans 30 jours",
+      "filters": {
+        "allPartners": "Tous les partenaires",
+        "allStatuses": "Tous les statuts",
+        "totalLabel": "Total : {{count}}",
+        "activeLabel": "Actifs : {{count}}"
+      },
+      "table": {
+        "titre": "Titre",
+        "partenaire": "Partenaire",
+        "type": "Type",
+        "debut": "Début",
+        "fin": "Fin",
+        "joursRestants": "Jours restants",
+        "statut": "Statut",
+        "publication": "Publication",
+        "fichier": "Fichier",
+        "traductions": "Traductions",
+        "actions": "Actions"
+      },
+      "alerts": {
+        "expiredSince_one": "Expiré depuis {{count}} jour",
+        "expiredSince_other": "Expiré depuis {{count}} jours",
+        "expiresIn_one": "Expire dans {{count}} jour",
+        "expiresIn_other": "Expire dans {{count}} jours",
+        "daysCount_one": "{{count}} jour",
+        "daysCount_other": "{{count}} jours",
+        "ok": "OK"
+      },
+      "file": {
+        "view": "Voir",
+        "viewTooltip": "Voir le fichier PDF",
+        "download": "Télécharger",
+        "downloadTooltip": "Télécharger le PDF",
+        "none": "Aucun fichier"
+      },
+      "modal": {
+        "newTitle": "Nouvel accord",
+        "editTitle": "Modifier l'accord",
+        "titre": "Titre *",
+        "partner": "Partenaire *",
+        "selectPartner": "Sélectionner un partenaire",
+        "typePlaceholder": "Ex: Accord de partenariat",
+        "dateSignature": "Date de signature",
+        "dateDebut": "Date de début",
+        "dateFin": "Date de fin",
+        "terms": "Termes et conditions",
+        "filePdf": "Fichier PDF",
+        "fileLabel": "Fichier : {{name}}",
+        "publicationStatus": "Statut de publication",
+        "saving": "Sauvegarde..."
+      },
+      "translationsModal": {
+        "title": "Traductions — {{titre}}",
+        "tooltip": "Voir / modifier les traductions",
+        "saving": "..."
+      },
+      "messages": {
+        "noFileAvailable": "Aucun fichier disponible",
+        "downloadFailed": "Impossible de télécharger ({{status}})",
+        "downloadError": "Erreur lors du téléchargement",
+        "translationsLoadError": "Erreur de chargement des traductions",
+        "translationsSaveError": "Erreur lors de l'enregistrement",
+        "loadError": "Erreur lors du chargement des données",
+        "noPdf": "Aucun fichier PDF pour l'accord \"{{titre}}\"",
+        "downloadStarted": "Téléchargement de \"{{titre}}\" commencé",
+        "noAgreementsToExport": "Aucun accord à exporter",
+        "exportSuccess": "Export Excel réussi : {{fileName}}",
+        "exportError": "Erreur lors de l'export : {{message}}",
+        "uploadSuccess": "Fichier uploadé avec succès",
+        "uploadError": "Erreur lors de l'upload : {{message}}",
+        "titleRequired": "Le titre est requis",
+        "partnerRequired": "Le partenaire est requis",
+        "endDateError": "La date de fin doit être postérieure à la date de début",
+        "updateSuccess": "Accord mis à jour avec succès",
+        "createSuccess": "Accord créé avec succès",
+        "saveError": "Erreur lors de la sauvegarde",
+        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet accord ?",
+        "deleteSuccess": "Accord supprimé avec succès",
+        "deleteError": "Erreur lors de la suppression"
+      },
+      "emptyState": "Aucun accord trouvé",
+      "excelExport": {
+        "id": "ID",
+        "titre": "Titre",
+        "partenaire": "Partenaire",
+        "type": "Type",
+        "dateDebut": "Date de début",
+        "dateFin": "Date de fin",
+        "joursRestants": "Jours restants",
+        "statut": "Statut",
+        "statutPublication": "Statut publication",
+        "fichierPdf": "Fichier PDF",
+        "description": "Description"
+      }
+    }
+  },
   "navbar": {
     "homeAria": "Accueil ESI",
     "brandLine1": "Coopération",
@@ -124,75 +411,6 @@
       "description": "Visualisez la répartition géographique de nos établissements partenaires à travers le monde."
     }
   },
-  "home": {
-    "hero": {
-      "eyebrow": "École Supérieure en Informatique",
-      "title": "Portail de la coopération internationale",
-      "description": "Centralisez et découvrez l'ensemble des activités internationales de l'école : projets de recherche, appels à projets, opportunités de mobilité et partenariats académiques à travers le monde.",
-      "ctaCalls": "Voir les appels à projets",
-      "ctaMobility": "Explorer les mobilités",
-      "brandTitle": "ESI Coopération Internationale",
-      "slideAria": "Aller à la diapositive {{number}}",
-      "slides": [
-        {
-          "eyebrow": "Bienvenue",
-          "title": "Portail de la coopération internationale",
-          "description": "📋 Explorez les appels à projets et les opportunités de mobilité académique. Découvrez un monde de possibilités pour votre carrière professionnelle."
-        },
-        {
-          "eyebrow": "Opportunités",
-          "title": "Mobilités internationales",
-          "description": "Participez à des échanges académiques dans plus de 50 pays. Construisez votre réseau international et enrichissez votre expérience."
-        },
-        {
-          "eyebrow": "Partenaires",
-          "title": "Réseau mondial",
-          "description": "Collaborez avec les meilleures universités et institutions du monde. Une plateforme pour bâtir des amitiés durables."
-        },
-        {
-          "eyebrow": "Projets",
-          "title": "Recherche et innovation",
-          "description": "Contribuez à des projets de recherche reconnus internationalement. Faites la différence dans votre domaine d'expertise."
-        }
-      ]
-    },
-    "agreements": {
-      "eyebrow": "Conventions",
-      "title": "Nos accords internationaux",
-      "description": "Découvrez l'ensemble des conventions signées avec nos partenaires internationaux.",
-      "cta": "Voir tous les accords"
-    },
-    "stats": {
-      "partners": "Partenaires internationaux",
-      "projects": "Projets de recherche actifs",
-      "mobility": "Mobilités par an",
-      "countries": "Pays partenaires"
-    },
-    "calls": {
-      "eyebrow": "Opportunités",
-      "title": "Appels à projets ouverts",
-      "description": "Financements et programmes actuellement accessibles aux chercheurs et étudiants.",
-      "seeAll": "Tous les appels"
-    },
-    "mobility": {
-      "eyebrow": "Mobilité",
-      "title": "Opportunités de mobilité",
-      "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement à l'international.",
-      "seeAll": "Toutes les mobilités",
-      "spots": "{{count}} places disponibles"
-    },
-    "news": {
-      "eyebrow": "En ce moment",
-      "title": "Actualités & événements",
-      "description": "Les dernières nouvelles de la coopération internationale de l'école.",
-      "seeAll": "Toutes les actualités"
-    },
-    "partners": {
-      "eyebrow": "Réseau",
-      "title": "Nos partenaires internationaux",
-      "description": "Un réseau d'universités et d'instituts de recherche de premier plan."
-    }
-  },
   "projets": {
     "eyebrow": "Recherche",
     "title": "Projets de recherche",
@@ -268,190 +486,6 @@
     "title": "Page introuvable",
     "text": "La page que vous recherchez n'existe pas ou a été déplacée.",
     "backHome": "Retour à l'accueil"
-  },
-  "admin": {
-    "title": "Administration",
-    "logout": "Se déconnecter",
-    "menuAria": "Menu",
-    "exit": "Quitter",
-    "dashboard": {
-      "title": "Tableau de bord",
-      "description": "Vue d'ensemble et gestion des contenus du portail.",
-      "backToSite": "Voir le site visiteur",
-      "about": {
-        "title": "À propos de cette interface",
-        "text": "Cette interface d'administration simule des opérations CRUD (créer, lire, modifier, supprimer) en mémoire. Les modifications ne sont pas persistées : elles disparaissent au rechargement de la page. La couche de services (<code>/src/services</code>) est prête à être connectée à une API REST externe."
-      }
-    },
-    "login": {
-      "brand": "Espace administrateur",
-      "title": "Espace Administration",
-      "subtitle": "Connectez-vous pour accéder au tableau de bord",
-      "email": "Adresse e-mail",
-      "password": "Mot de passe",
-      "submit": "Se connecter",
-      "errorRequired": "Veuillez remplir tous les champs",
-      "emailPlaceholder": "admin@esi.dz",
-      "showPassword": "Afficher",
-      "hidePassword": "Masquer",
-      "forgotPassword": "Mot de passe oublié ?",
-      "errorInvalid": "Identifiants incorrects",
-      "loading": "Connexion en cours...",
-      "secureConnection": "Connexion sécurisée",
-      "footer": "© {{year}} ESI Coopération Internationale"
-    },
-    "crud": {
-      "actions": "Actions",
-      "loading": "Chargement…",
-      "empty": "Aucun élément.",
-      "edit": "Modifier",
-      "delete": "Supprimer",
-      "add": "+ Ajouter",
-      "cancel": "Annuler",
-      "save": "Enregistrer",
-      "confirmDelete": "Supprimer cet élément ?",
-      "mockNotice": "gestion en mémoire",
-      "modalEdit": "Modifier",
-      "modalAdd": "Ajouter",
-      "listPlaceholder": "Séparés par des virgules",
-      "selectPlaceholder": "—",
-      "itemsCount_one": "{{count}} élément",
-      "itemsCount_other": "{{count}} éléments"
-    },
-    "nav": {
-      "menuAria": "Ouvrir le menu",
-      "admin": "Administration",
-      "title": "Panneau d'administration",
-      "dashboard": "Tableau de bord",
-      "partners": "Partenaires",
-      "projects": "Projets",
-      "calls": "Appels à projets",
-      "mobility": "Mobilités",
-      "news": "Actualités & événements",
-      "documents": "Documents",
-      "agreements": "Accords",
-      "users": "Utilisateurs",
-      "roles": "Rôles & permissions",
-      "school": "Présentation de l'école",
-      "testAccess": "Tester RBAC",
-      "audit": "Journal d'audit",
-      "settings": "Paramètres",
-      "changeLanguage": "Changer la langue",
-      "lightMode": "Mode clair",
-      "darkMode": "Mode sombre",
-      "user": "Utilisateur",
-      "logout": "Se déconnecter",
-      "administration": "Administration",
-      "backToSite": "Voir le site"
-    },
-    "agreementsPage": {
-      "title": "Gestion des Accords",
-      "exportExcel": "Exporter Excel",
-      "newAgreement": "Nouvel Accord",
-      "previewLabel": "Aperçu traduction :",
-      "stats": {
-        "total": "Total",
-        "published": "Publiés",
-        "drafts": "Brouillons",
-        "archived": "Archivés"
-      },
-      "expiringAlert_one": "{{count}} accord expirant dans 30 jours",
-"expiringAlert_other": "{{count}} accords expirant dans 30 jours",
-      "filters": {
-        "allPartners": "Tous les partenaires",
-        "allStatuses": "Tous les statuts",
-        "totalLabel": "Total : {{count}}",
-        "activeLabel": "Actifs : {{count}}"
-      },
-      "table": {
-        "titre": "Titre",
-        "partenaire": "Partenaire",
-        "type": "Type",
-        "debut": "Début",
-        "fin": "Fin",
-        "joursRestants": "Jours restants",
-        "statut": "Statut",
-        "publication": "Publication",
-        "fichier": "Fichier",
-        "traductions": "Traductions",
-        "actions": "Actions"
-      },
-      "alerts": {
-        "expiredSince_one": "Expiré depuis {{count}} jour",
-        "expiredSince_other": "Expiré depuis {{count}} jours",
-        "expiresIn_one": "Expire dans {{count}} jour",
-        "expiresIn_other": "Expire dans {{count}} jours",
-        "daysCount_one": "{{count}} jour",
-        "daysCount_other": "{{count}} jours",
-        "ok": "OK"
-      },
-      "file": {
-        "view": "Voir",
-        "viewTooltip": "Voir le fichier PDF",
-        "download": "Télécharger",
-        "downloadTooltip": "Télécharger le PDF",
-        "none": "Aucun fichier"
-      },
-      "modal": {
-        "newTitle": "Nouvel accord",
-        "editTitle": "Modifier l'accord",
-        "titre": "Titre *",
-        "partner": "Partenaire *",
-        "selectPartner": "Sélectionner un partenaire",
-        "typePlaceholder": "Ex: Accord de partenariat",
-        "dateSignature": "Date de signature",
-        "dateDebut": "Date de début",
-        "dateFin": "Date de fin",
-        "terms": "Termes et conditions",
-        "filePdf": "Fichier PDF",
-        "fileLabel": "Fichier : {{name}}",
-        "publicationStatus": "Statut de publication",
-        "saving": "Sauvegarde..."
-      },
-      "translationsModal": {
-        "title": "Traductions — {{titre}}",
-        "tooltip": "Voir / modifier les traductions",
-        "saving": "..."
-      },
-      "messages": {
-        "noFileAvailable": "Aucun fichier disponible",
-        "downloadFailed": "Impossible de télécharger ({{status}})",
-        "downloadError": "Erreur lors du téléchargement",
-        "translationsLoadError": "Erreur de chargement des traductions",
-        "translationsSaveError": "Erreur lors de l'enregistrement",
-        "loadError": "Erreur lors du chargement des données",
-        "noPdf": "Aucun fichier PDF pour l'accord \"{{titre}}\"",
-        "downloadStarted": "Téléchargement de \"{{titre}}\" commencé",
-        "noAgreementsToExport": "Aucun accord à exporter",
-        "exportSuccess": "Export Excel réussi : {{fileName}}",
-        "exportError": "Erreur lors de l'export : {{message}}",
-        "uploadSuccess": "Fichier uploadé avec succès",
-        "uploadError": "Erreur lors de l'upload : {{message}}",
-        "titleRequired": "Le titre est requis",
-        "partnerRequired": "Le partenaire est requis",
-        "endDateError": "La date de fin doit être postérieure à la date de début",
-        "updateSuccess": "Accord mis à jour avec succès",
-        "createSuccess": "Accord créé avec succès",
-        "saveError": "Erreur lors de la sauvegarde",
-        "deleteConfirm": "Êtes-vous sûr de vouloir supprimer cet accord ?",
-        "deleteSuccess": "Accord supprimé avec succès",
-        "deleteError": "Erreur lors de la suppression"
-      },
-      "emptyState": "Aucun accord trouvé",
-      "excelExport": {
-        "id": "ID",
-        "titre": "Titre",
-        "partenaire": "Partenaire",
-        "type": "Type",
-        "dateDebut": "Date de début",
-        "dateFin": "Date de fin",
-        "joursRestants": "Jours restants",
-        "statut": "Statut",
-        "statutPublication": "Statut publication",
-        "fichierPdf": "Fichier PDF",
-        "description": "Description"
-      }
-    }
   },
   "school": {
     "defaultTitle": "Présentation de l'école",
@@ -653,7 +687,7 @@
   "password": "Mot de passe",
   "presentationEcole": "Présentation de l'école",
   "role": "Rôle",
-  "voir": "Voir",           
+  "voir": "Voir",
   "telecharger": "Télécharger",
   "tauxFinancement": "Taux de financement",
   "typeAction": "Type d'action",
@@ -661,22 +695,22 @@
   "adminRoles": "Rôles & permissions",
   "adminTestAccess": "Tester RBAC",
   "adminAuditLog": "Journal d'audit",
-    "statut_publie": "Publié",
-    "statut_archive": "Archivé",
-    "statut_brouillon": "Brouillon",
-    "voir_document": "Voir le document",
-    "telecharger_document": "Télécharger le document",
-    "traductions": "Traductions",
-    "traductions_titre_modal": "Traductions",
-    "voir_modifier_traductions": "Voir / modifier les traductions",
-    "apercu_traduction": "Aperçu traduction :",
-    "aucun_fichier": "Aucun fichier",
-    "annuler": "Annuler",
-    "enregistrer": "Enregistrer",
-    "erreur_chargement_traductions": "Erreur de chargement des traductions",
-    "erreur_enregistrement_traductions": "Erreur lors de l'enregistrement",
-    "erreur_upload": "Erreur lors de l'upload",
-    "date_expiration_help": "Format : JJ/MM/AAAA — Exemple : 31/12/2027",
+  "statut_publie": "Publié",
+  "statut_archive": "Archivé",
+  "statut_brouillon": "Brouillon",
+  "voir_document": "Voir le document",
+  "telecharger_document": "Télécharger le document",
+  "traductions": "Traductions",
+  "traductions_titre_modal": "Traductions",
+  "voir_modifier_traductions": "Voir / modifier les traductions",
+  "apercu_traduction": "Aperçu traduction :",
+  "aucun_fichier": "Aucun fichier",
+  "annuler": "Annuler",
+  "enregistrer": "Enregistrer",
+  "erreur_chargement_traductions": "Erreur de chargement des traductions",
+  "erreur_enregistrement_traductions": "Erreur lors de l'enregistrement",
+  "erreur_upload": "Erreur lors de l'upload",
+  "date_expiration_help": "Format : JJ/MM/AAAA — Exemple : 31/12/2027",
   "agreementsList": {
     "eyebrow": "Partenariats",
     "title": "Nos accords de partenariat",
@@ -703,7 +737,6 @@
     "confirmDelete": "Supprimer cette notification ?",
     "close": "Fermer",
     "markAllRead": "Tout marquer comme lu",
-    
     "time": {
       "now": "À l'instant",
       "secondsAgo_one": "Il y a {{count}} seconde",
