@@ -71,7 +71,7 @@ exports.getTranslations = async (req, res) => {
     const rows = await programmesModel.findTranslations(req.params.id);
     const result = {};
     rows.forEach(r => {
-      result[r.lang_code] = { name: r.name, description: r.description };
+      result[r.lang_code] = { name: r.name, description: r.description, organisme_financeur: r.organisme_financeur };
     });
     res.json(result);
   } catch (err) { sendError(res, err); }

@@ -22,7 +22,6 @@
       "mobility": "Mobilités par an",
       "countries": "Pays partenaires"
     },
-    
     "hero": {
       "eyebrow": "École Supérieure en Informatique",
       "title": "Portail de la coopération internationale",
@@ -88,15 +87,37 @@
   },
   "admin": {
     "homeSlides": {
-    "title": "Slides de la page d'accueil",
-    "create": "Ajouter une slide",
-    "edit": "Modifier la slide",
-    "publish": "Publier",
-    "archive": "Archiver",
-    "order": "Ordre",
-    "badge": "Badge",
-    "status": "Statut"
-  },
+      "title": "Slides de la page d'accueil",
+      "create": "Ajouter une slide",
+      "edit": "Modifier la slide",
+      "publish": "Publier",
+      "archive": "Archiver",
+      "order": "Ordre",
+      "badge": "Badge",
+      "status": "Statut",
+      "icon": "Icône",
+      "titleFr": "Titre (FR)",
+      "descriptionFr": "Description (FR)",
+      "titleEn": "Titre (EN)",
+      "descriptionEn": "Description (EN)",
+      "titleAr": "Titre (AR)",
+      "descriptionAr": "Description (AR)",
+      "badgePlaceholder": "Ex: PROJETS",
+      "badges": {
+  "PROJETS": "Projets",
+  "DOCS": "Documents",
+  "PARTENARIATS": "Partenariats",
+  "MOBILITE": "Mobilité"
+},
+      "icons": {
+        "GraduationCap": "Diplôme",
+        "Megaphone": "Mégaphone",
+        "Globe": "Globe",
+        "FlaskConical": "Recherche",
+        "Users": "Partenaires",
+        "BookOpen": "Documents"
+      }
+    },
     "title": "Administration",
     "logout": "Se déconnecter",
     "menuAria": "Menu",
@@ -144,6 +165,7 @@
       "footer": "© {{year}} ESI Coopération Internationale"
     },
     "crud": {
+      "viewEditTranslations": "Voir / modifier les traductions",
       "actions": "Actions",
       "loading": "Chargement…",
       "empty": "Aucun élément.",
@@ -158,8 +180,34 @@
       "modalAdd": "Ajouter",
       "listPlaceholder": "Séparés par des virgules",
       "selectPlaceholder": "—",
-      "itemsCount_one": "{{count}} élément",
-      "itemsCount_other": "{{count}} éléments"
+      "itemsCount_one": "élément",
+      "itemsCount_other": "éléments",
+      "currentFile": "Fichier actuel",
+      "create": "Créer",
+      "publicationStatusTooltip": "Statut de publication",
+      "publishedLabel": "Publié",
+      "archivedLabel": "Archivé",
+      "stats": {
+        "total": "Total",
+        "published": "Publiés",
+        "drafts": "Brouillons",
+        "archived": "Archivés"
+      },
+      "errors": {
+        "delete": "Erreur lors de la suppression",
+        "publish": "Erreur lors de la publication",
+        "archive": "Erreur lors de l'archivage",
+        "save": "Erreur lors de l'enregistrement",
+        "geocode": "Adresse introuvable",
+        "loadTranslations": "Erreur de chargement"
+      },
+      "geocode": {
+        "button": "Localiser",
+        "found": "Trouvé : {{place}}",
+        "savedCoords": "Coordonnées enregistrées : {{lat}}, {{lng}}"
+      },
+      "itemsPublished_one": "publié",
+      "itemsPublished_other": "publiés"
     },
     "nav": {
       "menuAria": "Ouvrir le menu",
@@ -441,7 +489,9 @@
       "budget": "Budget",
       "period": "Période"
     },
-    "featured": "À la une"
+    "featured": "À la une",
+    "seeAll": "Voir tous les projets",
+    "learnMore": "En savoir plus"
   },
   "actualites": {
     "eyebrow": "Actualités",

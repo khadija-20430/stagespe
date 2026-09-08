@@ -1,5 +1,4 @@
 {
-  
   "programmes": "البرامج",
   "programmesPage": {
     "eyebrow": "التكوين",
@@ -87,16 +86,38 @@
     }
   },
   "admin": {
-     "homeSlides": {
-    "title": "شرائح الصفحة الرئيسية",
-    "create": "إضافة شريحة",
-    "edit": "تعديل الشريحة",
-    "publish": "نشر",
-    "archive": "أرشفة",
-    "order": "الترتيب",
-    "badge": "الشارة",
-    "status": "الحالة"
-  },
+    "homeSlides": {
+      "title": "شرائح الصفحة الرئيسية",
+      "create": "إضافة شريحة",
+      "edit": "تعديل الشريحة",
+      "publish": "نشر",
+      "archive": "أرشفة",
+      "order": "الترتيب",
+      "badge": "الشارة",
+      "status": "الحالة",
+      "icon": "أيقونة",
+      "titleFr": "العنوان (بالفرنسية)",
+      "descriptionFr": "الوصف (بالفرنسية)",
+      "titleEn": "العنوان (بالإنجليزية)",
+      "descriptionEn": "الوصف (بالإنجليزية)",
+      "titleAr": "العنوان (بالعربية)",
+      "descriptionAr": "الوصف (بالعربية)",
+      "badgePlaceholder": "مثال: المشاريع",
+      "badges": {
+  "PROJETS": "المشاريع",
+  "DOCS": "الوثائق",
+  "PARTENARIATS": "الشراكات",
+  "MOBILITE": "التنقل"
+},
+      "icons": {
+        "GraduationCap": "تخرج",
+        "Megaphone": "إعلان",
+        "Globe": "عالمي",
+        "FlaskConical": "بحث",
+        "Users": "شركاء",
+        "BookOpen": "وثائق"
+      }
+    },
     "title": "الإدارة",
     "logout": "تسجيل الخروج",
     "menuAria": "القائمة",
@@ -144,6 +165,7 @@
       "footer": "© {{year}} التعاون الدولي - المدرسة الوطنية العليا للإعلام الآلي"
     },
     "crud": {
+      "viewEditTranslations": "عرض / تعديل الترجمات",
       "actions": "إجراءات",
       "loading": "جارٍ التحميل…",
       "empty": "لا توجد عناصر.",
@@ -158,11 +180,40 @@
       "modalAdd": "إضافة",
       "listPlaceholder": "مفصولة بفواصل",
       "selectPlaceholder": "—",
-      "itemsCount_one": "عنصر واحد",
+      "itemsCount_one": "عنصر",
       "itemsCount_two": "عنصران",
-      "itemsCount_few": "{{count}} عناصر",
-      "itemsCount_many": "{{count}} عنصرًا",
-      "itemsCount_other": "{{count}} عنصر"
+      "itemsCount_few": "عناصر",
+      "itemsCount_many": "عنصرًا",
+      "itemsCount_other": "عنصر",
+      "currentFile": "الملف الحالي",
+      "create": "إنشاء",
+      "publicationStatusTooltip": "حالة النشر",
+      "publishedLabel": "منشور",
+      "archivedLabel": "مؤرشف",
+      "stats": {
+        "total": "الإجمالي",
+        "published": "المنشورة",
+        "drafts": "المسودات",
+        "archived": "المؤرشفة"
+      },
+      "errors": {
+        "delete": "خطأ أثناء الحذف",
+        "publish": "خطأ أثناء النشر",
+        "archive": "خطأ أثناء الأرشفة",
+        "save": "خطأ أثناء الحفظ",
+        "geocode": "العنوان غير موجود",
+        "loadTranslations": "خطأ أثناء التحميل"
+      },
+      "geocode": {
+        "button": "تحديد الموقع",
+        "found": "تم العثور على: {{place}}",
+        "savedCoords": "تم حفظ الإحداثيات: {{lat}}, {{lng}}"
+      },
+      "itemsPublished_one": "منشور",
+      "itemsPublished_two": "منشوران",
+      "itemsPublished_few": "منشورات",
+      "itemsPublished_many": "منشورًا",
+      "itemsPublished_other": "منشور"
     },
     "nav": {
       "menuAria": "فتح القائمة",
@@ -460,7 +511,9 @@
       "budget": "الميزانية",
       "period": "الفترة"
     },
-    "featured": "مُبرز"
+    "featured": "مُبرز",
+    "seeAll": "عرض جميع المشاريع",
+    "learnMore": "اعرف المزيد"
   },
   "actualites": {
     "eyebrow": "الأخبار",

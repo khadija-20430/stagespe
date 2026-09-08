@@ -15,7 +15,6 @@
       "description": "Discover our excellence programs",
       "seeAll": "See all programs"
     },
-    
     "stats": {
       "partners": "International partners",
       "projects": "Active research projects",
@@ -87,16 +86,38 @@
     }
   },
   "admin": {
-      "homeSlides": {
-    "title": "Homepage Slides",
-    "create": "Add a slide",
-    "edit": "Edit slide",
-    "publish": "Publish",
-    "archive": "Archive",
-    "order": "Order",
-    "badge": "Badge",
-    "status": "Status"
-  },
+    "homeSlides": {
+      "title": "Homepage Slides",
+      "create": "Add a slide",
+      "edit": "Edit slide",
+      "publish": "Publish",
+      "archive": "Archive",
+      "order": "Order",
+      "badge": "Badge",
+      "status": "Status",
+      "icon": "Icon",
+      "titleFr": "Title (FR)",
+      "descriptionFr": "Description (FR)",
+      "titleEn": "Title (EN)",
+      "descriptionEn": "Description (EN)",
+      "titleAr": "Title (AR)",
+      "descriptionAr": "Description (AR)",
+      "badgePlaceholder": "e.g. PROJECTS",
+      "badges": {
+  "PROJETS": "Projects",
+  "DOCS": "Documents",
+  "PARTENARIATS": "Partnerships",
+  "MOBILITE": "Mobility"
+},
+      "icons": {
+        "GraduationCap": "Graduation",
+        "Megaphone": "Announcement",
+        "Globe": "Globe",
+        "FlaskConical": "Research",
+        "Users": "Partners",
+        "BookOpen": "Documents"
+      }
+    },
     "title": "Administration",
     "logout": "Log out",
     "menuAria": "Menu",
@@ -144,6 +165,7 @@
       "footer": "© {{year}} ESI International Cooperation"
     },
     "crud": {
+      "viewEditTranslations": "View / edit translations",
       "actions": "Actions",
       "loading": "Loading…",
       "empty": "No items.",
@@ -158,8 +180,34 @@
       "modalAdd": "Add",
       "listPlaceholder": "Comma-separated",
       "selectPlaceholder": "—",
-      "itemsCount_one": "{{count}} item",
-      "itemsCount_other": "{{count}} items"
+      "itemsCount_one": "item",
+      "itemsCount_other": "items",
+      "currentFile": "Current file",
+      "create": "Create",
+      "publicationStatusTooltip": "Publication status",
+      "publishedLabel": "Published",
+      "archivedLabel": "Archived",
+      "stats": {
+        "total": "Total",
+        "published": "Published",
+        "drafts": "Drafts",
+        "archived": "Archived"
+      },
+      "errors": {
+        "delete": "Error while deleting",
+        "publish": "Error while publishing",
+        "archive": "Error while archiving",
+        "save": "Error while saving",
+        "geocode": "Address not found",
+        "loadTranslations": "Error while loading"
+      },
+      "geocode": {
+        "button": "Locate",
+        "found": "Found: {{place}}",
+        "savedCoords": "Saved coordinates: {{lat}}, {{lng}}"
+      },
+      "itemsPublished_one": "published",
+      "itemsPublished_other": "published"
     },
     "nav": {
       "menuAria": "Open menu",
@@ -441,7 +489,9 @@
       "budget": "Budget",
       "period": "Period"
     },
-    "featured": "Featured"
+    "featured": "Featured",
+    "seeAll": "See all projects",
+    "learnMore": "Learn more"
   },
   "actualites": {
     "eyebrow": "News",
@@ -698,6 +748,8 @@
   "password": "Password",
   "presentationEcole": "School presentation",
   "role": "Role",
+  "voir": "View",
+  "telecharger": "Download",
   "tauxFinancement": "Funding rate",
   "typeAction": "Action type",
   "users": "Users",
@@ -707,9 +759,7 @@
   "statut_publie": "Published",
   "statut_archive": "Archived",
   "statut_brouillon": "Draft",
-  "voir": "View",
   "voir_document": "View document",
-  "telecharger": "Download",
   "telecharger_document": "Download document",
   "traductions": "Translations",
   "traductions_titre_modal": "Translations",

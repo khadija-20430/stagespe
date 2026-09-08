@@ -11,14 +11,15 @@ import {
 } from '../../services/api.js';
 import { toProgrammePayload } from '../../services/mappers.js';
 
-const TRANSLATION_FIELDS = [
-  { name: 'name', label: 'Nom' },
-  { name: 'description', label: 'Description' },
+const getTranslationFields = (t) => [
+  { name: 'name', label: t('nom') },
+  { name: 'organisme_financeur', label: t('organismeFinanceur') },
+  { name: 'description', label: t('description') },
 ];
 
 const emptyTranslationSet = () => ({
-  en: { name: '', description: '' },
-  ar: { name: '', description: '' },
+  en: { name: '', description: '', organisme_financeur: '' },
+  ar: { name: '', description: '', organisme_financeur: '' },
 });
 
 /* ============================================================
@@ -54,6 +55,7 @@ const publicationLabel = (status, t) => {
 export default function ManageProgrammes() {
   const { t, i18n } = useTranslation();
   const previewLang = i18n.language;
+  const translationFields = getTranslationFields(t);
   const [previewData, setPreviewData] = useState({});
 
   const [translationsItem, setTranslationsItem] = useState(null);
@@ -95,7 +97,7 @@ export default function ManageProgrammes() {
         ar: { ...prev.ar, ...(existing.ar || {}) },
       }));
     } catch (err) {
-      setTranslationsError(err.message || 'Erreur de chargement');
+      setTranslationsError(err.message || t('admin.crud.errors.loadTranslations'));
     } finally {
       setTranslationsLoading(false);
     }
@@ -121,7 +123,7 @@ export default function ManageProgrammes() {
       refreshPreview();
       setTranslationsItem(null);
     } catch (err) {
-      setTranslationsError(err.message || "Erreur lors de l'enregistrement");
+      setTranslationsError(err.message || t('admin.crud.errors.save'));
     } finally {
       setTranslationsSaving(false);
     }
@@ -157,9 +159,11 @@ export default function ManageProgrammes() {
             key: 'name', label: t('nom'),
             render: (i) => previewData[i.id]?.name || i.name,
           },
-          { key: 'acronym', label: 'Acronyme', render: (i) => i.acronym || '—' },
-          { key: 'organismeFinanceur', label: t('organismeFinanceur'), render: (i) => i.organismeFinanceur || '—' },
-          { key: 'documentsCount', label: 'Documents', render: (i) => i.documentsCount ?? 0 },
+          { key: 'acronym', label: t('acronyme'), render: (i) => i.acronym || '—' },
+{
+  key: 'organismeFinanceur', label: t('organismeFinanceur'),
+  render: (i) => previewData[i.id]?.organismeFinanceur || i.organismeFinanceur || '—',
+},          { key: 'documentsCount', label: t('admin.nav.documents'), render: (i) => i.documentsCount ?? 0 },
           {
             key: 'statut_publication',
             label: t('statut'),
@@ -178,7 +182,7 @@ export default function ManageProgrammes() {
             render: (i) => (
               <button type="button" onClick={() => openTranslations(i)}
                 className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
-                title="Voir / modifier les traductions">
+                title={t('admin.crud.viewEditTranslations')}>
                 <Languages size={18} />
               </button>
             ),
@@ -186,7 +190,7 @@ export default function ManageProgrammes() {
         ]}
         fields={[
           { name: 'name', label: t('nom'), type: 'text', required: true },
-          { name: 'acronym', label: 'Acronyme', type: 'text' },
+          { name: 'acronym', label: t('acronyme'), type: 'text' },
           { name: 'organismeFinanceur', label: t('organismeFinanceur'), type: 'text' },
           { name: 'description', label: t('description'), type: 'textarea' },
           { name: 'siteWeb', label: t('siteWeb'), type: 'text' },
@@ -223,7 +227,7 @@ export default function ManageProgrammes() {
                   <Loader2 size={28} className="animate-spin" />
                 </div>
               ) : (
-                TRANSLATION_FIELDS.map((f) => (
+                translationFields.map((f) => (
                   <div key={f.name}>
                     <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
                       {f.label}

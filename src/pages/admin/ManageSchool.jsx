@@ -69,7 +69,7 @@ export default function ManageSchool() {
                     setPresentation(null);
                 }
             })
-            .catch((err) => setError(err.message || 'Erreur de chargement'))
+            .catch((err) => setError(err.message || t('erreur_chargement_traductions')))
             .finally(() => setLoading(false));
     };
 
@@ -93,7 +93,7 @@ export default function ManageSchool() {
             if (file && file.size > 0) {
                 formData.append('file', file);
             } else {
-                alert('Un fichier est obligatoire');
+                alert(t('erreur_upload'));
                 setUploading(false);
                 return;
             }
@@ -101,7 +101,7 @@ export default function ManageSchool() {
             await createSchoolPresentation(formData);
             load();
         } catch (err) {
-            alert(err.message || 'Erreur lors de la création');
+            alert(err.message || t('erreur_chargement_traductions'));
         } finally {
             setUploading(false);
         }
@@ -116,7 +116,7 @@ export default function ManageSchool() {
             await updateSchoolVisibilite(presentation.id, next);
             load();
         } catch (err) {
-            alert(err.message || 'Erreur lors du changement de visibilité');
+            alert(err.message || t('erreur_enregistrement_traductions'));
         } finally {
             setSavingVisibilite(false);
         }
@@ -143,7 +143,7 @@ export default function ManageSchool() {
             if (file && file.size > 0) {
                 formData.append('file', file);
             } else {
-                alert('Un fichier est obligatoire');
+                alert(t('erreur_upload'));
                 setUploading(false);
                 return;
             }
@@ -151,7 +151,7 @@ export default function ManageSchool() {
             await addSchoolTranslation(presentation.id, formData);
             load();
         } catch (err) {
-            alert(err.message || "Erreur lors de l'ajout de la traduction");
+            alert(err.message || t('erreur_enregistrement_traductions'));
         } finally {
             setUploading(false);
         }
@@ -167,7 +167,7 @@ export default function ManageSchool() {
             });
             load();
         } catch (err) {
-            alert(err.message || "Erreur lors de l'enregistrement");
+            alert(err.message || t('erreur_enregistrement_traductions'));
         }
     };
 
@@ -178,19 +178,20 @@ export default function ManageSchool() {
             await replaceSchoolFile(currentTranslation.id, file);
             load();
         } catch (err) {
-            alert(err.message || 'Erreur lors du remplacement du fichier');
+            alert(err.message || t('erreur_upload'));
         } finally {
             setUploading(false);
         }
     };
 
     const handleDeleteTranslation = async () => {
-        if (!window.confirm(`Supprimer la traduction en ${activeLang} ? Cette action est irréversible.`)) return;
+        const langLabel = LANGUAGES.find((l) => l.code === activeLang).label;
+        if (!window.confirm(`${t('traductions')} ${langLabel} ?`)) return;
         try {
             await deleteSchoolTranslation(currentTranslation.id);
             load();
         } catch (err) {
-            alert(err.message || 'Erreur lors de la suppression');
+            alert(err.message || t('erreur_chargement_traductions'));
         }
     };
 
@@ -203,22 +204,22 @@ export default function ManageSchool() {
             const data = await getSchoolRevisions(currentTranslation.id);
             setRevisions(data);
         } catch (err) {
-            alert(err.message || "Erreur lors du chargement de l'historique");
+            alert(err.message || t('erreur_chargement_traductions'));
         }
     };
 
     const handleDeletePresentation = async () => {
-        if (!window.confirm('Supprimer toute la présentation (toutes langues confondues) ? Cette action est irréversible.')) return;
+        if (!window.confirm(t('admin.crud.confirmDelete'))) return;
         try {
             await deleteSchoolPresentation(presentation.id);
             load();
         } catch (err) {
-            alert(err.message || 'Erreur lors de la suppression');
+            alert(err.message || t('erreur_chargement_traductions'));
         }
     };
 
     // ================== RENDU ==================
-    if (loading) return <p className="p-6 text-slate-500">Chargement…</p>;
+    if (loading) return <p className="p-6 text-slate-500">{t('admin.crud.loading')}</p>;
     if (error) return <p className="p-6 text-red-600">{error}</p>;
 
     return (
@@ -226,19 +227,19 @@ export default function ManageSchool() {
             <div className="mb-6 flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-navy flex items-center gap-2">
                     <School size={24} className="text-cobalt" />
-                    {t('presentation_ecole') || "Présentation de l'école"}
+                    {t('presentationEcole')}
                 </h1>
 
                 {presentation && (
                     <div className="flex items-center gap-3">
                         <Badge tone={presentation.visibilite === 'public' ? 'green' : 'amber'}>
-                            {presentation.visibilite === 'public' ? 'Public' : 'Brouillon'}
+                            {presentation.visibilite === 'public' ? t('published') : t('draft')}
                         </Badge>
                         <Button onClick={toggleVisibilite} disabled={savingVisibilite}>
-                            {presentation.visibilite === 'public' ? 'Repasser en brouillon' : 'Publier'}
+                            {presentation.visibilite === 'public' ? t('statut_archive') : t('published')}
                         </Button>
                         <Button tone="danger" onClick={handleDeletePresentation}>
-                            Supprimer tout
+                            {t('admin.crud.delete')}
                         </Button>
                     </div>
                 )}
@@ -265,23 +266,23 @@ export default function ManageSchool() {
             {!presentation && (
                 <Card className="max-w-xl p-6">
                     <p className="mb-4 text-slate-500">
-                        Aucune présentation n'existe encore. Crée la première traduction ({LANGUAGES.find((l) => l.code === activeLang).label}) pour commencer.
+                        {t('school.noContent')}
                     </p>
                     <form onSubmit={handleCreate} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Titre *</label>
-                            <input name="titre" placeholder="Titre" required className="w-full rounded border px-3 py-2" />
+                            <label className="block text-sm font-medium text-slate-700">{t('titre')} *</label>
+                            <input name="titre" placeholder={t('titre')} required className="w-full rounded border px-3 py-2" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Description *</label>
-                            <textarea name="description" placeholder="Description" rows={4} required className="w-full rounded border px-3 py-2" />
+                            <label className="block text-sm font-medium text-slate-700">{t('description')} *</label>
+                            <textarea name="description" placeholder={t('description')} rows={4} required className="w-full rounded border px-3 py-2" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Fichier PDF *</label>
+                            <label className="block text-sm font-medium text-slate-700">{t('fichier')} *</label>
                             <input name="file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required className="w-full" />
                         </div>
                         <Button type="submit" disabled={uploading}>
-                            {uploading ? 'Upload en cours...' : 'Créer la présentation'}
+                            {uploading ? t('admin.crud.loading') : t('admin.crud.create')}
                         </Button>
                     </form>
                 </Card>
@@ -291,23 +292,23 @@ export default function ManageSchool() {
             {presentation && !currentTranslation && (
                 <Card className="max-w-xl p-6">
                     <p className="mb-4 text-slate-500">
-                        Pas encore de traduction en {LANGUAGES.find((l) => l.code === activeLang).label}.
+                        {t('traductions')} - {LANGUAGES.find((l) => l.code === activeLang).label}
                     </p>
                     <form onSubmit={handleAddTranslation} className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Titre *</label>
-                            <input name="titre" placeholder="Titre" required className="w-full rounded border px-3 py-2" />
+                            <label className="block text-sm font-medium text-slate-700">{t('titre')} *</label>
+                            <input name="titre" placeholder={t('titre')} required className="w-full rounded border px-3 py-2" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Description *</label>
-                            <textarea name="description" placeholder="Description" rows={4} required className="w-full rounded border px-3 py-2" />
+                            <label className="block text-sm font-medium text-slate-700">{t('description')} *</label>
+                            <textarea name="description" placeholder={t('description')} rows={4} required className="w-full rounded border px-3 py-2" />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Fichier PDF *</label>
+                            <label className="block text-sm font-medium text-slate-700">{t('fichier')} *</label>
                             <input name="file" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx" required className="w-full" />
                         </div>
                         <Button type="submit" disabled={uploading}>
-                            {uploading ? 'Upload en cours...' : 'Ajouter cette traduction'}
+                            {uploading ? t('admin.crud.loading') : t('admin.crud.modalAdd')}
                         </Button>
                     </form>
                 </Card>
@@ -319,7 +320,7 @@ export default function ManageSchool() {
                     <Card className="p-6">
                         <form onSubmit={handleUpdateTranslation} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700">Titre *</label>
+                                <label className="block text-sm font-medium text-slate-700">{t('titre')} *</label>
                                 <input
                                     name="titre"
                                     defaultValue={currentTranslation.titre}
@@ -328,7 +329,7 @@ export default function ManageSchool() {
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-slate-700">Description *</label>
+                                <label className="block text-sm font-medium text-slate-700">{t('description')} *</label>
                                 <textarea
                                     name="description"
                                     defaultValue={currentTranslation.description}
@@ -337,13 +338,13 @@ export default function ManageSchool() {
                                     className="w-full rounded border px-3 py-2"
                                 />
                             </div>
-                            <Button type="submit">Enregistrer le texte</Button>
+                            <Button type="submit">{t('admin.crud.save')}</Button>
                         </form>
                     </Card>
 
                     <Card className="p-6">
                         <p className="mb-2 text-sm text-slate-500">
-                            Fichier actuel : {getFileName(currentTranslation.fichier_url)} · {formatBytes(currentTranslation.file_size)} · {currentTranslation.file_format?.toUpperCase()}
+                            {t('fichier')} : {getFileName(currentTranslation.fichier_url)} · {formatBytes(currentTranslation.file_size)} · {currentTranslation.file_format?.toUpperCase()}
                         </p>
                         <div className="flex flex-wrap items-center gap-3">
                             <a
@@ -352,10 +353,10 @@ export default function ManageSchool() {
                                 rel="noopener noreferrer"
                                 className="inline-flex items-center gap-1.5 text-cobalt hover:text-blue-700"
                             >
-                                <Eye size={16} /> Voir
+                                <Eye size={16} /> {t('voir')}
                             </a>
                             <label className="inline-flex items-center gap-1.5 cursor-pointer text-green-600 hover:text-green-700">
-                                <RotateCw size={16} /> Remplacer le fichier
+                                <RotateCw size={16} /> {t('telecharger')}
                                 <input
                                     type="file"
                                     accept=".pdf,.doc,.docx,.ppt,.pptx"
@@ -364,21 +365,20 @@ export default function ManageSchool() {
                                 />
                             </label>
                             <button onClick={handleShowRevisions} className="inline-flex items-center gap-1.5 text-slate-500 hover:text-slate-700">
-                                <History size={16} /> Historique
+                                <History size={16} /> {t('adminAuditLog')}
                             </button>
                             <button onClick={handleDeleteTranslation} className="inline-flex items-center gap-1.5 text-red-600 hover:text-red-700">
-                                <Trash2 size={16} /> Supprimer cette traduction
+                                <Trash2 size={16} /> {t('admin.crud.delete')}
                             </button>
                         </div>
 
                         {revisions && (
                             <div className="mt-4 border-t pt-3">
-                                {revisions.length === 0 && <p className="text-sm text-slate-400">Aucune révision antérieure.</p>}
+                                {revisions.length === 0 && <p className="text-sm text-slate-400">{t('aucun_fichier')}</p>}
                                 <ul className="space-y-2">
                                     {revisions.map((rev) => (
                                         <li key={rev.id} className="text-sm text-slate-500">
-                                            {getFileName(rev.fichier_url)} · {formatBytes(rev.file_size)} · remplacé par {rev.replaced_by_name || '—'} le{' '}
-                                            {new Date(rev.replaced_at).toLocaleString('fr-FR')}
+                                            {getFileName(rev.fichier_url)} · {formatBytes(rev.file_size)} · {t('admin.crud.modalEdit')} {rev.replaced_by_name || '—'} {t('date')} {new Date(rev.replaced_at).toLocaleString('fr-FR')}
                                         </li>
                                     ))}
                                 </ul>

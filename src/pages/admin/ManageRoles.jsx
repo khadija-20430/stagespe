@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { KeyRound } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getToken } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Button from '../../components/ui/Button.jsx';
@@ -26,10 +27,9 @@ async function apiFetch(path, options = {}) {
   return data;
 }
 
-// Page de gestion des rôles personnalisés et de leurs permissions.
-// Repose sur rolesRoutes.js (/roles) et permissionsRoutes.js (/permissions),
-// tous deux protégés par checkRole('super_admin') côté backend.
 export default function ManageRoles() {
+  const { t } = useTranslation();
+
   const [roles, setRoles] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [selectedRoleId, setSelectedRoleId] = useState(null);
@@ -61,6 +61,7 @@ export default function ManageRoles() {
 
   useEffect(() => {
     loadAll();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -86,9 +87,6 @@ export default function ManageRoles() {
     setBusyPerm(permId);
     setError('');
     try {
-      // Bascule une seule permission — appliqué immédiatement côté backend,
-      // sans cache : un admin utilisant ce rôle verra l'effet dès sa
-      // prochaine requête, pas besoin de se reconnecter.
       await apiFetch(`/roles/${selectedRoleId}/permissions/toggle`, {
         method: 'PUT',
         body: { permission_id: permId, enabled: !currentlyGranted },
@@ -129,7 +127,7 @@ export default function ManageRoles() {
 
   const removeRole = async (role) => {
     if (role.is_system) return;
-    if (!window.confirm(`Supprimer le rôle "${role.name}" ? Les admins qui l'utilisent perdront ces permissions.`)) return;
+    if (!window.confirm(t('admin.roles.deleteConfirm', { name: role.name }))) return;
     try {
       await apiFetch(`/roles/${role.id}`, { method: 'DELETE' });
       if (selectedRoleId === role.id) setSelectedRoleId(null);
@@ -143,7 +141,7 @@ export default function ManageRoles() {
     <div>
       <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
         <KeyRound size={24} className="text-cobalt" />
-        Rôles &amp; permissions
+        {t('adminRoles')}
       </h1>
 
       {error ? (
@@ -157,7 +155,7 @@ export default function ManageRoles() {
         <div className="space-y-4">
           <Card className="p-4 dark:bg-slate-900">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Rôles ({roles.length})
+              {t('admin.roles.sidebar.title', 'Rôles')} ({roles.length})
             </div>
             <div className="space-y-1">
               {roles.map((role) => (
@@ -173,51 +171,43 @@ export default function ManageRoles() {
                   <span className="flex items-center gap-2">
                     {role.name}
                     {role.is_system ? (
-                      <span
-                        className={`text-[10px] uppercase ${
-                          role.id === selectedRoleId ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'
-                        }`}
-                      >
-                        système
+                      <span className={`text-[10px] uppercase ${role.id === selectedRoleId ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'}`}>
+                        {t('admin.roles.system', 'système')}
                       </span>
                     ) : null}
                   </span>
-                  <span
-                    className={`tabular-nums text-xs ${
-                      role.id === selectedRoleId ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'
-                    }`}
-                  >
+                  <span className={`tabular-nums text-xs ${role.id === selectedRoleId ? 'text-white/80' : 'text-slate-400 dark:text-slate-500'}`}>
                     {role.users_count}
                   </span>
                 </button>
               ))}
               {!loading && roles.length === 0 ? (
-                <p className="px-1 py-2 text-sm text-slate-400 dark:text-slate-500">Aucun rôle pour l'instant.</p>
+                <p className="px-1 py-2 text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.empty', "Aucun rôle pour l'instant.")}</p>
               ) : null}
             </div>
           </Card>
 
           <Card className="p-4 dark:bg-slate-900">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Nouveau rôle
+              {t('admin.roles.newRole', 'Nouveau rôle')}
             </div>
             <form onSubmit={createRole} className="space-y-2">
               <input
                 type="text"
-                placeholder="Nom (ex : Gestionnaire appels)"
+                placeholder={t('admin.roles.namePlaceholder', 'Nom (ex : Gestionnaire appels)')}
                 value={newRoleName}
                 onChange={(e) => setNewRoleName(e.target.value)}
                 className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <textarea
-                placeholder="Description (optionnelle)"
+                placeholder={t('admin.roles.descPlaceholder', 'Description (optionnelle)')}
                 value={newRoleDesc}
                 onChange={(e) => setNewRoleDesc(e.target.value)}
                 rows={2}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <Button type="submit" disabled={creating || !newRoleName.trim()} className="w-full">
-                {creating ? '...' : 'Créer le rôle'}
+                {creating ? '...' : t('admin.roles.createBtn', 'Créer le rôle')}
               </Button>
             </form>
           </Card>
@@ -226,7 +216,7 @@ export default function ManageRoles() {
         {/* Grille de permissions */}
         <Card className="p-5 dark:bg-slate-900">
           {!selectedRole ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">Sélectionne un rôle pour voir ses permissions.</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.selectRole', 'Sélectionne un rôle pour voir ses permissions.')}</p>
           ) : (
             <>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -237,10 +227,10 @@ export default function ManageRoles() {
                   ) : null}
                 </div>
                 {selectedRole.is_system ? (
-                  <Badge tone="slate">Rôle système — lecture seule</Badge>
+                  <Badge tone="slate">{t('admin.roles.readOnly', 'Rôle système — lecture seule')}</Badge>
                 ) : (
                   <Button size="sm" variant="danger" onClick={() => removeRole(selectedRole)}>
-                    Supprimer ce rôle
+                    {t('admin.roles.deleteBtn', 'Supprimer ce rôle')}
                   </Button>
                 )}
               </div>
@@ -272,11 +262,7 @@ export default function ManageRoles() {
                                 granted ? 'bg-emerald-600' : 'bg-slate-300 dark:bg-slate-600'
                               }`}
                             >
-                              <span
-                                className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
-                                  granted ? 'translate-x-4' : 'translate-x-0'
-                                }`}
-                              />
+                              <span className={`absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${granted ? 'translate-x-4' : 'translate-x-0'}`} />
                             </button>
                           </div>
                         );

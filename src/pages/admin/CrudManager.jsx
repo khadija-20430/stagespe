@@ -112,7 +112,7 @@ export default function CrudManager({
       await onDelete(id);
       await reload();
     } catch (err) {
-      alert(err.message || 'Erreur lors de la suppression');
+      alert(err.message || t('admin.crud.errors.delete'));
     }
   };
 
@@ -129,7 +129,7 @@ export default function CrudManager({
       await reload();
       setPubDropdown(null);
     } catch (err) {
-      alert(err.message || 'Erreur lors de la publication');
+      alert(err.message || t('admin.crud.errors.publish'));
     } finally {
       setActionLoadingId(null);
     }
@@ -148,7 +148,7 @@ export default function CrudManager({
       await reload();
       setPubDropdown(null);
     } catch (err) {
-      alert(err.message || "Erreur lors de l'archivage");
+      alert(err.message || t('admin.crud.errors.archive'));
     } finally {
       setActionLoadingId(null);
     }
@@ -205,7 +205,7 @@ export default function CrudManager({
     } catch (err) {
       setError(
         err.message ||
-        "Erreur lors de l'enregistrement"
+        t('admin.crud.errors.save')
       );
     } finally {
       setSaving(false);
@@ -342,7 +342,7 @@ const stats = getStats();
             >
               {items === null ? '…' : stats.total}
             </span>{' '}
-            élément{stats.total > 1 ? 's' : ''}
+            {t('admin.crud.itemsCount', { count: stats.total })}
 
             {items !== null && (
               <>
@@ -358,7 +358,7 @@ const stats = getStats();
                   {stats.published}
                 </span>{' '}
 
-                publié{stats.published > 1 ? 's' : ''}
+                {t('admin.crud.itemsPublished', { count: stats.published })}
               </>
             )}
           </p>
@@ -400,19 +400,19 @@ const stats = getStats();
      {/* STATS CARDS */}
 <div className="grid gap-4 md:grid-cols-3">
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-slate-800">
-    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">Total</p>
+    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 uppercase">{t('admin.crud.stats.total')}</p>
     <p className="text-3xl font-bold text-navy dark:text-white mt-2">{stats.total}</p>
   </div>
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-green-50 dark:bg-slate-800">
-    <p className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase">Publiés</p>
+    <p className="text-xs font-semibold text-green-600 dark:text-green-400 uppercase">{t('admin.crud.stats.published')}</p>
     <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">{stats.published}</p>
   </div>
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-amber-50 dark:bg-slate-800">
-    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">Brouillons</p>
+    <p className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase">{t('admin.crud.stats.drafts')}</p>
     <p className="text-3xl font-bold text-amber-600 dark:text-amber-400 mt-2">{stats.drafts}</p>
   </div>
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800">
-    <p className="text-xs font-semibold text-gris-600 dark:text-gray-400 uppercase">archivés</p>
+    <p className="text-xs font-semibold text-gris-600 dark:text-gray-400 uppercase">{t('admin.crud.stats.archived')}</p>
     <p className="text-3xl font-bold text-gris-600 dark:text-gray-400 mt-2">{stats.archived}</p>
   </div>
 </div>
@@ -721,7 +721,7 @@ const stats = getStats();
 
                                     : 'text-amber-500 dark:text-amber-400'
                               )}
-                              title="Statut de publication"
+                              title={t('admin.crud.publicationStatusTooltip')}
                             >
                               ●
                             </button>
@@ -788,7 +788,7 @@ const stats = getStats();
 
                                   {actionLoadingId === item.id
                                     ? '...'
-                                    : '● Publié'}
+                                    : `● ${t('admin.crud.publishedLabel')}`}
 
                                 </button>
 
@@ -836,7 +836,7 @@ const stats = getStats();
 
                                   {actionLoadingId === item.id
                                     ? '...'
-                                    : '● Archivé'}
+                                    : `● ${t('admin.crud.archivedLabel')}`}
 
                                 </button>
 
@@ -1053,7 +1053,7 @@ const stats = getStats();
                       onSelect={(result) => {
                         setField('latitude', result.latitude);
                         setField('longitude', result.longitude);
-                        setGeocodeMsg(`Trouvé : ${result.displayName}`);
+                        setGeocodeMsg(t('admin.crud.geocode.found', { place: result.displayName }));
                       }}
                       placeholder={f.placeholder}
                     />
@@ -1136,14 +1136,14 @@ const stats = getStats();
                             );
 
                             setGeocodeMsg(
-                              `Trouvé : ${result.displayName}`
+                              t('admin.crud.geocode.found', { place: result.displayName })
                             );
 
                           } catch (err) {
 
                             setGeocodeMsg(
                               err.message ||
-                              'Adresse introuvable'
+                              t('admin.crud.errors.geocode')
                             );
 
                           } finally {
@@ -1159,7 +1159,7 @@ const stats = getStats();
                           ? '...'
                           : (
                             <span className="inline-flex items-center gap-1.5">
-                              <MapPin size={16} /> Localiser
+                              <MapPin size={16} /> {t('admin.crud.geocode.button')}
                             </span>
                           )}
                       </Button>
@@ -1193,17 +1193,10 @@ const stats = getStats();
                           "
                         >
 
-                          Coordonnées enregistrées :{' '}
-
-                          {Number(
-                            draft.latitude
-                          ).toFixed(4)}
-
-                          ,{' '}
-
-                          {Number(
-                            draft.longitude
-                          ).toFixed(4)}
+                          {t('admin.crud.geocode.savedCoords', {
+                            lat: Number(draft.latitude).toFixed(4),
+                            lng: Number(draft.longitude).toFixed(4),
+                          })}
 
                         </p>
 
@@ -1614,7 +1607,7 @@ const stats = getStats();
                     : (
                       <span className="inline-flex items-center gap-1.5">
                         {editingId ? <Save size={16} /> : <Plus size={16} />}
-                        {editingId ? 'Sauvegarder' : 'Créer'}
+                        {editingId ? t('admin.crud.save') : t('admin.crud.create')}
                       </span>
                     )
                   }

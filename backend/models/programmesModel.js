@@ -32,7 +32,8 @@ exports.findAllAdminPreview = async (lang) => {
   const result = await pool.query(`
     SELECT p.id,
       COALESCE(pt.name, p.name) as name,
-      COALESCE(pt.description, p.description) as description
+      COALESCE(pt.description, p.description) as description,
+      COALESCE(pt.organisme_financeur, p.organisme_financeur) as organisme_financeur
     FROM programmes p
     LEFT JOIN programme_translations pt 
       ON pt.programme_id = p.id
@@ -57,7 +58,8 @@ exports.findAllPublic = async (lang = 'fr') => {
   const result = await pool.query(`
     SELECT p.*,
       COALESCE(pt.name, p.name) as name,
-      COALESCE(pt.description, p.description) as description
+      COALESCE(pt.description, p.description) as description,
+      COALESCE(pt.organisme_financeur, p.organisme_financeur) as organisme_financeur
     FROM programmes p
     LEFT JOIN programme_translations pt 
       ON pt.programme_id = p.id
@@ -105,14 +107,15 @@ exports.findTranslations = async (programmeId) => {
 
 exports.upsertTranslation = async (programmeId, languageId, data) => {
   const result = await pool.query(`
-    INSERT INTO programme_translations (programme_id, language_id, name, description)
-    VALUES ($1, $2, $3, $4)
+    INSERT INTO programme_translations (programme_id, language_id, name, description, organisme_financeur)
+    VALUES ($1, $2, $3, $4, $5)
     ON CONFLICT (programme_id, language_id) DO UPDATE
     SET name = EXCLUDED.name,
         description = EXCLUDED.description,
+        organisme_financeur = EXCLUDED.organisme_financeur,
         updated_at = now()
     RETURNING *
-  `, [programmeId, languageId, data.name || '', data.description || null]);
+  `, [programmeId, languageId, data.name || '', data.description || null, data.organisme_financeur || null]);
   return result.rows[0];
 };
 
