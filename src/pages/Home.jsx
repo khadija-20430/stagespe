@@ -164,10 +164,12 @@ export default function Home() {
       .finally(() => setSlidesLoading(false));
   }, [i18n.language]);
 
-  // ⬇️ NOUVELLE LOGIQUE : On récupère les données publiques, puis on LES COMPTE nous-mêmes
+  // ⬇️ CORRECTION : On passe la langue à toutes les fonctions
   useEffect(() => {
+    const lang = i18n.language;
+    
     // Programmes
-    getProgrammesPublic(i18n.language)
+    getProgrammesPublic(lang)
       .then((d) => {
         const published = d.filter((p) => p.statut_publication === 'published');
         setProgrammes(published.slice(0, 3));
@@ -175,8 +177,8 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch programmes:', err));
 
-    // Partenaires
-    getPartenaires()
+    // Partenaires - ✅ AJOUT DE LA LANGUE
+    getPartenaires(lang)
       .then((d) => {
         const published = d.filter((p) => p.statut_publication === 'published');
         setPartenaires(published);
@@ -187,8 +189,8 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch partenaires:', err));
 
-    // Mobilités ouvertes
-    getMobilites()
+    // Mobilités ouvertes - ✅ AJOUT DE LA LANGUE
+    getMobilites(lang)
       .then((d) => {
         const open = d.filter((m) => m.status === 'open');
         setMobilites(open.slice(0, 3));
@@ -196,8 +198,8 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch mobilites:', err));
 
-    // ✅ PROJETS (Affichage + Compteur)
-    getProjets()
+    // Projets - ✅ AJOUT DE LA LANGUE
+    getProjets(lang)
       .then((d) => {
         const active = d.filter((p) => p.statut_publication === 'published');
         setProjets(active.slice(0, 3));
@@ -205,16 +207,18 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch projets:', err));
 
-    // Appels
-    getAppels()
+    // Appels - ✅ AJOUT DE LA LANGUE
+    getAppels(lang)
       .then((d) => {
         const open = d.filter((a) => a.status === 'open');
         setAppels(open.slice(0, 3));
       })
       .catch((err) => console.error('Failed to fetch appels:', err));
 
-    // Actualités
-    getActualites().then((d) => setActualites(d.slice(0, 3))).catch(() => {});
+    // Actualités - ✅ AJOUT DE LA LANGUE
+    getActualites(lang)
+      .then((d) => setActualites(d.slice(0, 3)))
+      .catch(() => {});
     
   }, [i18n.language]);
 
@@ -259,20 +263,14 @@ export default function Home() {
                   <span className="font-semibold text-cobalt dark:text-blue-400">
                     {p.projectsCount || 0} {t('programmesPage.credits')}
                   </span>
-                  <Link
-                    to={`/programmes/${p.id}`}
-                    className="text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
-                  >
-                    {t('programmesPage.learnMore')} →
-                  </Link>
-                </div>
+                 </div>
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION PROJETS (Utilise les vraies clés de traduction de Projets.jsx) */}
+      {/* SECTION PROJETS */}
       {projets.length > 0 && (
         <section className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700">
           <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -330,12 +328,6 @@ export default function Home() {
                     <span className="text-xs text-slate-500 dark:text-slate-400">
                       {proj.programme}
                     </span>
-                    <Link
-                      to={`/projets/${proj.id}`}
-                      className="text-sm font-semibold text-cobalt hover:underline dark:text-blue-400"
-                    >
-                      {t('projets.learnMore') || 'En savoir plus'} →
-                    </Link>
                   </div>
                 </Card>
               ))}
@@ -344,6 +336,7 @@ export default function Home() {
         </section>
       )}
 
+      {/* SECTION APPELS */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
@@ -372,6 +365,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION MOBILITE */}
       <section className="bg-surface dark:bg-slate-800">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -400,6 +394,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION ACTUALITES */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading
@@ -431,6 +426,7 @@ export default function Home() {
         </div>
       </section>
 
+      {/* SECTION PARTENAIRES */}
       <section className="border-t border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
           <SectionHeading
@@ -461,6 +457,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* SECTION ACCORDS */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
         <div className="text-center">
           <SectionHeading

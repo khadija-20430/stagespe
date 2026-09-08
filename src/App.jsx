@@ -29,7 +29,7 @@ import ManageDocuments from './pages/admin/ManageDocuments.jsx';
 import ManageRoles from './pages/admin/ManageRoles.jsx';
 import TestAccess from './pages/admin/TestAccess.jsx';
 import JournalAudit from './pages/admin/JournalAudit.jsx';
-import ManageNewsEvents from './pages/admin/ManageNewsEvents.jsx';
+import ManageNewsEvents from './pages/admin/Managenewsevents.jsx';
 import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
