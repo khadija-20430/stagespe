@@ -141,7 +141,7 @@ export default function ManageRoles() {
     <div>
       <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
         <KeyRound size={24} className="text-cobalt" />
-        {t('adminRoles')}
+        {t('admin.roles.title')}
       </h1>
 
       {error ? (
@@ -155,7 +155,7 @@ export default function ManageRoles() {
         <div className="space-y-4">
           <Card className="p-4 dark:bg-slate-900">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('admin.roles.sidebar.title', 'Rôles')} ({roles.length})
+              {t('admin.roles.sidebar.title')} ({roles.length})
             </div>
             <div className="space-y-1">
               {roles.map((role) => (
@@ -172,7 +172,7 @@ export default function ManageRoles() {
                     {role.name}
                     {role.is_system ? (
                       <span className={`text-[10px] uppercase ${role.id === selectedRoleId ? 'text-white/70' : 'text-slate-400 dark:text-slate-500'}`}>
-                        {t('admin.roles.system', 'système')}
+                        {t('admin.roles.sidebar.system')}
                       </span>
                     ) : null}
                   </span>
@@ -182,32 +182,32 @@ export default function ManageRoles() {
                 </button>
               ))}
               {!loading && roles.length === 0 ? (
-                <p className="px-1 py-2 text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.empty', "Aucun rôle pour l'instant.")}</p>
+                <p className="px-1 py-2 text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.sidebar.empty')}</p>
               ) : null}
             </div>
           </Card>
 
           <Card className="p-4 dark:bg-slate-900">
             <div className="mb-3 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t('admin.roles.newRole', 'Nouveau rôle')}
+              {t('admin.roles.newRole')}
             </div>
             <form onSubmit={createRole} className="space-y-2">
               <input
                 type="text"
-                placeholder={t('admin.roles.namePlaceholder', 'Nom (ex : Gestionnaire appels)')}
+                placeholder={t('admin.roles.namePlaceholder')}
                 value={newRoleName}
                 onChange={(e) => setNewRoleName(e.target.value)}
                 className="min-h-[40px] w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <textarea
-                placeholder={t('admin.roles.descPlaceholder', 'Description (optionnelle)')}
+                placeholder={t('admin.roles.descPlaceholder')}
                 value={newRoleDesc}
                 onChange={(e) => setNewRoleDesc(e.target.value)}
                 rows={2}
                 className="w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 py-2 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
               />
               <Button type="submit" disabled={creating || !newRoleName.trim()} className="w-full">
-                {creating ? '...' : t('admin.roles.createBtn', 'Créer le rôle')}
+                {creating ? '...' : t('admin.roles.createBtn')}
               </Button>
             </form>
           </Card>
@@ -216,7 +216,7 @@ export default function ManageRoles() {
         {/* Grille de permissions */}
         <Card className="p-5 dark:bg-slate-900">
           {!selectedRole ? (
-            <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.selectRole', 'Sélectionne un rôle pour voir ses permissions.')}</p>
+            <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.roles.selectRole')}</p>
           ) : (
             <>
               <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -227,10 +227,10 @@ export default function ManageRoles() {
                   ) : null}
                 </div>
                 {selectedRole.is_system ? (
-                  <Badge tone="slate">{t('admin.roles.readOnly', 'Rôle système — lecture seule')}</Badge>
+                  <Badge tone="slate">{t('admin.roles.readOnly')}</Badge>
                 ) : (
                   <Button size="sm" variant="danger" onClick={() => removeRole(selectedRole)}>
-                    {t('admin.roles.deleteBtn', 'Supprimer ce rôle')}
+                    {t('admin.roles.deleteBtn')}
                   </Button>
                 )}
               </div>

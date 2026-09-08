@@ -365,7 +365,93 @@
         "fichierPdf": "ملف PDF",
         "description": "الوصف"
       }
-    }
+    },
+    "resetSettingsPage": {
+  "title": "إعادة تعيين كلمة المرور",
+  "subtitle": "تُطبَّق هذه الإعدادات فورًا، دون الحاجة لإعادة النشر.",
+  "saved": "تم حفظ الإعدادات.",
+  "loading": "جارٍ التحميل...",
+  "fields": {
+    "codeWindow": "مدة صلاحية الرمز (بالدقائق)",
+    "maxAttempts": "الحد الأقصى لعدد المحاولات",
+    "emailSubject": "موضوع البريد الإلكتروني",
+    "emailText": "نص البريد الإلكتروني",
+    "emailTextHelpPrefix": "استخدم",
+    "emailTextHelpMiddle": "للرمز و",
+    "emailTextHelpSuffix": "للمدة."
+  },
+  "save": "حفظ"
+},
+"testAccessPage": {
+  "title": "اختبار صلاحيات RBAC",
+  "myPermissionsTitle": "صلاحياتي الفعلية",
+  "loading": "جارٍ التحميل…",
+  "noPermissions": "لا توجد صلاحيات (حساب مستخدم عادي، أو مسؤول بدون دور معيّن).",
+  "endpointsTitle": "نقاط النهاية المراد اختبارها (قراءة فقط، بدون مخاطر)",
+  "run": "تشغيل الاختبار",
+  "running": "جارٍ الاختبار…",
+  "checks": {
+    "callsAdmin": "عرض جميع الدعوات (الإدارة)",
+    "callsClosing": "الدعوات القريبة من الإغلاق",
+    "agreementsExpiring": "الاتفاقيات القريبة من الانتهاء",
+    "auditLog": "سجل التدقيق",
+    "usersList": "قائمة المستخدمين",
+    "loginHistory": "سجل تسجيلات الدخول"
+  },
+  "superAdminOnly": "المدير الأعلى فقط",
+  "status": {
+    "authorized": "مصرح (200)",
+    "forbidden": "مرفوض (403)",
+    "unauthenticated": "غير مسجل الدخول (401)",
+    "unknown": "—",
+    "other": "الحالة {{status}}"
+  }
+},
+    "audit": {
+      "title": "سجل التدقيق",
+      "description": "تاريخ جميع الإجراءات التي تمت في لوحة الإدارة — من فعل ماذا، ومتى. مخصص للمدير العام فقط.",
+      "tableLabel": "الجدول",
+      "actionLabel": "الإجراء",
+      "filter": "تصفية",
+      "reset": "إعادة تعيين",
+      "showDetails": "عرض التفاصيل",
+      "hideDetails": "إخفاء التفاصيل",
+      "routeError": "المسار /audit-log غير موجود — تحقق من مسار التحميل لـ auditLogRoutes.js في الخادم وصحح AUDIT_LOG_PATH في أعلى هذا الملف.",
+      "actions": {
+        "create": "إنشاء",
+        "update": "تعديل",
+        "delete": "حذف",
+        "login_success": "تسجيل دخول ناجح",
+        "login_failed": "محاولة تسجيل دخول فاشلة",
+        "logout": "تسجيل الخروج",
+        "activate_user": "تفعيل الحساب",
+        "deactivate_user": "تعطيل الحساب",
+        "publish": "نشر",
+        "archive": "أرشفة",
+        "password_reset": "إعادة تعيين كلمة المرور",
+        "grant_permission": "منح صلاحية",
+        "revoke_permission": "سحب صلاحية",
+        "update_role": "تعديل الدور",
+        "assign_role": "تعيين دور",
+        "update_permissions": "تحديث الصلاحيات"
+      }
+    },
+    "roles": {
+    "title": "الأدوار والصلاحيات",
+    "sidebar": {
+      "title": "الأدوار",
+      "system": "نظام",
+      "empty": "لا توجد أدوار حالياً."
+    },
+    "newRole": "دور جديد",
+    "namePlaceholder": "الاسم (مثال: مدير الدعوات)",
+    "descPlaceholder": "الوصف (اختياري)",
+    "createBtn": "إنشاء الدور",
+    "selectRole": "اختر دوراً لعرض صلاحياته.",
+    "readOnly": "دور نظام — قراءة فقط",
+    "deleteBtn": "حذف هذا الدور",
+    "deleteConfirm": "هل أنت متأكد من حذف الدور \"{{name}}\"؟"
+  }
   },
   "navbar": {
     "homeAria": "الرئيسية ESI",
@@ -851,4 +937,5 @@
       "daysAgo_other": "منذ {{count}} يوم"
     }
   }
+  
 }

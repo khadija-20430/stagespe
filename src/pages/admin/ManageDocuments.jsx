@@ -512,9 +512,7 @@ export default function ManageDocuments() {
            TRADUCTIONS
         ----------------------------------------------------- */
 
-        {
-          key: 'translations',
-          label: 'Traductions',
+        { key: 'translations', label: t('traductions'),
           render: (item) => (
             <button
               type="button"

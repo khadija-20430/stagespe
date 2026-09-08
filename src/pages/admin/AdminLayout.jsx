@@ -11,8 +11,8 @@ import NotificationBell from '../../components/ui/NotificationBell.jsx';
 import { 
   LayoutDashboard, School, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FileText, FolderOpen, Users, KeyRound, FlaskConical as TestTube,
-  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, ChevronDown, ChevronUp,
-  GraduationCap, GalleryHorizontal // ✅ GalleryHorizontal remplace Image pour les slides d'accueil
+  ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X,
+  GraduationCap, GalleryHorizontal
 } from 'lucide-react';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -45,11 +45,10 @@ export default function AdminLayout() {
       icon: LayoutDashboard,
     },
     {
-      to: '/admin/home-slides', // ✅ Lien gestion des slides de la page d'accueil
+      to: '/admin/home-slides',
       label: t('admin.homeSlides.title'),
       icon: GalleryHorizontal,
-      iconClassName: 'text-cobalt', // ✅ Icône bleue même à l'état inactif
-      //requiredPerm: 'reference_data.manage',
+      iconClassName: 'text-cobalt',
     },
     {
       to: '/admin/school-presentation',
@@ -70,10 +69,9 @@ export default function AdminLayout() {
       requiredPerm: 'projects.view',
     },
     {
-      to: '/admin/programmes', // ✅ Lien programmes
+      to: '/admin/programmes',
       label: t('programmes'),
       icon: GraduationCap,
-     //requiredPerm: 'programmes.view',
     },
     {
       to: '/admin/appels',
@@ -180,7 +178,7 @@ export default function AdminLayout() {
      NAVIGATION (Adaptée au mode mini)
   ========================================================= */
 
-    const Nav = () => (
+  const Nav = () => (
     <nav className={`space-y-1 ${isMini ? 'px-0' : ''}`}>
       {visibleLinks.map((link) => (
         <NavLink
@@ -194,7 +192,6 @@ export default function AdminLayout() {
               isMini ? 'justify-center p-3' : 'gap-3 px-3 py-2.5',
               isActive
                 ? 'bg-cobalt text-white'
-                // ✅ AJOUTEZ ICI : text-cobalt pour TOUS les liens inactifs
                 : 'text-slate-300 hover:bg-white/5 hover:text-white'
             )
           }
@@ -204,11 +201,8 @@ export default function AdminLayout() {
             <>
               <link.icon
                 size={20}
-                // ✅ REMPLACEZ CECI :
                 className={cn(
                   'shrink-0',
-                  // Avant : !isActive && link.iconClassName
-                  // Après : Mettez la couleur ici !
                   !isActive && 'text-cobalt'
                 )}
               />
@@ -236,7 +230,7 @@ export default function AdminLayout() {
           isMini ? 'w-20' : 'w-64'
         }`}
       >
-        {/* Logo CLICKABLE AVEC PASTILLE BLEUE VIVE */}
+        {/* Logo CLICKABLE - SANS FLÈCHE */}
         <button
           onClick={() => setIsMini(!isMini)}
           className="group mb-6 flex items-center gap-2.5 px-2 focus:outline-none w-full"
@@ -249,21 +243,12 @@ export default function AdminLayout() {
             ESI
           </span>
 
-          {/* Texte + Indicateur (disparaît en mini) */}
+          {/* Texte (disparaît en mini) */}
           {!isMini && (
-            <div className="flex flex-1 items-center justify-between overflow-hidden">
+            <div className="flex flex-1 items-center overflow-hidden">
               <div className="text-left">
                 <p className="text-sm font-bold text-white">{t('admin.title')}</p>
                 <p className="text-xs text-slate-400">{t('dashboard')}</p>
-              </div>
-
-              {/* PASTILLE BLEUE VIVE AVEC GLOW ET ANIMATION */}
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/50 transition-all duration-300 group-hover:bg-blue-400 group-hover:scale-110 group-hover:shadow-blue-300/60 animate-soft-bounce">
-                {isMini ? (
-                  <ChevronDown size={18} />
-                ) : (
-                  <ChevronUp size={18} />
-                )}
               </div>
             </div>
           )}

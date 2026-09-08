@@ -343,6 +343,92 @@
         "fichierPdf": "PDF file",
         "description": "Description"
       }
+    },
+    "resetSettingsPage": {
+  "title": "Password reset",
+  "subtitle": "These settings apply immediately, no redeployment needed.",
+  "saved": "Settings saved.",
+  "loading": "Loading...",
+  "fields": {
+    "codeWindow": "Code validity duration (minutes)",
+    "maxAttempts": "Max number of attempts",
+    "emailSubject": "Email subject",
+    "emailText": "Email text",
+    "emailTextHelpPrefix": "Use",
+    "emailTextHelpMiddle": "for the code and",
+    "emailTextHelpSuffix": "for the duration."
+  },
+  "save": "Save"
+},
+"testAccessPage": {
+  "title": "Test RBAC access",
+  "myPermissionsTitle": "My effective permissions",
+  "loading": "Loading…",
+  "noPermissions": "No permissions (regular user account, or admin with no role assigned).",
+  "endpointsTitle": "Endpoints to test (read-only, no risk)",
+  "run": "Run test",
+  "running": "Testing…",
+  "checks": {
+    "callsAdmin": "View all calls (admin)",
+    "callsClosing": "Calls closing soon",
+    "agreementsExpiring": "Agreements expiring soon",
+    "auditLog": "Audit log",
+    "usersList": "User list",
+    "loginHistory": "Login history"
+  },
+  "superAdminOnly": "super_admin only",
+  "status": {
+    "authorized": "Authorized (200)",
+    "forbidden": "Forbidden (403)",
+    "unauthenticated": "Not logged in (401)",
+    "unknown": "—",
+    "other": "Status {{status}}"
+  }
+},
+    "audit": {
+      "title": "Audit Log",
+      "description": "History of all actions performed in the admin — who did what, and when. Reserved for super_admin.",
+      "tableLabel": "Table",
+      "actionLabel": "Action",
+      "filter": "Filter",
+      "reset": "Reset",
+      "showDetails": "Show details",
+      "hideDetails": "Hide details",
+      "routeError": "The /audit-log route seems to be missing — check the mounting path of auditLogRoutes.js on the server and fix AUDIT_LOG_PATH at the top of this file.",
+      "actions": {
+        "create": "Created",
+        "update": "Updated",
+        "delete": "Deleted",
+        "login_success": "Login successful",
+        "login_failed": "Login failed",
+        "logout": "Logout",
+        "activate_user": "Account activated",
+        "deactivate_user": "Account deactivated",
+        "publish": "Published",
+        "archive": "Archived",
+        "password_reset": "Password reset",
+        "grant_permission": "Permission granted",
+        "revoke_permission": "Permission revoked",
+        "update_role": "Role updated",
+        "assign_role": "Role assigned",
+        "update_permissions": "Permissions updated"
+      }
+    },
+        "roles": {
+      "title": "Roles & Permissions",
+      "sidebar": {
+        "title": "Roles",
+        "system": "system",
+        "empty": "No roles yet."
+      },
+      "newRole": "New role",
+      "namePlaceholder": "Name (e.g. Calls Manager)",
+      "descPlaceholder": "Description (optional)",
+      "createBtn": "Create role",
+      "selectRole": "Select a role to view its permissions.",
+      "readOnly": "System role — read only",
+      "deleteBtn": "Delete this role",
+      "deleteConfirm": "Are you sure you want to delete role \"{{name}}\"?"
     }
   },
   "navbar": {
@@ -813,4 +899,5 @@
       "daysAgo_other": "{{count}} days ago"
     }
   }
+  
 }

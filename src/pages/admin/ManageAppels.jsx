@@ -140,10 +140,10 @@ export default function ManageAppels() {
             render: (i) => <Badge tone={callStatusTone(i.status)}>{t(`${i.status}`)}</Badge> },
           { key: 'dateLimite', label: t('dateLimite'),
             render: (i) => i.dateLimite ? new Date(i.dateLimite).toLocaleDateString('fr-FR') : '—' },
-          { key: 'statut_publication', label: t('statutPublication'),
-            render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{i.statut_publication}</Badge> },
-          { key: 'translations', label: 'Traductions',
-            render: (i) => (
+{ key: 'statut_publication', label: t('statutPublication'),
+  render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
+         { key: 'translations', label: t('traductions'),
+              render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}

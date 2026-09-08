@@ -144,10 +144,10 @@ export default function ManageProjets() {
             render: (i) => i.budget != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(i.budget) : '—' },
           { key: 'coordinator_partner_id', label: t('coordinateur'),
             render: (i) => partnerName(i.coordinator_partner_id) },
-          { key: 'statut_publication', label: t('statutPublication'),
-            render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
-          { key: 'translations', label: 'Traductions',
-            render: (i) => (
+         { key: 'statut_publication', label: t('statutPublication'),
+  render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
+         { key: 'translations', label: t('traductions'),
+              render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}

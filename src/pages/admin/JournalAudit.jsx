@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getToken } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
 import Badge from '../../components/ui/Badge.jsx';
@@ -8,9 +9,6 @@ import {
 } from 'lucide-react';
 
 const API = import.meta.env.VITE_API_URL;
-
-// ⚠️ À corriger dès qu'on connaît le vrai chemin de montage de auditLogRoutes.js
-// dans le fichier serveur (server.js / app.js), ex: app.use('/audit-logs', auditLogRoutes).
 const AUDIT_LOG_PATH = '/audit-logs';
 
 async function apiFetch(path) {
@@ -25,6 +23,26 @@ async function apiFetch(path) {
   }
   return data;
 }
+
+// Action labels with translations - MAINTENANT TOUTES LES TRADUCTIONS VONT DANS admin.audit.actions
+const ACTION_LABELS = (t) => ({
+  create: t('admin.audit.actions.create'),
+  update: t('admin.audit.actions.update'),
+  update_permissions: t('admin.audit.actions.update_permissions'),
+  grant_permission: t('admin.audit.actions.grant_permission'),
+  revoke_permission: t('admin.audit.actions.revoke_permission'),
+  update_role: t('admin.audit.actions.update_role'),
+  assign_role: t('admin.audit.actions.assign_role'),
+  delete: t('admin.audit.actions.delete'),
+  login_success: t('admin.audit.actions.login_success'),
+  login_failed: t('admin.audit.actions.login_failed'),
+  logout: t('admin.audit.actions.logout'),
+  activate_user: t('admin.audit.actions.activate_user'),
+  deactivate_user: t('admin.audit.actions.deactivate_user'),
+  publish: t('admin.audit.actions.publish'),
+  archive: t('admin.audit.actions.archive'),
+  password_reset: t('admin.audit.actions.password_reset'),
+});
 
 const ACTION_TONE = {
   create: 'green',
@@ -64,39 +82,19 @@ const ACTION_ICON = {
   password_reset: RotateCw,
 };
 
-function actionLabel(action) {
-  const map = {
-    create: 'Création',
-    update: 'Modification',
-    update_permissions: 'Permissions mises à jour',
-    grant_permission: 'Permission accordée',
-    revoke_permission: 'Permission retirée',
-    update_role: 'Rôle modifié',
-    assign_role: 'Rôle attribué',
-    delete: 'Suppression',
-    login_success: 'Connexion réussie',
-    login_failed: 'Tentative de connexion échouée',
-    logout: 'Déconnexion',
-    activate_user: 'Compte activé',
-    deactivate_user: 'Compte désactivé',
-    publish: 'Publication',
-    archive: 'Archivage',
-    password_reset: 'Mot de passe réinitialisé',
-  };
-  return map[action] || action;
-}
-
 const TABLES = [
   '', 'partner', 'project', 'call', 'mobility', 'document', 'agreement',
   'role', 'user', 'news_event',
 ];
 
 export default function JournalAudit() {
+  const { t, i18n } = useTranslation();
   const [logs, setLogs] = useState(null);
   const [error, setError] = useState('');
   const [tableName, setTableName] = useState('');
   const [action, setAction] = useState('');
   const [expandedId, setExpandedId] = useState(null);
+  const actionLabels = ACTION_LABELS(t);
 
   const load = async () => {
     setError('');
@@ -120,7 +118,7 @@ export default function JournalAudit() {
 
   const formatDate = (iso) => {
     if (!iso) return '—';
-    return new Date(iso).toLocaleString('fr-FR', {
+    return new Date(iso).toLocaleString(i18n.language === 'ar' ? 'ar-DZ' : i18n.language, {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit',
     });
@@ -128,10 +126,9 @@ export default function JournalAudit() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-navy dark:text-white">Journal d'audit</h1>
+      <h1 className="text-2xl font-bold text-navy dark:text-white">{t('admin.audit.title')}</h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Historique de toutes les actions effectuées dans l'admin — qui a fait quoi, et quand.
-        Réservé au super_admin.
+        {t('admin.audit.description')}
       </p>
 
       {error ? (
@@ -139,8 +136,7 @@ export default function JournalAudit() {
           {error}
           {error.includes('404') ? (
             <div className="mt-1 text-xs text-red-500 dark:text-red-400">
-              La route /audit-log semble introuvable — vérifie le chemin de montage de auditLogRoutes.js
-              côté serveur et corrige AUDIT_LOG_PATH en haut de ce fichier.
+              {t('admin.audit.routeError')}
             </div>
           ) : null}
         </div>
@@ -149,19 +145,23 @@ export default function JournalAudit() {
       <Card className="mt-6 p-4 dark:bg-slate-900">
         <div className="flex flex-wrap items-end gap-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Table</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
+              {t('admin.audit.tableLabel')}
+            </label>
             <select
               value={tableName}
               onChange={(e) => setTableName(e.target.value)}
               className="min-h-[40px] rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-3 text-sm text-slate-900 dark:text-white focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/30"
             >
               {TABLES.map((tb) => (
-                <option key={tb} value={tb}>{tb || 'Toutes'}</option>
+                <option key={tb} value={tb}>{tb || t('common.all')}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">Action</label>
+            <label className="mb-1 block text-xs font-medium text-slate-500 dark:text-slate-400">
+              {t('admin.audit.actionLabel')}
+            </label>
             <input
               type="text"
               placeholder="ex: create, delete, login_success…"
@@ -174,14 +174,14 @@ export default function JournalAudit() {
             onClick={load}
             className="rounded-lg bg-cobalt px-4 py-2 text-sm font-medium text-white"
           >
-            Filtrer
+            {t('admin.audit.filter')}
           </button>
           {(tableName || action) && (
             <button
               onClick={() => { setTableName(''); setAction(''); }}
               className="text-sm text-slate-500 dark:text-slate-400 underline"
             >
-              Réinitialiser
+              {t('admin.audit.reset')}
             </button>
           )}
         </div>
@@ -189,14 +189,15 @@ export default function JournalAudit() {
 
       <Card className="mt-4 p-5 dark:bg-slate-900">
         {logs === null ? (
-          <p className="text-sm text-slate-400 dark:text-slate-500">Chargement…</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.crud.loading')}</p>
         ) : logs.length === 0 ? (
-          <p className="text-sm text-slate-400 dark:text-slate-500">Aucune entrée pour ces filtres.</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.crud.empty')}</p>
         ) : (
           <ol className="relative border-l border-slate-200 dark:border-slate-700 pl-6">
             {logs.map((log) => {
               const isOpen = expandedId === log.id;
               const hasDetails = log.changes || log.old_data || log.new_data;
+              const actionLabel = actionLabels[log.action] || log.action;
               return (
                 <li key={log.id} className="mb-5 last:mb-0">
                   <span className="absolute -left-[9px] flex h-4 w-4 items-center justify-center rounded-full bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400">
@@ -206,7 +207,7 @@ export default function JournalAudit() {
                     })()}
                   </span>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Badge tone={ACTION_TONE[log.action] || 'slate'}>{actionLabel(log.action)}</Badge>
+                    <Badge tone={ACTION_TONE[log.action] || 'slate'}>{actionLabel}</Badge>
                     {log.table_name ? (
                       <span className="text-xs text-slate-400 dark:text-slate-500" translate="no">
                         {log.table_name}{log.record_id ? ` #${log.record_id}` : ''}
@@ -222,7 +223,7 @@ export default function JournalAudit() {
                       onClick={() => setExpandedId(isOpen ? null : log.id)}
                       className="mt-1 text-xs font-medium text-cobalt"
                     >
-                      {isOpen ? 'Masquer le détail' : 'Voir le détail'}
+                      {isOpen ? t('admin.audit.hideDetails') : t('admin.audit.showDetails')}
                     </button>
                   ) : null}
                   {isOpen && hasDetails ? (

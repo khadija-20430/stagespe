@@ -34,21 +34,21 @@ const NEWS_EVENT_TYPES = [
 ];
 
 /* ============================================================
-   STATUT PUBLICATION
+   STATUT PUBLICATION - AVEC TRADUCTION
 ============================================================ */
 
 const publicationStatusTone = (status) => {
   const value = String(status || 'draft').toLowerCase().trim();
-  if (value === 'published' || value === 'publié') return 'green';
-  if (value === 'archived') return 'slate';
+  if (value === 'published' || value === 'publié' || value === 'منشور') return 'green';
+  if (value === 'archived' || value === 'مؤرشف') return 'slate';
   return 'amber';
 };
 
-const publicationStatusLabel = (status) => {
+const publicationStatusLabel = (status, t) => {
   const value = String(status || 'draft').toLowerCase().trim();
-  if (value === 'published' || value === 'publié') return 'Publié';
-  if (value === 'archived') return 'Archivé';
-  return 'Brouillon';
+  if (value === 'published' || value === 'publié' || value === 'منشور') return t('statut_publie');
+  if (value === 'archived' || value === 'مؤرشف') return t('statut_archive');
+  return t('statut_brouillon');
 };
 
 /* ============================================================
@@ -172,10 +172,10 @@ export default function ManageNewsEvents() {
         onDelete={deleteActualite}
         onPublish={publishActualite}
         onArchive={archiveActualite}
-         createPermission="news_events.create"
-  updatePermission="news_events.edit"
-  deletePermission="news_events.delete"
-  publishPermission="news_events.publish"
+        createPermission="news_events.create"
+        updatePermission="news_events.edit"
+        deletePermission="news_events.delete"
+        publishPermission="news_events.publish"
         columns={[
           {
             key: 'title',
@@ -216,14 +216,14 @@ export default function ManageNewsEvents() {
               const status = item.statut_publication || 'draft';
               return (
                 <Badge tone={publicationStatusTone(status)}>
-                  {publicationStatusLabel(status)}
+                  {publicationStatusLabel(status, t)}
                 </Badge>
               );
             },
           },
           {
             key: 'translations',
-            label: 'Traductions',
+            label: t('traductions'),
             render: (item) => (
               <button
                 type="button"
@@ -345,7 +345,7 @@ export default function ManageNewsEvents() {
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="font-bold text-navy dark:text-white">
-                Traductions — {translationsItem.title}
+                {t('traductions_titre_modal')} — {translationsItem.title}
               </h3>
               <button type="button" onClick={closeTranslations} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X size={20} />
@@ -405,7 +405,7 @@ export default function ManageNewsEvents() {
                 disabled={translationsSaving}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Annuler
+                {t('annuler')}
               </button>
               <button
                 type="button"
@@ -413,7 +413,7 @@ export default function ManageNewsEvents() {
                 disabled={translationsSaving || translationsLoading}
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
-                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                {translationsSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
               </button>
             </div>
           </div>

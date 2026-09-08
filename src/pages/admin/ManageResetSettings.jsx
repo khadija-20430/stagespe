@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Settings } from 'lucide-react';
 import { getResetSettings, updateResetSettings } from '../../services/api.js';
 import Card from '../../components/ui/Card.jsx';
@@ -8,6 +9,7 @@ import Button from '../../components/ui/Button.jsx';
 // Repose sur settingsRoutes.js (/settings), protégé par checkRole('super_admin')
 // côté backend. Les valeurs sont appliquées immédiatement, sans redéploiement.
 export default function SettingsResetPassword() {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -48,10 +50,10 @@ export default function SettingsResetPassword() {
     <div>
       <h1 className="text-2xl font-bold text-navy dark:text-white flex items-center gap-2">
         <Settings size={24} className="text-cobalt" />
-        Réinitialisation de mot de passe
+        {t('admin.resetSettingsPage.title')}
       </h1>
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Ces réglages s'appliquent immédiatement, sans redéploiement.
+        {t('admin.resetSettingsPage.subtitle')}
       </p>
 
       {error ? (
@@ -62,18 +64,18 @@ export default function SettingsResetPassword() {
 
       {success ? (
         <div className="mt-4 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400">
-          Réglages enregistrés.
+          {t('admin.resetSettingsPage.saved')}
         </div>
       ) : null}
 
       <Card className="mt-6 max-w-xl p-5 dark:bg-slate-900">
         {loading || !settings ? (
-          <p className="text-sm text-slate-400 dark:text-slate-500">Chargement...</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500">{t('admin.resetSettingsPage.loading')}</p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Durée de validité du code (minutes)
+                {t('admin.resetSettingsPage.fields.codeWindow')}
               </label>
               <input
                 type="number"
@@ -88,7 +90,7 @@ export default function SettingsResetPassword() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Nombre max de tentatives
+                {t('admin.resetSettingsPage.fields.maxAttempts')}
               </label>
               <input
                 type="number"
@@ -103,7 +105,7 @@ export default function SettingsResetPassword() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Sujet de l'email
+                {t('admin.resetSettingsPage.fields.emailSubject')}
               </label>
               <input
                 type="text"
@@ -116,10 +118,10 @@ export default function SettingsResetPassword() {
 
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Texte de l'email
+                {t('admin.resetSettingsPage.fields.emailText')}
               </label>
               <p className="mb-1 text-xs text-slate-400 dark:text-slate-500">
-                Utilise <code>{'{{code}}'}</code> pour le code et <code>{'{{minutes}}'}</code> pour la durée.
+                {t('admin.resetSettingsPage.fields.emailTextHelpPrefix')} <code>{'{{code}}'}</code> {t('admin.resetSettingsPage.fields.emailTextHelpMiddle')} <code>{'{{minutes}}'}</code> {t('admin.resetSettingsPage.fields.emailTextHelpSuffix')}
               </p>
               <textarea
                 rows={4}
@@ -131,7 +133,7 @@ export default function SettingsResetPassword() {
             </div>
 
             <Button type="submit" disabled={saving}>
-              {saving ? '...' : 'Enregistrer'}
+              {saving ? '...' : t('admin.resetSettingsPage.save')}
             </Button>
           </form>
         )}

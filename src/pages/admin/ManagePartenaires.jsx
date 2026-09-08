@@ -32,12 +32,7 @@ const partnershipStatusTone = (s) =>
 const publicationStatusTone = (s) =>
   s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber';
 
-const publicationStatusLabel = (s) => {
-  const status = s || 'draft';
-  if (status === 'published') return 'Publié';
-  if (status === 'archived') return 'Archivé';
-  return 'Brouillon';
-};
+const publicationStatusLabel = (s, t) => t(s || 'draft', { defaultValue: t('draft') });
 
 const TRANSLATION_FIELDS = [
   { name: 'name', label: 'Nom' },
@@ -183,20 +178,19 @@ export default function ManagePartenaires() {
             ),
           },
           {
-            key: 'statut_publication',
-            label: t('statutPublication'),
-            render: (item) => {
-              const status = item.statut_publication || item.statutPublication || 'draft';
-              return (
-                <Badge tone={publicationStatusTone(status)}>
-                  {publicationStatusLabel(status)}
-                </Badge>
-              );
-            },
-          },
+  key: 'statut_publication',
+  label: t('statutPublication'),
+  render: (item) => {
+    const status = item.statut_publication || item.statutPublication || 'draft';
+    return (
+      <Badge tone={publicationStatusTone(status)}>
+        {publicationStatusLabel(status, t)}
+      </Badge>
+    );
+  },
+},
           {
-            key: 'translations',
-            label: 'Traductions',
+            key: 'translations', label: t('traductions'),
             render: (item) => (
               <button
                 type="button"

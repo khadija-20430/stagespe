@@ -145,8 +145,8 @@ export default function ManageMobilites() {
           { key: 'places', label: t('places') },
           { key: 'statut_publication', label: t('statutPublication'),
             render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
-          { key: 'translations', label: 'Traductions',
-            render: (i) => (
+          { key: 'translations', label: t('traductions'),
+              render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}

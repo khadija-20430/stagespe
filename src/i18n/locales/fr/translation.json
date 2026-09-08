@@ -343,6 +343,92 @@
         "fichierPdf": "Fichier PDF",
         "description": "Description"
       }
+    },
+     "resetSettingsPage": {
+    "title": "Réinitialisation de mot de passe",
+    "subtitle": "Ces réglages s'appliquent immédiatement...",
+    "saved": "Réglages enregistrés.",
+    "loading": "Chargement...",
+    "fields": {
+      "codeWindow": "Durée de validité du code (minutes)",
+      "maxAttempts": "Nombre max de tentatives",
+      "emailSubject": "Sujet de l'email",
+      "emailText": "Texte de l'email",
+      "emailTextHelpPrefix": "Utilise",
+      "emailTextHelpMiddle": "pour le code et",
+      "emailTextHelpSuffix": "pour la durée."
+    },
+    "save": "Enregistrer"
+  },
+  "testAccessPage": {
+    "title": "Tester les accès RBAC",
+    "myPermissionsTitle": "Mes permissions effectives",
+    "loading": "Chargement…",
+    "noPermissions": "Aucune permission...",
+    "endpointsTitle": "Endpoints à tester (lecture seule, sans risque)",
+    "run": "Lancer le test",
+    "running": "Test en cours…",
+    "checks": {
+      "callsAdmin": "Voir tous les appels (admin)",
+      "callsClosing": "Appels bientôt clos",
+      "agreementsExpiring": "Accords bientôt expirés",
+      "auditLog": "Journal d'audit",
+      "usersList": "Liste des utilisateurs",
+      "loginHistory": "Historique des connexions"
+    },
+    "superAdminOnly": "super_admin uniquement",
+    "status": {
+      "authorized": "Autorisé (200)",
+      "forbidden": "Refusé (403)",
+      "unauthenticated": "Non connecté (401)",
+      "unknown": "—",
+      "other": "Statut {{status}}"
+    }
+  },
+      "audit": {
+      "title": "Journal d'audit",
+      "description": "Historique de toutes les actions effectuées dans l'admin — qui a fait quoi, et quand. Réservé au super_admin.",
+      "tableLabel": "Table",
+      "actionLabel": "Action",
+      "filter": "Filtrer",
+      "reset": "Réinitialiser",
+      "showDetails": "Voir le détail",
+      "hideDetails": "Masquer le détail",
+      "routeError": "La route /audit-log semble introuvable — vérifie le chemin de montage de auditLogRoutes.js côté serveur et corrige AUDIT_LOG_PATH en haut de ce fichier.",
+      "actions": {
+        "create": "Création",
+        "update": "Modification",
+        "delete": "Suppression",
+        "login_success": "Connexion réussie",
+        "login_failed": "Tentative de connexion échouée",
+        "logout": "Déconnexion",
+        "activate_user": "Compte activé",
+        "deactivate_user": "Compte désactivé",
+        "publish": "Publication",
+        "archive": "Archivage",
+        "password_reset": "Mot de passe réinitialisé",
+        "grant_permission": "Permission accordée",
+        "revoke_permission": "Permission retirée",
+        "update_role": "Rôle modifié",
+        "assign_role": "Rôle attribué",
+        "update_permissions": "Permissions mises à jour"
+      }
+    },
+        "roles": {
+      "title": "Rôles et Permissions",
+      "sidebar": {
+        "title": "Rôles",
+        "system": "système",
+        "empty": "Aucun rôle pour l'instant."
+      },
+      "newRole": "Nouveau rôle",
+      "namePlaceholder": "Nom (ex : Gestionnaire appels)",
+      "descPlaceholder": "Description (optionnelle)",
+      "createBtn": "Créer le rôle",
+      "selectRole": "Sélectionne un rôle pour voir ses permissions.",
+      "readOnly": "Rôle système — lecture seule",
+      "deleteBtn": "Supprimer ce rôle",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le rôle \"{{name}}\" ?"
     }
   },
   "navbar": {
@@ -813,4 +899,5 @@
       "daysAgo_other": "Il y a {{count}} jours"
     }
   }
+  
 }

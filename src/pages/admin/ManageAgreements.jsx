@@ -475,21 +475,18 @@ const ManageAgreements = () => {
     return (
         <div className="manage-agreements">
             <div className="header">
-                <div className="header-left">
-                    <h1 className="flex items-center gap-2">
-                        <FileText size={26} className="text-cobalt" />
-                        {t('admin.agreementsPage.title')}
-                    </h1>
-                {hasPermission('agreements.create') && (
-    <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
-        <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
-    </button>
-)}
-                </div>
-                <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
-                    <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
-                </button>
-            </div>
+    <div className="header-left">
+        <h1 className="flex items-center gap-2">
+            <FileText size={26} className="text-cobalt" />
+            {t('admin.agreementsPage.title')}
+        </h1>
+    </div>
+    {hasPermission('agreements.create') && (
+        <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
+            <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
+        </button>
+    )}
+</div>
 
             {/* STATS CARDS */}
             <div className="grid gap-4 md:grid-cols-4">
