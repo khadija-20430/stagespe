@@ -577,9 +577,10 @@
     "title": "Appels à projets",
     "description": "Filtrez les appels à projets par programme, pays et statut pour trouver les opportunités adaptées.",
     "filters": {
-      "programme": "Programme",
-      "country": "Pays / zone",
-      "status": "Statut"
+       "programme": "Programme",
+  "country": "Pays / zone",
+  "status": "Statut",
+  "theme": "Thème"
     },
     "statuts": {
       "tous": "Tous",
@@ -917,7 +918,8 @@
   "telecharger": "Télécharger",
   "tauxFinancement": "Taux de financement",
   "typeAction": "Type d'action",
-  "users": "Utilisateurs",
+"themes": "Thèmes",
+"users": "Utilisateurs",
   "adminRoles": "Rôles & permissions",
   "adminTestAccess": "Tester RBAC",
   "adminAuditLog": "Journal d'audit",

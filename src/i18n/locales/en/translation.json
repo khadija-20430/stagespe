@@ -576,9 +576,10 @@
     "title": "Calls for Projects",
     "description": "Filter calls for projects by program, country, and status to find the opportunities that fit you.",
     "filters": {
-      "programme": "Program",
-      "country": "Country / region",
-      "status": "Status"
+      "programme": "Programme",
+  "country": "Country / region",
+  "status": "Status",
+  "theme": "Theme"
     },
     "statuts": {
       "tous": "All",
@@ -916,7 +917,8 @@
   "telecharger": "Download",
   "tauxFinancement": "Funding rate",
   "typeAction": "Action type",
-  "users": "Users",
+"themes": "Themes",
+"users": "Users",
   "adminRoles": "Roles & permissions",
   "adminTestAccess": "Test RBAC",
   "adminAuditLog": "Audit log",

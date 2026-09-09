@@ -1,45 +1,94 @@
+// models/callsModel.js - Version corrigée avec traductions themes + countries
+
 const pool = require('../db');
 
-exports.findAllPublished = async(filters) => {
+exports.findAllPublished = async(filters, lang = 'fr') => {
     const { programme_id, status, country_id, theme_id, action_type_id } = filters;
     let query = `
-    SELECT DISTINCT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label
+    SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label,
+           COALESCE(
+             (SELECT ARRAY_AGG(COALESCE(ctt.name, c.name))
+              FROM call_countries cc
+              JOIN countries c ON c.id = cc.country_id
+              LEFT JOIN languages l2 ON l2.code = $1
+              LEFT JOIN country_translations ctt
+                ON ctt.country_id = c.id AND ctt.language_id = l2.id
+              WHERE cc.call_id = calls.id),
+             '{}'
+           ) AS country_names,
+           COALESCE(
+             (SELECT ARRAY_AGG(COALESCE(tt.name, t.name))
+              FROM call_themes ct
+              JOIN themes t ON t.id = ct.theme_id
+              LEFT JOIN languages l ON l.code = $1
+              LEFT JOIN theme_translations tt
+                ON tt.theme_id = t.id AND tt.language_id = l.id
+              WHERE ct.call_id = calls.id),
+             '{}'
+           ) AS theme_names
     FROM calls
     LEFT JOIN programmes ON calls.programme_id = programmes.id
-    LEFT JOIN action_types ON calls.action_type_id = action_types.id`;
-    if (country_id) query += ' JOIN call_countries ON call_countries.call_id = calls.id';
-    if (theme_id) query += ' JOIN call_themes ON call_themes.call_id = calls.id';
-    query += " WHERE calls.statut_publication = 'published'";
-    const params = [];
+    LEFT JOIN action_types ON calls.action_type_id = action_types.id
+    WHERE calls.statut_publication = 'published'`;
+
+    // $1 est réservé à "lang" (utilisé dans les sous-selects thèmes ET pays ci-dessus).
+    // Tous les filtres dynamiques doivent donc démarrer à $2.
+    const params = [lang];
+
     if (programme_id) { params.push(programme_id);
         query += ` AND calls.programme_id = $${params.length}`; }
     if (status) { params.push(status);
         query += ` AND calls.status = $${params.length}`; }
     if (country_id) { params.push(country_id);
-        query += ` AND call_countries.country_id = $${params.length}`; }
+        query += ` AND EXISTS (SELECT 1 FROM call_countries WHERE call_countries.call_id = calls.id AND call_countries.country_id = $${params.length})`; }
     if (theme_id) { params.push(theme_id);
-        query += ` AND call_themes.theme_id = $${params.length}`; }
+        query += ` AND EXISTS (SELECT 1 FROM call_themes WHERE call_themes.call_id = calls.id AND call_themes.theme_id = $${params.length})`; }
     if (action_type_id) { params.push(action_type_id);
         query += ` AND calls.action_type_id = $${params.length}`; }
+
     query += ' ORDER BY calls.deadline ASC';
     const result = await pool.query(query, params);
     return result.rows;
 };
 
-exports.findAllAdmin = async() => {
+exports.findAllAdmin = async(lang = 'fr') => {
     const result = await pool.query(
         `SELECT calls.*, programmes.name AS programme_name, action_types.label AS action_type_label,
                 COALESCE(
-                    ARRAY_AGG(countries.name) FILTER (WHERE countries.name IS NOT NULL),
+                    ARRAY_AGG(DISTINCT countries.id) FILTER (WHERE countries.id IS NOT NULL),
                     '{}'
-                ) AS country_names
+                ) AS country_ids,
+                COALESCE(
+                    ARRAY_AGG(DISTINCT COALESCE(country_translations.name, countries.name))
+                    FILTER (WHERE countries.id IS NOT NULL),
+                    '{}'
+                ) AS country_names,
+                COALESCE(
+                    ARRAY_AGG(DISTINCT themes.id) FILTER (WHERE themes.id IS NOT NULL),
+                    '{}'
+                ) AS theme_ids,
+                COALESCE(
+                    ARRAY_AGG(DISTINCT COALESCE(theme_translations.name, themes.name))
+                    FILTER (WHERE themes.id IS NOT NULL),
+                    '{}'
+                ) AS theme_names
          FROM calls
          LEFT JOIN programmes ON calls.programme_id = programmes.id
          LEFT JOIN action_types ON calls.action_type_id = action_types.id
          LEFT JOIN call_countries ON call_countries.call_id = calls.id
          LEFT JOIN countries ON countries.id = call_countries.country_id
+         LEFT JOIN call_themes ON call_themes.call_id = calls.id
+         LEFT JOIN themes ON themes.id = call_themes.theme_id
+         LEFT JOIN languages ON languages.code = $1
+         LEFT JOIN theme_translations
+           ON theme_translations.theme_id = themes.id
+           AND theme_translations.language_id = languages.id
+         LEFT JOIN country_translations
+           ON country_translations.country_id = countries.id
+           AND country_translations.language_id = languages.id
          GROUP BY calls.id, programmes.name, action_types.label
-         ORDER BY calls.deadline ASC`
+         ORDER BY calls.deadline ASC`,
+        [lang]
     );
     return result.rows;
 };
@@ -90,7 +139,6 @@ exports.create = async(data, userId) => {
         deadline,
         official_link,
         contact_person,
-        status,
         theme_ids,
         country_ids
     } = data;
@@ -102,10 +150,11 @@ exports.create = async(data, userId) => {
             `INSERT INTO calls
        (title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
         action_type_id, budget_available, funding_rate, target_audience,
-        publication_date, deadline, official_link, contact_person, status, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *`, [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
+        publication_date, deadline, official_link, contact_person, created_by)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`, [
+                title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
                 action_type_id, budget_available, funding_rate, target_audience,
-                publication_date, deadline, official_link, contact_person, status || 'open', userId
+                publication_date, deadline, official_link, contact_person, userId
             ]
         );
         const call = result.rows[0];
@@ -114,6 +163,7 @@ exports.create = async(data, userId) => {
             const values = theme_ids.map((_, i) => `($1, $${i + 2})`).join(', ');
             await client.query(`INSERT INTO call_themes (call_id, theme_id) VALUES ${values}`, [call.id, ...theme_ids]);
         }
+
         if (Array.isArray(country_ids) && country_ids.length > 0) {
             const values = country_ids.map((_, i) => `($1, $${i + 2})`).join(', ');
             await client.query(`INSERT INTO call_countries (call_id, country_id) VALUES ${values}`, [call.id, ...country_ids]);
@@ -146,7 +196,6 @@ exports.update = async(id, data, userId, ip) => {
         deadline,
         official_link,
         contact_person,
-        status,
         theme_ids,
         country_ids
     } = data;
@@ -162,9 +211,10 @@ exports.update = async(id, data, userId, ip) => {
             `UPDATE calls SET title=$1, programme_id=$2, funding_body=$3, description=$4, objectives=$5,
        eligibility=$6, beneficiaries=$7, action_type_id=$8, budget_available=$9,
        funding_rate=$10, target_audience=$11, publication_date=$12, deadline=$13, official_link=$14,
-       contact_person=$15, status=$16, updated_at=NOW() WHERE id=$17 RETURNING *`, [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
+       contact_person=$15, updated_at=NOW() WHERE id=$16 RETURNING *`, [
+                title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
                 action_type_id, budget_available, funding_rate, target_audience,
-                publication_date, deadline, official_link, contact_person, status, id
+                publication_date, deadline, official_link, contact_person, id
             ]
         );
         if (result.rows.length === 0) {
@@ -179,6 +229,7 @@ exports.update = async(id, data, userId, ip) => {
                 await client.query(`INSERT INTO call_themes (call_id, theme_id) VALUES ${values}`, [id, ...theme_ids]);
             }
         }
+
         if (Array.isArray(country_ids)) {
             await client.query('DELETE FROM call_countries WHERE call_id = $1', [id]);
             if (country_ids.length > 0) {

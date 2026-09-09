@@ -17,7 +17,11 @@ export default function Appels() {
   const [programme, setProgramme] = useState('Tous');
   const [pays, setPays] = useState('Tous');
   const [statut, setStatut] = useState('tous');
-
+const [theme, setTheme] = useState('Tous');
+const listeThemes = useMemo(
+    () => ['Tous', ...new Set((appels ?? []).flatMap((a) => a.themeNames ?? []))],
+    [appels]
+);
    useEffect(() => {
   setAppels(null);
   getAppels(i18n.language).then(setAppels);
@@ -42,9 +46,11 @@ export default function Appels() {
         (pays === 'Tous' || (a.paysEligibles ?? []).includes(pays)) &&
         // ⚠️ mapAppel() renvoie "status" (pas "statut"). L'ancienne version comparait
         // a.statut, qui est toujours undefined -> le filtre par statut ne matchait jamais.
+                (theme === 'Tous' || (a.themeNames ?? []).includes(theme)) &&
+
         (statut === 'tous' || a.status === statut)
     );
-  }, [appels, programme, pays, statut]);
+  }, [appels, programme, pays,theme, statut]);
 
   const Groupe = ({ label, options, value, onChange, getLabel = (o) => o }) => (
     <div>
@@ -75,6 +81,8 @@ export default function Appels() {
             getLabel={(o) => (o === 'Tous' ? t('common.all') : o)} />
           <Groupe label={t('appels.filters.country')} options={listePays} value={pays} onChange={setPays}
             getLabel={(o) => (o === 'Tous' ? t('common.all') : o)} />
+          <Groupe label={t('appels.filters.theme')} options={listeThemes} value={theme} onChange={setTheme}
+    getLabel={(o) => (o === 'Tous' ? t('common.all') : o)} />
           <Groupe label={t('appels.filters.status')} options={['tous', ...CALL_STATUS]} value={statut} onChange={setStatut}
             getLabel={(code) => (code === 'tous' ? t('common.all') : t(`enums.callStatus.${code}`))} />
         </div>

@@ -65,9 +65,27 @@ export const mapProjet = (row) => ({
 export const mapAppel = (row) => ({
     id: row.id,
     titre: row.title,
+
+    // Champs bruts nécessaires au formulaire d'édition (openEdit / draft)
+    programmeId: row.programme_id != null ? String(row.programme_id) : '',
+    typeActionId: row.action_type_id != null ? String(row.action_type_id) : '',
+    organismeFinanceur: row.funding_body || '',
+    objectifs: row.objectives || '',
+    eligibilite: row.eligibility || '',
+    beneficiaires: row.beneficiaries || '',
+    tauxFinancement: row.funding_rate != null ? Number(row.funding_rate) : '',
+    publicCible: row.target_audience || '',
+    datePublication: row.publication_date || '',
+    lienOfficiel: row.official_link || '',
+    personneContact: row.contact_person || '',
+
+    // Champs d'affichage (colonnes du tableau)
     programme: row.programme_name,
     paysEligibles: Array.isArray(row.country_names) && row.country_names.length > 0 ?
         row.country_names : splitList(row.eligibility),
+    paysEligiblesIds: Array.isArray(row.country_ids)
+        ? row.country_ids
+        : (Array.isArray(row.countries) ? row.countries.map((c) => c.id) : []),
     status: row.status,
     dateLimite: row.deadline,
     budgetDisponible: row.budget_available != null ? Number(row.budget_available) : null,
@@ -76,6 +94,12 @@ export const mapAppel = (row) => ({
     resume: row.description,
     lien: row.official_link || '#',
     themes: row.themes,
+    themeIds: Array.isArray(row.theme_ids)
+        ? row.theme_ids
+        : (Array.isArray(row.themes) ? row.themes.map((t) => t.id) : []),
+    themeNames: Array.isArray(row.theme_names) && row.theme_names.length > 0
+        ? row.theme_names
+        : (Array.isArray(row.themes) ? row.themes.map((t) => t.name) : []),
     countries: row.countries,
     documents: row.documents,
     statut_publication: row.statut_publication,
@@ -199,30 +223,44 @@ export const toProjetPayload = (draft) => {
             draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
     };
 };
-export const toAppelPayload = (draft) => ({
-    title: draft.titre,
-    programme_id: draft.programmeId || null,
+// mappers.js
+export const toAppelPayload = (draft) => {
+    const parseIds = (input) => {
+        if (!input) return [];
+        if (Array.isArray(input)) {
+            return input.map(id => parseInt(id)).filter(Boolean);
+        }
+        if (typeof input === 'string') {
+            return input.split(',')
+                .map(s => parseInt(s.trim()))
+                .filter(Boolean);
+        }
+        return [];
+    };
 
-    funding_body: draft.organismeFinanceur,
-    description: draft.resume,
-    action_type_id: draft.typeActionId || null,
+    return {
+        title: draft.titre,
+        programme_id: draft.programmeId ? parseInt(draft.programmeId) : null,
+        funding_body: draft.organismeFinanceur || null,
+        description: draft.resume || null,
+        objectives: draft.objectifs || null,
+        eligibility: draft.eligibilite || null,
+        beneficiaries: draft.beneficiaires || null,
+        action_type_id: draft.typeActionId ? parseInt(draft.typeActionId) : null,
+        budget_available: draft.budgetDisponible ? parseFloat(draft.budgetDisponible) : null,
+        funding_rate: draft.tauxFinancement ? parseFloat(draft.tauxFinancement) : null,
+        target_audience: draft.publicCible || null,
+        publication_date: draft.datePublication || null,
+        deadline: draft.dateLimite || null,
+        official_link: draft.lienOfficiel || null,
+        contact_person: draft.personneContact || null,
+        // "status" retiré : plus jamais envoyé au backend
+        statut_publication: draft.statut_publication || 'draft',
 
-    budget_available: draft.budgetDisponible || null,
-    funding_rate: draft.tauxFinancement || null,
-    target_audience: draft.publicCible,
-
-    publication_date: draft.datePublication || null,
-    deadline: draft.dateLimite || null,
-
-    official_link: draft.lienOfficiel,
-    contact_person: draft.personneContact,
-
-    status: draft.status || 'open',
-    statut_publication: draft.statut_publication || 'draft',
-
-    country_ids: draft.paysEligiblesIds || [],
-    theme_ids: draft.themeIds || [],
-});
+        theme_ids: parseIds(draft.themeIds),
+        country_ids: parseIds(draft.paysEligiblesIds),
+    };
+};
 export const toMobilitePayload = (draft) => ({
     title: draft.title,
     type: draft.type,

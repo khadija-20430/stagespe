@@ -10,12 +10,21 @@ import {
 } from 'lucide-react';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
-
+const toDateInputValue = (value) => {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toISOString().slice(0, 10); // "yyyy-MM-dd"
+};
 function emptyItem(fields) {
   const obj = {};
 
   fields.forEach((f) => {
-    obj[f.name] = f.type === 'number' ? 0 : '';
+    if (f.type === 'multiselect') {
+      obj[f.name] = [];
+    } else {
+      obj[f.name] = f.type === 'number' ? 0 : '';
+    }
   });
 
   return obj;
@@ -79,12 +88,18 @@ export default function CrudManager({
   };
 
   // EDITER
-  const openEdit = (item) => {
+      const openEdit = (item) => {
     const d = { ...item };
 
     fields.forEach((f) => {
       if (f.type === 'list' && Array.isArray(d[f.name])) {
         d[f.name] = d[f.name].join(', ');
+      }
+      if (f.type === 'multiselect') {
+        d[f.name] = Array.isArray(d[f.name]) ? d[f.name].map(String) : [];
+      }
+      if (f.type === 'date') {
+        d[f.name] = toDateInputValue(d[f.name]);
       }
     });
 
@@ -960,7 +975,75 @@ const stats = getStats();
 
                   {/* TEXTAREA */}
 
-                  {f.type === 'address-autocomplete' ? (
+                                   {/* TEXTAREA */}
+
+                  {f.type === 'multiselect' ? (
+
+                    <div
+                      className="
+                        w-full
+                        max-h-48
+                        overflow-y-auto
+                        rounded-lg
+                        border
+                        border-slate-300
+                        dark:border-slate-600
+                        bg-white
+                        dark:bg-slate-700
+                        p-2
+                        space-y-1
+                      "
+                    >
+                      {f.options?.map((o) => {
+                        const value = typeof o === 'object' ? o.value : o;
+                        const label = typeof o === 'object' ? o.label : o;
+                        const selected = Array.isArray(draft[f.name]) ? draft[f.name].map(String) : [];
+                        const checked = selected.includes(String(value));
+
+                        return (
+                          <label
+                            key={value}
+                            className="
+                              flex
+                              items-center
+                              gap-2
+                              px-2
+                              py-1.5
+                              rounded
+                              text-sm
+                              text-slate-700
+                              dark:text-slate-300
+                              hover:bg-slate-50
+                              dark:hover:bg-slate-600
+                              cursor-pointer
+                            "
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                setField(f.name, (current) => {
+                                  const arr = Array.isArray(current) ? current.map(String) : [];
+                                  return e.target.checked
+                                    ? [...arr, String(value)]
+                                    : arr.filter((v) => v !== String(value));
+                                });
+                              }}
+                              className="rounded border-slate-300 dark:border-slate-500 text-cobalt focus:ring-cobalt/30"
+                            />
+                            <span>{label}</span>
+                          </label>
+                        );
+                      })}
+
+                      {(!f.options || f.options.length === 0) && (
+                        <p className="text-xs text-slate-400 px-2 py-1">
+                          {t('admin.crud.selectPlaceholder')}
+                        </p>
+                      )}
+                    </div>
+
+                  ) : f.type === 'address-autocomplete' ? (
 
                     <AddressAutocomplete
                       value={draft[f.name] ?? ''}

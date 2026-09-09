@@ -967,9 +967,8 @@ export const getStats = async() => {
 // ============================================================
 // DONNÉES DE RÉFÉRENCE
 // ============================================================
-
-export const getCountries = () =>
-    request('/countries');
+export const getCountries = (lang = 'fr') =>
+    request(`/countries?lang=${lang}`);
 
 
 export const getProgrammes = () =>
@@ -988,9 +987,8 @@ export const getActionTypes = () =>
     request('/action-types');
 
 
-export const getThemes = () =>
-    request('/themes');
-
+export const getThemes = (lang = 'fr') =>
+    request(`/themes?lang=${lang}`);
 
 // ============================================================
 // RBAC — RÔLES & PERMISSIONS
@@ -1617,3 +1615,7 @@ export const reorderHomeSlides = (slides) =>
         method: 'PUT',
         body: { slides },
     });
+    export const getThemeTranslations = (id) => authRequest(`/themes/${id}/translations`);
+export const updateThemeTranslations = (id, payload) => authRequest(`/themes/${id}/translations`, { method: 'PUT', body: payload });
+export const getCountryTranslations = (id) => authRequest(`/countries/${id}/translations`);
+export const updateCountryTranslations = (id, payload) => authRequest(`/countries/${id}/translations`, { method: 'PUT', body: payload });

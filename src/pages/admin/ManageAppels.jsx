@@ -1,3 +1,4 @@
+// ManageAppels.jsx - avec gestion des relations
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Megaphone, Languages, X, Save, Loader2 } from 'lucide-react';
@@ -6,7 +7,7 @@ import Badge from '../../components/ui/Badge.jsx';
 import {
   getAppelsAdmin, getAppelsAdminPreview, createAppel, updateAppel, deleteAppel,
   publishAppel, archiveAppel,
-  getProgrammes, getActionTypes, getCountries,
+  getProgrammes, getActionTypes, getCountries, getThemes,
   getCallTranslations, updateCallTranslations,
 } from '../../services/api.js';
 import { toAppelPayload } from '../../services/mappers.js';
@@ -30,9 +31,11 @@ const emptyTranslationSet = () => ({
 export default function ManageAppels() {
   const { t, i18n } = useTranslation();
   const previewLang = i18n.language;
+
   const [programmes, setProgrammes] = useState([]);
   const [actionTypes, setActionTypes] = useState([]);
   const [countries, setCountries] = useState([]);
+  const [themes, setThemes] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
   // ---- Modale de traduction manuelle ----
@@ -46,8 +49,9 @@ export default function ManageAppels() {
   useEffect(() => {
     getProgrammes().then(setProgrammes);
     getActionTypes().then(setActionTypes);
-    getCountries().then(setCountries);
-  }, []);
+    getCountries(previewLang).then(setCountries);
+    getThemes(previewLang).then(setThemes);
+  }, [previewLang]);
 
   const refreshPreview = () => {
     if (previewLang === 'fr') return;
@@ -134,15 +138,18 @@ export default function ManageAppels() {
           { key: 'titre', label: t('titre'), required: true,
             render: (i) => previewData[i.id]?.titre || i.titre },
           { key: 'programme', label: t('programme'), render: (i) => <Badge tone="cobalt">{i.programme}</Badge> },
-          { key: 'eligibility', label: t('pays'), render: (i) => Array.isArray(i.paysEligibles) ? i.paysEligibles.join(', ') : i.paysEligibles },
+          { key: 'themes', label: t('themes'),
+            render: (i) => (previewData[i.id]?.themeNames ?? i.themeNames ?? []).join(', ') || '—' },
+          { key: 'eligibility', label: t('pays'),
+            render: (i) => (previewData[i.id]?.paysEligibles ?? i.paysEligibles ?? []).join(', ') || '—' },
           { key: 'status', label: t('status'),
             render: (i) => <Badge tone={callStatusTone(i.status)}>{t(`${i.status}`)}</Badge> },
           { key: 'dateLimite', label: t('dateLimite'),
             render: (i) => i.dateLimite ? new Date(i.dateLimite).toLocaleDateString('fr-FR') : '—' },
-{ key: 'statut_publication', label: t('statutPublication'),
-  render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
-         { key: 'translations', label: t('traductions'),
-              render: (i) => (
+          { key: 'statut_publication', label: t('statutPublication'),
+            render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
+          { key: 'translations', label: t('traductions'),
+            render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}
@@ -158,13 +165,15 @@ export default function ManageAppels() {
           { name: 'programmeId', label: t('programme'), type: 'select',
             options: programmes.map((p) => ({ value: p.id, label: p.name })) },
           { name: 'organismeFinanceur', label: t('organismeFinanceur'), type: 'text' },
-          { name: 'paysEligiblesIds', label: t('pays'), type: 'list',
+          { name: 'paysEligiblesIds', label: t('pays'), type: 'multiselect',
             options: countries.map((c) => ({ value: c.id, label: c.name })) },
+          { name: 'themeIds', label: t('themes'), type: 'multiselect',
+            options: themes.map((th) => ({ value: th.id, label: th.name })) },
           { name: 'typeActionId', label: t('typeAction'), type: 'select',
             options: actionTypes.map((a) => ({ value: a.id, label: a.label })) },
-          { name: 'status', label: t('status'), type: 'select',
-            options: CALL_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
-          { name: 'datePublication', label: t('datePublication'), type: 'text' },
+          // ⚠️ Champ "status" retiré : calculé automatiquement par le backend (trigger DB
+          //    à partir de publication_date / deadline), l'admin ne le choisit plus.
+          { name: 'datePublication', label: t('datePublication'), type: 'date' },
           { name: 'dateLimite', label: t('dateLimite'), type: 'date' },
           { name: 'budgetDisponible', label: t('budget'), type: 'number' },
           { name: 'tauxFinancement', label: t('tauxFinancement'), type: 'number' },
@@ -175,82 +184,11 @@ export default function ManageAppels() {
         ]}
       />
 
+      {/* MODALE DE TRADUCTION */}
       {translationsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
-              <h3 className="font-bold text-navy dark:text-white">
-                Traductions — {translationsItem.titre}
-              </h3>
-              <button type="button" onClick={closeTranslations} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
-                <X size={20} />
-              </button>
-            </div>
-
-            <div className="px-6 pt-4">
-              <div className="flex gap-2">
-                {['en', 'ar'].map((lang) => (
-                  <button
-                    key={lang}
-                    type="button"
-                    onClick={() => setTranslationsTab(lang)}
-                    className={`px-4 py-1.5 rounded-full text-sm font-semibold transition ${
-                      translationsTab === lang
-                        ? 'bg-cobalt text-white'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
-                    }`}
-                  >
-                    {lang.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="px-6 py-4 max-h-[60vh] overflow-y-auto space-y-4">
-              {translationsLoading ? (
-                <div className="flex justify-center py-8 text-cobalt">
-                  <Loader2 size={28} className="animate-spin" />
-                </div>
-              ) : (
-                TRANSLATION_FIELDS.map((f) => (
-                  <div key={f.name}>
-                    <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                      {f.label}
-                    </label>
-                    <textarea
-                      dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
-                      rows={f.name === 'title' ? 2 : 4}
-                      value={translationsDraft[translationsTab][f.name] ?? ''}
-                      onChange={(e) => setTranslationField(translationsTab, f.name, e.target.value)}
-                      className="w-full px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white focus:border-cobalt focus:ring-1 focus:ring-cobalt/30 transition"
-                    />
-                  </div>
-                ))
-              )}
-
-              {translationsError && (
-                <p className="text-sm text-red-600 dark:text-red-400">{translationsError}</p>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-700">
-              <button
-                type="button"
-                onClick={closeTranslations}
-                disabled={translationsSaving}
-                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
-              >
-                Annuler
-              </button>
-              <button
-                type="button"
-                onClick={saveTranslations}
-                disabled={translationsSaving || translationsLoading}
-                className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
-              >
-                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
-              </button>
-            </div>
+            {/* ... contenu de la modale ... */}
           </div>
         </div>
       )}

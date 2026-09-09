@@ -1,3 +1,5 @@
+// controllers/callsController.js
+const pool = require('../db'); 
 const callsModel = require('../models/callsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
@@ -5,22 +7,38 @@ const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, g
 
 exports.getAllPublished = async(req, res) => {
     try {
-        const calls = await callsModel.findAllPublished(req.query);
-        res.json(await translateList('call', calls, req.query.lang));
+        const lang = req.query.lang || 'fr';
+        const calls = await callsModel.findAllPublished(req.query, lang);
+        res.json(await translateList('call', calls, lang));
     } catch (err) { sendError(res, err); }
 };
 
 exports.getAllAdmin = async(req, res) => {
     try {
-        const calls = await callsModel.findAllAdmin();
-        res.json(calls);
+        const lang = req.query.lang || 'fr';
+        const calls = await callsModel.findAllAdmin(req.query.lang || 'fr');
+        const callsWithRelations = await Promise.all(calls.map(async (call) => {
+            const themes = await pool.query(
+                `SELECT themes.* FROM themes JOIN call_themes ON call_themes.theme_id = themes.id WHERE call_themes.call_id = $1`, [call.id]
+            );
+            const countries = await pool.query(
+                `SELECT countries.* FROM countries JOIN call_countries ON call_countries.country_id = countries.id WHERE call_countries.call_id = $1`, [call.id]
+            );
+            return {
+                ...call,
+                themes: themes.rows,
+                countries: countries.rows
+            };
+        }));
+        res.json(callsWithRelations);
     } catch (err) { sendError(res, err); }
 };
 
 exports.getAllAdminPreview = async(req, res) => {
     try {
-        const rows = await callsModel.findAllAdmin();
-        const translated = await translateList('call', rows, req.query.lang);
+        const lang = req.query.lang || 'fr';
+        const rows = await callsModel.findAllAdmin(lang);
+        const translated = await translateList('call', rows, lang);
         res.json(translated);
     } catch (err) { sendError(res, err); }
 };
@@ -53,6 +71,7 @@ exports.updateTranslations = async(req, res) => {
         res.json(updated);
     } catch (err) { sendError(res, err); }
 };
+
 exports.create = async(req, res) => {
     try {
         const { publication_date, deadline } = req.body;
@@ -63,7 +82,9 @@ exports.create = async(req, res) => {
         const call = await callsModel.create(req.body, req.user.id);
         await logAction(req.user.id, 'create', 'call', call.id, null, req);
         await autoTranslateAndSave('call', call.id, req.body);
-        res.status(201).json(call);
+
+        const fullCall = await callsModel.findById(call.id);
+        res.status(201).json(fullCall);
     } catch (err) { sendError(res, err); }
 };
 
@@ -77,7 +98,9 @@ exports.update = async(req, res) => {
         const call = await callsModel.update(req.params.id, req.body, req.user.id, req.ip);
         if (!call) return res.status(404).json({ error: 'Appel non trouvé' });
         await autoTranslateAndSave('call', req.params.id, req.body);
-        res.json(call);
+
+        const fullCall = await callsModel.findById(req.params.id);
+        res.json(fullCall);
     } catch (err) { sendError(res, err); }
 };
 

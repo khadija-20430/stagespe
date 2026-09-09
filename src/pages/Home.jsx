@@ -9,7 +9,7 @@ import { formatDate } from '../lib/utils.js';
 import { getActualites, getAppels, getMobilites, getPartenaires, getFileUrl, getProgrammesPublic, getHomeSlides, getProjets } from '../services/api.js';
 import { callStatusTone, projectStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
-import { Megaphone, Globe, GraduationCap, FlaskConical, Users, BookOpen } from 'lucide-react';
+import { Megaphone, Globe, GraduationCap, FlaskConical, Users, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Map string -> composant icône Lucide
 const ICON_MAP = { GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen };
@@ -23,31 +23,34 @@ const NUMBER_LOCALE = { fr: 'fr-FR', en: 'en-US', ar: 'ar-DZ' };
 function Hero({ slides, loading }) {
   const { t } = useTranslation();
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     setCurrentSlide(0);
   }, [slides]);
 
   useEffect(() => {
-    if (!slides.length) return;
+    if (!slides.length || paused) return;
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, [slides.length]);
+  }, [slides.length, paused]);
+
+  const goTo = (i) => setCurrentSlide((i + slides.length) % slides.length);
 
   if (loading) {
     return (
       <section className="relative overflow-hidden bg-gradient-to-br from-navy via-slate-800 to-navy">
-        <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
           <div className="mb-12 flex flex-col items-center text-center">
             <img src={esiLogo} alt="ESI" className="h-24 w-auto mb-4 animate-pulse-scale" />
             <h2 className="text-4xl font-bold text-white">{t('home.hero.brandTitle')}</h2>
           </div>
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl animate-pulse">
-              <div className="h-6 w-32 rounded-full bg-slate-400/20 mb-6" />
-              <div className="h-8 w-3/4 rounded bg-slate-400/20 mb-4" />
+          <div className="max-w-4xl mx-auto mb-8">
+            <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-6 shadow-2xl animate-pulse">
+              <div className="h-6 w-32 rounded-full bg-slate-400/20 mb-4" />
+              <div className="h-8 w-3/4 rounded bg-slate-400/20 mb-3" />
               <div className="h-4 w-full rounded bg-slate-400/10" />
             </div>
           </div>
@@ -68,38 +71,46 @@ function Hero({ slides, loading }) {
         <div className="absolute -bottom-8 right-20 w-72 h-72 bg-cobalt/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-2000"></div>
       </div>
 
-      <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-20">
         <div className="mb-12 flex flex-col items-center text-center">
           <img src={esiLogo} alt="ESI" className="h-24 w-auto mb-4 animate-pulse-scale" />
           <h2 className="text-4xl font-bold text-white">{t('home.hero.brandTitle')}</h2>
         </div>
 
-        <div className="relative max-w-2xl mx-auto mb-8">
-          <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-10 shadow-2xl transition-all duration-500">
-            <div className="mb-6 inline-block">
-              <p key={`badge-${currentSlideData.id}`} className="inline-flex items-center gap-2 rounded-full border border-slate-300/30 bg-slate-400/20 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-200 animate-fade-in">
+        {/* --- Carte réduite en hauteur, sans flèches --- */}
+        <div
+          className="relative max-w-4xl mx-auto mb-8"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+        >
+          <div className="rounded-2xl border border-slate-400/20 bg-gradient-to-br from-slate-500/15 via-slate-400/10 to-slate-500/15 backdrop-blur-xl p-6 sm:p-8 shadow-2xl transition-all duration-500">
+            <div className="mb-4 inline-block">
+              <p
+                key={`badge-${currentSlideData.id}`}
+                className="inline-flex items-center gap-2 rounded-full bg-blue-500 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white shadow-lg shadow-blue-500/50 animate-fade-in"
+              >
                 <IconComponent size={14} />
                 {currentSlideData.badge}
               </p>
             </div>
 
-            <div className="mb-6 min-h-[100px] overflow-hidden">
-              <h1 key={`title-${currentSlideData.id}`} className="text-3xl font-extrabold leading-tight text-white animate-slide-up">
+            <div className="mb-4 min-h-[70px] overflow-hidden">
+              <h1 key={`title-${currentSlideData.id}`} className="text-2xl sm:text-3xl font-extrabold leading-tight text-white animate-slide-up">
                 {currentSlideData.title}
               </h1>
             </div>
 
-            <div className="min-h-[90px] overflow-hidden">
-              <p key={`desc-${currentSlideData.id}`} className="text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light">
+            <div className="min-h-[60px] overflow-hidden">
+              <p key={`desc-${currentSlideData.id}`} className="text-sm sm:text-base leading-relaxed text-slate-200 animate-slide-up delay-100 font-light max-w-2xl">
                 {currentSlideData.description}
               </p>
             </div>
 
-            <div className="mt-10 flex justify-start gap-2">
+            <div className="mt-6 flex justify-start gap-2">
               {slides.map((s, index) => (
                 <button
                   key={s.id}
-                  onClick={() => setCurrentSlide(index)}
+                  onClick={() => goTo(index)}
                   className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
                     index === currentSlide
                       ? 'bg-cobalt w-10 shadow-lg shadow-cobalt/50'
@@ -139,7 +150,6 @@ export default function Home() {
   const [slides, setSlides] = useState([]);
   const [slidesLoading, setSlidesLoading] = useState(true);
 
-  // AU DÉPART : les stats sont vides avec '—'
   const [stats, setStats] = useState([
     { key: 'partners', value: '—' },
     { key: 'projects', value: '—' },
@@ -150,7 +160,6 @@ export default function Home() {
 
   const currencyLocale = NUMBER_LOCALE[i18n.language] || 'fr-FR';
 
-  // Slides du hero — rechargées à chaque changement de langue
   useEffect(() => {
     const langId = LANG_ID_MAP[i18n.language] || 1;
     setSlidesLoading(true);
@@ -164,11 +173,9 @@ export default function Home() {
       .finally(() => setSlidesLoading(false));
   }, [i18n.language]);
 
-  // ⬇️ CORRECTION : On passe la langue à toutes les fonctions
   useEffect(() => {
     const lang = i18n.language;
-    
-    // Programmes
+
     getProgrammesPublic(lang)
       .then((d) => {
         const published = d.filter((p) => p.statut_publication === 'published');
@@ -177,19 +184,17 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch programmes:', err));
 
-    // Partenaires - ✅ AJOUT DE LA LANGUE
     getPartenaires(lang)
       .then((d) => {
         const published = d.filter((p) => p.statut_publication === 'published');
         setPartenaires(published);
         setStats((prev) => prev.map(s => s.key === 'partners' ? { ...s, value: String(published.length) } : s));
-        
+
         const uniqueCountries = new Set(published.map(p => p.pays)).size;
         setStats((prev) => prev.map(s => s.key === 'countries' ? { ...s, value: String(uniqueCountries) } : s));
       })
       .catch((err) => console.error('Failed to fetch partenaires:', err));
 
-    // Mobilités ouvertes - ✅ AJOUT DE LA LANGUE
     getMobilites(lang)
       .then((d) => {
         const open = d.filter((m) => m.status === 'open');
@@ -198,7 +203,6 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch mobilites:', err));
 
-    // Projets - ✅ AJOUT DE LA LANGUE
     getProjets(lang)
       .then((d) => {
         const active = d.filter((p) => p.statut_publication === 'published');
@@ -207,7 +211,6 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch projets:', err));
 
-    // Appels - ✅ AJOUT DE LA LANGUE
     getAppels(lang)
       .then((d) => {
         const open = d.filter((a) => a.status === 'open');
@@ -215,11 +218,10 @@ export default function Home() {
       })
       .catch((err) => console.error('Failed to fetch appels:', err));
 
-    // Actualités - ✅ AJOUT DE LA LANGUE
     getActualites(lang)
       .then((d) => setActualites(d.slice(0, 3)))
       .catch(() => {});
-    
+
   }, [i18n.language]);
 
   return (
@@ -294,7 +296,7 @@ export default function Home() {
                   </div>
                   <h3 className="mt-4 text-xl font-bold text-navy dark:text-white">{proj.titre}</h3>
                   <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{proj.resume}</p>
-                  
+
                   <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-slate-100 dark:border-slate-800 pt-4 text-sm">
                     {proj.coordinateurPartenaire && (
                       <>
