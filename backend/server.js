@@ -8,6 +8,7 @@ const { globalLimiter, loginLimiter } = require('./middleware/rateLimiter');
 const sanitizeBody = require('./middleware/sanitize');
 const ensureSuperAdmin = require('./lib/bootstrapAdmin');
 const { runAllJobs } = require('./services/notificationScheduler');
+const { startScheduledPublishJob } = require('./jobs/scheduledPublishJob');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -69,6 +70,7 @@ app.use((err, req, res, next) => {
     console.error('[ERREUR NON GÉRÉE]', err);
     res.status(500).json({ error: 'Une erreur interne est survenue' });
 });
+startScheduledPublishJob();
 
 // CRON JOB : tout les jours a 1h du matin
 function scheduleDailyJobAt1AM() {

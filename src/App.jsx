@@ -33,13 +33,14 @@ import ManageNewsEvents from './pages/admin/Managenewsevents.jsx';
 import ManageResetSettings from './pages/admin/ManageResetSettings.jsx';
 import ManageUsers from './pages/admin/ManageUsers.jsx';
 import ManageAgreements from './pages/admin/ManageAgreements.jsx';
-import ManageSchool from './pages/admin/Manageschool.jsx';
+import ManageSchool from './pages/admin/ManageSchool.jsx';
 import AgreementsList from './pages/AgreementsList.jsx';
 import ManageProgrammes from "./pages/admin/ManageProgrammes.jsx";
 import Programmes from './pages/Programmes.jsx';
 import ManageHomeSlides from './pages/admin/ManageHomeSlides.jsx';
 import ManageNotifications from './pages/admin/ManageNotifications.jsx';
 
+import PartnerDetail from './pages/PartnerDetail.jsx';
 
 
 function ScrollToTop() {
@@ -59,6 +60,7 @@ export default function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/cooperation" element={<Cooperation />} />
+          <Route path="/cooperation/partenaires/:id" element={<PartnerDetail />} />
           <Route path="/programmes" element={<Programmes />} />
           <Route path="/projets" element={<Projets />} />
           <Route path="/appels" element={<Appels />} />

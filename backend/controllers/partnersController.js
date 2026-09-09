@@ -32,22 +32,27 @@ exports.getAllAdminPreview = async(req, res) => {
         res.json(translated);
     } catch (err) { sendError(res, err); }
 };
+
 exports.getOne = async(req, res) => {
     try {
         const partner = await partnersModel.findById(req.params.id);
         if (!partner) return res.status(404).json({ error: 'Partenaire non trouvé' });
-
-        const [agreements, contacts, projects] = await Promise.all([
+ 
+        // 🆕 ajout de themes dans le Promise.all — même principe que
+        // agreements / contacts / projects.
+        const [agreements, contacts, projects, themes] = await Promise.all([
             partnersModel.findAgreementsByPartner(req.params.id),
             partnersModel.findPublicContactsByPartner(req.params.id),
             partnersModel.findPublishedProjectsByPartner(req.params.id),
+            partnersModel.findThemesByPartner(req.params.id),
         ]);
-
+ 
         res.json({
             ...(await translateOne('partner', partner, req.query.lang)),
             agreements,
             contacts,
             projects,
+            themes,
         });
     } catch (err) { sendError(res, err); }
 };

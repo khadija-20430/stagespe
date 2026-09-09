@@ -8,16 +8,19 @@ import Loader from '../components/ui/Loader.jsx';
 import FilterChip from '../components/ui/FilterChip.jsx';
 import { getPartenaires, getFileUrl, getPartenairesMap } from '../services/api.js';
 import PartnersMap from '../components/PartnersMap.jsx';
+import { useNavigate } from 'react-router-dom';
 
 export default function Cooperation() {
   const { t, i18n } = useTranslation();
   const [partenaires, setPartenaires] = useState(null);
   const [partenairesMap, setPartenairesMap] = useState(null);
-
+const navigate = useNavigate();
   // --- Filtres ---
   const [pays, setPays] = useState('Tous');
   const [typeEtab, setTypeEtab] = useState('Tous');
   const [domaine, setDomaine] = useState('Tous');
+  // 🆕 filtre "Type d'accord" (cahier des charges 2.3, manquait entièrement)
+  const [typeAccord, setTypeAccord] = useState('Tous');
   const [statut, setStatut] = useState('Tous');
 
   useEffect(() => {
@@ -71,8 +74,17 @@ export default function Cooperation() {
     () => ['Tous', ...new Set((partenaires ?? []).map((p) => p.typeEtablissement).filter(Boolean))],
     [partenaires]
   );
+  // 🔧 CORRIGÉ : utilisait p.domaines (ancien champ texte libre
+  // cooperation_areas), qui n'est plus rempli par le formulaire admin
+  // depuis qu'on est passés aux thèmes (partner_themes). On utilise
+  // maintenant p.themeNames, comme pour le filtre thèmes des calls.
   const listeDomaines = useMemo(
-    () => ['Tous', ...new Set((partenaires ?? []).flatMap((p) => p.domaines ?? []))],
+    () => ['Tous', ...new Set((partenaires ?? []).flatMap((p) => p.themeNames ?? []))],
+    [partenaires]
+  );
+  // 🆕 types de convention disponibles (cahier des charges 2.3 : "Type d'accord")
+  const listeTypesAccord = useMemo(
+    () => ['Tous', ...new Set((partenaires ?? []).flatMap((p) => p.agreementTypes ?? []))],
     [partenaires]
   );
   // mapPartner() renvoie "partnershipStatus" : 'active' | 'pending' | 'ended'
@@ -89,10 +101,12 @@ export default function Cooperation() {
       (p) =>
         (pays === 'Tous' || p.pays === pays) &&
         (typeEtab === 'Tous' || p.typeEtablissement === typeEtab) &&
-        (domaine === 'Tous' || (p.domaines ?? []).includes(domaine)) &&
+        (domaine === 'Tous' || (p.themeNames ?? []).includes(domaine)) &&
+        // 🆕 filtre par type d'accord
+        (typeAccord === 'Tous' || (p.agreementTypes ?? []).includes(typeAccord)) &&
         (statut === 'Tous' || p.partnershipStatus === statut)
     );
-  }, [partenaires, pays, typeEtab, domaine, statut]);
+  }, [partenaires, pays, typeEtab, domaine, typeAccord, statut]);
 
   const Groupe = ({ label, options, value, onChange, getLabel = (o) => o }) => (
     <div>
@@ -158,6 +172,17 @@ export default function Cooperation() {
               <Groupe label={t('common.pays')} options={listePays} value={pays} onChange={setPays} />
               <Groupe label={t('typeEtablissement')} options={listeTypesEtab} value={typeEtab} onChange={setTypeEtab} />
               <Groupe label={t('domaines')} options={listeDomaines} value={domaine} onChange={setDomaine} />
+              {/* 🆕 groupe de filtre "Type d'accord" — ajouter la clé i18n
+                  "typeAccord" dans les fichiers de langue si elle n'existe
+                  pas déjà (fallback "Type d'accord" en attendant). */}
+              {listeTypesAccord.length > 1 && (
+                <Groupe
+                  label={t('typeAccord', { defaultValue: "Type d'accord" })}
+                  options={listeTypesAccord}
+                  value={typeAccord}
+                  onChange={setTypeAccord}
+                />
+              )}
               {listeStatuts.length > 1 && (
                 <Groupe
                   label={t('statutPartenariat')}
@@ -179,7 +204,9 @@ export default function Cooperation() {
           ) : (
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {partenairesFiltres.map((p) => (
-                <Card key={p.id} hover className="p-6">
+                <Card key={p.id} hover className="p-6 cursor-pointer" 
+    onClick={() => navigate(`/cooperation/partenaires/${p.id}`)} 
+  >
                   <div className="flex items-center gap-3">
                     {p.logo ? (
                       <img
@@ -213,8 +240,10 @@ export default function Cooperation() {
                       </>
                     ) : null}
                   </dl>
+                  {/* 🔧 CORRIGÉ : affichait p.domaines (texte libre obsolète),
+                      affiche maintenant les thèmes réels du partenaire. */}
                   <div className="mt-4 flex flex-wrap gap-1.5">
-                    {(p.domaines ?? []).map((d) => (
+                    {(p.themeNames ?? []).map((d) => (
                       <span key={d} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">
                         {d}
                       </span>

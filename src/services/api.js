@@ -7,14 +7,15 @@
 
 import {
     mapPartner,
+    mapPartnerDetail,   // 🔧 AJOUTÉ — manquait à l'import
     mapProjet,
     mapAppel,
     mapMobilite,
     mapActualite,
     mapDocument,
     mapStats,
-    mapAgreement, // ← AJOUTER
-    mapSchoolPresentation, // ← AJOUT
+    mapAgreement,
+    mapSchoolPresentation,
     toAppelPayload,
     toProjetPayload,
     toMobilitePayload,
@@ -22,8 +23,7 @@ import {
     toPartnerPayload,
     toDocumentPayload,
     toAgreementPayload,
-    mapProgramme, // ← AJOUTER
-
+    mapProgramme,
 } from './mappers.js';
 
 
@@ -573,6 +573,7 @@ export const getPartenairesAdminPreview = async(lang = 'en') => {
     return data.map(mapPartner);
 };
 
+
 export const getPartenaireById = async(
     id,
     lang = 'fr'
@@ -583,7 +584,7 @@ export const getPartenaireById = async(
             `/partners/${id}?lang=${lang}`
         );
 
-    return mapPartner(data);
+    return mapPartnerDetail(data);
 };
 
 export const getPartenaireTranslations = async(id) => {
@@ -1619,3 +1620,27 @@ export const reorderHomeSlides = (slides) =>
 export const updateThemeTranslations = (id, payload) => authRequest(`/themes/${id}/translations`, { method: 'PUT', body: payload });
 export const getCountryTranslations = (id) => authRequest(`/countries/${id}/translations`);
 export const updateCountryTranslations = (id, payload) => authRequest(`/countries/${id}/translations`, { method: 'PUT', body: payload });
+
+
+
+
+export const getPartnerContactsAdmin = (partnerId) =>
+    authRequest(`/partner-contacts/partner/${partnerId}/all`);
+
+export const createPartnerContact = (payload) =>
+    authRequest('/partner-contacts', {
+        method: 'POST',
+        body: payload,
+    });
+
+export const updatePartnerContact = (id, payload) =>
+    authRequest(`/partner-contacts/${id}`, {
+        method: 'PUT',
+        body: payload,
+    });
+
+export const deletePartnerContact = (id) =>
+    authRequest(`/partner-contacts/${id}`, {
+        method: 'DELETE',
+    });
+    

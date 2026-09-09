@@ -16,6 +16,14 @@ const toDateInputValue = (value) => {
   if (Number.isNaN(d.getTime())) return '';
   return d.toISOString().slice(0, 10); // "yyyy-MM-dd"
 };
+const toDateTimeLocalInputValue = (value) => {
+  if (!value) return '';
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return '';
+  // "yyyy-MM-ddTHH:mm" — format attendu par <input type="datetime-local">
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 function emptyItem(fields) {
   const obj = {};
 
@@ -101,6 +109,9 @@ export default function CrudManager({
       if (f.type === 'date') {
         d[f.name] = toDateInputValue(d[f.name]);
       }
+      if (f.type === 'datetime-local') {          // 🆕 à ajouter
+       d[f.name] = toDateTimeLocalInputValue(d[f.name]);
+     }
     });
 
     setDraft(d);

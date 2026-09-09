@@ -1,36 +1,6 @@
 const splitList = (value) =>
     value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
-export const mapPartner = (row) => ({
-    id: row.id,
-    nom: row.name,
-    nomOfficiel: row.official_name,
-    pays: row.country_name,
-    paysId: row.country_id,
-    ville: row.city,
-    adresse: row.address,
-    typeEtablissement: row.establishment_type,
-    typeEtablissementId: row.establishment_type_id,
-    typePartenariatId: row.partnership_type_id,
-    partnershipStatus: row.partnership_status,
-    domaines: splitList(row.cooperation_areas),
 
-    accord: row.agreements?.[0] ? {
-            titre: row.agreements[0].title,
-            type: row.agreements[0].type,
-            depuis: row.agreements[0].start_date ?
-                new Date(row.agreements[0].start_date).getFullYear() : null,
-        } :
-        undefined,
-
-    logo: row.logo_url,
-    site: row.website,
-    latitude: row.latitude != null ? Number(row.latitude) : null,
-    longitude: row.longitude != null ? Number(row.longitude) : null,
-    statut_publication: row.statut_publication,
-    agreements: row.agreements,
-    contacts: row.contacts,
-    projects: row.projects,
-});
 export const mapProjet = (row) => ({
   id: row.id,
   titre: row.title,
@@ -179,6 +149,67 @@ export const mapStats = (row) => ({
     expiringSoon: Number(row.expiring_soon) || 0,
 });
 
+// ============================================================
+// PATCH — à coller dans src/services/mappers.js
+// Remplace UNIQUEMENT mapPartner et toPartnerPayload (le reste du
+// fichier — mapAppel, mapProjet, mapAgreement, etc. — ne change pas).
+// ============================================================
+
+export const mapPartner = (row) => ({
+    id: row.id,
+    nom: row.name,
+    nomOfficiel: row.official_name,
+    pays: row.country_name,
+    paysId: row.country_id,
+    ville: row.city,
+    adresse: row.address,
+
+    // 🔧 BUG CORRIGÉ : le backend renvoie `establishment_type_label`
+    // (alias du JOIN dans partnersModel), pas `establishment_type`.
+    // C'est pour ça que le type d'établissement était toujours vide
+    // dans le tableau admin alors que la BDD était correcte.
+    typeEtablissement: row.establishment_type_label,
+    typeEtablissementId: row.establishment_type_id,
+
+    typePartenariatId: row.partnership_type_id,
+    // 🆕 libellé du type de partenariat — jamais mappé avant, donc
+    // jamais affichable nulle part côté front même si présent en BDD.
+    typePartenariat: row.partnership_type_label,
+
+    partnershipStatus: row.partnership_status,
+
+    // 🆕 thèmes du partenaire (table `themes` partagée avec les calls,
+    // via la table de liaison `partner_themes`).
+    // - themeIds  : pour pré-remplir le select multiple à l'édition
+    // - themeNames: pour l'affichage colonne admin + filtre visiteur
+    themeIds: Array.isArray(row.theme_ids) ?
+        row.theme_ids : (Array.isArray(row.themes) ? row.themes.map((th) => th.id) : []),
+    themeNames: Array.isArray(row.theme_names) ?
+        row.theme_names : (Array.isArray(row.themes) ? row.themes.map((th) => th.name) : []),
+
+    // conservé pour compatibilité ascendante (ancien champ texte libre)
+    domaines: splitList(row.cooperation_areas),
+
+    accord: row.agreements?.[0] ? {
+            titre: row.agreements[0].title,
+            type: row.agreements[0].type,
+            depuis: row.agreements[0].start_date ?
+                new Date(row.agreements[0].start_date).getFullYear() : null,
+        } :
+        undefined,
+
+    logo: row.logo_url,
+    site: row.website,
+    latitude: row.latitude != null ? Number(row.latitude) : null,
+    longitude: row.longitude != null ? Number(row.longitude) : null,
+    statut_publication: row.statut_publication,
+    // 🆕 date de programmation de publication (cahier des charges 4.3)
+    scheduledPublishAt: row.scheduled_publish_at,
+    agreements: row.agreements,
+    contacts: row.contacts,
+    projects: row.projects,
+});
+
 export const toPartnerPayload = (draft) => ({
     name: draft.nom,
     official_name: draft.nomOfficiel,
@@ -189,13 +220,21 @@ export const toPartnerPayload = (draft) => ({
     partnership_type_id: draft.typePartenariatId || null,
     partnership_status: draft.statutPartenariat || 'active',
     website: draft.siteWeb,
+
+    // 🆕 thèmes sélectionnés -> insérés dans partner_themes côté backend
+theme_ids: Array.isArray(draft.themeIds) ? draft.themeIds.map(Number) : [],
+
+    // conservé pour compatibilité ascendante
     cooperation_areas: Array.isArray(draft.domaines) ? draft.domaines.join(', ') : draft.domaines,
     description: draft.description,
     logo_url: draft.logo,
     latitude: draft.latitude || null,
     longitude: draft.longitude || null,
-});
 
+    // 🆕 date de programmation de publication — null si publication immédiate
+scheduled_publish_at: draft.scheduledPublishAt
+    ? new Date(draft.scheduledPublishAt).toISOString()
+    : null,});
 export const toProjetPayload = (draft) => {
     if (draft.debut && draft.fin && draft.fin < draft.debut) {
         throw new Error('La date de fin doit être postérieure ou égale à la date de début');
@@ -449,4 +488,15 @@ export const toProgrammePayload = (draft) => ({
   organisme_financeur: draft.organismeFinanceur || null,
   description: draft.description || null,
   official_website: draft.siteWeb || null,
+});
+export const mapPublicContact = (c) => ({
+  id: c.id,
+  fullName: c.full_name,
+  position: c.position,
+  email: c.email,
+  phone: c.phone,
+  isPrimary: c.is_primary,
+});export const mapPartnerDetail = (p) => ({
+  ...mapPartner(p),
+  contacts: (p.contacts ?? []).map(mapPublicContact),
 });
