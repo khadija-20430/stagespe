@@ -228,12 +228,14 @@
       "testAccess": "Tester RBAC",
       "audit": "Journal d'audit",
       "settings": "Paramètres",
+      "emailTemplates": " Gestion des emails",
       "changeLanguage": "Changer la langue",
       "lightMode": "Mode clair",
       "darkMode": "Mode sombre",
       "user": "Utilisateur",
       "logout": "Se déconnecter",
       "administration": "Administration",
+      "notifications": "Gestion des notifications",
       "backToSite": "Voir le site"
     },
     "agreementsPage": {
@@ -344,22 +346,46 @@
         "description": "Description"
       }
     },
-     "resetSettingsPage": {
-    "title": "Réinitialisation de mot de passe",
-    "subtitle": "Ces réglages s'appliquent immédiatement...",
-    "saved": "Réglages enregistrés.",
-    "loading": "Chargement...",
-    "fields": {
-      "codeWindow": "Durée de validité du code (minutes)",
-      "maxAttempts": "Nombre max de tentatives",
-      "emailSubject": "Sujet de l'email",
-      "emailText": "Texte de l'email",
-      "emailTextHelpPrefix": "Utilise",
-      "emailTextHelpMiddle": "pour le code et",
-      "emailTextHelpSuffix": "pour la durée."
+    "resetSettingsPage": {
+      "title": "Gestion des emails",
+      "subtitle": "Ces réglages s'appliquent immédiatement, sans redéploiement.",
+      "saved": "Réglages enregistrés.",
+      "loading": "Chargement...",
+      "save": "Enregistrer",
+      "tabs": {
+        "reset": " Réinitialisation mot de passe",
+        "welcome": " Bienvenue",
+        "activation": " Activation compte",
+        "deactivation": " Désactivation compte",
+        "suspicious": " Tentatives suspectes"
+      },
+      "fields": {
+        "codeWindow": "Durée de validité du code (minutes)",
+        "maxAttempts": "Nombre max de tentatives",
+        "emailSubject": "Sujet de l'email",
+        "emailText": "Texte de l'email",
+        "emailTextHelpPrefix": "Utilise",
+        "emailTextHelpMiddle": "pour le code et",
+        "emailTextHelpSuffix": "pour la durée.",
+        "welcomeSubject": "Sujet de l'email de bienvenue",
+        "welcomeText": "Texte de l'email de bienvenue",
+        "welcomeHelp": "Utilise {{fullName}} pour le nom, {{email}} pour l'email, {{password}} pour le mot de passe temporaire.",
+        "welcomeDescription": "Email envoyé à un nouvel utilisateur lors de la création de son compte.",
+        "activationSubject": "Sujet de l'email d'activation",
+        "activationText": "Texte de l'email d'activation",
+        "activationHelp": "Utilise {{fullName}} pour le nom, {{date}} pour la date.",
+        "activationDescription": "Email envoyé à un utilisateur lorsque son compte est réactivé par un administrateur.",
+        "deactivationSubject": "Sujet de l'email de désactivation",
+        "deactivationText": "Texte de l'email de désactivation",
+        "deactivationHelp": "Utilise {{fullName}} pour le nom, {{date}} pour la date.",
+        "deactivationDescription": "Email envoyé à un utilisateur lorsque son compte est désactivé par un administrateur.",
+        "suspiciousThreshold": "Seuil de tentatives avant alerte",
+        "suspiciousSubject": "Sujet de l'email de sécurité",
+        "suspiciousText": "Texte de l'email de sécurité",
+        "suspiciousHelp": "Utilise {{fullName}} pour le nom, {{attempts}} pour le nombre de tentatives, {{ip}} pour l'adresse IP.",
+        "suspiciousDescription": "Email envoyé à un utilisateur lorsque plusieurs tentatives de connexion échouées sont détectées sur son compte."
+      }
     },
-    "save": "Enregistrer"
-  },
   "testAccessPage": {
     "title": "Tester les accès RBAC",
     "myPermissionsTitle": "Mes permissions effectives",
@@ -429,8 +455,61 @@
       "readOnly": "Rôle système — lecture seule",
       "deleteBtn": "Supprimer ce rôle",
       "deleteConfirm": "Êtes-vous sûr de vouloir supprimer le rôle \"{{name}}\" ?"
+    },
+    "notifications": {
+      "title": "Gestion des notifications",
+      "total": "{{total}} notifications au total",
+      "unread": "{{count}} non lues",
+      "read": "{{count}} lues",
+      "send": "Envoyer une notification",
+      "refresh": "Rafraîchir",
+      "markAllRead": "Tout marquer comme lu",
+      "noResults": "Aucune notification trouvée",
+      "loading": "Chargement...",
+      "searchPlaceholder": "Rechercher...",
+      "filters": {
+        "allTypes": "Tous les types",
+        "allStatus": "Tous les statuts",
+        "unread": "Non lus",
+        "read": "Lus",
+        "info": "Info",
+        "success": "Succès",
+        "warning": "Avertissement",
+        "error": "Erreur"
+      },
+      "status": {
+        "unread": "Non lu",
+        "read": "Lu"
+      },
+      "actions": {
+        "markAsRead": "Marquer comme lu",
+        "delete": "Supprimer"
+      },
+      "deleteConfirm": "Supprimer cette notification ?",
+      "modal": {
+        "title": "Envoyer une notification",
+        "sendMode": "Mode d'envoi",
+        "singleUser": "Utilisateur",
+        "groupRole": "Groupe (rôle)",
+        "selectUser": "Sélectionner un utilisateur",
+        "selectRole": "Sélectionner un rôle",
+        "user": "Utilisateur *",
+        "role": "Rôle RBAC cible *",
+        "titleLabel": "Titre *",
+        "titlePlaceholder": "Ex: Nouveau projet disponible",
+        "messageLabel": "Message *",
+        "messagePlaceholder": "Détails de la notification...",
+        "typeLabel": "Type",
+        "linkLabel": "Lien (optionnel)",
+        "linkPlaceholder": "/admin/users - Page vers laquelle l'utilisateur sera redirigé",
+        "linkHelp": "Lien vers une page de l'application (ex: /admin/users, /admin/agreements)",
+        "roleHelp": "Envoie la notification à tous les utilisateurs ayant ce rôle RBAC.",
+        "cancel": "Annuler",
+        "send": "Envoyer"
+      }
     }
   },
+
   "navbar": {
     "homeAria": "Accueil ESI",
     "brandLine1": "Coopération",

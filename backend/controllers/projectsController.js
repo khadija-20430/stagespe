@@ -2,10 +2,12 @@ const projectsModel = require('../models/projectsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+
 function isEndDateBeforeStartDate(start_date, end_date) {
     return start_date && end_date && new Date(end_date) < new Date(start_date);
 }
 
+// public
 exports.getAll = async(req, res) => {
     try {
         const rows = await projectsModel.findAllPublished(req.query);
@@ -17,6 +19,7 @@ exports.getAll = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+// admin
 exports.getAllAdmin = async(req, res) => {
     try {
         const rows = await projectsModel.findAllAdmin();
@@ -61,6 +64,7 @@ exports.getOne = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
+//traductions
 exports.getTranslations = async(req, res) => {
     try {
         res.json(await getAllTranslations('project', req.params.id));
@@ -74,6 +78,8 @@ exports.updateTranslations = async(req, res) => {
         res.json(updated);
     } catch (err) { sendError(res, err); }
 };
+
+// creation d un projet
 exports.create = async(req, res) => {
     try {
         const { start_date, end_date } = req.body;
@@ -89,7 +95,7 @@ exports.create = async(req, res) => {
         res.status(201).json(project);
     } catch (err) { sendError(res, err); }
 };
-
+// mise a jour d un projet
 exports.update = async(req, res) => {
     try {
         const { start_date, end_date } = req.body;
@@ -113,7 +119,7 @@ exports.update = async(req, res) => {
         res.json(project);
     } catch (err) { sendError(res, err); }
 };
-
+// publication status
 exports.publish = async(req, res) => {
     try {
         const project = await projectsModel.publish(req.params.id);
@@ -140,7 +146,7 @@ exports.duplicate = async(req, res) => {
         res.status(201).json(project);
     } catch (err) { sendError(res, err); }
 };
-
+// suppression d un projet
 exports.remove = async(req, res) => {
     try {
         const existing = await projectsModel.findLogoUrlById(req.params.id);

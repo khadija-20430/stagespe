@@ -3,6 +3,7 @@ const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
+// public liste partenaire et carte partenaires
 exports.getAll = async(req, res) => {
     try {
         const rows = await partnersModel.findAllPublished(req.query);
@@ -16,7 +17,7 @@ exports.getForMap = async(req, res) => {
         res.json(rows);
     } catch (err) { sendError(res, err); }
 };
-
+// admin
 exports.getAllAdmin = async(req, res) => {
     try {
         const rows = await partnersModel.findAllAdmin();
@@ -64,9 +65,7 @@ exports.updateTranslations = async(req, res) => {
         res.json(updated);
     } catch (err) { sendError(res, err); }
 };
-// upload.single('logo') : le champ du FormData envoyé par le frontend doit
-// s'appeler "logo". req.file contient les infos du fichier une fois uploadé,
-// req.body contient les autres champs texte (name, description, etc.).
+// creation d un partenaire 
 exports.create = async(req, res) => {
     try {
         const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -77,9 +76,7 @@ exports.create = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// Si un nouveau fichier "logo" est envoyé, on l'utilise et on supprime
-// l'ancien fichier physique. Sinon on garde le logo_url existant tel quel
-// (le frontend peut le renvoyer en texte pour ne rien changer).
+// mise a jour d un partenaire
 exports.update = async(req, res) => {
     try {
         let logo_url = req.body.logo_url || null;
@@ -99,7 +96,7 @@ exports.update = async(req, res) => {
         res.json(partner);
     } catch (err) { sendError(res, err); }
 };
-
+// statuts de publication d un partenaire
 exports.publish = async(req, res) => {
     try {
         const partner = await partnersModel.publish(req.params.id);
@@ -126,7 +123,7 @@ exports.duplicate = async(req, res) => {
         res.status(201).json(partner);
     } catch (err) { sendError(res, err); }
 };
-
+// suppression d un partenaire
 exports.remove = async(req, res) => {
     try {
         const existing = await partnersModel.findLogoUrlById(req.params.id);

@@ -6,7 +6,7 @@ function isInvalidTestimonial(type, author_name, quote_text) {
     return type === 'testimonial' && (!author_name || !quote_text);
 }
 
-// =============== PUBLIC ===============
+// public
 exports.getAll = async(req, res) => {
     try {
         const rows = await newsEventsModel.findAllPublished(req.query);
@@ -22,7 +22,7 @@ exports.getOne = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// =============== ADMIN ===============
+// admin
 exports.getAllAdmin = async(req, res) => {
     try {
         const rows = await newsEventsModel.findAllAdmin();
@@ -49,7 +49,7 @@ exports.updateTranslations = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// =============== CRUD ===============
+// crud
 exports.create = async(req, res) => {
     try {
         const {
@@ -176,7 +176,7 @@ exports.remove = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// =============== PUBLICATION ===============
+// status publication
 exports.publish = async(req, res) => {
     try {
         const news = await newsEventsModel.publish(req.params.id);

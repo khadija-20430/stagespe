@@ -12,15 +12,12 @@ import {
   LayoutDashboard, School, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FileText, FolderOpen, Users, KeyRound, FlaskConical as TestTube,
   ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X,
-  GraduationCap, GalleryHorizontal
+  GraduationCap, GalleryHorizontal, Bell
 } from 'lucide-react';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 export default function AdminLayout() {
-  /* =========================================================
-     HOOKS
-  ========================================================= */
 
   const { t, i18n } = useTranslation();
   const { user, logout } = useAuth();
@@ -33,10 +30,7 @@ export default function AdminLayout() {
 
   const [isDark, setIsDark] = useDarkMode();
 
-  /* =========================================================
-     MENU ADMIN
-  ========================================================= */
-
+  //menue admin
   const links = [
     {
       to: '/admin',
@@ -129,10 +123,16 @@ export default function AdminLayout() {
     },
     {
       to: '/admin/settings/reset-password',
-      label: t('password'),
+      label: t('admin.nav.emailTemplates'),
       icon: Settings,
       superAdminOnly: true,
     },
+   {
+  to: '/admin/notifications',
+  label: t('admin.nav.notifications'),
+  icon: Bell,
+  superAdminOnly: true,
+},
   ];
 
   const canSeeLink = (link) => {
@@ -143,9 +143,7 @@ export default function AdminLayout() {
 
   const visibleLinks = links.filter(canSeeLink);
 
-  /* =========================================================
-     LOGOUT
-  ========================================================= */
+  //logout
 
   const handleLogout = async () => {
     try {
@@ -157,10 +155,7 @@ export default function AdminLayout() {
     }
   };
 
-  /* =========================================================
-     LANGUAGE
-  ========================================================= */
-
+  //langue
   const changeLanguage = (language) => {
     i18n.changeLanguage(language);
     setLangOpen(false);
@@ -174,10 +169,7 @@ export default function AdminLayout() {
     }
   };
 
-  /* =========================================================
-     NAVIGATION (Adaptée au mode mini)
-  ========================================================= */
-
+  //navigation
   const Nav = () => (
     <nav className={`space-y-1 ${isMini ? 'px-0' : ''}`}>
       {visibleLinks.map((link) => (
@@ -214,16 +206,11 @@ export default function AdminLayout() {
     </nav>
   );
 
-  /* =========================================================
-     RENDER
-  ========================================================= */
-
+  //render
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
 
-      {/* =====================================================
-          SIDEBAR DESKTOP (RÉDUCTIBLE)
-      ===================================================== */}
+      {/*SIDEBAR DESKTOP (RÉDUCTIBLE)*/}
 
       <aside
         className={`hidden lg:flex shrink-0 flex-col bg-navy p-4 fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ${
@@ -285,15 +272,11 @@ export default function AdminLayout() {
         </div>
       </aside>
 
-      {/* =====================================================
-          RIGHT SIDE
-      ===================================================== */}
+      {/*RIGHT SIDE */}
 
       <div className={`flex min-w-0 flex-1 flex-col transition-all duration-300 ${isMini ? 'lg:ml-20' : 'lg:ml-64'}`}>
 
-        {/* ===================================================
-            TOPBAR
-        =================================================== */}
+        {/*TOPBAR*/}
 
         <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 sm:px-6">
 
@@ -321,9 +304,7 @@ export default function AdminLayout() {
             <h1 className="text-lg font-bold text-navy dark:text-white">{t('adminSpaceTitle')}</h1>
           </div>
 
-          {/* =================================================
-              RIGHT CONTROLS
-          ================================================= */}
+          {/*RIGHT CONTROLS*/}
 
           <div className="flex items-center gap-2 sm:gap-3">
 
@@ -381,7 +362,7 @@ export default function AdminLayout() {
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
 
-            {/* 🔔 NOTIFICATIONS */}
+            {/* NOTIFICATIONS */}
             <NotificationBell />
 
             {/* Separator */}
@@ -405,9 +386,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* ===================================================
-            MOBILE SIDEBAR
-        =================================================== */}
+        {/*MOBILE SIDEBAR */}
 
         {open && (
           <div className="lg:hidden">
@@ -428,9 +407,7 @@ export default function AdminLayout() {
           </div>
         )}
 
-        {/* ===================================================
-            PAGE CONTENT
-        =================================================== */}
+        {/*PAGE CONTENT*/}
 
         <main className="flex-1 p-4 sm:p-8">
           <Outlet />

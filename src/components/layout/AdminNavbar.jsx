@@ -7,7 +7,7 @@ import {
   LayoutDashboard, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FolderOpen, FileText, Users, KeyRound, School, FlaskConical as TestTube,
   ClipboardList, Settings, LogOut, Globe, Moon, Sun, Eye, Menu, X, PanelLeftClose, PanelLeftOpen,
-  GraduationCap // AJOUT pour les programmes
+  GraduationCap 
 } from 'lucide-react';
 
 export default function AdminNavbar() {

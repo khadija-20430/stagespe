@@ -38,6 +38,8 @@ import AgreementsList from './pages/AgreementsList.jsx';
 import ManageProgrammes from "./pages/admin/ManageProgrammes.jsx";
 import Programmes from './pages/Programmes.jsx';
 import ManageHomeSlides from './pages/admin/ManageHomeSlides.jsx';
+import ManageNotifications from './pages/admin/ManageNotifications.jsx';
+
 
 
 function ScrollToTop() {
@@ -100,6 +102,7 @@ export default function App() {
           <Route path="test-acces" element={<TestAccess />} />
           <Route path="journal" element={<JournalAudit />} />
           <Route path="settings/reset-password" element={<ManageResetSettings />} />
+          <Route path="notifications" element={<ManageNotifications />} />
         </Route>
 
         {/* Route 404 */}

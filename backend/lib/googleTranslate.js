@@ -1,5 +1,5 @@
 const MYMEMORY_URL = 'https://api.mymemory.translated.net/get';
-const MYMEMORY_EMAIL = process.env.MYMEMORY_EMAIL || null; // optionnel : passe le quota de 5000 à 10000 mots/jour
+const MYMEMORY_EMAIL = process.env.MYMEMORY_EMAIL || null; // utile si on depasse le quota gratuit (1000 requêtes/jour)
 
 // Traduit un seul texte via MyMemory
 async function translateSingle(text, targetLang, sourceLang) {
@@ -16,7 +16,6 @@ async function translateSingle(text, targetLang, sourceLang) {
         throw new Error('Échec de la traduction automatique');
     }
 
-    // MyMemory renvoie un statut interne même en HTTP 200 — 403 = quota dépassé
     if (data.responseStatus && Number(data.responseStatus) >= 400) {
         console.error('[MYMEMORY] Erreur API:', data.responseStatus, data.responseDetails);
         throw new Error(`MyMemory: ${data.responseDetails || 'erreur inconnue'}`);
@@ -25,7 +24,6 @@ async function translateSingle(text, targetLang, sourceLang) {
     return data.responseData.translatedText;
 }
 
-// Garde la même signature que l'ancienne version Google — aucun changement requis dans i18n.js
 async function translateBatch(texts, targetLang, sourceLang = 'fr') {
     const indexesToTranslate = [];
     const textsToTranslate = [];
@@ -38,7 +36,6 @@ async function translateBatch(texts, targetLang, sourceLang = 'fr') {
 
     if (textsToTranslate.length === 0) return texts.map(() => null);
 
-    // Pas d'endpoint batch chez MyMemory -> une requête par texte, en parallèle
     const translatedTexts = await Promise.all(
         textsToTranslate.map((t) => translateSingle(t, targetLang, sourceLang))
     );

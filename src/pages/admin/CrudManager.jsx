@@ -47,9 +47,8 @@ export default function CrudManager({
   const canUpdate = !updatePermission || hasPermission(updatePermission);
   const canDelete = !deletePermission || hasPermission(deletePermission);
   const canPublish = !publishPermission || hasPermission(publishPermission);
-  // =========================================================
+
   // STATE — LOGIQUE ORIGINALE
-  // =========================================================
   const [items, setItems] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [draft, setDraft] = useState(null);
@@ -63,18 +62,14 @@ export default function CrudManager({
   // UI
   const [pubDropdown, setPubDropdown] = useState(null);
 
-  // =========================================================
   // CHARGER
-  // =========================================================
   const reload = () => fetcher().then(setItems);
 
   useEffect(() => {
     reload();
   }, [fetcher]);
 
-  // =========================================================
   // CRÉER
-  // =========================================================
   const openCreate = () => {
     setDraft(emptyItem(fields));
     setEditingId(null);
@@ -83,9 +78,7 @@ export default function CrudManager({
     setModalOpen(true);
   };
 
-  // =========================================================
   // EDITER
-  // =========================================================
   const openEdit = (item) => {
     const d = { ...item };
 
@@ -102,9 +95,7 @@ export default function CrudManager({
     setModalOpen(true);
   };
 
-  // =========================================================
   // SUPPRIMER
-  // =========================================================
   const remove = async (id) => {
     if (!window.confirm(t('admin.crud.confirmDelete'))) return;
 
@@ -116,9 +107,7 @@ export default function CrudManager({
     }
   };
 
-  // =========================================================
   // PUBLIER
-  // =========================================================
   const doPublish = async (id) => {
     if (!onPublish) return;
 
@@ -135,9 +124,7 @@ export default function CrudManager({
     }
   };
 
-  // =========================================================
   // ARCHIVER
-  // =========================================================
   const doArchive = async (id) => {
     if (!onArchive) return;
 
@@ -154,9 +141,7 @@ export default function CrudManager({
     }
   };
 
-  // =========================================================
   // SAUVEGARDER
-  // =========================================================
   const save = async (e) => {
     e.preventDefault();
 
@@ -212,9 +197,7 @@ export default function CrudManager({
     }
   };
 
-  // =========================================================
   // CHAMP
-  // =========================================================
   const setField = (name, value) =>
     setDraft((d) => ({
       ...d,
@@ -224,26 +207,14 @@ export default function CrudManager({
           : value,
     }));
 
-  // =========================================================
-  // REQUIRED DYNAMIQUE
-  //
-  // f.required peut être :
-  //   - un booléen (true/false)
-  //   - une fonction (values) => boolean
-  //
-  // IMPORTANT : ne jamais faire Boolean(f.required) directement,
-  // car Boolean(uneFonction) vaut toujours true.
-  // =========================================================
+  
   const isFieldRequired = (f) =>
     typeof f.required === 'function'
       ? f.required(draft || {})
       : Boolean(f.required);
 
 
-// =========================================================
 // STATUT
-// =========================================================
-
 const safeItems = Array.isArray(items)
   ? items
   : [];
@@ -257,10 +228,7 @@ const getStatus = (item) => {
 };
 
 
-// =========================================================
 // STATS
-// =========================================================
-
 const getStats = () => {
   const total = safeItems.length;
 
@@ -297,15 +265,11 @@ const getStats = () => {
 const stats = getStats();
 
 
-  // =========================================================
   // RENDER
-  // =========================================================
   return (
     <div className="space-y-6">
 
-      {/* =====================================================
-          HEADER
-      ====================================================== */}
+      {/* HEADER*/}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
         <div>
@@ -366,9 +330,7 @@ const stats = getStats();
         </div>
 
 
-        {/* ===================================================
-            AJOUTER
-        ==================================================== */}
+        {/*AJOUTER*/}
 
         {canCreate && (
           <Button
@@ -392,11 +354,6 @@ const stats = getStats();
 
       </div>
 
-
-      {/* =====================================================
-          STATS CARDS
-      ====================================================== */}
-
      {/* STATS CARDS */}
 <div className="grid gap-4 md:grid-cols-3">
   <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-700 bg-blue-50 dark:bg-slate-800">
@@ -416,9 +373,7 @@ const stats = getStats();
     <p className="text-3xl font-bold text-gris-600 dark:text-gray-400 mt-2">{stats.archived}</p>
   </div>
 </div>
-      {/* =====================================================
-          ERROR
-      ====================================================== */}
+      {/* ERROR */}
 
       {error ? (
         <div
@@ -444,9 +399,7 @@ const stats = getStats();
       ) : null}
 
 
-      {/* =====================================================
-          TABLE
-      ====================================================== */}
+      {/* TABLE */}
 
       <Card
         className="
@@ -465,9 +418,7 @@ const stats = getStats();
             "
           >
 
-            {/* =================================================
-                HEADER
-            ================================================== */}
+            {/* HEADER */}
 
             <thead>
 
@@ -522,9 +473,7 @@ const stats = getStats();
             </thead>
 
 
-            {/* =================================================
-                BODY
-            ================================================== */}
+            {/*BODY */}
 
             <tbody
               className="
@@ -623,9 +572,7 @@ const stats = getStats();
                     "
                   >
 
-                    {/* =================================================
-                        COLONNES
-                    ================================================== */}
+                    {/*COLONNES*/}
 
                     {columns.map((c) => (
 
@@ -651,9 +598,7 @@ const stats = getStats();
                     ))}
 
 
-                    {/* =================================================
-                        ACTIONS
-                    ================================================== */}
+                    {/* ACTIONS*/}
 
                     <td className="px-6 py-4">
 
@@ -666,36 +611,28 @@ const stats = getStats();
                         "
                       >
 
-                        {/* =============================================
-                            MODIFIER
-                        ============================================== */}
+                        {/* MODIFIER */}
 
                         {canUpdate && (
-  <button
-    type="button"
-    onClick={() => openEdit(item)}
-    className="
-      text-slate-600
-      dark:text-slate-400
-      hover:text-cobalt
-      dark:hover:text-cobalt
-      transition
-      text-lg
-    "
-    title={t('admin.crud.edit')}
-  >
-    <Pencil size={18} />
-  </button>
-)}
+                      <button
+                         type="button"
+                         onClick={() => openEdit(item)}
+                         className="
+                          text-slate-600
+                         dark:text-slate-400
+                         hover:text-cobalt
+                         dark:hover:text-cobalt
+                         transition
+                         text-lg
+                         "
+                         title={t('admin.crud.edit')}
+                          >
+                          <Pencil size={18} />
+                       </button>
+                  )}
 
 
-                        {/* =============================================
-                            STATUT
-                            
-                            IMPORTANT:
-                            On affiche ce menu uniquement si
-                            onPublish + onArchive existent.
-                        ============================================== */}
+                        {/*STATUT*/}
 
 {onPublish && onArchive && canPublish ? (
 
@@ -748,9 +685,7 @@ const stats = getStats();
                                 "
                               >
 
-                                {/* ===================================
-                                    PUBLIER
-                                ==================================== */}
+                                {/* PUBLIER */}
 
                                 <button
                                   type="button"
@@ -793,9 +728,7 @@ const stats = getStats();
                                 </button>
 
 
-                                {/* ===================================
-                                    ARCHIVER
-                                ==================================== */}
+                                {/* ARCHIVER */}
 
                                 <button
                                   type="button"
@@ -849,9 +782,7 @@ const stats = getStats();
                         ) : null}
 
 
-                        {/* =============================================
-                            SUPPRIMER
-                        ============================================== */}
+                        {/* SUPPRIMER */}
 
                        {canDelete && (
   <button
@@ -890,9 +821,7 @@ const stats = getStats();
       </Card>
 
 
-      {/* =====================================================
-          FORM MODAL
-      ====================================================== */}
+      {/* FORM MODAL */}
 
       {modalOpen && draft ? (
 
@@ -935,9 +864,7 @@ const stats = getStats();
             }
           >
 
-            {/* =================================================
-                HEADER FORM
-            ================================================== */}
+            {/* HEADER FORM */}
 
             <div
               className="
@@ -996,9 +923,7 @@ const stats = getStats();
             </div>
 
 
-            {/* =================================================
-                FORM
-            ================================================== */}
+            {/* FORM */}
 
             <form
               onSubmit={save}
@@ -1009,9 +934,7 @@ const stats = getStats();
 
                 <div key={f.name}>
 
-                  {/* =================================================
-                      LABEL
-                  ================================================== */}
+                  {/* LABEL */}
 
                   <label
                     className="
@@ -1035,17 +958,9 @@ const stats = getStats();
                   </label>
 
 
-                  {/* =================================================
-                      TEXTAREA
-                  ================================================== */}
+                  {/* TEXTAREA */}
 
                   {f.type === 'address-autocomplete' ? (
-
-                    /* =================================================
-                       ADRESSE AVEC AUTOCOMPLÉTION (Nominatim)
-                       Sélectionner une suggestion remplit aussi
-                       automatiquement latitude/longitude.
-                    ================================================== */
 
                     <AddressAutocomplete
                       value={draft[f.name] ?? ''}
@@ -1101,10 +1016,6 @@ const stats = getStats();
 
 
                   ) : f.type === 'geocode' ? (
-
-                    /* =================================================
-                       GEOCODE
-                    ================================================== */
 
                     <div>
 
@@ -1207,9 +1118,6 @@ const stats = getStats();
 
                   ) : f.type === 'select' ? (
 
-                    /* =================================================
-                       SELECT
-                    ================================================== */
 
                     <select
                       value={
@@ -1281,10 +1189,6 @@ const stats = getStats();
 
                   ) : f.type === 'number' ? (
 
-                    /* =================================================
-                       NUMBER
-                    ================================================== */
-
                     <input
                       type="number"
 
@@ -1326,10 +1230,6 @@ const stats = getStats();
 
                   ) : f.type === 'file' ? (
 
-                    /* =================================================
-                       FILE
-                    ================================================== */
-
                     <div>
 
                       {draft[f.name] ? (
@@ -1368,13 +1268,6 @@ const stats = getStats();
 
                         accept={f.accept}
 
-                        /*
-                         * Obligatoire uniquement lorsque le champ
-                         * n'a pas déjà une valeur.
-                         *
-                         * Cela permet de modifier un document
-                         * sans être obligé de re-uploader le fichier.
-                         */
                         required={
                           Boolean(
                             isFieldRequired(f) &&
@@ -1426,10 +1319,6 @@ const stats = getStats();
 
 
                   ) : (
-
-                    /* =================================================
-                       TEXT / DATE / EMAIL / AUTRES
-                    ================================================== */
 
                     <input
                       type={f.type || 'text'}
@@ -1485,9 +1374,7 @@ const stats = getStats();
                   )}
 
 
-                  {/* =================================================
-                      HELP / FORMAT
-                  ================================================== */}
+                  {/* HELP / FORMAT */}
 
                   {f.help ? (
 
@@ -1509,9 +1396,7 @@ const stats = getStats();
               ))}
 
 
-              {/* =================================================
-                  ERROR FORM
-              ================================================== */}
+              {/* ERROR FORM */}
 
               {error ? (
 
@@ -1539,9 +1424,7 @@ const stats = getStats();
               ) : null}
 
 
-              {/* =================================================
-                  BUTTONS
-              ================================================== */}
+              {/* BUTTONS*/}
 
               <div
                 className="

@@ -1,9 +1,6 @@
 const bcrypt = require('bcryptjs');
 const pool = require('../db');
 
-// Exécuté au démarrage du serveur. Ne crée le compte QUE s'il n'existe pas
-// déjà (vérifié par email) — jamais de doublon, jamais d'écrasement silencieux
-// d'un mot de passe déjà en place.
 async function ensureSuperAdmin() {
   const email = process.env.ADMIN_EMAIL;
   const password = process.env.ADMIN_PASSWORD;

@@ -16,14 +16,14 @@ exports.uploadFile = (req, res) => {
         });
     });
 };
-
+// public
 exports.getAllPublic = async(req, res) => {
     try {
         const documents = await documentsModel.findAllPublic(req.query);
         res.json(await translateList('document', documents, req.query.lang));
     } catch (err) { sendError(res, err); }
 };
-
+//admin
 exports.getAllAdmin = async(req, res) => {
     try {
         const documents = await documentsModel.findAllAdmin();
@@ -72,7 +72,7 @@ exports.updateTranslations = async(req, res) => {
         res.json(updated);
     } catch (err) { sendError(res, err); }
 };
-
+// téléchargement d un document
 exports.download = async(req, res) => {
     try {
         const doc = await documentsModel.findById(req.params.id);
@@ -90,7 +90,7 @@ exports.getRevisions = async(req, res) => {
         res.json(revisions);
     } catch (err) { sendError(res, err); }
 };
-
+// creation d un document
 exports.create = async(req, res) => {
     try {
         const doc = await documentsModel.create({...req.body, uploaded_by: req.user.id });
@@ -117,7 +117,7 @@ exports.removeLink = async(req, res) => {
         res.json({ message: 'Lien supprimé' });
     } catch (err) { sendError(res, err); }
 };
-
+// mise a jour d un document
 exports.update = async(req, res) => {
     try {
         const { fichier_url, change_note } = req.body;
@@ -136,7 +136,7 @@ exports.update = async(req, res) => {
         res.json(doc);
     } catch (err) { sendError(res, err); }
 };
-
+// suppression d un document
 exports.remove = async(req, res) => {
     try {
         const doc = await documentsModel.remove(req.params.id);
@@ -146,7 +146,7 @@ exports.remove = async(req, res) => {
         res.json({ message: 'Document supprimé', deleted: doc });
     } catch (err) { sendError(res, err); }
 };
-
+//status publication
 exports.publish = async(req, res) => {
     try {
         const doc = await documentsModel.publish(req.params.id);

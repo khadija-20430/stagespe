@@ -14,9 +14,6 @@ export function AuthProvider({ children }) {
     }
   });
 
-  // Codes de permission de l'utilisateur connecté (ex: 'documents.view',
-  // 'documents.delete'...). Un super_admin reçoit tous les codes, un
-  // 'utilisateur' simple reçoit un tableau vide.
   const [permissions, setPermissions] = useState(new Set());
   const [permissionsLoaded, setPermissionsLoaded] = useState(false);
 

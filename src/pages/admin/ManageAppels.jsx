@@ -64,7 +64,6 @@ export default function ManageAppels() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const openTranslations = async (item) => {
@@ -128,9 +127,9 @@ export default function ManageAppels() {
         onPublish={publishAppel}
         onArchive={archiveAppel}
         createPermission="calls.create"
-  updatePermission="calls.edit"
-  deletePermission="calls.delete"
-  publishPermission="calls.publish"
+        updatePermission="calls.edit"
+        deletePermission="calls.delete"
+        publishPermission="calls.publish"
         columns={[
           { key: 'titre', label: t('titre'), required: true,
             render: (i) => previewData[i.id]?.titre || i.titre },

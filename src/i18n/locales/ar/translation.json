@@ -234,12 +234,14 @@
       "testAccess": "اختبار الصلاحيات",
       "audit": "سجل التدقيق",
       "settings": "الإعدادات",
+      "emailTemplates": " إدارة البريد الإلكتروني",
       "changeLanguage": "تغيير اللغة",
       "lightMode": "الوضع الفاتح",
       "darkMode": "الوضع الداكن",
       "user": "مستخدم",
       "logout": "تسجيل الخروج",
       "administration": "الإدارة",
+      "notifications": "إدارة الإشعارات",
       "backToSite": "عرض الموقع"
     },
     "agreementsPage": {
@@ -366,22 +368,46 @@
         "description": "الوصف"
       }
     },
-    "resetSettingsPage": {
-  "title": "إعادة تعيين كلمة المرور",
-  "subtitle": "تُطبَّق هذه الإعدادات فورًا، دون الحاجة لإعادة النشر.",
-  "saved": "تم حفظ الإعدادات.",
-  "loading": "جارٍ التحميل...",
-  "fields": {
-    "codeWindow": "مدة صلاحية الرمز (بالدقائق)",
-    "maxAttempts": "الحد الأقصى لعدد المحاولات",
-    "emailSubject": "موضوع البريد الإلكتروني",
-    "emailText": "نص البريد الإلكتروني",
-    "emailTextHelpPrefix": "استخدم",
-    "emailTextHelpMiddle": "للرمز و",
-    "emailTextHelpSuffix": "للمدة."
-  },
-  "save": "حفظ"
-},
+     "resetSettingsPage": {
+      "title": "إدارة البريد الإلكتروني",
+      "subtitle": "تُطبَّق هذه الإعدادات فورًا، دون الحاجة لإعادة النشر.",
+      "saved": "تم حفظ الإعدادات.",
+      "loading": "جارٍ التحميل...",
+      "save": "حفظ",
+      "tabs": {
+        "reset": " إعادة تعيين كلمة المرور",
+        "welcome": " ترحيب",
+        "activation": " تفعيل الحساب",
+        "deactivation": " إلغاء تفعيل الحساب",
+        "suspicious": " محاولات مشبوهة"
+      },
+      "fields": {
+        "codeWindow": "مدة صلاحية الرمز (بالدقائق)",
+        "maxAttempts": "الحد الأقصى لعدد المحاولات",
+        "emailSubject": "موضوع البريد الإلكتروني",
+        "emailText": "نص البريد الإلكتروني",
+        "emailTextHelpPrefix": "استخدم",
+        "emailTextHelpMiddle": "للرمز و",
+        "emailTextHelpSuffix": "للمدة.",
+        "welcomeSubject": "موضوع بريد الترحيب",
+        "welcomeText": "نص بريد الترحيب",
+        "welcomeHelp": "استخدم {{fullName}} للاسم، {{email}} للبريد الإلكتروني، {{password}} لكلمة المرور المؤقتة.",
+        "welcomeDescription": "بريد إلكتروني يُرسل إلى مستخدم جديد عند إنشاء حسابه.",
+        "activationSubject": "موضوع بريد التفعيل",
+        "activationText": "نص بريد التفعيل",
+        "activationHelp": "استخدم {{fullName}} للاسم، {{date}} للتاريخ.",
+        "activationDescription": "بريد إلكتروني يُرسل إلى مستخدم عند إعادة تفعيل حسابه من قبل المسؤول.",
+        "deactivationSubject": "موضوع بريد إلغاء التفعيل",
+        "deactivationText": "نص بريد إلغاء التفعيل",
+        "deactivationHelp": "استخدم {{fullName}} للاسم، {{date}} للتاريخ.",
+        "deactivationDescription": "بريد إلكتروني يُرسل إلى مستخدم عند إلغاء تفعيل حسابه من قبل المسؤول.",
+        "suspiciousThreshold": "عدد المحاولات قبل التنبيه",
+        "suspiciousSubject": "موضوع بريد الأمان",
+        "suspiciousText": "نص بريد الأمان",
+        "suspiciousHelp": "استخدم {{fullName}} للاسم، {{attempts}} لعدد المحاولات، {{ip}} لعنوان IP.",
+        "suspiciousDescription": "بريد إلكتروني يُرسل إلى مستخدم عند اكتشاف عدة محاولات تسجيل دخول فاشلة على حسابه."
+      }
+   },
 "testAccessPage": {
   "title": "اختبار صلاحيات RBAC",
   "myPermissionsTitle": "صلاحياتي الفعلية",
@@ -451,7 +477,59 @@
     "readOnly": "دور نظام — قراءة فقط",
     "deleteBtn": "حذف هذا الدور",
     "deleteConfirm": "هل أنت متأكد من حذف الدور \"{{name}}\"؟"
-  }
+  },
+  "notifications": {
+      "title": "إدارة الإشعارات",
+      "total": "{{total}} إشعارات في المجموع",
+      "unread": "{{count}} غير مقروءة",
+      "read": "{{count}} مقروءة",
+      "send": "إرسال إشعار",
+      "refresh": "تحديث",
+      "markAllRead": "تحديد الكل كمقروء",
+      "noResults": "لم يتم العثور على إشعارات",
+      "loading": "جارٍ التحميل...",
+      "searchPlaceholder": "بحث...",
+      "filters": {
+        "allTypes": "جميع الأنواع",
+        "allStatus": "جميع الحالات",
+        "unread": "غير مقروء",
+        "read": "مقروء",
+        "info": "معلومات",
+        "success": "نجاح",
+        "warning": "تحذير",
+        "error": "خطأ"
+      },
+      "status": {
+        "unread": "غير مقروء",
+        "read": "مقروء"
+      },
+      "actions": {
+        "markAsRead": "تحديد كمقروء",
+        "delete": "حذف"
+      },
+      "deleteConfirm": "هل تريد حذف هذا الإشعار؟",
+      "modal": {
+        "title": "إرسال إشعار",
+        "sendMode": "طريقة الإرسال",
+        "singleUser": "مستخدم",
+        "groupRole": "مجموعة (دور)",
+        "selectUser": "اختر مستخدمًا",
+        "selectRole": "اختر دورًا",
+        "user": "المستخدم *",
+        "role": "الدور RBAC المستهدف *",
+        "titleLabel": "العنوان *",
+        "titlePlaceholder": "مثال: مشروع جديد متاح",
+        "messageLabel": "الرسالة *",
+        "messagePlaceholder": "تفاصيل الإشعار...",
+        "typeLabel": "النوع",
+        "linkLabel": "الرابط (اختياري)",
+        "linkPlaceholder": "/admin/users - الصفحة التي سيتم توجيه المستخدم إليها",
+        "linkHelp": "رابط إلى صفحة في التطبيق (مثال: /admin/users، /admin/agreements)",
+        "roleHelp": "يرسل الإشعار إلى جميع المستخدمين الذين لديهم هذا الدور RBAC.",
+        "cancel": "إلغاء",
+        "send": "إرسال"
+      }
+    }
   },
   "navbar": {
     "homeAria": "الرئيسية ESI",

@@ -1,12 +1,10 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-// Import des icônes UI génériques (toujours disponibles dans lucide-react)
 import { 
   MapPin, Mail, Phone, ArrowRight 
 } from 'lucide-react';
 
-// 🔒 Définition des icônes SVG locales (Cela évite tout problème d'import ou de version)
 const SocialIcons = {
   Facebook: (
     <svg viewBox="0 0 24 24" className="h-5 w-5 fill-current" xmlns="http://www.w3.org/2000/svg">
@@ -41,7 +39,7 @@ export default function Footer() {
         { to: '/projets', labelKey: 'footer.columns.consultation.projets' },
         { to: '/appels', labelKey: 'footer.columns.consultation.appels' },
         { to: '/mobilites', labelKey: 'footer.columns.consultation.mobilites' },
-        { to: '/programmes', labelKey: 'programmes' }, // AJOUT: Lien vers les programmes
+        { to: '/programmes', labelKey: 'programmes' },
       ],
     },
     {
@@ -55,7 +53,7 @@ export default function Footer() {
     },
   ];
 
-  // ✅ VRAIS RÉSEAUX SOCIAUX OFFICIELS DE L'ESI
+  // Reseaux sociaux ESI
   const socialLinks = [
     { name: 'Facebook', href: 'https://www.facebook.com/ESI.Page/', icon: SocialIcons.Facebook },
     { name: 'Twitter / X', href: 'https://x.com/EsiAlger', icon: SocialIcons.X },

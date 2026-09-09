@@ -1,7 +1,7 @@
 
 const db = require('../db');
 
-// Récupérer tous les slides publiés + traductions (public)
+// public slides
 async function findAllPublic(lang) {
   const query = `
     SELECT 
@@ -13,10 +13,10 @@ async function findAllPublic(lang) {
     ORDER BY s.display_order ASC
   `;
   const result = await db.query(query, [lang]);
-  return result.rows; // ✅ FIX: extraire .rows au lieu de renvoyer l'objet pg complet
+  return result.rows;
 }
 
-// Récupérer TOUS les slides (admin preview)
+// admin
 async function findAllAdmin(lang) {
   const query = `
     SELECT 
@@ -28,10 +28,10 @@ async function findAllAdmin(lang) {
     ORDER BY s.display_order ASC
   `;
   const result = await db.query(query, [lang]);
-  return result.rows; // ✅ FIX: idem
+  return result.rows;
 }
 
-// Créer un slide
+// creation d un nouveau slide
 async function create(badge, iconType, iconValue) {
   return db.query(
     `INSERT INTO home_slides (badge, icon_type, icon_value) 
@@ -40,7 +40,7 @@ async function create(badge, iconType, iconValue) {
   );
 }
 
-// Mettre à jour un slide
+// mise a jour d un slide
 async function update(id, { badge, iconType, iconValue }) {
   return db.query(
     `UPDATE home_slides SET badge=$1, icon_type=$2, icon_value=$3, updated_at=now() 
@@ -49,16 +49,15 @@ async function update(id, { badge, iconType, iconValue }) {
   );
 }
 
-// Réordonner (pour drag & drop)
+// reordonner les slides
 async function reorder(slides) {
-  // slides = [{id: 1}, {id: 2}, ...] dans le nouvel ordre
   const promises = slides.map((s, i) =>
     db.query(`UPDATE home_slides SET display_order=$1 WHERE id=$2`, [i, s.id])
   );
   return Promise.all(promises);
 }
 
-// Publier/archiver
+//publication status
 async function updateStatus(id, status) {
   return db.query(
     `UPDATE home_slides SET statut_publication=$1, updated_at=now() WHERE id=$2 RETURNING *`,
@@ -66,7 +65,7 @@ async function updateStatus(id, status) {
   );
 }
 
-// Supprimer
+// Supprimer un slide
 async function remove(id) {
   return db.query(`DELETE FROM home_slides WHERE id=$1`, [id]);
 }

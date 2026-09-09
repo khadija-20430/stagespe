@@ -14,7 +14,7 @@ exports.findAll = async () => {
   return result.rows;
 };
 
-// Admin — tous les programmes avec stats
+// Admin  tous les programmes avec stats
 exports.findAllAdmin = async () => {
   const result = await pool.query(`
     SELECT p.*,
@@ -53,7 +53,7 @@ exports.findLogoUrlById = async (id) => {
   return result.rows[0];
 };
 
-// Public — avec traduction
+// Public  avec traduction
 exports.findAllPublic = async (lang = 'fr') => {
   const result = await pool.query(`
     SELECT p.*,

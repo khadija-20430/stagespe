@@ -1,7 +1,7 @@
 const homeSlidesModel = require('../models/homeSlidesModel');
 
 exports.getPublic = async (req, res) => {
-  const lang = req.query.lang || 1; // Default FR
+  const lang = req.query.lang || 1; // c est fr par defaut 
   try {
     const slides = await homeSlidesModel.findAllPublic(lang);
     res.json(slides);
@@ -57,7 +57,7 @@ exports.update = async (req, res) => {
 };
 
 exports.reorder = async (req, res) => {
-  const { slides } = req.body; // [{id: 1}, {id: 2}, ...]
+  const { slides } = req.body;
   try {
     await homeSlidesModel.reorder(slides);
     res.json({ message: 'Slides réordonnées' });
@@ -68,7 +68,7 @@ exports.reorder = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body; // draft ou published
+  const { status } = req.body;
   try {
     const result = await homeSlidesModel.updateStatus(id, status);
     res.json(result.rows[0]);

@@ -1,11 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 
-// ============================================================
-// AUTOCOMPLÉTION D'ADRESSE
-// Utilise l'API Nominatim (OpenStreetMap) — gratuite, sans clé API,
-// cohérente avec geocode.js déjà utilisé pour le bouton "Localiser".
-// ============================================================
-
 export default function AddressAutocomplete({ value, onChange, onSelect, placeholder }) {
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -32,8 +26,7 @@ export default function AddressAutocomplete({ value, onChange, onSelect, placeho
       return;
     }
 
-    // Attend 400ms sans frappe avant d'appeler l'API — évite une requête
-    // à chaque lettre tapée
+    // Attend 400ms sans frappe avant d'appeler l'API
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {

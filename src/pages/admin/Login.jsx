@@ -41,9 +41,7 @@ export default function Login() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-navy flex items-center justify-center px-4 py-12">
 
-      {/* =====================================================
-          ANIMATED BACKGROUND
-      ===================================================== */}
+      {/* ANIMATED BACKGROUND*/}
       <div className="absolute inset-0 bg-gradient-to-br from-navy via-slate-900 to-blue-950" />
 
       {/* Floating gradient blobs */}
@@ -70,9 +68,7 @@ export default function Login() {
         <Sparkles className="absolute top-[80%] left-[20%] text-blue-200/30 animate-pulse" size={22} />
       </div>
 
-      {/* =====================================================
-          CARD
-      ===================================================== */}
+      {/* CARD */}
       <div className="relative w-full max-w-md animate-slide-up">
         <div className="rounded-2xl border border-white/10 bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl shadow-2xl shadow-black/40 p-8">
 

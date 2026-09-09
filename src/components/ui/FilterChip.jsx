@@ -1,6 +1,5 @@
 import { cn } from '../../lib/utils.js';
 
-// Puce de filtre cliquable ("filter chip").
 export default function FilterChip({ active = false, onClick, children }) {
   return (
     <button

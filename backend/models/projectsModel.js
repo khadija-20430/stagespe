@@ -9,8 +9,6 @@ function deleteOldFile(fileUrl) {
 }
 exports.deleteOldFile = deleteOldFile;
 
-// Remplace tous les livrables/résultats d'un projet par la nouvelle liste envoyée
-// (tableau de strings). Si le tableau n'est pas fourni, on ne touche à rien.
 async function replaceItems(client, table, projectId, items) {
     if (!Array.isArray(items)) return;
     await client.query(`DELETE FROM ${table} WHERE project_id = $1`, [projectId]);

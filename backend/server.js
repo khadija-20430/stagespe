@@ -21,9 +21,7 @@ app.use(globalLimiter);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ============================================================
-// ROUTES PUBLIQUES (référentiels)
-// ============================================================
+// public
 app.use('/api/languages', require('./routes/languagesRoutes'));
 app.use('/api/countries', require('./routes/countriesRoutes'));
 app.use('/api/programmes', require('./routes/programmesRoutes'));
@@ -34,17 +32,13 @@ app.use('/api/action-types', require('./routes/actionTypesRoutes'));
 app.use('/api/cities', require('./routes/citiesRoutes'));
 app.use('/api/institutions', require('./routes/institutionsRoutes'));
 
-// ============================================================
-// ROUTES AUTH & RBAC
-// ============================================================
+// auth et rbac
 app.use('/api/auth/login', loginLimiter);
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/roles', require('./routes/rolesRoutes'));
 app.use('/api/permissions', require('./routes/permissionsRoutes'));
 
-// ============================================================
-// ROUTES MÉTIER
-// ============================================================
+// metier
 app.use('/api/partners', require('./routes/partnersRoutes'));
 app.use('/api/partner-contacts', require('./routes/partnerContactsRoutes'));
 app.use('/api/agreements', require('./routes/agreementsRoutes'));
@@ -55,41 +49,28 @@ app.use('/api/mobility', require('./routes/mobilityRoutes'));
 app.use('/api/news-events', require('./routes/newsEventsRoutes'));
 app.use('/api/document-categories', require('./routes/documentCategoriesRoutes'));
 app.use('/api/documents', require('./routes/documentsRoutes'));
-app.use('/api/home-slides', require('./routes/Homeslidesroutes'));
+app.use('/api/home-slides', require('./routes/homeSlidesRoutes'));
 
-
-// ============================================================
-// ROUTES SCHOOL PRESENTATION
-// ============================================================
 app.use('/api/school-presentation', require('./routes/schoolPresentationRoutes'));
 
-// ============================================================
-// ROUTES SYSTÈME
-// ============================================================
+// Systeme
 app.use('/api/notifications', require('./routes/notificationsRoutes'));
 app.use('/api/audit-logs', require('./routes/auditLogRoutes'));
 app.use('/api/stats', require('./routes/statsRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 
-// ============================================================
-// ROUTE RACINE
-// ============================================================
+// racine
 app.get('/', (req, res) => {
     res.json({ status: 'ok', message: 'API Portail International ESI' });
 });
 
-// ============================================================
-// MIDDLEWARE D'ERREUR
-// ============================================================
+// middleware 
 app.use((err, req, res, next) => {
     console.error('[ERREUR NON GÉRÉE]', err);
     res.status(500).json({ error: 'Une erreur interne est survenue' });
 });
 
-// ============================================================
-// 🕐 CRON JOB : EXÉCUTER TOUS LES JOURS À 1H DU MATIN
-// ============================================================
-
+// CRON JOB : tout les jours a 1h du matin
 function scheduleDailyJobAt1AM() {
     const now = new Date();
     const next1AM = new Date(
@@ -98,8 +79,6 @@ function scheduleDailyJobAt1AM() {
         now.getDate(),
         1, 0, 0, 0
     );
-
-    // Si 1h du matin est déjà passé aujourd'hui, on programme pour demain
     if (now >= next1AM) {
         next1AM.setDate(next1AM.getDate() + 1);
     }
@@ -110,7 +89,6 @@ function scheduleDailyJobAt1AM() {
     setTimeout(() => {
         runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
 
-        // Une fois déclenché à 1h, on répète toutes les 24h à partir de là
         setInterval(() => {
             runAllJobs().catch(err => console.error('[CRON] Erreur jobs notifications:', err));
         }, 24 * 60 * 60 * 1000);
@@ -118,9 +96,7 @@ function scheduleDailyJobAt1AM() {
     }, delayMs);
 }
 
-// ============================================================
-// DÉMARRAGE
-// ============================================================
+// lancer backend
 const PORT = process.env.PORT || 5000;
 
 ensureSuperAdmin().finally(() => {

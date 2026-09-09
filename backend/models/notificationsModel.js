@@ -1,8 +1,6 @@
 const pool = require('../db');
 
-// ============================================================
-// RÉCUPÉRER TOUTES LES NOTIFICATIONS D'UN UTILISATEUR
-// ============================================================
+// toutes les notifs d un utilisateur
 
 exports.findAllByUser = async(userId, limit = 50, offset = 0) => {
     const result = await pool.query(
@@ -14,9 +12,7 @@ exports.findAllByUser = async(userId, limit = 50, offset = 0) => {
     return result.rows;
 };
 
-// ============================================================
-// RÉCUPÉRER LE NOMBRE DE NOTIFICATIONS NON LUES
-// ============================================================
+// nbr de notifs non lues
 
 exports.countUnreadByUser = async(userId) => {
     const result = await pool.query(
@@ -27,9 +23,7 @@ exports.countUnreadByUser = async(userId) => {
     return parseInt(result.rows[0].count);
 };
 
-// ============================================================
-// RÉCUPÉRER LES NOTIFICATIONS NON LUES
-// ============================================================
+// recuperer les notifs non lues
 
 exports.findUnreadByUser = async(userId) => {
     const result = await pool.query(
@@ -40,9 +34,7 @@ exports.findUnreadByUser = async(userId) => {
     return result.rows;
 };
 
-// ============================================================
-// MARQUER COMME LUE
-// ============================================================
+// marquer comme lu
 
 exports.markAsRead = async(id, userId) => {
     const result = await pool.query(
@@ -51,9 +43,7 @@ exports.markAsRead = async(id, userId) => {
     return result.rows[0];
 };
 
-// ============================================================
-// MARQUER TOUTES COMME LUES
-// ============================================================
+// tout marquer comme lu
 
 exports.markAllAsRead = async(userId) => {
     const result = await pool.query(
@@ -62,14 +52,11 @@ exports.markAllAsRead = async(userId) => {
     return result.rows;
 };
 
-// ============================================================
-// CRÉER UNE NOTIFICATION - VERSION SIMPLIFIÉE
-// ============================================================
+// creer une notif pour un utilisateur
 
 exports.create = async(data) => {
     const { user_id, title, message, type, link } = data;
 
-    // On laisse PostgreSQL gérer id, is_read (default false) et created_at (default now())
     const result = await pool.query(
         `INSERT INTO notifications (user_id, title, message, type, link)
          VALUES ($1, $2, $3, $4, $5)
@@ -78,16 +65,12 @@ exports.create = async(data) => {
     return result.rows[0];
 };
 
-// ============================================================
-// CRÉER POUR PLUSIEURS UTILISATEURS (VERSION SIMPLIFIÉE)
-// ============================================================
+//creer une notif groupé
 
 exports.createForUsers = async(userIds, title, message, type = 'info', link = null) => {
     if (!userIds || userIds.length === 0) return [];
 
     const created = [];
-
-    // Version simplifiée : boucle pour chaque utilisateur
     for (const userId of userIds) {
         const notif = await exports.create({
             user_id: userId,
@@ -98,13 +81,10 @@ exports.createForUsers = async(userIds, title, message, type = 'info', link = nu
         });
         created.push(notif);
     }
-
     return created;
 };
 
-// ============================================================
-// SUPPRIMER UNE NOTIFICATION
-// ============================================================
+// supprimer une notif d un utilisateur
 
 exports.delete = async(id, userId) => {
     const result = await pool.query(
@@ -113,9 +93,7 @@ exports.delete = async(id, userId) => {
     return result.rows[0];
 };
 
-// ============================================================
-// SUPPRIMER TOUTES LES NOTIFICATIONS D'UN UTILISATEUR
-// ============================================================
+// supprimer toutes les notifs d un utilisateur
 
 exports.deleteAll = async(userId) => {
     const result = await pool.query(
@@ -124,9 +102,6 @@ exports.deleteAll = async(userId) => {
     return result.rows;
 };
 
-// ============================================================
-// RÉCUPÉRER LES ADMINISTRATEURS (tous, sans distinction de permissions)
-// ============================================================
 
 exports.getAdminUsers = async() => {
     const result = await pool.query(
@@ -138,10 +113,6 @@ exports.getAdminUsers = async() => {
     return result.rows;
 };
 
-// ============================================================
-// RÉCUPÉRER LES UTILISATEURS AYANT UNE PERMISSION DONNÉE
-// (super_admin toujours inclus, même sans rôle personnalisé)
-// ============================================================
 
 exports.getUsersWithPermission = async(permissionCode) => {
     const result = await pool.query(
@@ -155,11 +126,8 @@ exports.getUsersWithPermission = async(permissionCode) => {
     return result.rows;
 };
 
-// ============================================================
-// SUPPRIMER LES NOTIFICATIONS ANCIENNES (30+ jours)
-// ============================================================
-
-exports.deleteOldNotifications = async(days = 30) => {
+//supprimer les notifs plus anciennes
+exports.deleteOldNotifications = async(days = 15) => {
     const result = await pool.query(
         `DELETE FROM notifications
          WHERE created_at < NOW() - INTERVAL '${days} days'
@@ -167,6 +135,8 @@ exports.deleteOldNotifications = async(days = 30) => {
     );
     return result.rows;
 };
+
+//milestone 
 exports.wasMilestoneSent = async(entityType, entityId, milestone) => {
     const result = await pool.query(
         `SELECT id FROM notification_milestones 
@@ -180,8 +150,20 @@ exports.markMilestoneSent = async(entityType, entityId, milestone) => {
     await pool.query(
         `INSERT INTO notification_milestones (entity_type, entity_id, milestone)
          VALUES ($1, $2, $3)
-         ON CONFLICT DO NOTHING`,
+         ON CONFLICT (entity_type, entity_id, milestone) DO NOTHING`,
         [entityType, entityId, milestone]
     );
+};
+
+exports.findAll = async (limit = 100, offset = 0) => {
+    const result = await pool.query(
+        `SELECT n.*, u.full_name, u.email
+         FROM notifications n
+         LEFT JOIN users u ON n.user_id = u.id
+         ORDER BY n.created_at DESC
+         LIMIT $1 OFFSET $2`,
+        [limit, offset]
+    );
+    return result.rows;
 };
 module.exports = exports;

@@ -8,29 +8,16 @@ const sendError = require('../middleware/errorResponse');
 
 const router = express.Router();
 
-// ------------------------------------------------------------
-// Routes publiques
-// ------------------------------------------------------------
 router.get('/', agreementsController.getPublic);
-
-// ------------------------------------------------------------
-// Routes à segments fixes — TOUJOURS avant '/:id'
-// ------------------------------------------------------------
 router.get('/admin/all', verifyToken, checkPermission('agreements.view'), agreementsController.getAdmin);
 router.get('/admin/all/preview', verifyToken, checkPermission('agreements.view'), agreementsController.getAllAdminPreview);
 router.get('/expiring-soon', verifyToken, checkPermission('agreements.view'), agreementsController.getExpiringSoon);
-
-// ------------------------------------------------------------
-// Routes avec :id
-// ------------------------------------------------------------
 router.get('/:id', agreementsController.getById);
 router.get('/:id/translations', verifyToken, checkPermission('agreements.view'), agreementsController.getTranslations);
 router.put('/:id/translations', verifyToken, checkPermission('agreements.edit'), agreementsController.updateTranslations);
-
 router.post('/', verifyToken, checkPermission('agreements.create'), upload.single('fichier_pdf'), agreementsController.create);
 router.put('/:id', verifyToken, checkPermission('agreements.edit'), upload.single('fichier_pdf'), agreementsController.update);
 router.delete('/:id', verifyToken, checkPermission('agreements.delete'), agreementsController.remove);
-
 router.patch('/:id/publish', verifyToken, checkPermission('agreements.edit'), async (req, res) => {
     try {
         const agreement = await agreementsModel.update(

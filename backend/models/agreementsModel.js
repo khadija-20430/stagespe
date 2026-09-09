@@ -37,9 +37,7 @@ exports.findAll = async(filters) => {
         params.push(status);
         query += ` AND agreements.status = $${params.length}`; 
     }
-    // NOUVEAU : filtre optionnel sur le statut de publication.
-    // - Non fourni (route admin) → aucun filtre, les 3 statuts remontent.
-    // - 'published' (route publique) → seul le contenu publié remonte.
+   
     if (statut_publication) {
         params.push(statut_publication);
         query += ` AND agreements.statut_publication = $${params.length}`;
@@ -51,7 +49,6 @@ exports.findAll = async(filters) => {
     return result.rows;
 };
 
-// CORRECTION : Calcul direct des accords arrivant à expiration
 exports.findExpiringSoon = async() => {
     const query = `
         SELECT 
@@ -127,7 +124,6 @@ exports.create = async(data) => {
     }
 };
 
-// CORRECTION MAJEURE : Suppression du code dupliqué et gestion du partner_id conditionnelle
 exports.update = async(id, data, userId, ip) => {
     const { 
         partner_id, title, type, description, terms_conditions, 
@@ -136,7 +132,6 @@ exports.update = async(id, data, userId, ip) => {
     } = data;
     
     return withAuditContext(userId, ip, async(client) => {
-        // Construction dynamique de la requête pour éviter le null sur partner_id
         let query = `UPDATE agreements SET 
             title=$1, type=$2, description=$3, 
             terms_conditions=$4, fichier_pdf=$5, signature_date=$6, 
@@ -150,14 +145,12 @@ exports.update = async(id, data, userId, ip) => {
 
         let paramIndex = 10;
 
-        // Ajouter partner_id uniquement s'il est fourni et non-null
         if (partner_id) {
             query += `, partner_id = $${paramIndex}`;
             params.push(partner_id);
             paramIndex++;
         }
 
-        // Ajouter statut_publication si fourni
         if (statut_publication !== undefined) {
             query += `, statut_publication = $${paramIndex}`;
             params.push(statut_publication);

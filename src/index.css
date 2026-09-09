@@ -6,12 +6,6 @@
     color-scheme: light;
 }
 
-/* 🆕 FIX — c'était le bug de la capture d'écran.
-   body est stylé en CSS pur (background-color: #f8fafc en dur), donc il
-   ignorait totalement la classe .dark posée sur <html> par le switch de
-   thème. Résultat : les composants Tailwind (Card, Button, SectionHeading...)
-   passaient bien en mode sombre via leurs classes dark:, mais le fond de
-   page restait clair -> texte blanc invisible sur fond clair. */
 .dark {
     color-scheme: dark;
 }

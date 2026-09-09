@@ -2,15 +2,15 @@ const db = require('../db');
 
 exports.findBasic = async () => {
     const [partners, projects, programmes, mobility, countries] = await Promise.all([
-        // Nombre de partenaires (tous, ou publiés selon votre logique)
+        // Nombre de partenaires 
         db.query(`SELECT COUNT(*) FROM partners`), 
         // Nombre de projets
         db.query(`SELECT COUNT(*) FROM projects`),
-        // ⬇️ Compter UNIQUEMENT les programmes publiés
+        //  Compter les programmes publies
         db.query(`SELECT COUNT(*) FROM programmes WHERE statut_publication = 'published'`),
-        // ⬇️ Compter les mobilités ouvertes
+        // Compter les mobilites ouvertes
         db.query(`SELECT COUNT(*) FROM mobility WHERE status = 'open'`),
-        // ⬇️ Compter les pays distincts (en utilisant country_id)
+        // Compter les pays partenaires distincts
         db.query(`SELECT COUNT(DISTINCT country_id) FROM partners`)
     ]);
 
@@ -39,7 +39,7 @@ exports.findFull = async () => {
         db.query(`SELECT COUNT(*) FROM agreements WHERE status = 'expired'`),
         db.query(`SELECT COUNT(*) FROM agreements WHERE status = 'active' AND end_date < NOW() + INTERVAL '60 days'`),
         db.query(`SELECT COUNT(DISTINCT country_id) FROM partners`),
-        // ⬇️ Compter les programmes publiés pour le dashboard
+        // Compter les programmes publies pour le dashboard
         db.query(`SELECT COUNT(*) FROM programmes WHERE statut_publication = 'published'`)
     ]);
 

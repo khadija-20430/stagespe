@@ -10,10 +10,7 @@ const LINK_TABLES = {
 
 exports.LINK_TABLES = LINK_TABLES;
 
-
-// =========================================================
-// DOCUMENTS PUBLICS
-// =========================================================
+//public documents
 
 exports.findAllPublic = async(filters) => {
     const {
@@ -40,8 +37,7 @@ exports.findAllPublic = async(filters) => {
     const joins = [];
     const params = [];
 
-    // IMPORTANT :
-    // La colonne est statut_publication
+
     const conditions = [
         "documents.statut_publication = 'published'"
     ];
@@ -107,9 +103,7 @@ exports.findAllPublic = async(filters) => {
 };
 
 
-// =========================================================
-// DOCUMENTS ADMIN
-// =========================================================
+//admin documents
 
 exports.findAllAdmin = async() => {
     const result = await pool.query(`
@@ -127,9 +121,7 @@ exports.findAllAdmin = async() => {
 };
 
 
-// =========================================================
-// DOCUMENTS EXPIRÉS
-// =========================================================
+//doc expired
 
 exports.findExpired = async() => {
     const result = await pool.query(
@@ -140,9 +132,7 @@ exports.findExpired = async() => {
 };
 
 
-// =========================================================
-// DOCUMENT PAR ID
-// =========================================================
+//doc par id
 
 exports.findById = async(id) => {
     const result = await pool.query(
@@ -162,9 +152,7 @@ exports.findById = async(id) => {
 };
 
 
-// =========================================================
-// LIENS D'UN DOCUMENT
-// =========================================================
+//links for a doc
 
 exports.findLinksForDocument = async(id) => {
     const links = {};
@@ -187,9 +175,7 @@ exports.findLinksForDocument = async(id) => {
 };
 
 
-// =========================================================
-// LOG ACCÈS DOCUMENT
-// =========================================================
+//log access
 
 exports.logAccess = async(
     documentId,
@@ -220,9 +206,7 @@ exports.logAccess = async(
 };
 
 
-// =========================================================
-// RÉVISIONS
-// =========================================================
+//revision
 
 exports.findRevisions = async(id) => {
     const result = await pool.query(
@@ -242,9 +226,7 @@ exports.findRevisions = async(id) => {
 };
 
 
-// =========================================================
-// CRÉER DOCUMENT
-// =========================================================
+//mise a jour d un doc
 
 exports.update = async(id, data) => {
     try {
@@ -294,6 +276,7 @@ exports.update = async(id, data) => {
         throw error;
     }
 };
+//creation d un doc
 exports.create = async(data) => {
     try {
         const {
@@ -336,9 +319,7 @@ exports.create = async(data) => {
         throw error;
     }
 };
-// =========================================================
-// CRÉER LIEN
-// =========================================================
+//creer un lien entre un document et une entite (prgrm,prjt ...)
 
 exports.createLink = async(
     entityType,
@@ -368,9 +349,7 @@ exports.createLink = async(
 };
 
 
-// =========================================================
-// SUPPRIMER LIEN
-// =========================================================
+//supprimer un lien entre un doc et une entite
 
 exports.removeLink = async(
     entityType,
@@ -396,9 +375,7 @@ exports.removeLink = async(
 };
 
 
-// =========================================================
-// INFOS FICHIER POUR RÉVISION
-// =========================================================
+//info revision
 
 exports.getRevisionSourceInfo = async(id) => {
     const result = await pool.query(
@@ -416,9 +393,7 @@ exports.getRevisionSourceInfo = async(id) => {
 };
 
 
-// =========================================================
-// CRÉER RÉVISION
-// =========================================================
+//creer une revision pour un doc
 
 exports.createRevision = async(
     documentId,
@@ -451,17 +426,7 @@ exports.createRevision = async(
     );
 };
 
-
-// =========================================================
-// MODIFIER DOCUMENT
-// =========================================================
-
-
-
-// =========================================================
-// SUPPRIMER
-// =========================================================
-
+//supprimer un doc
 exports.remove = async(id) => {
     const result = await pool.query(
         `
@@ -474,11 +439,7 @@ exports.remove = async(id) => {
     return result.rows[0];
 };
 
-
-// =========================================================
-// PUBLIER
-// =========================================================
-
+//publication status
 exports.publish = async(id) => {
     const result = await pool.query(
         `
@@ -492,11 +453,6 @@ exports.publish = async(id) => {
     return result.rows[0];
 };
 
-
-// =========================================================
-// ARCHIVER
-// =========================================================
-
 exports.archive = async(id) => {
     const result = await pool.query(
         `
@@ -509,11 +465,6 @@ exports.archive = async(id) => {
 
     return result.rows[0];
 };
-
-
-// =========================================================
-// RESTAURER
-// =========================================================
 
 exports.restore = async(id) => {
     const result = await pool.query(

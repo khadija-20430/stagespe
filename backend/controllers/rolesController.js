@@ -2,7 +2,7 @@ const rolesModel = require('../models/rolesModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 
-// GET tous les rôles, avec le nombre de comptes qui l'utilisent
+// Get tous les roles et nbr d utilisateurs associé
 exports.getAll = async(req, res) => {
     try {
         const roles = await rolesModel.findAllWithUserCount();
@@ -10,7 +10,7 @@ exports.getAll = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// GET le détail d'un rôle : ses infos + la liste des permissions déjà cochées
+// get un role avec la liste de ses perm
 exports.getOne = async(req, res) => {
     try {
         const role = await rolesModel.findById(req.params.id);
@@ -21,8 +21,7 @@ exports.getOne = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// POST créer un nouveau rôle personnalisé, avec sa liste de permissions cochées
-// body : { name, description, permission_ids: [1, 4, 7, ...] }
+// creation d un role
 exports.create = async(req, res) => {
     try {
         const { name, permission_ids } = req.body;
@@ -34,7 +33,7 @@ exports.create = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// PUT modifier le nom/description d'un rôle (pas ses permissions, voir la route dédiée)
+// mise a jour d un role
 exports.update = async(req, res) => {
     try {
         const roleCheck = await rolesModel.findIsSystemById(req.params.id);
@@ -46,9 +45,7 @@ exports.update = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// body : { permission_ids: [1, 4, 7, ...] } (liste complète, pas juste celle
-// qu'on ajoute — le frontend envoie l'état complet de la grille à chaque clic,
-// ou accumule puis envoie en un coup, selon ce que fait Khadidja).
+// mise a jour des permissions d un role
 exports.replacePermissions = async(req, res) => {
     try {
         const { permission_ids } = req.body;
@@ -60,7 +57,7 @@ exports.replacePermissions = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// body : { permission_id, enabled: true|false }
+
 exports.togglePermission = async(req, res) => {
     try {
         const { permission_id, enabled } = req.body;
@@ -70,7 +67,7 @@ exports.togglePermission = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// DELETE un rôle personnalisé (jamais un rôle système)
+// suppression d un role
 exports.remove = async(req, res) => {
     try {
         const roleCheck = await rolesModel.findIsSystemById(req.params.id);

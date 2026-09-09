@@ -2,11 +2,10 @@ import { useState , useRef} from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useDarkMode } from '../../hooks/useDarkMode.js';
-// Import des icônes Lucide
 import { 
   Home, School, Globe, Sun, Moon, Lock, Menu, X, 
   ChevronDown, ArrowRight, Briefcase, FileText, Megaphone, 
-  Plane, Newspaper, FolderOpen, Landmark, GraduationCap // Ajout de GraduationCap
+  Plane, Newspaper, FolderOpen, Landmark, GraduationCap 
 } from 'lucide-react';
 
 const cn = (...c) => c.filter(Boolean).join(' ');
@@ -173,7 +172,7 @@ export default function Navbar() {
     { to: '/projets', label: t('navbar.projets'), icon: <Briefcase className="h-4 w-4" /> },
     { to: '/appels', label: t('navbar.appels'), icon: <Megaphone className="h-4 w-4" /> },
     { to: '/mobilites', label: t('navbar.mobilites'), icon: <Plane className="h-4 w-4" /> },
-    { to: '/programmes', label: t('programmes'), icon: <GraduationCap className="h-4 w-4" /> }, // AJOUT
+    { to: '/programmes', label: t('programmes'), icon: <GraduationCap className="h-4 w-4" /> },
   ];
 
   const ressources = [

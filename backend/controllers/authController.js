@@ -1,13 +1,14 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const pool = require('../db'); // ← AJOUTER CETTE LIGNE
+const pool = require('../db');
 const authModel = require('../models/authModel');
 const settingsModel = require('../models/settingsModel');
-const notificationsModel = require('../models/notificationsModel'); // ← AJOUT
+const notificationsModel = require('../models/notificationsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
-const { sendResetCodeEmail } = require('../lib/Mailer');
+
+const mailer = require('../lib/mailer');
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MINUTES = 15;
@@ -22,9 +23,7 @@ function isPasswordValid(password) {
     );
 }
 
-// ============================================================
-// LOGIN (AVEC NOTIFICATION POUR TENTATIVES SUSPECTES)
-// ============================================================
+//login
 
 exports.login = async(req, res) => {
     const { email, password } = req.body;
@@ -47,7 +46,6 @@ exports.login = async(req, res) => {
         if (!user || !validPassword) {
             await logAction(null, 'login_failed', 'user', null, { email }, req);
 
-            // 🔔 NOTIFICATION POUR TENTATIVES SUSPECTES (après 3 échecs consécutifs)
             try {
                 const recentFailures = await authModel.countRecentFailures(email, LOCKOUT_WINDOW_MINUTES);
                 if (recentFailures >= 3) {
@@ -55,15 +53,25 @@ exports.login = async(req, res) => {
                     if (userInfo) {
                         await notificationsModel.create({
                             user_id: userInfo.id,
-                            title: '⚠️ Tentatives de connexion suspectes',
+                            title: ' Tentatives de connexion suspectes',
                             message: `${recentFailures} tentatives de connexion échouées sur votre compte depuis l'IP ${ip}.`,
                             type: 'error',
-                            link: '/admin/journal'
+                            link: null
                         });
+
+                        const settings = await settingsModel.getAll();
+                        await mailer.sendSuspiciousLoginEmail(
+                            userInfo.email,
+                            userInfo.full_name,
+                            recentFailures,
+                            ip,
+                            settings.suspicious_email_subject || ' Alertes de sécurité - Tentatives de connexion suspectes',
+                            settings.suspicious_email_text || 'Bonjour {{fullName}},\n\nNous avons détecté {{attempts}} tentatives de connexion échouées sur votre compte.\n\nAdresse IP : {{ip}}\nDate : {{date}}\n\nSi vous ne reconnaissez pas ces tentatives, nous vous recommandons de changer immédiatement votre mot de passe.'
+                        );
                     }
                 }
             } catch (notifErr) {
-                console.error('Erreur création notification:', notifErr);
+                console.error('Erreur notification/email:', notifErr);
             }
 
             return res.status(401).json({ error: 'Identifiants incorrects' });
@@ -91,26 +99,18 @@ exports.login = async(req, res) => {
     }
 };
 
-// ============================================================
-// LOGOUT
-// ============================================================
+//logout
 
 exports.logout = async(req, res) => {
     await logAction(req.user.id, 'logout', 'user', req.user.id, null, req);
     res.json({ message: 'Déconnecté avec succès' });
 };
 
-// ============================================================
-// ME
-// ============================================================
-
 exports.me = (req, res) => {
     res.json(req.user);
 };
 
-// ============================================================
-// REGISTER (AVEC NOTIFICATION POUR SUPER_ADMIN)
-// ============================================================
+// creation des admins par super admin
 
 exports.register = async(req, res) => {
     try {
@@ -126,11 +126,24 @@ exports.register = async(req, res) => {
         const password_hash = await bcrypt.hash(password, 10);
         const newUser = await authModel.createUser({ full_name, email, password_hash, role, role_id });
 
-        // 🔔 NOTIFICATION POUR LE SUPER_ADMIN QUI A CRÉÉ LE COMPTE
+        try {
+            const settings = await settingsModel.getAll();
+            await mailer.sendWelcomeEmail(
+                newUser.email,
+                newUser.full_name,
+                password,
+                settings.welcome_email_subject || ' Bienvenue sur le Portail International ESI',
+                settings.welcome_email_text || 'Bonjour {{fullName}},\n\nVotre compte a été créé avec succès sur le Portail International ESI.\n\nEmail : {{email}}\nMot de passe temporaire : {{password}}\n\nVeuillez changer votre mot de passe lors de votre première connexion.'
+            );
+            console.log(` Email de bienvenue envoyé à ${newUser.email}`);
+        } catch (emailErr) {
+            console.error(' Erreur envoi email de bienvenue:', emailErr);
+        }
+
         try {
             await notificationsModel.create({
                 user_id: req.user.id,
-                title: '✅ Nouveau compte créé',
+                title: ' Nouveau compte créé',
                 message: `Un nouveau compte a été créé : ${full_name} (${email})`,
                 type: 'success',
                 link: '/admin/users'
@@ -147,9 +160,7 @@ exports.register = async(req, res) => {
     }
 };
 
-// ============================================================
-// GET ALL USERS
-// ============================================================
+// get all users
 
 exports.getAllUsers = async(req, res) => {
     try {
@@ -160,20 +171,38 @@ exports.getAllUsers = async(req, res) => {
     }
 };
 
-// ============================================================
-// ACTIVATE USER (AVEC NOTIFICATION)
-// ============================================================
+// activation d un compte
 
 exports.activateUser = async(req, res) => {
     try {
-        const user = await authModel.setActiveStatus(req.params.id, true);
+        const user = await authModel.findUserById(req.params.id);
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
 
-        // 🔔 NOTIFICATION POUR L'UTILISATEUR CONCERNÉ
+        if (user.is_active) {
+            return res.json(user);
+        }
+
+        const updatedUser = await authModel.setActiveStatus(req.params.id, true);
+        if (!updatedUser) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+        try {
+            const settings = await settingsModel.getAll();
+            await mailer.sendAccountActivationEmail(
+                updatedUser.email,
+                updatedUser.full_name,
+                settings.activation_email_subject || ' Votre compte ESI a été réactivé',
+                settings.activation_email_text || 'Bonjour {{fullName}},\n\nVotre compte sur le Portail International ESI a été réactivé.\n\nVous pouvez maintenant vous connecter avec vos identifiants habituels.\n\nDate : {{date}}'
+            );
+            console.log(` Email de réactivation envoyé à ${updatedUser.email}`);
+        } catch (emailErr) {
+            console.error(' Erreur envoi email de réactivation:', emailErr);
+        }
+
+        // Notification pour l'utilisateur
         try {
             await notificationsModel.create({
                 user_id: req.params.id,
-                title: '✅ Compte activé',
+                title: ' Compte activé',
                 message: 'Votre compte a été réactivé. Vous pouvez maintenant vous connecter.',
                 type: 'success',
                 link: '/admin/login'
@@ -182,12 +211,12 @@ exports.activateUser = async(req, res) => {
             console.error('Erreur création notification:', notifErr);
         }
 
-        // 🔔 NOTIFICATION POUR LE SUPER_ADMIN
+        // Notification pour le super admin
         try {
             await notificationsModel.create({
                 user_id: req.user.id,
                 title: '✅ Compte activé',
-                message: `Vous avez activé le compte de ${user.full_name} (${user.email}).`,
+                message: `Vous avez activé le compte de ${updatedUser.full_name} (${updatedUser.email}).`,
                 type: 'success',
                 link: '/admin/users'
             });
@@ -196,41 +225,45 @@ exports.activateUser = async(req, res) => {
         }
 
         await logAction(req.user.id, 'activate_user', 'user', req.params.id, null, req);
-        res.json(user);
+        res.json(updatedUser);
 
     } catch (err) {
         sendError(res, err);
     }
 };
 
-// ============================================================
-// DEACTIVATE USER (AVEC NOTIFICATION)
-// ============================================================
+// desactivation d un compte
 
 exports.deactivateUser = async(req, res) => {
     try {
-        const user = await authModel.setActiveStatus(req.params.id, false);
+        const user = await authModel.findUserById(req.params.id);
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
 
-        // 🔔 NOTIFICATION POUR L'UTILISATEUR CONCERNÉ
-        try {
-            await notificationsModel.create({
-                user_id: req.params.id,
-                title: '⛔ Compte désactivé',
-                message: 'Votre compte a été désactivé. Contactez un administrateur pour plus d\'informations.',
-                type: 'error',
-                link: '/admin/login'
-            });
-        } catch (notifErr) {
-            console.error('Erreur création notification:', notifErr);
+        if (!user.is_active) {
+            return res.json(user);
         }
 
-        // 🔔 NOTIFICATION POUR LE SUPER_ADMIN
+        const updatedUser = await authModel.setActiveStatus(req.params.id, false);
+        if (!updatedUser) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+        try {
+            const settings = await settingsModel.getAll();
+            await mailer.sendAccountDeactivationEmail(
+                updatedUser.email,
+                updatedUser.full_name,
+                settings.deactivation_email_subject || ' Votre compte ESI a été désactivé',
+                settings.deactivation_email_text || 'Bonjour {{fullName}},\n\nVotre compte sur le Portail International ESI a été désactivé par un administrateur.\n\nRaisons possibles : inactivité prolongée, demande de l\'utilisateur, ou mesure de sécurité.\n\nPour plus d\'informations, veuillez contacter le support : cooperation@esi.dz\n\nDate : {{date}}'
+            );
+            console.log(` Email de désactivation envoyé à ${updatedUser.email}`);
+        } catch (emailErr) {
+            console.error(' Erreur envoi email de désactivation:', emailErr);
+        }
+
         try {
             await notificationsModel.create({
                 user_id: req.user.id,
-                title: '⛔ Compte désactivé',
-                message: `Vous avez désactivé le compte de ${user.full_name} (${user.email}).`,
+                title: 'Compte désactivé',
+                message: `Vous avez désactivé le compte de ${updatedUser.full_name} (${updatedUser.email}).`,
                 type: 'warning',
                 link: '/admin/users'
             });
@@ -239,16 +272,14 @@ exports.deactivateUser = async(req, res) => {
         }
 
         await logAction(req.user.id, 'deactivate_user', 'user', req.params.id, null, req);
-        res.json(user);
+        res.json(updatedUser);
 
     } catch (err) {
         sendError(res, err);
     }
 };
 
-// ============================================================
-// DELETE USER
-// ============================================================
+// supprimer un utilisateur
 
 exports.deleteUser = async(req, res) => {
     try {
@@ -267,9 +298,7 @@ exports.deleteUser = async(req, res) => {
     }
 };
 
-// ============================================================
-// UPDATE USER ROLE (AVEC NOTIFICATION)
-// ============================================================
+// update role
 
 exports.updateUserRole = async(req, res) => {
     try {
@@ -279,7 +308,6 @@ exports.updateUserRole = async(req, res) => {
             return res.status(400).json({ error: 'Rôle invalide' });
         }
 
-        // Récupérer l'utilisateur avant modification
         const userBefore = await authModel.findUserById(req.params.id);
         if (!userBefore) {
             return res.status(404).json({ error: 'Utilisateur non trouvé' });
@@ -287,34 +315,12 @@ exports.updateUserRole = async(req, res) => {
 
         const oldRole = userBefore.role;
 
+        if (oldRole === role) {
+            return res.json(userBefore);
+        }
+
         const user = await authModel.updateRole(req.params.id, role);
         if (!user) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-
-        // 🔔 NOTIFICATION POUR L'UTILISATEUR CONCERNÉ
-        try {
-            await notificationsModel.create({
-                user_id: req.params.id,
-                title: '🔐 Rôle mis à jour',
-                message: `Votre rôle a été changé de "${oldRole}" à "${role}".`,
-                type: 'warning',
-                link: '/admin/users'
-            });
-        } catch (notifErr) {
-            console.error('Erreur création notification:', notifErr);
-        }
-
-        // 🔔 NOTIFICATION POUR LE SUPER_ADMIN QUI A FAIT LE CHANGEMENT
-        try {
-            await notificationsModel.create({
-                user_id: req.user.id,
-                title: '✅ Rôle utilisateur modifié',
-                message: `Vous avez changé le rôle de ${userBefore.full_name} (${userBefore.email}) de "${oldRole}" à "${role}".`,
-                type: 'success',
-                link: '/admin/users'
-            });
-        } catch (notifErr) {
-            console.error('Erreur création notification:', notifErr);
-        }
 
         await logAction(req.user.id, 'update_role', 'user', req.params.id, { old_role: oldRole, new_role: role }, req);
         res.json(user);
@@ -324,9 +330,7 @@ exports.updateUserRole = async(req, res) => {
     }
 };
 
-// ============================================================
-// UPDATE USER PROFILE
-// ============================================================
+// update profil
 
 exports.updateUserProfile = async(req, res) => {
     try {
@@ -334,6 +338,18 @@ exports.updateUserProfile = async(req, res) => {
 
         if (!full_name && !email) {
             return res.status(400).json({ error: 'Au moins un champ (full_name ou email) est requis' });
+        }
+
+        const userBefore = await authModel.findUserById(req.params.id);
+        if (!userBefore) return res.status(404).json({ error: 'Utilisateur non trouvé' });
+
+        const hasChanges = (
+            (full_name && full_name !== userBefore.full_name) ||
+            (email && email !== userBefore.email)
+        );
+
+        if (!hasChanges) {
+            return res.json(userBefore);
         }
 
         const user = await authModel.updateUserProfile(req.params.id, { full_name, email });
@@ -350,13 +366,7 @@ exports.updateUserProfile = async(req, res) => {
     }
 };
 
-// ============================================================
-// ASSIGN CUSTOM ROLE (AVEC NOTIFICATION)
-// ============================================================
-// ============================================================
-// ASSIGN CUSTOM ROLE (AVEC NOTIFICATION) - CORRIGÉ
-// ============================================================
-
+// role rbac
 exports.assignCustomRole = async(req, res) => {
     try {
         const { role_id } = req.body;
@@ -368,23 +378,23 @@ exports.assignCustomRole = async(req, res) => {
             return res.status(400).json({ error: 'Seul un compte de rôle "admin" peut recevoir un rôle personnalisé' });
         }
 
-        // Récupérer le nom du rôle
+        const currentRoleId = target.role_id;
+        if (currentRoleId === role_id) {
+            const userInfo = await authModel.findUserById(req.params.id);
+            return res.json(userInfo);
+        }
+
         let roleName = null;
         if (role_id) {
             const exists = await authModel.roleExists(role_id);
             if (!exists) return res.status(404).json({ error: 'Rôle non trouvé' });
-            // ✅ CORRECTION : utiliser authModel au lieu de pool directement
             const roleInfo = await authModel.findRoleById(role_id);
             roleName = roleInfo?.name || 'Rôle personnalisé';
         }
 
         const user = await authModel.assignCustomRole(req.params.id, role_id);
 
-        // Récupérer les infos de l'utilisateur
         const userInfo = await authModel.findUserById(req.params.id);
-        const adminInfo = await authModel.findUserById(req.user.id);
-
-        // 🔔 NOTIFICATION POUR L'UTILISATEUR CONCERNÉ
         try {
             const message = role_id ?
                 `Vos permissions ont été mises à jour. Vous êtes maintenant "${roleName}".` :
@@ -392,16 +402,15 @@ exports.assignCustomRole = async(req, res) => {
 
             await notificationsModel.create({
                 user_id: req.params.id,
-                title: '🔑 Permissions mises à jour',
+                title: ' Permissions mises à jour',
                 message: message,
                 type: 'warning',
-                link: '/admin/users'
+                link: null
             });
         } catch (notifErr) {
             console.error('Erreur création notification:', notifErr);
         }
 
-        // 🔔 NOTIFICATION POUR LE SUPER_ADMIN
         try {
             const message = role_id ?
                 `Vous avez attribué le rôle "${roleName}" à ${userInfo?.full_name} (${userInfo?.email}).` :
@@ -425,10 +434,7 @@ exports.assignCustomRole = async(req, res) => {
         sendError(res, err);
     }
 };
-// ============================================================
-// MY PERMISSIONS
-// ============================================================
-
+// mes perm
 exports.myPermissions = async(req, res) => {
     try {
         if (req.user.role === 'super_admin') {
@@ -444,9 +450,7 @@ exports.myPermissions = async(req, res) => {
     }
 };
 
-// ============================================================
-// LOGIN HISTORY
-// ============================================================
+// historique login
 
 exports.loginHistory = async(req, res) => {
     try {
@@ -457,9 +461,7 @@ exports.loginHistory = async(req, res) => {
     }
 };
 
-// ============================================================
-// FORGOT PASSWORD
-// ============================================================
+// mot de passe oublié
 
 exports.forgotPassword = async(req, res) => {
     try {
@@ -479,7 +481,13 @@ exports.forgotPassword = async(req, res) => {
         const expiresAt = new Date(Date.now() + windowMinutes * 60 * 1000);
 
         await authModel.createResetToken(user.id, codeHash, expiresAt);
-        await sendResetCodeEmail(user.email, code, windowMinutes, settings.reset_email_subject, settings.reset_email_text);
+        await mailer.sendResetCodeEmail(
+            user.email,
+            code,
+            windowMinutes,
+            settings.reset_email_subject,
+            settings.reset_email_text
+        );
 
         res.json(genericResponse);
     } catch (err) {
@@ -487,9 +495,7 @@ exports.forgotPassword = async(req, res) => {
     }
 };
 
-// ============================================================
-// VERIFY RESET TOKEN
-// ============================================================
+// verification
 
 exports.verifyResetToken = async(req, res) => {
     try {
@@ -521,9 +527,7 @@ exports.verifyResetToken = async(req, res) => {
     }
 };
 
-// ============================================================
-// RESET PASSWORD
-// ============================================================
+// reset mot de passe
 
 exports.resetPassword = async(req, res) => {
     try {

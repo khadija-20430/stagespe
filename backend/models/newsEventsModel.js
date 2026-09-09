@@ -2,11 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const pool = require('../db');
 
-
-// =========================================================
-// SUPPRIMER ANCIEN FICHIER
-// =========================================================
-
+// supprimer anciens fichiers
 function deleteOldFile(fileUrl) {
     if (!fileUrl || !fileUrl.startsWith('/uploads/')) {
         return;
@@ -20,9 +16,7 @@ function deleteOldFile(fileUrl) {
 exports.deleteOldFile = deleteOldFile;
 
 
-// =========================================================
-// ACTUALITÉS / ÉVÉNEMENTS PUBLIÉS
-// =========================================================
+// status publication
 
 exports.findAllPublished = async (filters) => {
     const {
@@ -73,11 +67,6 @@ exports.findAllPublished = async (filters) => {
     return result.rows;
 };
 
-
-// =========================================================
-// ACTUALITÉ PUBLIÉE PAR ID
-// =========================================================
-
 exports.findPublishedById = async (id) => {
     const result = await pool.query(
         `
@@ -93,10 +82,7 @@ exports.findPublishedById = async (id) => {
 };
 
 
-// =========================================================
-// TOUTES LES ACTUALITÉS POUR ADMIN
-// =========================================================
-
+//toutes les actues
 exports.findAllAdmin = async () => {
     const result = await pool.query(
         `
@@ -110,10 +96,7 @@ exports.findAllAdmin = async () => {
 };
 
 
-// =========================================================
-// FICHIERS D'UNE ACTUALITÉ
-// =========================================================
-
+// 
 exports.findFilesById = async (id) => {
     const result = await pool.query(
         `
@@ -130,10 +113,7 @@ exports.findFilesById = async (id) => {
 };
 
 
-// =========================================================
-// CRÉER ACTUALITÉ
-// =========================================================
-
+// creer actualite
 exports.create = async (data, userId) => {
     const {
         title,
@@ -219,10 +199,7 @@ exports.create = async (data, userId) => {
 };
 
 
-// =========================================================
-// MODIFIER ACTUALITÉ
-// =========================================================
-
+// modifier actualite
 exports.update = async (id, data) => {
     const {
         title,
@@ -300,10 +277,7 @@ exports.update = async (id, data) => {
 };
 
 
-// =========================================================
-// SUPPRIMER
-// =========================================================
-
+// supprimer actualite
 exports.remove = async (id) => {
     const result = await pool.query(
         `
@@ -318,10 +292,7 @@ exports.remove = async (id) => {
 };
 
 
-// =========================================================
-// PUBLIER
-// =========================================================
-
+// publication
 exports.publish = async (id) => {
     const result = await pool.query(
         `
@@ -340,10 +311,7 @@ exports.publish = async (id) => {
 };
 
 
-// =========================================================
-// ARCHIVER
-// =========================================================
-
+// archiver
 exports.archive = async (id) => {
     const result = await pool.query(
         `
@@ -361,10 +329,7 @@ exports.archive = async (id) => {
 };
 
 
-// =========================================================
-// RESTAURER
-// =========================================================
-
+// restaurer
 exports.restore = async (id) => {
     const result = await pool.query(
         `

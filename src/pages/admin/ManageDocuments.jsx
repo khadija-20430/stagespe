@@ -38,9 +38,7 @@ const emptyTranslationSet = () => ({
   ar: { titre: '', description: '' },
 });
 
-/* ============================================================
-   FORMAT TAILLE
-============================================================ */
+/* FORMAT TAILLE */
 
 const formatBytes = (bytes) => {
   if (!bytes) return '—';
@@ -60,9 +58,7 @@ const formatBytes = (bytes) => {
     .replace('.', ',')} ${units[i]}`;
 };
 
-/* ============================================================
-   NOM FICHIER
-============================================================ */
+/* NOM FICHIER */
 
 const getFileName = (path) => {
   if (!path) return 'document';
@@ -79,9 +75,7 @@ const getFileName = (path) => {
   }
 };
 
-/* ============================================================
-   TÉLÉCHARGEMENT RÉEL
-============================================================ */
+/* TÉLÉCHARGEMENT RÉEL */
 
 const downloadFile = async (
   path,
@@ -133,11 +127,7 @@ const downloadFile = async (
   }
 };
 
-/* ============================================================
-   STATUT PUBLICATION
-   IMPORTANT :
-   statut_publication = published | draft | archived
-============================================================ */
+/* STATUT PUBLICATION */
 
 const publicationTone = (status) => {
   const value = String(status || 'draft')
@@ -167,9 +157,7 @@ const publicationLabel = (status, t) => {
   return t('draft');
 };
 
-/* ============================================================
-   COMPOSANT
-============================================================ */
+/* COMPOSANT*/
 
 export default function ManageDocuments() {
   const { t, i18n } = useTranslation();
@@ -177,10 +165,10 @@ export default function ManageDocuments() {
 
   const [categories, setCategories] = useState([]);
 
-  // ===== APERÇU DE TRADUCTION (lecture seule, suit la langue globale du site) =====
+  //  APERÇU DE TRADUCTION (lecture seule, suit la langue globale du site)
   const [previewData, setPreviewData] = useState({});
 
-  // ===== MODALE DE TRADUCTION MANUELLE =====
+  // MODALE DE TRADUCTION MANUELLE
   const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
@@ -188,9 +176,7 @@ export default function ManageDocuments() {
   const [translationsSaving, setTranslationsSaving] = useState(false);
   const [translationsError, setTranslationsError] = useState('');
 
-  /* ==========================================================
-     CATEGORIES
-  ========================================================== */
+  /*  CATEGORIES */
 
   useEffect(() => {
     getDocumentCategories()
@@ -203,7 +189,7 @@ export default function ManageDocuments() {
       });
   }, []);
 
-  // ===== APERÇU DE TRADUCTION =====
+  //  APERÇU DE TRADUCTION 
   const refreshPreview = () => {
     if (previewLang === 'fr') return;
     getDocumentsAdminPreview(previewLang).then((rows) => {
@@ -222,7 +208,7 @@ export default function ManageDocuments() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
-  // ===== MODALE DE TRADUCTION MANUELLE =====
+  // MODALE DE TRADUCTION MANUELLE 
   const openTranslations = async (item) => {
     setTranslationsItem(item);
     setTranslationsTab('en');
@@ -277,9 +263,7 @@ export default function ManageDocuments() {
       icon={FolderOpen}
       idPrefix="doc"
 
-      /* ======================================================
-         CRUD
-      ====================================================== */
+      /* CRUD*/
 
       fetcher={getDocumentsAdmin}
 
@@ -291,9 +275,7 @@ export default function ManageDocuments() {
 
       onDelete={deleteDocument}
 
-      /* ======================================================
-         PUBLICATION
-      ====================================================== */
+      /*  PUBLICATION */
 
       onPublish={publishDocument}
 
@@ -302,14 +284,9 @@ export default function ManageDocuments() {
   updatePermission="documents.edit"
   deletePermission="documents.delete"
   publishPermission="documents.edit"
-      /* ======================================================
-         COLONNES
-      ====================================================== */
+      /* COLONNES */
 
       columns={[
-        /* ----------------------------------------------------
-           TITRE
-        ----------------------------------------------------- */
 
         {
           key: 'nom',
@@ -321,10 +298,6 @@ export default function ManageDocuments() {
             item.titre
           ),
         },
-
-        /* ----------------------------------------------------
-           CATEGORIE
-        ----------------------------------------------------- */
 
       {
   key: 'categorieLabel',
@@ -341,9 +314,6 @@ export default function ManageDocuments() {
     );
   },
 },
-        /* ----------------------------------------------------
-           FORMAT
-        ----------------------------------------------------- */
 
         {
           key: 'format',
@@ -358,10 +328,6 @@ export default function ManageDocuments() {
             </span>
           ),
         },
-
-        /* ----------------------------------------------------
-           TAILLE
-        ----------------------------------------------------- */
 
         {
           key: 'taille',
@@ -383,10 +349,6 @@ export default function ManageDocuments() {
           },
         },
 
-        /* ----------------------------------------------------
-           DATE UPLOAD
-        ----------------------------------------------------- */
-
         {
           key: 'date',
           label: t('date'),
@@ -400,11 +362,6 @@ export default function ManageDocuments() {
             </span>
           ),
         },
-
-        /* ----------------------------------------------------
-           STATUT PUBLICATION
-           IMPORTANT : statut_publication
-        ----------------------------------------------------- */
 
         {
           key: 'statut_publication',
@@ -425,10 +382,6 @@ export default function ManageDocuments() {
   );
 },
         },
-
-        /* ----------------------------------------------------
-           FICHIER
-        ----------------------------------------------------- */
 
         {
           key: 'fichier_url',
@@ -508,10 +461,6 @@ export default function ManageDocuments() {
           },
         },
 
-        /* ----------------------------------------------------
-           TRADUCTIONS
-        ----------------------------------------------------- */
-
         { key: 'translations', label: t('traductions'),
           render: (item) => (
             <button
@@ -526,17 +475,7 @@ export default function ManageDocuments() {
         },
       ]}
 
-      /* ======================================================
-         FORMULAIRE
-         
-         PAS DE statut_publication ICI.
-         Le statut est géré par publier/archiver.
-      ====================================================== */
-
       fields={[
-        /* ---------------------------------------------------
-           TITRE
-        --------------------------------------------------- */
 
         {
           name: 'titre',
@@ -545,19 +484,11 @@ export default function ManageDocuments() {
           required: true,
         },
 
-        /* ---------------------------------------------------
-           DESCRIPTION
-        --------------------------------------------------- */
-
         {
           name: 'description',
           label: t('description'),
           type: 'textarea',
         },
-
-        /* ---------------------------------------------------
-           FICHIER
-        --------------------------------------------------- */
 
         {
           name: 'fichier_url',
@@ -615,10 +546,6 @@ export default function ManageDocuments() {
           },
         },
 
-        /* ---------------------------------------------------
-           CATEGORIE
-        --------------------------------------------------- */
-
         {
           name: 'categorieId',
           label: t('categorie'),
@@ -631,10 +558,6 @@ export default function ManageDocuments() {
           })),
         },
 
-        /* ---------------------------------------------------
-           LANGUE
-        --------------------------------------------------- */
-
         {
           name: 'langage',
           label: t('langage'),
@@ -642,19 +565,11 @@ export default function ManageDocuments() {
           options: LANGUAGES,
         },
 
-        /* ---------------------------------------------------
-           VERSION
-        --------------------------------------------------- */
-
         {
           name: 'version',
           label: t('version'),
           type: 'text',
         },
-
-        /* ---------------------------------------------------
-           MIS EN AVANT
-        --------------------------------------------------- */
 
         {
           name: 'misEnAvant',
@@ -673,10 +588,6 @@ export default function ManageDocuments() {
           ],
         },
 
-        /* ---------------------------------------------------
-           DATE EXPIRATION
-        --------------------------------------------------- */
-
         {
           name: 'dateExpiration',
           label: t('dateExpiration'),
@@ -688,10 +599,7 @@ export default function ManageDocuments() {
       ]}
     />
 
-    {/* =========================================================
-        MODALE — TRADUCTIONS MANUELLES (EN / AR)
-        Indépendante de la modale d'édition de CrudManager.
-    ========================================================== */}
+    {/* TRADUCTIONS MANUELLES (EN / AR) */}
     {translationsItem && (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
         <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

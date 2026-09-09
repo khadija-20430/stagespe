@@ -6,9 +6,6 @@ const schoolPresentationController = require('../controllers/schoolPresentationC
 
 const router = express.Router();
 
-// ============================================================
-// UPLOAD (comme documents)
-// ============================================================
 router.post(
     '/upload',
     verifyToken,
@@ -16,16 +13,12 @@ router.post(
     schoolPresentationController.uploadFile
 );
 
-// ============================================================
-// ROUTES PUBLIQUES
-// ============================================================
+// public
 router.get('/', schoolPresentationController.getAll);
 router.get('/lang/:code', schoolPresentationController.getByLanguage);
 router.get('/:id', schoolPresentationController.getById);
 
-// ============================================================
-// ROUTES ADMIN
-// ============================================================
+// admin
 router.get(
     '/admin/all',
     verifyToken,
@@ -37,7 +30,7 @@ router.post(
     '/',
     verifyToken,
     checkPermission('school_presentation.create'),
-    upload.single('file'), // ← comme documents
+    upload.single('file'), 
     schoolPresentationController.create
 );
 
@@ -45,7 +38,7 @@ router.post(
     '/:id/translations',
     verifyToken,
     checkPermission('school_presentation.edit'),
-    upload.single('file'), // ← comme documents
+    upload.single('file'),
     schoolPresentationController.addTranslation
 );
 
@@ -60,7 +53,7 @@ router.put(
     '/translations/:translationId/file',
     verifyToken,
     checkPermission('school_presentation.edit'),
-    upload.single('file'), // ← comme documents
+    upload.single('file'),
     schoolPresentationController.replaceFile
 );
 

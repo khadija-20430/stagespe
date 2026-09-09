@@ -4,9 +4,6 @@ const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { upload } = require('../middleware/upload');
 
-// ============================================================
-// UPLOAD FICHIER (comme documentsController.uploadFile)
-// ============================================================
 exports.uploadFile = (req, res) => {
     upload.single('file')(req, res, (err) => {
         if (err) return res.status(400).json({ error: err.message });
@@ -19,10 +16,7 @@ exports.uploadFile = (req, res) => {
     });
 };
 
-// ============================================================
-// PUBLIC
-// ============================================================
-
+// public
 exports.getAll = async(req, res) => {
     try {
         const presentations = await schoolPresentationModel.findAll();
@@ -38,7 +32,7 @@ exports.getById = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// Ex : GET /school-presentation/lang/fr → utilisé par le site public
+// pour la langue
 exports.getByLanguage = async(req, res) => {
     try {
         const translation = await schoolPresentationModel.findByLanguageCode(req.params.code);
@@ -47,17 +41,14 @@ exports.getByLanguage = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// ============================================================
-// ADMIN
-// ============================================================
-
+// admin
 exports.getAllAdmin = async(req, res) => {
     try {
         const presentations = await schoolPresentationModel.findAllAdmin();
         res.json(presentations);
     } catch (err) { sendError(res, err); }
 };
-
+// creation de la presentation 
 exports.create = async(req, res) => {
     try {
         const { language_id, titre, description, visibilite, fichier_url } = req.body;
@@ -90,7 +81,7 @@ exports.create = async(req, res) => {
         res.status(201).json(presentation);
     } catch (err) { sendError(res, err); }
 };
-
+// ajouter une traduction a une presentation existante
 exports.addTranslation = async(req, res) => {
     try {
         const { language_id, titre, description, fichier_url } = req.body;
@@ -122,7 +113,7 @@ exports.addTranslation = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// Modifie titre/définition uniquement (pas le fichier)
+// modifier une traduction 
 exports.updateTranslation = async(req, res) => {
     try {
         const { titre, description } = req.body;
@@ -134,7 +125,7 @@ exports.updateTranslation = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// "Remplacer" : archive l'ancien fichier dans les révisions, pose le nouveau
+// remplacer le fichier d un presentation ou de sa traduction
 exports.replaceFile = async(req, res) => {
     try {
         const file = req.file ? {
@@ -159,7 +150,7 @@ exports.getRevisions = async(req, res) => {
         res.json(revisions);
     } catch (err) { sendError(res, err); }
 };
-
+// mettre a jour la visibilite d une presentation
 exports.updateVisibilite = async(req, res) => {
     try {
         const { visibilite } = req.body;
@@ -173,7 +164,7 @@ exports.updateVisibilite = async(req, res) => {
         res.json(presentation);
     } catch (err) { sendError(res, err); }
 };
-
+// supprimer une presentation
 exports.remove = async(req, res) => {
     try {
         const presentation = await schoolPresentationModel.remove(req.params.id);
@@ -183,7 +174,7 @@ exports.remove = async(req, res) => {
         res.json({ message: 'Présentation supprimée', deleted: presentation });
     } catch (err) { sendError(res, err); }
 };
-
+// supprimer une traduction
 exports.removeTranslation = async(req, res) => {
     try {
         const translation = await schoolPresentationModel.removeTranslation(req.params.translationId);
@@ -194,10 +185,8 @@ exports.removeTranslation = async(req, res) => {
     } catch (err) { sendError(res, err); }
 };
 
-// ============================================================
-// PUBLIER / ARCHIVER (comme documents)
-// ============================================================
 
+// publication status
 exports.publish = async(req, res) => {
     try {
         const presentation = await schoolPresentationModel.publish(req.params.id);

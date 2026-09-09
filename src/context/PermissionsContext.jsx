@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getMyPermissions } from '../services/api.js'; // adapte le chemin si besoin
+import { getMyPermissions } from '../services/api.js';
 
 const PermissionsContext = createContext({
   permissions: [],
@@ -14,7 +14,6 @@ export function PermissionsProvider({ children }) {
   useEffect(() => {
     getMyPermissions()
       .then((data) => {
-        // gère les deux formes possibles de réponse : tableau brut ou { permissions: [...] }
         const list = Array.isArray(data) ? data : data?.permissions || [];
         const codes = list.map((p) => (typeof p === 'string' ? p : p.code));
         setPermissions(codes);

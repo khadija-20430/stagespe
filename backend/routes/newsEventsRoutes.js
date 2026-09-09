@@ -6,8 +6,6 @@ const newsEventsController = require('../controllers/newsEventsController');
 
 const router = express.Router();
 
-// upload.fields() : deux champs distincts possibles dans le FormData,
-// "image" pour la photo de l'actu et "author_photo" pour la photo de l'auteur.
 const newsUpload = upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'author_photo', maxCount: 1 },

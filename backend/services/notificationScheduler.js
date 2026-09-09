@@ -1,15 +1,12 @@
 const pool = require('../db');
 const notificationsModel = require('../models/notificationsModel');
 
-// ============================================================
-// TRAITE UNE CATÉGORIE : ENVOIE "SOON" (J-5) ET "EXPIRED" (J-0)
-// ============================================================
 
 async function processMilestones({
-    entityType,       // 'agreement' | 'call' | 'mobility'
-    query,            // SQL retournant id, title/nom, date de référence, extra (ex: partner_name)
+    entityType,       // agreement call mobility
+    query,            
     viewerIds,
-    soonDaysBefore,   // 5
+    soonDaysBefore,   
     buildSoonMessage,
     buildExpiredMessage
 }) {
@@ -26,7 +23,7 @@ async function processMilestones({
 
         const daysLeft = Math.round((refDate - today) / (1000 * 60 * 60 * 24));
 
-        // --- Jalon "bientôt expiré" : dès qu'on est à J-5 ou moins (mais pas encore expiré)
+        // Jalon (expire bientot) des qu on est a J-5 ou moins
         if (daysLeft >= 0 && daysLeft <= soonDaysBefore) {
             const already = await notificationsModel.wasMilestoneSent(entityType, row.id, 'soon');
             if (!already) {
@@ -37,7 +34,7 @@ async function processMilestones({
             }
         }
 
-        // --- Jalon "expiré" : dès que la date est dépassée
+        // Jalon (expiré) des que la date est depassée
         if (daysLeft < 0) {
             const already = await notificationsModel.wasMilestoneSent(entityType, row.id, 'expired');
             if (!already) {
@@ -52,16 +49,13 @@ async function processMilestones({
     return count;
 }
 
-// ============================================================
-// JOB PRINCIPAL
-// ============================================================
 
 async function runNotificationChecks() {
     console.log('[NOTIFICATIONS] Exécution des vérifications...');
     try {
         let notificationsCreated = 0;
 
-        // 1️⃣ Conventions
+        // Conventions
         const agreementViewers = await notificationsModel.getUsersWithPermission('agreements.view');
         notificationsCreated += await processMilestones({
             entityType: 'agreement',
@@ -83,7 +77,7 @@ async function runNotificationChecks() {
             })
         });
 
-        // 2️⃣ Appels à projets
+        // Appels a projets
         const callViewers = await notificationsModel.getUsersWithPermission('calls.view');
         const callViewerIds = callViewers.map(u => u.id);
         notificationsCreated += await processMilestones({
@@ -105,7 +99,7 @@ async function runNotificationChecks() {
             })
         });
 
-        // 3️⃣ Mobilités
+        // Mobility
         const mobilityViewers = await notificationsModel.getUsersWithPermission('mobility.view');
         notificationsCreated += await processMilestones({
             entityType: 'mobility',
@@ -126,7 +120,7 @@ async function runNotificationChecks() {
             })
         });
 
-        // 4️⃣ Documents expirés (jalon "expired" uniquement, pas de "soon" demandé)
+        //  Documents expires
         const documentViewers = await notificationsModel.getUsersWithPermission('documents.view');
         const documentViewerIds = documentViewers.map(u => u.id);
 
@@ -150,7 +144,7 @@ async function runNotificationChecks() {
             }
         }
 
-        // 5️⃣ Brouillons oubliés — inchangé (pas concerné par ta demande)
+        //  Brouillons oublies
         const projectViewers = await notificationsModel.getUsersWithPermission('projects.view');
         const partnerViewers = await notificationsModel.getUsersWithPermission('partners.view');
         const viewersByType = {

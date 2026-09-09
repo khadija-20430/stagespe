@@ -13,22 +13,22 @@ const TRANSLATION_CONFIG = {
 agreement: { table: 'agreement_translations', fk: 'agreement_id', fields: ['title', 'description', 'terms_conditions', 'type'] },document: { table: 'document_translations', fk: 'document_id', fields: ['titre', 'description'] },
 };
 
-const TARGET_LANGUAGES = ['en', 'ar']; // le français est déjà la langue de base, jamais traduit
+const TARGET_LANGUAGES = ['en', 'ar']; // fr par defaut donc pas besoin de traduction
 
 
 async function getLanguageId(langCode) {
-  if (!langCode || langCode === 'fr') return null; // le français est déjà dans la table principale
+  if (!langCode || langCode === 'fr') return null; 
   const result = await pool.query('SELECT id FROM languages WHERE code = $1 AND is_active = TRUE', [langCode]);
   return result.rows[0] ? result.rows[0].id : null;
 }
 
-// LECTURE — pour une LISTE de résultats (une seule requête groupée, pas de boucle)
+// lecture d une liste de resultats 
 async function translateList(entityType, rows, langCode) {
   const config = TRANSLATION_CONFIG[entityType];
   if (!config || !langCode || langCode === 'fr' || rows.length === 0) return rows;
 
   const languageId = await getLanguageId(langCode);
-  if (!languageId) return rows; // langue inconnue/inactive -> on garde le français
+  if (!languageId) return rows; // si langue inconnue ou inactive on garde fr
 
   const ids = rows.map((r) => r.id);
   const result = await pool.query(
@@ -41,16 +41,16 @@ async function translateList(entityType, rows, langCode) {
 
   return rows.map((row) => {
     const t = byId[row.id];
-    if (!t) return row; // pas encore traduit -> on garde le français
+    if (!t) return row; // si pas encore traduit on garde fr aussi
     const merged = { ...row };
     for (const field of config.fields) {
-      if (t[field]) merged[field] = t[field]; // on remplace SEULEMENT si la traduction existe
+      if (t[field]) merged[field] = t[field]; // on remplace seulement si traduction existante
     }
     return merged;
   });
 }
 
-// LECTURE — pour UN SEUL résultat (fiche détail)
+// lecture d un seul resultat 
 async function translateOne(entityType, row, langCode) {
   if (!row) return row;
   const [translated] = await translateList(entityType, [row], langCode);
@@ -63,7 +63,6 @@ async function translateRelatedField(rows, langCode, { entityType, idField, name
   const ids = [...new Set(rows.map((r) => r[idField]).filter(Boolean))];
   if (ids.length === 0) return rows;
 
-  // "Lignes" minimales portant juste l'id de l'entité liée, pour réutiliser translateList
   const fakeRows = ids.map((id) => ({ id }));
   const translated = await translateList(entityType, fakeRows, langCode);
 
@@ -76,19 +75,18 @@ async function translateRelatedField(rows, langCode, { entityType, idField, name
     return { ...row, [nameField]: translatedName };
   });
 }
-// ÉCRITURE — enregistre les traductions (manuelles OU générées automatiquement)
-// attend : { en: { title: '...', description: '...' }, ar: { title: '...' } }
+// ecriture des traductions (directement apres create ou update)
 async function upsertTranslations(entityType, entityId, translationsInput) {
   const config = TRANSLATION_CONFIG[entityType];
   if (!config || !translationsInput) return;
 
   for (const langCode of Object.keys(translationsInput)) {
-    if (langCode === 'fr') continue; // le français ne passe jamais par ici
+    if (langCode === 'fr') continue; 
     const languageId = await getLanguageId(langCode);
     if (!languageId) continue;
 
     const fieldsInput = translationsInput[langCode] || {};
-    const mainField = config.fields[0]; // ex: 'title' ou 'name' -> NOT NULL, donc jamais vide
+    const mainField = config.fields[0]; 
     const columns = [config.fk, 'language_id', ...config.fields];
     const values = [
       entityId,
@@ -108,8 +106,7 @@ async function upsertTranslations(entityType, entityId, translationsInput) {
   }
 }
 
-// TRADUCTION AUTOMATIQUE — appelée après un create/update en français,
-// génère EN + AR via Google Translate et les enregistre via upsertTranslations
+// traduction automatique via MyMemory (apres create/update)
 async function autoTranslateAndSave(entityType, entityId, frenchData) {
   const config = TRANSLATION_CONFIG[entityType];
   if (!config) return;
@@ -125,7 +122,7 @@ async function autoTranslateAndSave(entityType, entityId, frenchData) {
       translatedTexts = await translateBatch(sourceTexts, targetLang, 'fr');
     } catch (err) {
       console.error(`[I18N] Traduction ${targetLang} échouée pour ${entityType}#${entityId}:`, err.message);
-      continue; // une langue en échec ne bloque pas l'autre
+      continue; // une langue en echec ne bloque pas les autres
     }
 
     const translationPayload = {};
@@ -139,7 +136,7 @@ async function autoTranslateAndSave(entityType, entityId, frenchData) {
   }
 }
 
-// Pour préremplir le formulaire d'édition admin (toutes langues d'un coup)
+
 async function getAllTranslations(entityType, entityId) {
   const config = TRANSLATION_CONFIG[entityType];
   if (!config) return {};

@@ -21,9 +21,6 @@ import {
 } from '../../services/api.js';
 import { toAgreementPayload } from '../../services/mappers.js';
 
-// Champs traduisibles — noms de colonnes réels de agreement_translations
-// (les labels de CES champs restent en dur intentionnellement : ce sont les noms
-// des colonnes de la table de traduction elle-même, indépendants de la langue de l'UI)
 const TRANSLATION_FIELDS = [
   { name: 'title', label: 'Titre' },
   { name: 'type', label: 'Type' },
@@ -36,9 +33,7 @@ const emptyTranslationSet = () => ({
   ar: { title: '', type: '', description: '', terms_conditions: '' },
 });
 
-// ============================================================
-// FONCTION UTILITAIRE : TÉLÉCHARGEMENT SÉCURISÉ
-// ============================================================
+
 const downloadFileSecure = async (path, fallbackName, t) => {
     try {
         const url = getFileUrl(path);
@@ -67,7 +62,7 @@ const ManageAgreements = () => {
     const previewLang = i18n.language;
     const { hasPermission } = usePermissions();
 
-    // ===== STATE =====
+    //  STATE 
     const [agreements, setAgreements] = useState([]);
     const [partners, setPartners] = useState([]);
     const [expiringAgreements, setExpiringAgreements] = useState([]);
@@ -76,10 +71,10 @@ const ManageAgreements = () => {
     const [success, setSuccess] = useState('');
     const [downloadingFileId, setDownloadingFileId] = useState(null);
 
-    // ===== APERÇU DE TRADUCTION (lecture seule, suit la langue globale du site) =====
+    //  APERÇU DE TRADUCTION
     const [previewData, setPreviewData] = useState({});
 
-    // ===== MODALE DE TRADUCTION MANUELLE =====
+    // MODALE DE TRADUCTION MANUELLE 
     const [translationsItem, setTranslationsItem] = useState(null);
     const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
     const [translationsTab, setTranslationsTab] = useState('en');
@@ -104,7 +99,7 @@ const ManageAgreements = () => {
         dateFin: '',
         statut: 'active',
         statutPublication: 'draft',
-        fichierPdf: null, // AJOUT : pour stocker le chemin du fichier
+        fichierPdf: null, 
     });
 
     // Filters
@@ -113,14 +108,13 @@ const ManageAgreements = () => {
         partnerId: '',
     });
 
-    // ===== LIFECYCLE =====
+    //  LIFECYCLE
     useEffect(() => {
         fetchData();
         fetchExpiringAgreements();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filters]);
 
-    // ===== APERÇU DE TRADUCTION =====
+    // APERÇU DE TRADUCTION 
     const refreshPreview = () => {
         if (previewLang === 'fr') return;
         getAgreementsAdminPreview(previewLang).then((rows) => {
@@ -136,10 +130,9 @@ const ManageAgreements = () => {
             return;
         }
         refreshPreview();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [previewLang]);
 
-    // ===== MODALE DE TRADUCTION MANUELLE =====
+    // MODALE DE TRADUCTION MANUELLE
     const openTranslations = async (agreement) => {
         setTranslationsItem(agreement);
         setTranslationsTab('en');
@@ -187,7 +180,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== FETCH EXPIRING AGREEMENTS =====
+    //  FETCH EXPIRING AGREEMENTS 
     const fetchExpiringAgreements = async () => {
         try {
             const data = await getAgreementsExpiringSoon();
@@ -197,7 +190,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== FETCH DATA =====
+    //  FETCH DATA 
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -226,7 +219,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== FONCTION TÉLÉCHARGER =====
+    //  FONCTION TÉLÉCHARGER 
     const handleDownloadPDF = async (agreement) => {
         if (!agreement.fichierPdf) {
             setError(t('admin.agreementsPage.messages.noPdf', { titre: agreement.titre }));
@@ -244,7 +237,7 @@ const ManageAgreements = () => {
         setTimeout(() => setSuccess(''), 3000);
     };
 
-    // ===== EXPORT EXCEL =====
+    // EXPORT EXCEL 
     const exportToExcel = () => {
         if (agreements.length === 0) {
             setError(t('admin.agreementsPage.messages.noAgreementsToExport'));
@@ -293,7 +286,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== STATS (cartes en haut de page) =====
+    //  STATS (cartes en haut de page) 
     const safeItems = Array.isArray(agreements) ? agreements : [];
 
     const getStatus = (item) => item?.statutPublication || '';
@@ -315,7 +308,7 @@ const ManageAgreements = () => {
 
     const stats = getStats();
 
-    // ===== HANDLERS =====
+    // HANDLERS 
     const handleOpenModal = (agreement = null) => {
         if (agreement) {
             setEditingId(agreement.id);
@@ -364,7 +357,7 @@ const ManageAgreements = () => {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
-    // ===== HANDLER UPLOAD FICHIER =====
+    //  HANDLER UPLOAD FICHIER 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -400,7 +393,7 @@ const ManageAgreements = () => {
         return true;
     };
 
-    // ===== HANDLE SAVE (Ne ferme plus la modale trop tôt) =====
+    // HANDLE SAVE (Ne ferme plus la modale trop tôt) 
     const handleSave = async (e) => {
         e.preventDefault();
 
@@ -450,7 +443,7 @@ const ManageAgreements = () => {
         }
     };
 
-    // ===== CALCUL DES ALERTES D'EXPIRATION =====
+    //  CALCUL DES ALERTES D'EXPIRATION 
     const getExpirationAlert = (endDate) => {
         if (!endDate) return null;
 
@@ -471,7 +464,7 @@ const ManageAgreements = () => {
         return null;
     };
 
-    // ===== RENDER =====
+    // RENDER 
     return (
         <div className="manage-agreements">
             <div className="header">
@@ -864,10 +857,7 @@ const ManageAgreements = () => {
                 </div>
             )}
 
-            {/* =========================================================
-                MODALE — TRADUCTIONS MANUELLES (EN / AR)
-                Indépendante de la modale d'édition ci-dessus.
-            ========================================================== */}
+            {/* MODALE — TRADUCTIONS MANUELLES (EN / AR)*/}
             {translationsItem && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                     <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

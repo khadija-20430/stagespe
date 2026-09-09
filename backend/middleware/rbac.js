@@ -1,7 +1,5 @@
 const pool = require('../db');
 
-// checkRole reste utile pour les cas simples (réservé strictement au super_admin,
-// ex: gestion des comptes, suppression d'un rôle...)
 function checkRole(...allowedRoles) {
     return (req, res, next) => {
         if (!req.user || !allowedRoles.includes(req.user.role)) {
@@ -11,13 +9,7 @@ function checkRole(...allowedRoles) {
     };
 }
 
-// checkPermission vérifie une permission précise (ex: 'partners.delete').
-// - super_admin passe toujours, quoi qu'il arrive
-// - utilisateur n'a jamais accès (pas de rôle admin)
-// - admin doit avoir un role_id assigné, ET ce rôle doit contenir la permission
-// La vérification interroge la BDD à chaque appel (pas de cache dans le JWT)
-// pour que les changements de droits faits par le super_admin soient immédiats,
-// sans obliger l'admin concerné à se reconnecter.
+// checkPermission verifie une permission precise pour l utilisateur connecté
 function checkPermission(permissionCode) {
     return async(req, res, next) => {
         if (!req.user) return res.status(401).json({ error: 'Connexion requise' });

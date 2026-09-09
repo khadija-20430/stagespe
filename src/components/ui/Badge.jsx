@@ -23,7 +23,6 @@ export default function Badge({ tone = 'default', className = '', children }) {
   );
 }
 
-// Aide : associe un statut métier à une tonalité de couleur.
 export function statutTone(statut) {
   const map = {
     Ouvert: 'green',

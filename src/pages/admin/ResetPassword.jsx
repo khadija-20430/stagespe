@@ -6,15 +6,11 @@ import {
 import Button from '../../components/ui/Button.jsx';
 import Card from '../../components/ui/Card.jsx';
 
-// Flux "mot de passe oublié" basé sur un code à 6 chiffres envoyé par email
-// (voir authController.forgotPassword / verifyResetToken / resetPassword côté backend).
-// Étape 1 : email + code -> vérifié via /auth/verify-reset-token
-// Étape 2 : nouveau mot de passe -> envoyé avec email + code via /auth/reset-password
 export default function ResetPassword() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const [step, setStep] = useState(1); // 1 = vérifier le code, 2 = nouveau mot de passe
+  const [step, setStep] = useState(1); 
   const [email, setEmail] = useState(searchParams.get('email') || '');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');

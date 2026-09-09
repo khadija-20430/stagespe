@@ -2,6 +2,7 @@ const programmesModel = require('../models/programmesModel');
 const pool = require('../db');
 const sendError = require('../middleware/errorResponse');
 
+// Recupere tous les programmes publics
 exports.getAll = async (req, res) => {
   try {
     const lang = req.query.lang || 'fr';
@@ -9,7 +10,7 @@ exports.getAll = async (req, res) => {
     res.json(programmes);
   } catch (err) { sendError(res, err); }
 };
-
+//admin
 exports.getAllAdmin = async (req, res) => {
   try {
     const programmes = await programmesModel.findAllAdmin();
@@ -32,7 +33,7 @@ exports.getOne = async (req, res) => {
     res.json(programme);
   } catch (err) { sendError(res, err); }
 };
-
+//creation d un programme
 exports.create = async (req, res) => {
   try {
     const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
@@ -40,7 +41,7 @@ exports.create = async (req, res) => {
     res.status(201).json(programme);
   } catch (err) { sendError(res, err); }
 };
-
+// mise a jour d un programme
 exports.update = async (req, res) => {
   try {
     let logo_url = req.body.logo_url || null;
@@ -54,7 +55,7 @@ exports.update = async (req, res) => {
     res.json(programme);
   } catch (err) { sendError(res, err); }
 };
-
+// suppression d un programme
 exports.remove = async (req, res) => {
   try {
     const existing = await programmesModel.findLogoUrlById(req.params.id);
@@ -94,6 +95,7 @@ exports.updateTranslations = async (req, res) => {
     res.json({ success: true });
   } catch (err) { sendError(res, err); }
 };
+// Publication status
 exports.publish = async (req, res) => {
   try {
     const programme = await programmesModel.updateStatutPublication(req.params.id, 'published');

@@ -1455,43 +1455,89 @@ export const deleteSchoolPresentation = async (id) => {
 
 export const deleteSchoolTranslation = async (translationId) => {
     return authRequest(`/school-presentation/translations/${translationId}`, { method: 'DELETE' });
-};
-// ============================================================
+};// ============================================================
 // NOTIFICATIONS
 // ============================================================
 
+// Récupérer les notifications de l'utilisateur connecté (avec pagination)
 export const getNotifications = async (limit = 50, offset = 0) => {
-    const data = await authRequest(`/notifications?limit=${limit}&offset=${offset}`);
+    const data = await authRequest(`/notifications/me?limit=${limit}&offset=${offset}`);
     return data;
 };
 
+// Récupérer uniquement les notifications non lues
 export const getUnreadNotifications = async () => {
-    const data = await authRequest('/notifications/unread');
+    const data = await authRequest('/notifications/me/unread');
     return data;
 };
 
+// Récupérer le nombre de notifications non lues
 export const getUnreadCount = async () => {
-    const data = await authRequest('/notifications/unread/count');
+    const data = await authRequest('/notifications/me/unread-count');
     return data;
 };
 
+// Marquer une notification comme lue
 export const markAsRead = async (id) => {
     const data = await authRequest(`/notifications/${id}/read`, { method: 'PUT' });
     return data;
 };
 
+// Marquer toutes les notifications comme lues
 export const markAllAsRead = async () => {
-    const data = await authRequest('/notifications/read-all', { method: 'PUT' });
+    const data = await authRequest('/notifications/me/read-all', { method: 'PUT' });
     return data;
 };
 
+// Supprimer une notification
 export const deleteNotification = async (id) => {
     const data = await authRequest(`/notifications/${id}`, { method: 'DELETE' });
     return data;
 };
 
+// Supprimer toutes les notifications de l'utilisateur connecté
 export const deleteAllNotifications = async () => {
-    const data = await authRequest('/notifications', { method: 'DELETE' });
+    const data = await authRequest('/notifications/me/all', { method: 'DELETE' });
+    return data;
+};
+
+// ============================================================
+// NOTIFICATIONS - ROUTES ADMIN (super_admin uniquement)
+// ============================================================
+
+// Récupérer toutes les notifications (admin)
+export const getAllNotificationsAdmin = async (limit = 100, offset = 0) => {
+    const data = await authRequest(`/notifications/admin/all?limit=${limit}&offset=${offset}`);
+    return data;
+};
+
+// Créer une notification pour un utilisateur spécifique
+export const createNotification = async (data) => {
+    return await authRequest('/notifications/admin', {
+        method: 'POST',
+        body: data
+    });
+};
+
+// Créer des notifications pour plusieurs utilisateurs
+export const createNotificationsForUsers = async (data) => {
+    return await authRequest('/notifications/admin/bulk', {
+        method: 'POST',
+        body: data
+    });
+};
+
+// Créer des notifications par rôle RBAC
+export const createNotificationsByRole = async (data) => {
+    return await authRequest('/notifications/admin/by-role', {
+        method: 'POST',
+        body: data
+    });
+};
+
+// Supprimer toutes les notifications d'un utilisateur spécifique (admin)
+export const deleteAllNotificationsByUser = async (userId) => {
+    const data = await authRequest(`/notifications/admin/user/${userId}/all`, { method: 'DELETE' });
     return data;
 };
 

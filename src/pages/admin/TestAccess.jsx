@@ -7,7 +7,6 @@ import Badge from '../../components/ui/Badge.jsx';
 
 const API = import.meta.env.VITE_API_URL;
 
-// Uniquement des routes GET, sans effet de bord
 const CHECKS = (t) => [
   { label: t('admin.testAccessPage.checks.callsAdmin'), method: 'GET', path: '/calls/admin/all', permission: 'calls.view' },
   { label: t('admin.testAccessPage.checks.callsClosing'), method: 'GET', path: '/calls/closing-soon', permission: 'calls.view' },

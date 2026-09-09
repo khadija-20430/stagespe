@@ -1,9 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { ChevronDown, GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen } from 'lucide-react';
 
-// ⚠️ Doit couvrir exactement les mêmes noms que LUCIDE_ICONS dans ManageHomeSlides.jsx
-// et que ICON_MAP dans Home.jsx. Si vous ajoutez une icône dans LUCIDE_ICONS,
-// importez-la ci-dessus et ajoutez-la ici.
 const ICON_COMPONENTS = {
   GraduationCap,
   Megaphone,
@@ -13,14 +10,6 @@ const ICON_COMPONENTS = {
   BookOpen,
 };
 
-/**
- * IconPicker — sélecteur d'icône Lucide sous forme de dropdown.
- *
- * Props:
- * - value: string (nom de l'icône actuellement sélectionnée, ex: "Globe")
- * - onChange: (newValue: string) => void
- * - options: string[] (liste des noms d'icônes autorisés, ex: LUCIDE_ICONS)
- */
 export default function IconPicker({ value, onChange, options = [] }) {
   const [open, setOpen] = useState(false);
   const containerRef = useRef(null);

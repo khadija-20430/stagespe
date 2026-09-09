@@ -58,19 +58,32 @@ const fetchUsers = () => getUsers().then((rows) => rows.map(mapUser));
 const updateUserFull = async (id, payload) => {
   const { full_name, email, role, role_id, is_active } = payload;
 
-  if (full_name || email) {
+  // ✅ Récupérer l'utilisateur actuel pour comparer
+  const users = await getUsers();
+  const currentUser = users.find(u => u.id === id);
+  if (!currentUser) throw new Error('Utilisateur non trouvé');
+
+  // ✅ Vérifier les changements
+  const hasProfileChanges = (full_name && full_name !== currentUser.full_name) || 
+                           (email && email !== currentUser.email);
+  const hasRoleChange = role && role !== currentUser.role;
+  const hasCustomRoleChange = role === 'admin' && role_id !== currentUser.role_id;
+  const hasStatusChange = typeof is_active === 'boolean' && is_active !== currentUser.is_active;
+
+  // ✅ Ne faire les appels que si les données ont changé
+  if (hasProfileChanges) {
     await updateUserProfile(id, { full_name, email });
   }
 
-  if (role) {
+  if (hasRoleChange) {
     await updateUserRole(id, role);
   }
 
-  if (role === 'admin' && role_id) {
+  if (hasCustomRoleChange) {
     await assignRoleToUser(id, role_id);
   }
 
-  if (typeof is_active === 'boolean') {
+  if (hasStatusChange) {
     await (is_active ? activateUser : deactivateUser)(id);
   }
 };
@@ -98,13 +111,6 @@ export default function ManageUsers() {
       onCreate={registerUser}
       onUpdate={updateUserFull}
       onDelete={deleteUser}
-
-      /*
-       * Pas de statut_publication sur cette table : onPublish/onArchive
-       * ne sont donc pas fournis à CrudManager. Le statut actif/inactif
-       * est géré via le champ "isActive" du formulaire (ci-dessous)
-       * et via le badge cliquable dans la colonne "Statut".
-       */
 
       columns={[
         {
@@ -184,12 +190,6 @@ export default function ManageUsers() {
           name: 'password',
           label: t('password'),
           type: 'text',
-          /*
-           * Champ utilisé uniquement à la création (voir registerUser).
-           * Aucun endpoint backend ne permet de changer le mot de passe
-           * d'un utilisateur existant depuis cette page — en modification,
-           * ce champ est ignoré même s'il est rempli.
-           */
           help: 'Requis à la création (8+ caractères, une majuscule, une minuscule, un chiffre). Sans effet en modification.',
         },
 

@@ -11,8 +11,6 @@ function verifyToken(req, res, next) {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // decoded = { id, full_name, role } — role est une simple chaîne :
-    // 'super_admin' | 'admin' | 'utilisateur'
     req.user = decoded;
     next();
   } catch (err) {

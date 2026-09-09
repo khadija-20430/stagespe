@@ -15,8 +15,6 @@ const PARTNER_SELECT = `
          partnership_types.label AS partnership_type_label
 `;
 
-// Supprime physiquement un ancien logo du dossier uploads (best-effort,
-// on ne bloque jamais la requête si le fichier n'existe déjà plus).
 function deleteOldLogoFile(logoUrl) {
     if (!logoUrl || !logoUrl.startsWith('/uploads/')) return;
     const filePath = path.join(__dirname, '..', logoUrl);
@@ -126,8 +124,6 @@ exports.create = async(data, userId) => {
     return result.rows[0];
 };
 
-// Passe par withAuditContext pour que les triggers PostgreSQL de journalisation
-// disposent de l'utilisateur/IP courant (pas de logAction explicite ici).
 exports.update = async(id, data, auditContext) => {
     const {
         name,

@@ -1,9 +1,6 @@
 const pool = require('../db');
 
-// ============================================================
-// ADMIN - TOUTES LES PRÉSENTATIONS
-// ============================================================
-
+//toutes les presentations
 exports.findAllAdmin = async() => {
     const result = await pool.query(
         `SELECT sp.*, 
@@ -32,10 +29,7 @@ exports.findAllAdmin = async() => {
     return result.rows;
 };
 
-// ============================================================
-// PUBLIC - TOUTES LES PRÉSENTATIONS PUBLIÉES
-// ============================================================
-
+// toutes les presentations publié
 exports.findAll = async() => {
     const result = await pool.query(
         `SELECT sp.*, 
@@ -65,10 +59,7 @@ exports.findAll = async() => {
     return result.rows;
 };
 
-// ============================================================
-// RÉCUPÉRER UNE PRÉSENTATION PAR ID
-// ============================================================
-
+// 
 exports.findById = async(id) => {
     const presentation = await pool.query(
         'SELECT * FROM school_presentation WHERE id = $1', [id]
@@ -86,10 +77,7 @@ exports.findById = async(id) => {
     return {...presentation.rows[0], translations: translations.rows };
 };
 
-// ============================================================
-// RÉCUPÉRER PAR LANGUE (PUBLIC)
-// ============================================================
-
+//
 exports.findByLanguageCode = async(languageCode) => {
     const result = await pool.query(
         `SELECT spt.*, sp.visibilite, sp.created_at AS presentation_created_at
@@ -102,10 +90,7 @@ exports.findByLanguageCode = async(languageCode) => {
     return result.rows[0];
 };
 
-// ============================================================
-// RÉCUPÉRER UNE TRADUCTION PAR ID
-// ============================================================
-
+//
 exports.findTranslationById = async(translationId) => {
     const result = await pool.query(
         'SELECT * FROM school_presentation_translation WHERE id = $1', [translationId]
@@ -113,10 +98,7 @@ exports.findTranslationById = async(translationId) => {
     return result.rows[0];
 };
 
-// ============================================================
-// RÉCUPÉRER LES RÉVISIONS
-// ============================================================
-
+//
 exports.getRevisions = async(translationId) => {
     const result = await pool.query(
         `SELECT r.*, u.full_name AS replaced_by_name
@@ -128,10 +110,7 @@ exports.getRevisions = async(translationId) => {
     return result.rows;
 };
 
-// ============================================================
-// CRÉER UNE PRÉSENTATION
-// ============================================================
-
+// creer presentation
 exports.create = async(data) => {
     const { visibilite, created_by, translation } = data;
 
@@ -165,10 +144,7 @@ exports.create = async(data) => {
     }
 };
 
-// ============================================================
-// AJOUTER UNE TRADUCTION
-// ============================================================
-
+// ajouter traduction
 exports.addTranslation = async(schoolPresentationId, data) => {
     const { language_id, titre, description, fichier_url, file_format, file_size } = data;
     const result = await pool.query(
@@ -179,10 +155,7 @@ exports.addTranslation = async(schoolPresentationId, data) => {
     return result.rows[0];
 };
 
-// ============================================================
-// METTRE À JOUR UNE TRADUCTION (titre/description uniquement)
-// ============================================================
-
+// mise a jour traduction
 exports.updateTranslation = async(translationId, data) => {
     const fields = [];
     const params = [];
@@ -205,10 +178,7 @@ exports.updateTranslation = async(translationId, data) => {
     return result.rows[0];
 };
 
-// ============================================================
-// REMPLACER LE FICHIER (avec révision)
-// ============================================================
-
+// remplacer fichier
 exports.replaceFile = async(translationId, newFile, userId) => {
     const { fichier_url, file_format, file_size } = newFile;
 
@@ -225,14 +195,14 @@ exports.replaceFile = async(translationId, newFile, userId) => {
         }
         const old = current.rows[0];
 
-        // Archive l'ancien fichier
+        // Archive l ancien fichier
         await client.query(
             `INSERT INTO school_presentation_revisions
                 (translation_id, fichier_url, file_format, file_size, replaced_by)
              VALUES ($1, $2, $3, $4, $5)`, [translationId, old.fichier_url, old.file_format, old.file_size, userId]
         );
 
-        // Écrase avec le nouveau fichier
+        // ecrase avec le nouveau fichier
         const updated = await client.query(
             `UPDATE school_presentation_translation
              SET fichier_url = $1, file_format = $2, file_size = $3
@@ -249,10 +219,7 @@ exports.replaceFile = async(translationId, newFile, userId) => {
     }
 };
 
-// ============================================================
-// METTRE À JOUR LA VISIBILITÉ
-// ============================================================
-
+// mise a jour visibilite
 exports.updateVisibilite = async(id, visibilite) => {
     const result = await pool.query(
         'UPDATE school_presentation SET visibilite = $1, updated_at = NOW() WHERE id = $2 RETURNING *', [visibilite, id]
@@ -260,10 +227,7 @@ exports.updateVisibilite = async(id, visibilite) => {
     return result.rows[0];
 };
 
-// ============================================================
-// PUBLIER
-// ============================================================
-
+// publication
 exports.publish = async(id) => {
     const result = await pool.query(
         `UPDATE school_presentation
@@ -274,10 +238,7 @@ exports.publish = async(id) => {
     return result.rows[0];
 };
 
-// ============================================================
-// ARCHIVER
-// ============================================================
-
+//archiver
 exports.archive = async(id) => {
     const result = await pool.query(
         `UPDATE school_presentation
@@ -288,10 +249,7 @@ exports.archive = async(id) => {
     return result.rows[0];
 };
 
-// ============================================================
-// SUPPRIMER
-// ============================================================
-
+// suppression
 exports.remove = async(id) => {
     const result = await pool.query(
         'DELETE FROM school_presentation WHERE id = $1 RETURNING *', [id]

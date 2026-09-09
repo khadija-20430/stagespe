@@ -228,12 +228,14 @@
       "testAccess": "Test RBAC",
       "audit": "Audit Log",
       "settings": "Settings",
+      "emailTemplates": "Email Management",
       "changeLanguage": "Change language",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode",
       "user": "User",
       "logout": "Log out",
       "administration": "Administration",
+      "notifications": "Manage Notifications",
       "backToSite": "View site"
     },
     "agreementsPage": {
@@ -345,21 +347,45 @@
       }
     },
     "resetSettingsPage": {
-  "title": "Password reset",
-  "subtitle": "These settings apply immediately, no redeployment needed.",
-  "saved": "Settings saved.",
-  "loading": "Loading...",
-  "fields": {
-    "codeWindow": "Code validity duration (minutes)",
-    "maxAttempts": "Max number of attempts",
-    "emailSubject": "Email subject",
-    "emailText": "Email text",
-    "emailTextHelpPrefix": "Use",
-    "emailTextHelpMiddle": "for the code and",
-    "emailTextHelpSuffix": "for the duration."
-  },
-  "save": "Save"
-},
+      "title": "Email Management",
+      "subtitle": "These settings apply immediately, no redeployment needed.",
+      "saved": "Settings saved.",
+      "loading": "Loading...",
+      "save": "Save",
+      "tabs": {
+        "reset": " Password reset",
+        "welcome": " Welcome",
+        "activation": " Account activation",
+        "deactivation": " Account deactivation",
+        "suspicious": " Suspicious attempts"
+      },
+      "fields": {
+        "codeWindow": "Code validity duration (minutes)",
+        "maxAttempts": "Max number of attempts",
+        "emailSubject": "Email subject",
+        "emailText": "Email text",
+        "emailTextHelpPrefix": "Use",
+        "emailTextHelpMiddle": "for the code and",
+        "emailTextHelpSuffix": "for the duration.",
+        "welcomeSubject": "Welcome email subject",
+        "welcomeText": "Welcome email text",
+        "welcomeHelp": "Use {{fullName}} for name, {{email}} for email, {{password}} for temporary password.",
+        "welcomeDescription": "Email sent to a new user when their account is created.",
+        "activationSubject": "Activation email subject",
+        "activationText": "Activation email text",
+        "activationHelp": "Use {{fullName}} for name, {{date}} for date.",
+        "activationDescription": "Email sent to a user when their account is reactivated by an administrator.",
+        "deactivationSubject": "Deactivation email subject",
+        "deactivationText": "Deactivation email text",
+        "deactivationHelp": "Use {{fullName}} for name, {{date}} for date.",
+        "deactivationDescription": "Email sent to a user when their account is deactivated by an administrator.",
+        "suspiciousThreshold": "Attempts threshold before alert",
+        "suspiciousSubject": "Security email subject",
+        "suspiciousText": "Security email text",
+        "suspiciousHelp": "Use {{fullName}} for name, {{attempts}} for attempts count, {{ip}} for IP address.",
+        "suspiciousDescription": "Email sent to a user when multiple failed login attempts are detected on their account."
+      }
+    },
 "testAccessPage": {
   "title": "Test RBAC access",
   "myPermissionsTitle": "My effective permissions",
@@ -429,6 +455,58 @@
       "readOnly": "System role — read only",
       "deleteBtn": "Delete this role",
       "deleteConfirm": "Are you sure you want to delete role \"{{name}}\"?"
+    },
+    "notifications": {
+      "title": "Notifications Management",
+      "total": "{{total}} notifications in total",
+      "unread": "{{count}} unread",
+      "read": "{{count}} read",
+      "send": "Send notification",
+      "refresh": "Refresh",
+      "markAllRead": "Mark all as read",
+      "noResults": "No notifications found",
+      "loading": "Loading...",
+      "searchPlaceholder": "Search...",
+      "filters": {
+        "allTypes": "All types",
+        "allStatus": "All status",
+        "unread": "Unread",
+        "read": "Read",
+        "info": "Info",
+        "success": "Success",
+        "warning": "Warning",
+        "error": "Error"
+      },
+      "status": {
+        "unread": "Unread",
+        "read": "Read"
+      },
+      "actions": {
+        "markAsRead": "Mark as read",
+        "delete": "Delete"
+      },
+      "deleteConfirm": "Delete this notification?",
+      "modal": {
+        "title": "Send notification",
+        "sendMode": "Send mode",
+        "singleUser": "User",
+        "groupRole": "Group (role)",
+        "selectUser": "Select a user",
+        "selectRole": "Select a role",
+        "user": "User *",
+        "role": "RBAC target role *",
+        "titleLabel": "Title *",
+        "titlePlaceholder": "Ex: New project available",
+        "messageLabel": "Message *",
+        "messagePlaceholder": "Notification details...",
+        "typeLabel": "Type",
+        "linkLabel": "Link (optional)",
+        "linkPlaceholder": "/admin/users - Page the user will be redirected to",
+        "linkHelp": "Link to an application page (ex: /admin/users, /admin/agreements)",
+        "roleHelp": "Sends the notification to all users with this RBAC role.",
+        "cancel": "Cancel",
+        "send": "Send"
+      }
     }
   },
   "navbar": {

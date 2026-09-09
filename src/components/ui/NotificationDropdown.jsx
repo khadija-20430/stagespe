@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { getNotifications, markAsRead, deleteNotification } from '../../services/api.js';
 
@@ -16,8 +17,6 @@ const typeIcons = {
     success: '✅',
     error: '❌',
 };
-
-// Locale ICU/Intl à utiliser pour toLocaleDateString selon la langue i18n active.
 const localeMap = {
     fr: 'fr-FR',
     en: 'en-US',
@@ -27,6 +26,7 @@ const localeMap = {
 export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAllAsRead }) {
     const { t, i18n } = useTranslation();
     const { user } = useAuth();
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [deleting, setDeleting] = useState(null);
@@ -75,7 +75,6 @@ export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAll
         }
     };
 
-    // ✅ FORMAT DE DATE PRÉCIS
     const formatDate = (date) => {
         try {
             const d = new Date(date);
@@ -110,11 +109,9 @@ export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAll
         }
     };
 
-    // ✅ Marquer comme lue UNIQUEMENT quand on clique sur la notification
     const handleNotificationClick = async (notif) => {
         setClickingId(notif.id);
         
-        // Marquer comme lue si ce n'est pas déjà fait
         if (!notif.is_read) {
             try {
                 await markAsRead(notif.id);
@@ -127,7 +124,12 @@ export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAll
             }
         }
         
-        // Attendre un peu pour voir l'effet visuel
+        //  REDIRECTION vers le lien si existant
+        if (notif.link) {
+            if (onClose) onClose();
+            navigate(notif.link);
+        }
+        
         setTimeout(() => {
             setClickingId(null);
         }, 400);
@@ -185,7 +187,7 @@ export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAll
                         {notif.message}
                     </p>
                     
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-1 flex-wrap">
                         <p className={`text-xs ${
                             !notif.is_read ? 'text-slate-400' : 'text-slate-400/60'
                         }`}>
@@ -203,25 +205,25 @@ export default function NotificationDropdown({ onClose, onCountUpdate, onMarkAll
     return (
         <div className="w-96 max-h-[500px] overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl animate-scale-up">
             {/* Header */}
-           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
-        <h3 className="font-bold text-navy dark:text-white">🔔 {t('notifications.title')}</h3>
-        <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400">
-                {t('notifications.unreadCount', { count: notifications.filter(n => !n.is_read).length })}
-            </span>
-            {notifications.some(n => !n.is_read) && (
-                <button
-                    onClick={async () => {
-                        await onMarkAllAsRead();
-                        setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-                    }}
-                    className="text-xs text-cobalt hover:underline font-medium"
-                >
-                    {t('notifications.markAllRead')}
-                </button>
-            )}
-        </div>
-    </div>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <h3 className="font-bold text-navy dark:text-white">🔔 {t('notifications.title')}</h3>
+                <div className="flex items-center gap-3">
+                    <span className="text-xs text-slate-400">
+                        {t('notifications.unreadCount', { count: notifications.filter(n => !n.is_read).length })}
+                    </span>
+                    {notifications.some(n => !n.is_read) && (
+                        <button
+                            onClick={async () => {
+                                await onMarkAllAsRead();
+                                setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
+                            }}
+                            className="text-xs text-cobalt hover:underline font-medium"
+                        >
+                            {t('notifications.markAllRead')}
+                        </button>
+                    )}
+                </div>
+            </div>
 
             {/* Liste */}
             <div className="overflow-y-auto max-h-[400px]">

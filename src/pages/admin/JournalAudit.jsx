@@ -24,7 +24,6 @@ async function apiFetch(path) {
   return data;
 }
 
-// Action labels with translations - MAINTENANT TOUTES LES TRADUCTIONS VONT DANS admin.audit.actions
 const ACTION_LABELS = (t) => ({
   create: t('admin.audit.actions.create'),
   update: t('admin.audit.actions.update'),
@@ -113,7 +112,6 @@ export default function JournalAudit() {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formatDate = (iso) => {

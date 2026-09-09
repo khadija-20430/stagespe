@@ -59,8 +59,6 @@ exports.update = async(id, data) => {
     return result.rows[0];
 };
 
-// PUT /:id/permissions — LE TOGGLE : remplace entièrement la liste des permissions
-// cochées pour ce rôle.
 exports.replacePermissions = async(roleId, permissionIds) => {
     const client = await pool.connect();
     try {
@@ -79,8 +77,6 @@ exports.replacePermissions = async(roleId, permissionIds) => {
     }
 };
 
-// Bascule UNE seule permission (pratique pour un bouton toggle individuel dans
-// la grille, plutôt que de renvoyer toute la liste à chaque clic)
 exports.togglePermission = async(roleId, permissionId, enabled) => {
     if (enabled) {
         await pool.query(
