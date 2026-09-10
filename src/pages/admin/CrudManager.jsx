@@ -112,6 +112,9 @@ export default function CrudManager({
       if (f.type === 'datetime-local') {          // 🆕 à ajouter
        d[f.name] = toDateTimeLocalInputValue(d[f.name]);
      }
+     if (f.type === 'list' && Array.isArray(d[f.name])) {
+    d[f.name] = d[f.name].join(', ');
+}
     });
 
     setDraft(d);
@@ -189,7 +192,9 @@ export default function CrudManager({
             .split(',')
             .map((s) => s.trim())
             .filter(Boolean);
-        }
+        }if (f.type === 'list' && !Array.isArray(cleanDraft[f.name])) {
+    cleanDraft[f.name] = String(cleanDraft[f.name] || '').split(',').map(s => s.trim()).filter(Boolean);
+}
 
         // Transformer les nombres
         if (f.type === 'number') {

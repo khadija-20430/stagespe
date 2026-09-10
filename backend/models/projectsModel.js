@@ -22,7 +22,17 @@ async function replaceItems(client, table, projectId, items) {
 exports.findAllPublished = async(filters) => {
     const { status, programme_id, is_featured } = filters;
     let query = `
-    SELECT projects.*, programmes.name AS programme_name, partners.name AS coordinator_partner_name
+    SELECT projects.*, programmes.name AS programme_name, partners.name AS coordinator_partner_name,
+      COALESCE((
+        SELECT json_agg(description ORDER BY id)
+        FROM project_deliverables
+        WHERE project_id = projects.id
+      ), '[]') AS deliverables,
+      COALESCE((
+        SELECT json_agg(description ORDER BY id)
+        FROM project_results
+        WHERE project_id = projects.id
+      ), '[]') AS results
     FROM projects
     LEFT JOIN programmes ON projects.programme_id = programmes.id
     LEFT JOIN partners ON projects.coordinator_partner_id = partners.id
@@ -39,13 +49,24 @@ exports.findAllPublished = async(filters) => {
 };
 
 exports.findAllAdmin = async() => {
-    const result = await pool.query(
-        `SELECT projects.*, programmes.name AS programme_name FROM projects
-     LEFT JOIN programmes ON projects.programme_id = programmes.id ORDER BY projects.id DESC`
-    );
+    const result = await pool.query(`
+        SELECT projects.*, programmes.name AS programme_name,
+          COALESCE((
+            SELECT json_agg(description ORDER BY id)
+            FROM project_deliverables
+            WHERE project_id = projects.id
+          ), '[]') AS deliverables,
+          COALESCE((
+            SELECT json_agg(description ORDER BY id)
+            FROM project_results
+            WHERE project_id = projects.id
+          ), '[]') AS results
+        FROM projects
+        LEFT JOIN programmes ON projects.programme_id = programmes.id
+        ORDER BY projects.id DESC
+    `);
     return result.rows;
 };
-
 exports.findById = async(id) => {
     const result = await pool.query(
         `SELECT projects.*, programmes.name AS programme_name, partners.name AS coordinator_partner_name

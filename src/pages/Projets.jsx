@@ -81,16 +81,11 @@ export default function Projets() {
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge tone="cobalt">{p.programme}</Badge>
                   <Badge tone={projectStatusTone(p.statut)}>{t(`enums.projectStatus.${p.status}`)}</Badge>
-                  {/* mapProjet() renvoie "isFeatured", pas "misEnAvant" */}
                   {p.isFeatured ? <Badge tone="amber">{t('projets.featured')}</Badge> : null}
                 </div>
                 <h3 className="mt-4 text-xl font-bold text-navy dark:text-white">{p.titre}</h3>
                 <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{p.resume}</p>
                 <dl className="mt-5 grid grid-cols-2 gap-y-2 border-t border-slate-100 dark:border-slate-800 pt-4 text-sm">
-                  {/* ⚠️ mapProjet() ne renvoie que "coordinator_partner_id" (un ID), pas un nom.
-                      Pour afficher un nom lisible il faut que le backend fasse le join vers
-                      partners.name et l'expose (ex: coordinator_partner_name). En attendant,
-                      on n'affiche la ligne que si cette donnée existe, pour éviter "undefined". */}
                   {p.coordinateurPartenaire && (
                     <>
                       <dt className="text-slate-400 dark:text-slate-500">{t('projets.fields.coordinator')}</dt>
@@ -108,9 +103,7 @@ export default function Projets() {
                     {formatDate(p.debut)} — {formatDate(p.fin)}
                   </dd>
                 </dl>
-                {/* ⚠️ "pays" n'existe pas du tout dans mapProjet() : il faudrait que le backend
-                    agrège les pays des partenaires liés (project_partners -> partners.country_id)
-                    et l'expose (ex: row.countries). Affiché seulement si présent. */}
+
                 {Array.isArray(p.pays) && p.pays.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {p.pays.map((c) => (
@@ -118,6 +111,40 @@ export default function Projets() {
                         {c}
                       </span>
                     ))}
+                  </div>
+                )}
+
+                {/* LIVRABLES */}
+                {Array.isArray(p.livrables) && p.livrables.length > 0 && (
+                  <div className="mt-5 border-t border-slate-100 dark:border-slate-800 pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-2">
+                      {t('projets.fields.deliverables')}
+                    </p>
+                    <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                      {p.livrables.map((item, idx) => (
+                        <li key={idx} className="flex gap-2">
+                          <span className="text-cobalt">•</span>
+                          <span>{typeof item === 'string' ? item : item.description}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* RÉSULTATS */}
+                {Array.isArray(p.resultats) && p.resultats.length > 0 && (
+                  <div className="mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-2">
+                      {t('projets.fields.results')}
+                    </p>
+                    <ul className="space-y-1 text-sm text-slate-600 dark:text-slate-300">
+                      {p.resultats.map((item, idx) => (
+                        <li key={idx} className="flex gap-2">
+                          <span className="text-cobalt">•</span>
+                          <span>{typeof item === 'string' ? item : item.description}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 )}
               </Card>
