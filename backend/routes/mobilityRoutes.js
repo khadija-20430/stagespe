@@ -16,5 +16,5 @@ router.put('/:id', verifyToken, checkPermission('mobility.edit'), mobilityContro
 router.patch('/:id/publish', verifyToken, checkPermission('mobility.publish'), mobilityController.publish);
 router.patch('/:id/archive', verifyToken, checkPermission('mobility.publish'), mobilityController.archive);
 router.delete('/:id', verifyToken, checkPermission('mobility.delete'), mobilityController.remove);
-
+router.put('/:id/language-requirements', verifyToken, checkPermission('mobility.edit'), mobilityController.updateLanguageRequirements);
 module.exports = router;

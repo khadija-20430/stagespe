@@ -3,7 +3,6 @@
 // Point d'accès unique aux données
 // Express + PostgreSQL
 // ============================================================
-
 import {
     mapPartner,
     mapPartnerDetail,
@@ -23,6 +22,8 @@ import {
     toDocumentPayload,
     toAgreementPayload,
     mapProgramme,
+    mapInstitution,
+    toInstitutionPayload,
 } from './mappers.js';
 
 // ============================================================
@@ -868,3 +869,33 @@ export const getDocumentRevisions = (id) => authRequest(`/documents/${id}/revisi
 
 export const restoreDocumentRevision = (id, revisionId) =>
     authRequest(`/documents/${id}/revisions/${revisionId}/restore`, { method: 'PUT' });
+// ============================================================
+// INSTITUTIONS
+// ============================================================
+
+export const getInstitutions = async (filters = {}) => {
+    const qs = new URLSearchParams(filters).toString();
+    const data = await request(`/institutions${qs ? `?${qs}` : ''}`);
+    return data.map(mapInstitution);
+};
+
+export const createInstitution = (payload) =>
+    authRequest('/institutions', { method: 'POST', body: toInstitutionPayload(payload) });
+
+export const updateInstitution = (id, payload) =>
+    authRequest(`/institutions/${id}`, { method: 'PUT', body: toInstitutionPayload(payload) });
+
+export const deleteInstitution = (id) =>
+    authRequest(`/institutions/${id}`, { method: 'DELETE' });
+
+export const updateMobilityLanguageRequirements = (id, requirements) =>
+    authRequest(`/mobility/${id}/language-requirements`, {
+        method: 'PUT',
+        body: {
+            language_requirements: requirements.map((r) => ({
+                language_id: r.languageId,
+                min_level: r.minLevel || null,
+            })),
+        },
+    });
+    export const getLanguages = () => request('/languages/reference');

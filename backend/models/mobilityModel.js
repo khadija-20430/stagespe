@@ -140,3 +140,16 @@ exports.remove = async (id) => {
   const result = await pool.query('DELETE FROM mobility WHERE id=$1 RETURNING *', [id]);
   return result.rows[0];
 };
+exports.updateLanguageRequirements = async (mobilityId, requirements) => {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+        await replaceLanguageRequirements(client, mobilityId, requirements);
+        await client.query('COMMIT');
+    } catch (err) {
+        await client.query('ROLLBACK');
+        throw err;
+    } finally {
+        client.release();
+    }
+};

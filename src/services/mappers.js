@@ -145,13 +145,18 @@ export const toAppelPayload = (draft) => {
 // ============================================================
 // MOBILITÉS
 // ============================================================
-
 export const mapMobilite = (row) => ({
     id: row.id,
     type: row.type,
     title: row.title,
     status: row.status,
+
+    institutionId: row.institution_id || null,
+    institutionName: row.institution_name || null,
+    partnerId: row.destination_partner_id || null,
+    partnerName: row.partner_name || null,
     institutionAccueil: row.institution_name || row.partner_name,
+
     paysDestination: row.country_name,
     villeAccueil: row.city_name,
     duree: row.duration,
@@ -162,6 +167,27 @@ export const mapMobilite = (row) => ({
     description: row.description,
     dateLimite: row.deadline,
     statut_publication: row.statut_publication,
+conditions: row.conditions,
+    lien: row.application_link,
+    procedure: row.application_procedure,
+    criteres: row.selection_criteria,
+    financement: row.funding_details,
+    contact: row.contact_person,
+    emailContact: row.contact_email,
+    languageRequirements: Array.isArray(row.language_requirements)
+        ? row.language_requirements.map((r) => ({
+              languageId: r.id, languageCode: r.code, languageName: r.name, minLevel: r.min_level,
+          }))
+        : [],
+    // 🆕 forme réelle renvoyée par getOne : [{ id, code, name, min_level }]
+    languageRequirements: Array.isArray(row.language_requirements)
+        ? row.language_requirements.map((r) => ({
+              languageId: r.id,
+              languageCode: r.code,
+              languageName: r.name,
+              minLevel: r.min_level,
+          }))
+        : [],
 });
 
 export const toMobilitePayload = (draft) => ({
@@ -169,7 +195,8 @@ export const toMobilitePayload = (draft) => ({
     type: draft.type,
     programme_id: draft.programmeId || null,
     destination_country_id: draft.paysDestinationId || null,
-    destination_partner_id: draft.institutionAccueilId || null,
+    destination_partner_id: draft.partnerId || null,
+    institution_id: draft.institutionId || null,
     target_audience: draft.publicCible,
     description: draft.description,
     conditions: draft.conditions,
@@ -183,6 +210,9 @@ export const toMobilitePayload = (draft) => ({
     deadline: draft.dateLimite || null,
     status: draft.status || 'open',
     statut_publication: draft.statutPublication || 'draft',
+    language_requirements: Array.isArray(draft.languageRequirements)
+        ? draft.languageRequirements.map((r) => ({ language_id: r.languageId, min_level: r.minLevel || null }))
+        : [],
 });
 
 // ============================================================
@@ -527,4 +557,23 @@ export const toProgrammePayload = (draft) => ({
   organisme_financeur: draft.organismeFinanceur || null,
   description: draft.description || null,
   official_website: draft.siteWeb || null,
+});
+// ============================================================
+// INSTITUTIONS
+// ============================================================
+
+export const mapInstitution = (row) => ({
+    id: row.id,
+    nom: row.name,
+    villeId: row.city_id,
+    ville: row.city_name,
+    pays: row.country_name,
+    partnerId: row.partner_id,
+    partnerName: row.partner_name || null,
+});
+
+export const toInstitutionPayload = (draft) => ({
+    name: draft.nom,
+    city_id: draft.villeId || null,
+    partner_id: draft.partnerId || null,
 });

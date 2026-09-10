@@ -104,11 +104,11 @@
       "descriptionAr": "Description (AR)",
       "badgePlaceholder": "e.g. PROJECTS",
       "badges": {
-  "PROJETS": "Projects",
-  "DOCS": "Documents",
-  "PARTENARIATS": "Partnerships",
-  "MOBILITE": "Mobility"
-},
+        "PROJETS": "Projects",
+        "DOCS": "Documents",
+        "PARTENARIATS": "Partnerships",
+        "MOBILITE": "Mobility"
+      },
       "icons": {
         "GraduationCap": "Graduation",
         "Megaphone": "Announcement",
@@ -386,31 +386,31 @@
         "suspiciousDescription": "Email sent to a user when multiple failed login attempts are detected on their account."
       }
     },
-"testAccessPage": {
-  "title": "Test RBAC access",
-  "myPermissionsTitle": "My effective permissions",
-  "loading": "Loading…",
-  "noPermissions": "No permissions (regular user account, or admin with no role assigned).",
-  "endpointsTitle": "Endpoints to test (read-only, no risk)",
-  "run": "Run test",
-  "running": "Testing…",
-  "checks": {
-    "callsAdmin": "View all calls (admin)",
-    "callsClosing": "Calls closing soon",
-    "agreementsExpiring": "Agreements expiring soon",
-    "auditLog": "Audit log",
-    "usersList": "User list",
-    "loginHistory": "Login history"
-  },
-  "superAdminOnly": "super_admin only",
-  "status": {
-    "authorized": "Authorized (200)",
-    "forbidden": "Forbidden (403)",
-    "unauthenticated": "Not logged in (401)",
-    "unknown": "—",
-    "other": "Status {{status}}"
-  }
-},
+    "testAccessPage": {
+      "title": "Test RBAC access",
+      "myPermissionsTitle": "My effective permissions",
+      "loading": "Loading…",
+      "noPermissions": "No permissions (regular user account, or admin with no role assigned).",
+      "endpointsTitle": "Endpoints to test (read-only, no risk)",
+      "run": "Run test",
+      "running": "Testing…",
+      "checks": {
+        "callsAdmin": "View all calls (admin)",
+        "callsClosing": "Calls closing soon",
+        "agreementsExpiring": "Agreements expiring soon",
+        "auditLog": "Audit log",
+        "usersList": "User list",
+        "loginHistory": "Login history"
+      },
+      "superAdminOnly": "super_admin only",
+      "status": {
+        "authorized": "Authorized (200)",
+        "forbidden": "Forbidden (403)",
+        "unauthenticated": "Not logged in (401)",
+        "unknown": "—",
+        "other": "Status {{status}}"
+      }
+    },
     "audit": {
       "title": "Audit Log",
       "description": "History of all actions performed in the admin — who did what, and when. Reserved for super_admin.",
@@ -440,7 +440,7 @@
         "update_permissions": "Permissions updated"
       }
     },
-        "roles": {
+    "roles": {
       "title": "Roles & Permissions",
       "sidebar": {
         "title": "Roles",
@@ -569,7 +569,10 @@
     "allFem": "All",
     "pays": "Country",
     "debut": "Start",
-    "fin": "End"
+    "allMasc": "All",
+    "fin": "End",
+    "showLess": "Show less",
+    "showMore": "Show more"
   },
   "appels": {
     "eyebrow": "Funding",
@@ -577,9 +580,9 @@
     "description": "Filter calls for projects by program, country, and status to find the opportunities that fit you.",
     "filters": {
       "programme": "Programme",
-  "country": "Country / region",
-  "status": "Status",
-  "theme": "Theme"
+      "country": "Country / region",
+      "status": "Status",
+      "theme": "Theme"
     },
     "statuts": {
       "tous": "All",
@@ -680,7 +683,13 @@
       "format": "Format",
       "size": "Size",
       "updated": "Updated",
+      "language": "Language",
       "action": "Action"
+    },
+    "filters": {
+      "category": "Category",
+      "language": "Language",
+      "programme": "Programme"
     },
     "download": "Download",
     "noResults": "No documents found",
@@ -693,18 +702,23 @@
     }
   },
   "mobilites": {
-    "eyebrow": "Mobility",
-    "title": "Mobility Opportunities",
-    "description": "Student exchanges, doctoral placements, and teaching assignments with our international partners.",
+    "eyebrow": "International mobility",
+    "title": "Mobility opportunities",
+    "description": "Discover student, faculty and research mobility opportunities.",
     "filters": {
       "type": "Mobility type"
     },
-    "spots": "{{count}} spots",
+    "spots": "{{count}} spot",
+    "spots_other": "{{count}} spots",
     "fields": {
       "duration": "Duration",
       "level": "Level",
-      "programme": "Program",
-      "audience": "Target audience"
+      "programme": "Programme",
+      "audience": "Target audience",
+      "deadline": "Deadline",
+      "languages": "Required languages",
+      "procedure": "Application procedure",
+      "criteria": "Selection criteria"
     },
     "apply": "Apply"
   },
@@ -917,8 +931,8 @@
   "telecharger": "Download",
   "tauxFinancement": "Funding rate",
   "typeAction": "Action type",
-"themes": "Themes",
-"users": "Users",
+  "themes": "Themes",
+  "users": "Users",
   "adminRoles": "Roles & permissions",
   "adminTestAccess": "Test RBAC",
   "adminAuditLog": "Audit log",
@@ -978,6 +992,7 @@
       "daysAgo_one": "{{count}} day ago",
       "daysAgo_other": "{{count}} days ago"
     }
-  }
-  
+  },
+  "languesRequises": "Required languages",
+  "partenaire": "Partner"
 }

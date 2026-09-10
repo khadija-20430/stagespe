@@ -103,3 +103,11 @@ exports.remove = async(req, res) => {
         res.json({ message: 'Offre supprimée', deleted: mobility });
     } catch (err) { sendError(res, err); }
 };
+exports.updateLanguageRequirements = async (req, res) => {
+    try {
+        await mobilityModel.updateLanguageRequirements(req.params.id, req.body.language_requirements || []);
+        const languageRequirements = await mobilityModel.getLanguageRequirements(req.params.id);
+        await logAction(req.user.id, 'update', 'mobility', req.params.id, null, req);
+        res.json(languageRequirements);
+    } catch (err) { sendError(res, err); }
+};

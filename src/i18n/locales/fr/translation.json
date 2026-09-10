@@ -104,11 +104,11 @@
       "descriptionAr": "Description (AR)",
       "badgePlaceholder": "Ex: PROJETS",
       "badges": {
-  "PROJETS": "Projets",
-  "DOCS": "Documents",
-  "PARTENARIATS": "Partenariats",
-  "MOBILITE": "Mobilité"
-},
+        "PROJETS": "Projets",
+        "DOCS": "Documents",
+        "PARTENARIATS": "Partenariats",
+        "MOBILITE": "Mobilité"
+      },
       "icons": {
         "GraduationCap": "Diplôme",
         "Megaphone": "Mégaphone",
@@ -386,32 +386,32 @@
         "suspiciousDescription": "Email envoyé à un utilisateur lorsque plusieurs tentatives de connexion échouées sont détectées sur son compte."
       }
     },
-  "testAccessPage": {
-    "title": "Tester les accès RBAC",
-    "myPermissionsTitle": "Mes permissions effectives",
-    "loading": "Chargement…",
-    "noPermissions": "Aucune permission...",
-    "endpointsTitle": "Endpoints à tester (lecture seule, sans risque)",
-    "run": "Lancer le test",
-    "running": "Test en cours…",
-    "checks": {
-      "callsAdmin": "Voir tous les appels (admin)",
-      "callsClosing": "Appels bientôt clos",
-      "agreementsExpiring": "Accords bientôt expirés",
-      "auditLog": "Journal d'audit",
-      "usersList": "Liste des utilisateurs",
-      "loginHistory": "Historique des connexions"
+    "testAccessPage": {
+      "title": "Tester les accès RBAC",
+      "myPermissionsTitle": "Mes permissions effectives",
+      "loading": "Chargement…",
+      "noPermissions": "Aucune permission...",
+      "endpointsTitle": "Endpoints à tester (lecture seule, sans risque)",
+      "run": "Lancer le test",
+      "running": "Test en cours…",
+      "checks": {
+        "callsAdmin": "Voir tous les appels (admin)",
+        "callsClosing": "Appels bientôt clos",
+        "agreementsExpiring": "Accords bientôt expirés",
+        "auditLog": "Journal d'audit",
+        "usersList": "Liste des utilisateurs",
+        "loginHistory": "Historique des connexions"
+      },
+      "superAdminOnly": "super_admin uniquement",
+      "status": {
+        "authorized": "Autorisé (200)",
+        "forbidden": "Refusé (403)",
+        "unauthenticated": "Non connecté (401)",
+        "unknown": "—",
+        "other": "Statut {{status}}"
+      }
     },
-    "superAdminOnly": "super_admin uniquement",
-    "status": {
-      "authorized": "Autorisé (200)",
-      "forbidden": "Refusé (403)",
-      "unauthenticated": "Non connecté (401)",
-      "unknown": "—",
-      "other": "Statut {{status}}"
-    }
-  },
-      "audit": {
+    "audit": {
       "title": "Journal d'audit",
       "description": "Historique de toutes les actions effectuées dans l'admin — qui a fait quoi, et quand. Réservé au super_admin.",
       "tableLabel": "Table",
@@ -440,7 +440,7 @@
         "update_permissions": "Permissions mises à jour"
       }
     },
-        "roles": {
+    "roles": {
       "title": "Rôles et Permissions",
       "sidebar": {
         "title": "Rôles",
@@ -509,7 +509,6 @@
       }
     }
   },
-
   "navbar": {
     "homeAria": "Accueil ESI",
     "brandLine1": "Coopération",
@@ -570,17 +569,20 @@
     "allFem": "Toutes",
     "pays": "Pays",
     "debut": "Début",
-    "fin": "Fin"
+    "fin": "Fin",
+    "allMasc": "Tous",
+    "showLess": "Voir moins",
+    "showMore": "Voir plus"
   },
   "appels": {
     "eyebrow": "Financements",
     "title": "Appels à projets",
     "description": "Filtrez les appels à projets par programme, pays et statut pour trouver les opportunités adaptées.",
     "filters": {
-       "programme": "Programme",
-  "country": "Pays / zone",
-  "status": "Statut",
-  "theme": "Thème"
+      "programme": "Programme",
+      "country": "Pays / zone",
+      "status": "Statut",
+      "theme": "Thème"
     },
     "statuts": {
       "tous": "Tous",
@@ -681,7 +683,13 @@
       "format": "Format",
       "size": "Taille",
       "updated": "Mis à jour",
+      "language": "Langue",
       "action": "Action"
+    },
+    "filters": {
+      "category": "Catégorie",
+      "language": "Langue",
+      "programme": "Programme"
     },
     "download": "Télécharger",
     "noResults": "Aucun document trouvé",
@@ -694,20 +702,25 @@
     }
   },
   "mobilites": {
-    "eyebrow": "Mobilité",
+    "eyebrow": "Mobilité internationale",
     "title": "Opportunités de mobilité",
-    "description": "Échanges étudiants, séjours doctoraux et missions d'enseignement chez nos partenaires internationaux.",
+    "description": "Découvrez les opportunités de mobilité étudiante, enseignante et de recherche.",
     "filters": {
       "type": "Type de mobilité"
     },
-    "spots": "{{count}} places",
+    "spots": "{{count}} place",
+    "spots_other": "{{count}} places",
     "fields": {
       "duration": "Durée",
       "level": "Niveau",
       "programme": "Programme",
-      "audience": "Public visé"
+      "audience": "Public cible",
+      "deadline": "Date limite",
+      "languages": "Langues requises",
+      "procedure": "Procédure de candidature",
+      "criteria": "Critères de sélection"
     },
-    "apply": "Candidater"
+    "apply": "Postuler"
   },
   "notFound": {
     "title": "Page introuvable",
@@ -918,8 +931,8 @@
   "telecharger": "Télécharger",
   "tauxFinancement": "Taux de financement",
   "typeAction": "Type d'action",
-"themes": "Thèmes",
-"users": "Utilisateurs",
+  "themes": "Thèmes",
+  "users": "Utilisateurs",
   "adminRoles": "Rôles & permissions",
   "adminTestAccess": "Tester RBAC",
   "adminAuditLog": "Journal d'audit",
@@ -979,6 +992,7 @@
       "daysAgo_one": "Il y a {{count}} jour",
       "daysAgo_other": "Il y a {{count}} jours"
     }
-  }
-  
+  },
+  "languesRequises": "Langues requises",
+  "partenaire": "Partenaire"
 }

@@ -104,11 +104,11 @@
       "descriptionAr": "الوصف (بالعربية)",
       "badgePlaceholder": "مثال: المشاريع",
       "badges": {
-  "PROJETS": "المشاريع",
-  "DOCS": "الوثائق",
-  "PARTENARIATS": "الشراكات",
-  "MOBILITE": "التنقل"
-},
+        "PROJETS": "المشاريع",
+        "DOCS": "الوثائق",
+        "PARTENARIATS": "الشراكات",
+        "MOBILITE": "التنقل"
+      },
       "icons": {
         "GraduationCap": "تخرج",
         "Megaphone": "إعلان",
@@ -368,7 +368,7 @@
         "description": "الوصف"
       }
     },
-     "resetSettingsPage": {
+    "resetSettingsPage": {
       "title": "إدارة البريد الإلكتروني",
       "subtitle": "تُطبَّق هذه الإعدادات فورًا، دون الحاجة لإعادة النشر.",
       "saved": "تم حفظ الإعدادات.",
@@ -407,32 +407,32 @@
         "suspiciousHelp": "استخدم {{fullName}} للاسم، {{attempts}} لعدد المحاولات، {{ip}} لعنوان IP.",
         "suspiciousDescription": "بريد إلكتروني يُرسل إلى مستخدم عند اكتشاف عدة محاولات تسجيل دخول فاشلة على حسابه."
       }
-   },
-"testAccessPage": {
-  "title": "اختبار صلاحيات RBAC",
-  "myPermissionsTitle": "صلاحياتي الفعلية",
-  "loading": "جارٍ التحميل…",
-  "noPermissions": "لا توجد صلاحيات (حساب مستخدم عادي، أو مسؤول بدون دور معيّن).",
-  "endpointsTitle": "نقاط النهاية المراد اختبارها (قراءة فقط، بدون مخاطر)",
-  "run": "تشغيل الاختبار",
-  "running": "جارٍ الاختبار…",
-  "checks": {
-    "callsAdmin": "عرض جميع الدعوات (الإدارة)",
-    "callsClosing": "الدعوات القريبة من الإغلاق",
-    "agreementsExpiring": "الاتفاقيات القريبة من الانتهاء",
-    "auditLog": "سجل التدقيق",
-    "usersList": "قائمة المستخدمين",
-    "loginHistory": "سجل تسجيلات الدخول"
-  },
-  "superAdminOnly": "المدير الأعلى فقط",
-  "status": {
-    "authorized": "مصرح (200)",
-    "forbidden": "مرفوض (403)",
-    "unauthenticated": "غير مسجل الدخول (401)",
-    "unknown": "—",
-    "other": "الحالة {{status}}"
-  }
-},
+    },
+    "testAccessPage": {
+      "title": "اختبار صلاحيات RBAC",
+      "myPermissionsTitle": "صلاحياتي الفعلية",
+      "loading": "جارٍ التحميل…",
+      "noPermissions": "لا توجد صلاحيات (حساب مستخدم عادي، أو مسؤول بدون دور معيّن).",
+      "endpointsTitle": "نقاط النهاية المراد اختبارها (قراءة فقط، بدون مخاطر)",
+      "run": "تشغيل الاختبار",
+      "running": "جارٍ الاختبار…",
+      "checks": {
+        "callsAdmin": "عرض جميع الدعوات (الإدارة)",
+        "callsClosing": "الدعوات القريبة من الإغلاق",
+        "agreementsExpiring": "الاتفاقيات القريبة من الانتهاء",
+        "auditLog": "سجل التدقيق",
+        "usersList": "قائمة المستخدمين",
+        "loginHistory": "سجل تسجيلات الدخول"
+      },
+      "superAdminOnly": "المدير الأعلى فقط",
+      "status": {
+        "authorized": "مصرح (200)",
+        "forbidden": "مرفوض (403)",
+        "unauthenticated": "غير مسجل الدخول (401)",
+        "unknown": "—",
+        "other": "الحالة {{status}}"
+      }
+    },
     "audit": {
       "title": "سجل التدقيق",
       "description": "تاريخ جميع الإجراءات التي تمت في لوحة الإدارة — من فعل ماذا، ومتى. مخصص للمدير العام فقط.",
@@ -463,22 +463,22 @@
       }
     },
     "roles": {
-    "title": "الأدوار والصلاحيات",
-    "sidebar": {
-      "title": "الأدوار",
-      "system": "نظام",
-      "empty": "لا توجد أدوار حالياً."
+      "title": "الأدوار والصلاحيات",
+      "sidebar": {
+        "title": "الأدوار",
+        "system": "نظام",
+        "empty": "لا توجد أدوار حالياً."
+      },
+      "newRole": "دور جديد",
+      "namePlaceholder": "الاسم (مثال: مدير الدعوات)",
+      "descPlaceholder": "الوصف (اختياري)",
+      "createBtn": "إنشاء الدور",
+      "selectRole": "اختر دوراً لعرض صلاحياته.",
+      "readOnly": "دور نظام — قراءة فقط",
+      "deleteBtn": "حذف هذا الدور",
+      "deleteConfirm": "هل أنت متأكد من حذف الدور \"{{name}}\"؟"
     },
-    "newRole": "دور جديد",
-    "namePlaceholder": "الاسم (مثال: مدير الدعوات)",
-    "descPlaceholder": "الوصف (اختياري)",
-    "createBtn": "إنشاء الدور",
-    "selectRole": "اختر دوراً لعرض صلاحياته.",
-    "readOnly": "دور نظام — قراءة فقط",
-    "deleteBtn": "حذف هذا الدور",
-    "deleteConfirm": "هل أنت متأكد من حذف الدور \"{{name}}\"؟"
-  },
-  "notifications": {
+    "notifications": {
       "title": "إدارة الإشعارات",
       "total": "{{total}} إشعارات في المجموع",
       "unread": "{{count}} غير مقروءة",
@@ -591,18 +591,20 @@
     "allFem": "الكل",
     "pays": "البلد",
     "debut": "البداية",
-        "allMasc": "الكل",
-    "fin": "النهاية"
+    "allMasc": "الكل",
+    "fin": "النهاية",
+    "showLess": "عرض أقل",
+    "showMore": "عرض المزيد"
   },
   "appels": {
     "eyebrow": "التمويل",
     "title": "دعوات المشاريع",
     "description": "قم بتصفية دعوات المشاريع حسب البرنامج والبلد والحالة لإيجاد الفرص المناسبة.",
     "filters": {
-       "programme": "البرنامج",
-  "country": "الدولة / المنطقة",
-  "status": "الحالة",
-  "theme": "الموضوع"
+      "programme": "البرنامج",
+      "country": "الدولة / المنطقة",
+      "status": "الحالة",
+      "theme": "الموضوع"
     },
     "statuts": {
       "tous": "الكل",
@@ -703,7 +705,7 @@
       "format": "الصيغة",
       "size": "الحجم",
       "updated": "آخر تحديث",
-            "language": "اللغة",
+      "language": "اللغة",
       "action": "إجراء"
     },
     "filters": {
@@ -722,20 +724,25 @@
     }
   },
   "mobilites": {
-    "eyebrow": "التنقل",
+    "eyebrow": "التنقل الدولي",
     "title": "فرص التنقل",
-    "description": "تبادلات طلابية، إقامات دكتوراه ومهام تدريس لدى شركائنا الدوليين.",
+    "description": "اكتشف فرص التنقل الخاصة بالطلبة والأساتذة والباحثين.",
     "filters": {
       "type": "نوع التنقل"
     },
     "spots": "{{count}} مكان",
+    "spots_other": "{{count}} أماكن",
     "fields": {
       "duration": "المدة",
       "level": "المستوى",
       "programme": "البرنامج",
-      "audience": "الفئة المستهدفة"
+      "audience": "الفئة المستهدفة",
+      "deadline": "آخر أجل",
+      "languages": "اللغات المطلوبة",
+      "procedure": "إجراء الترشح",
+      "criteria": "معايير الاختيار"
     },
-    "apply": "تقديم طلب"
+    "apply": "التقديم"
   },
   "notFound": {
     "title": "الصفحة غير موجودة",
@@ -944,8 +951,8 @@
   "role": "الدور",
   "tauxFinancement": "نسبة التمويل",
   "typeAction": "نوع الإجراء",
-"themes": "المواضيع",
-"users": "المستخدمون",
+  "themes": "المواضيع",
+  "users": "المستخدمون",
   "adminRoles": "الأدوار والصلاحيات",
   "adminTestAccess": "اختبار الصلاحيات (RBAC)",
   "adminAuditLog": "سجل التدقيق",
@@ -1023,6 +1030,8 @@
       "daysAgo_many": "منذ {{count}} يومًا",
       "daysAgo_other": "منذ {{count}} يوم"
     }
-  }
-  
+  },
+  "languesRequises": "اللغات المطلوبة",
+  "partenaire": "الشريك"
+ 
 }

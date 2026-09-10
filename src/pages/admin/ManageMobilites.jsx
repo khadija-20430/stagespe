@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plane, Languages, X, Save, Loader2 } from 'lucide-react';
+import { Plane, Languages, Globe2, X, Save, Loader2 } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
   getMobilitesAdmin, getMobilitesAdminPreview, createMobilite, updateMobilite, deleteMobilite,
   publishMobilite, archiveMobilite,
-  getProgrammes, getCountries, getPartenaires,
+  getProgrammes, getCountries, getPartenaires, getInstitutions, getLanguages,
+  getMobiliteById, updateMobilityLanguageRequirements,
   getMobilitiesTranslations, updateMobilitiesTranslations,
 } from '../../services/api.js';
 import { toMobilitePayload } from '../../services/mappers.js';
@@ -33,9 +34,13 @@ const emptyTranslationSet = () => ({
 export default function ManageMobilites() {
   const { t, i18n } = useTranslation();
   const previewLang = i18n.language;
+
+  // ---- Données de référence ----
   const [programmes, setProgrammes] = useState([]);
   const [countries, setCountries] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
+  const [institutions, setInstitutions] = useState([]);
+  const [languages, setLanguages] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
   // ---- Modale de traduction manuelle ----
@@ -46,10 +51,19 @@ export default function ManageMobilites() {
   const [translationsSaving, setTranslationsSaving] = useState(false);
   const [translationsError, setTranslationsError] = useState('');
 
+  // ---- Modale langues requises ----
+  const [langItem, setLangItem] = useState(null);
+  const [langDraft, setLangDraft] = useState([]); // [{ languageId, minLevel }]
+  const [langLoading, setLangLoading] = useState(false);
+  const [langSaving, setLangSaving] = useState(false);
+
+  // ---- Chargement initial des référentiels (un seul effet) ----
   useEffect(() => {
     getProgrammes().then(setProgrammes);
     getCountries().then(setCountries);
     getPartenaires().then(setPartenaires);
+    getInstitutions().then(setInstitutions);
+    getLanguages().then(setLanguages);
   }, []);
 
   const refreshPreview = () => {
@@ -70,6 +84,7 @@ export default function ManageMobilites() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
+  // ---- Traductions ----
   const openTranslations = async (item) => {
     setTranslationsItem(item);
     setTranslationsTab('en');
@@ -117,6 +132,45 @@ export default function ManageMobilites() {
     }
   };
 
+  // ---- Langues requises ----
+  const openLanguages = async (item) => {
+    setLangItem(item);
+    setLangLoading(true);
+    try {
+      const fresh = await getMobiliteById(item.id);
+      setLangDraft(fresh.languageRequirements.map((r) => ({ languageId: r.languageId, minLevel: r.minLevel || '' })));
+    } finally {
+      setLangLoading(false);
+    }
+  };
+
+  const closeLanguages = () => {
+    if (langSaving) return;
+    setLangItem(null);
+  };
+
+  const toggleLanguage = (languageId) => {
+    setLangDraft((prev) =>
+      prev.some((r) => r.languageId === languageId)
+        ? prev.filter((r) => r.languageId !== languageId)
+        : [...prev, { languageId, minLevel: '' }]
+    );
+  };
+
+  const setLangLevel = (languageId, minLevel) => {
+    setLangDraft((prev) => prev.map((r) => (r.languageId === languageId ? { ...r, minLevel } : r)));
+  };
+
+  const saveLanguages = async () => {
+    setLangSaving(true);
+    try {
+      await updateMobilityLanguageRequirements(langItem.id, langDraft);
+      setLangItem(null);
+    } finally {
+      setLangSaving(false);
+    }
+  };
+
   return (
     <div>
       <CrudManager
@@ -130,10 +184,10 @@ export default function ManageMobilites() {
         onDelete={deleteMobilite}
         onPublish={publishMobilite}
         onArchive={archiveMobilite}
-         createPermission="mobility.create"
-  updatePermission="mobility.edit"
-  deletePermission="mobility.delete"
-  publishPermission="mobility.publish"
+        createPermission="mobility.create"
+        updatePermission="mobility.edit"
+        deletePermission="mobility.delete"
+        publishPermission="mobility.publish"
         columns={[
           { key: 'title', label: t('title'),
             render: (i) => previewData[i.id]?.title || i.title },
@@ -146,7 +200,7 @@ export default function ManageMobilites() {
           { key: 'statut_publication', label: t('statutPublication'),
             render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
           { key: 'translations', label: t('traductions'),
-              render: (i) => (
+            render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}
@@ -154,6 +208,17 @@ export default function ManageMobilites() {
                 title="Voir / modifier les traductions"
               >
                 <Languages size={18} />
+              </button>
+            ) },
+          { key: 'languages', label: t('languesRequises'),
+            render: (i) => (
+              <button
+                type="button"
+                onClick={() => openLanguages(i)}
+                className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
+                title="Langues requises"
+              >
+                <Globe2 size={18} />
               </button>
             ) },
         ]}
@@ -165,8 +230,10 @@ export default function ManageMobilites() {
             options: programmes.map((p) => ({ value: p.id, label: p.name })) },
           { name: 'paysDestinationId', label: t('pays'), type: 'select',
             options: countries.map((c) => ({ value: c.id, label: c.name })) },
-          { name: 'institutionAccueilId', label: t('institutionAccueil'), type: 'select',
+          { name: 'partnerId', label: t('partenaire'), type: 'select',
             options: partenaires.map((p) => ({ value: p.id, label: p.nom })) },
+          { name: 'institutionId', label: t('institutionAccueil'), type: 'select',
+            options: institutions.map((inst) => ({ value: inst.id, label: inst.nom })) },
           { name: 'duree', label: t('duree'), type: 'text' },
           { name: 'periode', label: t('periode'), type: 'text' },
           { name: 'places', label: t('places'), type: 'number' },
@@ -257,6 +324,67 @@ export default function ManageMobilites() {
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
                 {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {langItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-navy dark:text-white">
+                Langues requises — {langItem.title}
+              </h3>
+              <button type="button" onClick={closeLanguages} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                <X size={20} />
+              </button>
+            </div>
+
+            {langLoading ? (
+              <div className="flex justify-center py-8 text-cobalt">
+                <Loader2 size={28} className="animate-spin" />
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[50vh] overflow-y-auto">
+                {languages.map((lang) => {
+                  const active = langDraft.find((r) => r.languageId === lang.id);
+                  return (
+                    <div key={lang.id} className="flex items-center gap-3">
+                      <input type="checkbox" checked={!!active} onChange={() => toggleLanguage(lang.id)} />
+                      <span className="flex-1 text-sm text-slate-700 dark:text-slate-200">{lang.name}</span>
+                      {active && (
+                        <input
+                          type="text"
+                          placeholder="Niveau min. (ex: B2)"
+                          value={active.minLevel}
+                          onChange={(e) => setLangLevel(lang.id, e.target.value)}
+                          className="w-28 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-sm"
+                        />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={closeLanguages}
+                disabled={langSaving}
+                className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
+              >
+                Annuler
+              </button>
+              <button
+                type="button"
+                onClick={saveLanguages}
+                disabled={langSaving || langLoading}
+                className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
+              >
+                {langSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
               </button>
             </div>
           </div>
