@@ -12,9 +12,11 @@ export default function Mobilites() {
   const { t, i18n } = useTranslation();
   const [mobilites, setMobilites] = useState(null);
   const [type, setType] = useState('tous');
+  const [programme, setProgramme] = useState('tous');
+  const [pays, setPays] = useState('tous');
 
   const [expandedId, setExpandedId] = useState(null);
-  const [details, setDetails] = useState({});   // { [id]: mobilite complet }
+  const [details, setDetails] = useState({});
   const [detailsLoading, setDetailsLoading] = useState(null);
 
   useEffect(() => {
@@ -29,10 +31,24 @@ export default function Mobilites() {
     [mobilites]
   );
 
+  const programmes = useMemo(
+    () => ['tous', ...new Set((mobilites ?? []).map((m) => m.programme).filter(Boolean))],
+    [mobilites]
+  );
+
+  const paysListe = useMemo(
+    () => ['tous', ...new Set((mobilites ?? []).map((m) => m.paysDestination).filter(Boolean))],
+    [mobilites]
+  );
+
   const filtres = useMemo(() => {
     if (!mobilites) return [];
-    return mobilites.filter((m) => type === 'tous' || m.type === type);
-  }, [mobilites, type]);
+    return mobilites.filter((m) =>
+      (type === 'tous' || m.type === type) &&
+      (programme === 'tous' || m.programme === programme) &&
+      (pays === 'tous' || m.paysDestination === pays)
+    );
+  }, [mobilites, type, programme, pays]);
 
   const toggleExpand = async (id) => {
     if (expandedId === id) {
@@ -60,17 +76,49 @@ export default function Mobilites() {
       />
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        <div>
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
-            {t('mobilites.filters.type')}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {types.map((code) => (
-              <FilterChip key={code} active={type === code} onClick={() => setType(code)}>
-                {code === 'tous' ? t('common.all') : t(`enums.mobilityType.${code}`)}
-              </FilterChip>
-            ))}
+        <div className="space-y-6">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+              {t('mobilites.filters.type')}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {types.map((code) => (
+                <FilterChip key={code} active={type === code} onClick={() => setType(code)}>
+                  {code === 'tous' ? t('common.all') : t(`enums.mobilityType.${code}`)}
+                </FilterChip>
+              ))}
+            </div>
           </div>
+
+          {programmes.length > 1 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                {t('mobilites.filters.programme')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {programmes.map((p) => (
+                  <FilterChip key={p} active={programme === p} onClick={() => setProgramme(p)}>
+                    {p === 'tous' ? t('common.all') : p}
+                  </FilterChip>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {paysListe.length > 1 && (
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                {t('mobilites.filters.pays')}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {paysListe.map((p) => (
+                  <FilterChip key={p} active={pays === p} onClick={() => setPays(p)}>
+                    {p === 'tous' ? t('common.all') : p}
+                  </FilterChip>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {mobilites === null ? (

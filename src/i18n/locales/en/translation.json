@@ -705,8 +705,10 @@
     "eyebrow": "International mobility",
     "title": "Mobility opportunities",
     "description": "Discover student, faculty and research mobility opportunities.",
-    "filters": {
-      "type": "Mobility type"
+     "filters": {
+      "type": "Mobility type",
+      "programme": "Programme",
+      "pays": "Destination country"
     },
     "spots": "{{count}} spot",
     "spots_other": "{{count}} spots",
