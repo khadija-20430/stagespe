@@ -24,5 +24,6 @@ router.put('/:id', verifyToken, checkPermission('documents.edit'), documentsCont
 router.put('/:id/publish', verifyToken, checkPermission('documents.edit'), documentsController.publish);
 router.put('/:id/archive', verifyToken, checkPermission('documents.edit'), documentsController.archive);
 router.delete('/:id', verifyToken, checkPermission('documents.delete'), documentsController.remove);
+router.put('/:id/revisions/:revisionId/restore', verifyToken, checkPermission('documents.edit'), documentsController.restoreRevision);
 
 module.exports = router;

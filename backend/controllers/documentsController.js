@@ -93,7 +93,7 @@ exports.getRevisions = async(req, res) => {
 // creation d un document
 exports.create = async(req, res) => {
     try {
-        const doc = await documentsModel.create({...req.body, uploaded_by: req.user.id });
+        const doc = await documentsModel.create({ ...req.body, uploaded_by: req.user.id });
         await logAction(req.user.id, 'create', 'document', doc.id, null, req);
         await autoTranslateAndSave('document', doc.id, req.body);
         res.status(201).json(doc);
@@ -161,6 +161,14 @@ exports.archive = async(req, res) => {
         const doc = await documentsModel.archive(req.params.id);
         if (!doc) return res.status(404).json({ error: 'Document non trouvé' });
         await logAction(req.user.id, 'archive', 'document', req.params.id, null, req);
+        res.json(doc);
+    } catch (err) { sendError(res, err); }
+};
+exports.restoreRevision = async(req, res) => {
+    try {
+        const doc = await documentsModel.restoreRevision(req.params.id, req.params.revisionId, req.user.id);
+        if (!doc) return res.status(404).json({ error: 'Document ou révision non trouvé' });
+        await logAction(req.user.id, 'restore_revision', 'document', req.params.id, { revision_id: req.params.revisionId }, req);
         res.json(doc);
     } catch (err) { sendError(res, err); }
 };

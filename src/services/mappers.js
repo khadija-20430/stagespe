@@ -1,6 +1,10 @@
 const splitList = (value) =>
     value ? value.split(',').map((s) => s.trim()).filter(Boolean) : [];
 
+// ============================================================
+// PROJETS
+// ============================================================
+
 export const mapProjet = (row) => ({
   id: row.id,
   titre: row.title,
@@ -19,18 +23,45 @@ export const mapProjet = (row) => ({
   resultats: row.results,
   livrables: row.deliverables,
   coordinator_partner_id: row.coordinator_partner_id,
-  // 🆕 nom lisible du coordinateur — nécessite que le backend fasse le join
-  // vers partners.name et l'expose sous ce nom (ex: alias SQL "coordinator_partner_name")
   coordinateurPartenaire: row.coordinator_partner_name || null,
-  // 🆕 liste des pays des partenaires liés au projet — nécessite que le
-  // backend agrège project_partners -> partners.country_id -> countries.name
-  // et l'expose (ex: alias SQL "countries" en tableau de noms)
   pays: Array.isArray(row.countries) ? row.countries : [],
   isFeatured: row.is_featured,
   statut_publication: row.statut_publication,
   news: row.news,
   documents: row.documents,
 });
+
+export const toProjetPayload = (draft) => {
+    if (draft.debut && draft.fin && draft.fin < draft.debut) {
+        throw new Error('La date de fin doit être postérieure ou égale à la date de début');
+    }
+
+    return {
+        title: draft.titre,
+        acronym: draft.acronyme,
+        reference_code: draft.codeReference,
+        description: draft.resume,
+        objectives: draft.objectifs,
+        target_groups: draft.groupesCibles,
+        official_website: draft.siteWeb,
+        status: draft.status || 'proposed',
+        statut_publication: draft.statut_publication || 'draft',
+        programme_id: draft.programmeId || null,
+        coordinator_partner_id: draft.coordinator_partner_id || null,
+        budget: draft.budget || null,
+        start_date: draft.debut || null,
+        end_date: draft.fin || null,
+        is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
+        deliverables: typeof draft.livrables === 'string' ?
+            draft.livrables.split(',').map((s) => s.trim()).filter(Boolean) : draft.livrables,
+        results: typeof draft.resultats === 'string' ?
+            draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
+    };
+};
+
+// ============================================================
+// APPELS À PROJETS
+// ============================================================
 
 export const mapAppel = (row) => ({
     id: row.id,
@@ -75,6 +106,46 @@ export const mapAppel = (row) => ({
     statut_publication: row.statut_publication,
 });
 
+export const toAppelPayload = (draft) => {
+    const parseIds = (input) => {
+        if (!input) return [];
+        if (Array.isArray(input)) {
+            return input.map((id) => parseInt(id)).filter(Boolean);
+        }
+        if (typeof input === 'string') {
+            return input.split(',')
+                .map((s) => parseInt(s.trim()))
+                .filter(Boolean);
+        }
+        return [];
+    };
+
+    return {
+        title: draft.titre,
+        programme_id: draft.programmeId ? parseInt(draft.programmeId) : null,
+        funding_body: draft.organismeFinanceur || null,
+        description: draft.resume || null,
+        objectives: draft.objectifs || null,
+        eligibility: draft.eligibilite || null,
+        beneficiaries: draft.beneficiaires || null,
+        action_type_id: draft.typeActionId ? parseInt(draft.typeActionId) : null,
+        budget_available: draft.budgetDisponible ? parseFloat(draft.budgetDisponible) : null,
+        funding_rate: draft.tauxFinancement ? parseFloat(draft.tauxFinancement) : null,
+        target_audience: draft.publicCible || null,
+        publication_date: draft.datePublication || null,
+        deadline: draft.dateLimite || null,
+        official_link: draft.lienOfficiel || null,
+        contact_person: draft.personneContact || null,
+        statut_publication: draft.statut_publication || 'draft',
+        theme_ids: parseIds(draft.themeIds),
+        country_ids: parseIds(draft.paysEligiblesIds),
+    };
+};
+
+// ============================================================
+// MOBILITÉS
+// ============================================================
+
 export const mapMobilite = (row) => ({
     id: row.id,
     type: row.type,
@@ -92,6 +163,31 @@ export const mapMobilite = (row) => ({
     dateLimite: row.deadline,
     statut_publication: row.statut_publication,
 });
+
+export const toMobilitePayload = (draft) => ({
+    title: draft.title,
+    type: draft.type,
+    programme_id: draft.programmeId || null,
+    destination_country_id: draft.paysDestinationId || null,
+    destination_partner_id: draft.institutionAccueilId || null,
+    target_audience: draft.publicCible,
+    description: draft.description,
+    conditions: draft.conditions,
+    places_count: draft.places || null,
+    duration: draft.duree,
+    period: draft.periode,
+    funding_details: draft.financement,
+    application_link: draft.lienCandidature,
+    contact_person: draft.personneContact,
+    contact_email: draft.emailContact,
+    deadline: draft.dateLimite || null,
+    status: draft.status || 'open',
+    statut_publication: draft.statutPublication || 'draft',
+});
+
+// ============================================================
+// DOCUMENTS
+// ============================================================
 
 export const mapDocument = (row) => ({
     id: row.id,
@@ -115,13 +211,25 @@ export const mapDocument = (row) => ({
     dateExpiration: row.date_expiration || null,
     dateUpload: row.date_upload || row.date,
     date: row.date_upload || row.date,
+
+    // 🆕 liens vers d'autres entités — nécessite que le backend
+    // (findLinksForDocument / getDocumentById) expose ce champ pour
+    // que le formulaire d'édition puisse pré-cocher les multiselects.
+    links: {
+        project: Array.isArray(row.links?.project) ? row.links.project : [],
+        call: Array.isArray(row.links?.call) ? row.links.call : [],
+        agreement: Array.isArray(row.links?.agreement) ? row.links.agreement : [],
+        mobility: Array.isArray(row.links?.mobility) ? row.links.mobility : [],
+        programme: Array.isArray(row.links?.programme) ? row.links.programme : [],
+    },
 });
 
 export const toDocumentPayload = (draft) => ({
     titre: draft.titre,
     description: draft.description || null,
     fichier_url: draft.fichier_url,
-categorie_id: draft.categorieId,
+    change_note: draft.changeNote || null,
+    categorie_id: draft.categorieId,
     langage: draft.langage || 'fr',
     version: draft.version || '1.0',
     file_size: draft.fileSize || null,
@@ -129,7 +237,22 @@ categorie_id: draft.categorieId,
     statut_publication: draft.statutPublication || 'draft',
     is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true || draft.isFeatured === true,
     date_expiration: draft.dateExpiration || null,
+
+    // Relations — lues côté backend uniquement à la création
+    // (create() transactionnel). L'update les ignore encore ;
+    // voir syncDocumentLinks dans api.js pour le sync après édition.
+    links: {
+        project: draft.projectIds || [],
+        call: draft.callIds || [],
+        agreement: draft.agreementIds || [],
+        mobility: draft.mobilityIds || [],
+        programme: draft.programmeIds || [],
+    },
 });
+
+// ============================================================
+// STATISTIQUES
+// ============================================================
 
 export const mapStats = (row) => ({
     partners: Number(row.total_active_partners) || 0,
@@ -150,9 +273,7 @@ export const mapStats = (row) => ({
 });
 
 // ============================================================
-// PATCH — à coller dans src/services/mappers.js
-// Remplace UNIQUEMENT mapPartner et toPartnerPayload (le reste du
-// fichier — mapAppel, mapProjet, mapAgreement, etc. — ne change pas).
+// PARTENAIRES
 // ============================================================
 
 export const mapPartner = (row) => ({
@@ -164,30 +285,23 @@ export const mapPartner = (row) => ({
     ville: row.city,
     adresse: row.address,
 
-    // 🔧 BUG CORRIGÉ : le backend renvoie `establishment_type_label`
-    // (alias du JOIN dans partnersModel), pas `establishment_type`.
-    // C'est pour ça que le type d'établissement était toujours vide
-    // dans le tableau admin alors que la BDD était correcte.
+    // Le backend renvoie `establishment_type_label` (alias du JOIN dans
+    // partnersModel), pas `establishment_type`.
     typeEtablissement: row.establishment_type_label,
     typeEtablissementId: row.establishment_type_id,
 
     typePartenariatId: row.partnership_type_id,
-    // 🆕 libellé du type de partenariat — jamais mappé avant, donc
-    // jamais affichable nulle part côté front même si présent en BDD.
     typePartenariat: row.partnership_type_label,
 
     partnershipStatus: row.partnership_status,
 
-    // 🆕 thèmes du partenaire (table `themes` partagée avec les calls,
-    // via la table de liaison `partner_themes`).
-    // - themeIds  : pour pré-remplir le select multiple à l'édition
-    // - themeNames: pour l'affichage colonne admin + filtre visiteur
+    // Thèmes du partenaire (table `themes` partagée avec les calls,
+    // via la table de liaison `partner_themes`)
     themeIds: Array.isArray(row.theme_ids) ?
         row.theme_ids : (Array.isArray(row.themes) ? row.themes.map((th) => th.id) : []),
     themeNames: Array.isArray(row.theme_names) ?
         row.theme_names : (Array.isArray(row.themes) ? row.themes.map((th) => th.name) : []),
 
-    // conservé pour compatibilité ascendante (ancien champ texte libre)
     domaines: splitList(row.cooperation_areas),
 
     accord: row.agreements?.[0] ? {
@@ -203,7 +317,6 @@ export const mapPartner = (row) => ({
     latitude: row.latitude != null ? Number(row.latitude) : null,
     longitude: row.longitude != null ? Number(row.longitude) : null,
     statut_publication: row.statut_publication,
-    // 🆕 date de programmation de publication (cahier des charges 4.3)
     scheduledPublishAt: row.scheduled_publish_at,
     agreements: row.agreements,
     contacts: row.contacts,
@@ -220,106 +333,34 @@ export const toPartnerPayload = (draft) => ({
     partnership_type_id: draft.typePartenariatId || null,
     partnership_status: draft.statutPartenariat || 'active',
     website: draft.siteWeb,
-
-    // 🆕 thèmes sélectionnés -> insérés dans partner_themes côté backend
-theme_ids: Array.isArray(draft.themeIds) ? draft.themeIds.map(Number) : [],
-
-    // conservé pour compatibilité ascendante
+    theme_ids: Array.isArray(draft.themeIds) ? draft.themeIds.map(Number) : [],
     cooperation_areas: Array.isArray(draft.domaines) ? draft.domaines.join(', ') : draft.domaines,
     description: draft.description,
     logo_url: draft.logo,
     latitude: draft.latitude || null,
     longitude: draft.longitude || null,
-
-    // 🆕 date de programmation de publication — null si publication immédiate
-scheduled_publish_at: draft.scheduledPublishAt
-    ? new Date(draft.scheduledPublishAt).toISOString()
-    : null,});
-export const toProjetPayload = (draft) => {
-    if (draft.debut && draft.fin && draft.fin < draft.debut) {
-        throw new Error('La date de fin doit être postérieure ou égale à la date de début');
-    }
-
-    return {
-        title: draft.titre,
-        acronym: draft.acronyme,
-        reference_code: draft.codeReference,
-        description: draft.resume,
-        objectives: draft.objectifs,
-        target_groups: draft.groupesCibles,
-        official_website: draft.siteWeb,
-        status: draft.status || 'proposed',
-        statut_publication: draft.statut_publication || 'draft',
-        programme_id: draft.programmeId || null,
-        coordinator_partner_id: draft.coordinator_partner_id || null,
-        budget: draft.budget || null,
-        start_date: draft.debut || null,
-        end_date: draft.fin || null,
-        is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
-        deliverables: typeof draft.livrables === 'string' ?
-            draft.livrables.split(',').map((s) => s.trim()).filter(Boolean) : draft.livrables,
-        results: typeof draft.resultats === 'string' ?
-            draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
-    };
-};
-// mappers.js
-export const toAppelPayload = (draft) => {
-    const parseIds = (input) => {
-        if (!input) return [];
-        if (Array.isArray(input)) {
-            return input.map(id => parseInt(id)).filter(Boolean);
-        }
-        if (typeof input === 'string') {
-            return input.split(',')
-                .map(s => parseInt(s.trim()))
-                .filter(Boolean);
-        }
-        return [];
-    };
-
-    return {
-        title: draft.titre,
-        programme_id: draft.programmeId ? parseInt(draft.programmeId) : null,
-        funding_body: draft.organismeFinanceur || null,
-        description: draft.resume || null,
-        objectives: draft.objectifs || null,
-        eligibility: draft.eligibilite || null,
-        beneficiaries: draft.beneficiaires || null,
-        action_type_id: draft.typeActionId ? parseInt(draft.typeActionId) : null,
-        budget_available: draft.budgetDisponible ? parseFloat(draft.budgetDisponible) : null,
-        funding_rate: draft.tauxFinancement ? parseFloat(draft.tauxFinancement) : null,
-        target_audience: draft.publicCible || null,
-        publication_date: draft.datePublication || null,
-        deadline: draft.dateLimite || null,
-        official_link: draft.lienOfficiel || null,
-        contact_person: draft.personneContact || null,
-        // "status" retiré : plus jamais envoyé au backend
-        statut_publication: draft.statut_publication || 'draft',
-
-        theme_ids: parseIds(draft.themeIds),
-        country_ids: parseIds(draft.paysEligiblesIds),
-    };
-};
-export const toMobilitePayload = (draft) => ({
-    title: draft.title,
-    type: draft.type,
-    programme_id: draft.programmeId || null,
-    destination_country_id: draft.paysDestinationId || null,
-    destination_partner_id: draft.institutionAccueilId || null,
-    target_audience: draft.publicCible,
-    description: draft.description,
-    conditions: draft.conditions,
-    places_count: draft.places || null,
-    duration: draft.duree,
-    period: draft.periode,
-    funding_details: draft.financement,
-    application_link: draft.lienCandidature,
-    contact_person: draft.personneContact,
-    contact_email: draft.emailContact,
-    deadline: draft.dateLimite || null,
-    status: draft.status || 'open',
-    statut_publication: draft.statutPublication || 'draft',
+    scheduled_publish_at: draft.scheduledPublishAt
+        ? new Date(draft.scheduledPublishAt).toISOString()
+        : null,
 });
+
+export const mapPublicContact = (c) => ({
+  id: c.id,
+  fullName: c.full_name,
+  position: c.position,
+  email: c.email,
+  phone: c.phone,
+  isPrimary: c.is_primary,
+});
+
+export const mapPartnerDetail = (p) => ({
+  ...mapPartner(p),
+  contacts: (p.contacts ?? []).map(mapPublicContact),
+});
+
+// ============================================================
+// ACTUALITÉS / ÉVÉNEMENTS
+// ============================================================
 
 export const mapActualite = (row) => ({
     id: row.id,
@@ -360,9 +401,13 @@ export const toActualitePayload = (data) => ({
     quote_text: data.quoteText || null,
     statut_publication: data.statut_publication || 'draft',
 });
+
+// ============================================================
+// UTILISATEURS
+// ============================================================
+
 // Valeur sentinelle utilisée dans le select "Rôle" du formulaire pour
 // représenter un compte sans rôle RBAC détaillé (role='utilisateur').
-// La table `roles` ne contient aucune ligne pour ce cas, d'où ce fallback.
 export const PLAIN_USER_ROLE_ID = '__utilisateur__';
 
 export const mapUser = (row) => ({
@@ -372,8 +417,6 @@ export const mapUser = (row) => ({
     role: row.role,
     roleId: row.role_id,
     roleName: row.role_name,
-    // Valeur pré-sélectionnée dans le select fusionné : le vrai role_id
-    // si le compte est admin avec un rôle détaillé, sinon la sentinelle.
     roleSelectValue: row.role === 'admin' && row.role_id ?
         row.role_id : PLAIN_USER_ROLE_ID,
     isActive: row.is_active,
@@ -394,24 +437,15 @@ export const toUserPayload = (draft) => {
         password: draft.password || undefined,
     };
 };
-// Dans mappers.js - Ajouter ces fonctions
 
 // ============================================================
-// AGREEMENTS MAPPER
+// ACCORDS / AGREEMENTS
 // ============================================================
 
-// Dans mappers.js - À la fin du fichier
-// Copier le contenu de mappers_additions.js
-// services/api.js
-// ============================================================
-// À AJOUTER À LA FIN DE: src/services/mappers.js
-// ============================================================
 export const mapAgreement = (row) => ({
   id: row.id,
   partnerId: row.partner_id,
   partnerName: row.partner_name,
-  // 🆕 pays du partenaire — nécessite que le backend fasse le join
-  // agreements -> partners -> countries et l'expose (ex: alias "partner_country")
   partnerCountry: row.partner_country || null,
   titre: row.title,
   type: row.type,
@@ -447,7 +481,7 @@ export const toAgreementPayload = (draft) => ({
 });
 
 // ============================================================
-// SCHOOL PRESENTATION MAPPER
+// SCHOOL PRESENTATION
 // ============================================================
 
 export const mapSchoolPresentation = (row) => {
@@ -468,8 +502,13 @@ export const mapSchoolPresentation = (row) => {
         updatedAt: row.updated_at,
         revisions: row.revisions || [],
     };
-    
-};export const mapProgramme = (row) => ({
+};
+
+// ============================================================
+// PROGRAMMES
+// ============================================================
+
+export const mapProgramme = (row) => ({
   id: row.id,
   name: row.name,
   nom: row.name,
@@ -479,7 +518,7 @@ export const mapSchoolPresentation = (row) => {
   siteWeb: row.official_website || '',
   logo: row.logo_url || null,
   documentsCount: Number(row.documents_count) || 0,
-  statut_publication: row.statut_publication || 'draft', // ✅ ajouté
+  statut_publication: row.statut_publication || 'draft',
 });
 
 export const toProgrammePayload = (draft) => ({
@@ -488,15 +527,4 @@ export const toProgrammePayload = (draft) => ({
   organisme_financeur: draft.organismeFinanceur || null,
   description: draft.description || null,
   official_website: draft.siteWeb || null,
-});
-export const mapPublicContact = (c) => ({
-  id: c.id,
-  fullName: c.full_name,
-  position: c.position,
-  email: c.email,
-  phone: c.phone,
-  isPrimary: c.is_primary,
-});export const mapPartnerDetail = (p) => ({
-  ...mapPartner(p),
-  contacts: (p.contacts ?? []).map(mapPublicContact),
 });

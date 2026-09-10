@@ -591,6 +591,7 @@
     "allFem": "الكل",
     "pays": "البلد",
     "debut": "البداية",
+        "allMasc": "الكل",
     "fin": "النهاية"
   },
   "appels": {
@@ -702,7 +703,13 @@
       "format": "الصيغة",
       "size": "الحجم",
       "updated": "آخر تحديث",
+            "language": "اللغة",
       "action": "إجراء"
+    },
+    "filters": {
+      "category": "الفئة",
+      "language": "اللغة",
+      "programme": "البرنامج"
     },
     "download": "تحميل",
     "noResults": "لم يتم العثور على أي وثيقة",

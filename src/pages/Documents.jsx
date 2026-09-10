@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Download, Eye, Loader2 } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
@@ -7,7 +8,7 @@ import FilterChip from '../components/ui/FilterChip.jsx';
 import Button from '../components/ui/Button.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { formatDate } from '../lib/utils.js';
-import { getDocuments, getFileUrl } from '../services/api.js';
+import { getDocuments, getFileUrl, getProgrammesPublic } from '../services/api.js';
 
 const formatBytes = (bytes) => {
   if (!bytes) return '—';
@@ -21,31 +22,57 @@ const formatBytes = (bytes) => {
   return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
 };
 
+// Le cahier des charges (2.7) liste "langue" et "programme associé" comme
+// attributs à part entière du document, au même titre que la catégorie.
+// On les extrait donc avec les mêmes alias défensifs que le reste du fichier
+// (le nom exact renvoyé par l'API peut varier selon le mapping backend).
+const getLangue = (d) => d.langue || d.langage || d.lang || null;
+const getProgramme = (d) => d.programme || d.programmeNom || d.programme_nom || null;
+
+const LANGUE_LABELS = { fr: 'Français', en: 'English', ar: 'العربية' };
+
 export default function Documents() {
 const { t, i18n } = useTranslation();
   const [documents, setDocuments] = useState(null);
   const [categorie, setCategorie] = useState('toutes');
+  const [langue, setLangue] = useState('toutes');
+  const [programme, setProgramme] = useState('tous');
   const [downloading, setDownloading] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getDocuments(i18n.language) 
+    getDocuments(i18n.language)
       .then(setDocuments)
       .catch((err) => {
         console.error('Erreur chargement:', err);
         setError(t('documents.errors.loadFailed'));
       });
-  }, [t, i18n.language]);  
+  }, [t, i18n.language]);
 
   const categories = useMemo(
-    () => ['toutes', ...new Set((documents ?? []).map((d) => d.categorie))],
+    () => ['toutes', ...new Set((documents ?? []).map((d) => d.categorie).filter(Boolean))],
+    [documents]
+  );
+
+  const langues = useMemo(
+    () => ['toutes', ...new Set((documents ?? []).map(getLangue).filter(Boolean))],
+    [documents]
+  );
+
+  const programmes = useMemo(
+    () => ['tous', ...new Set((documents ?? []).map(getProgramme).filter(Boolean))],
     [documents]
   );
 
   const filtres = useMemo(() => {
     if (!documents) return [];
-    return documents.filter((d) => categorie === 'toutes' || d.categorie === categorie);
-  }, [documents, categorie]);
+    return documents.filter((d) => {
+      const matchCategorie = categorie === 'toutes' || d.categorie === categorie;
+      const matchLangue = langue === 'toutes' || getLangue(d) === langue;
+      const matchProgramme = programme === 'tous' || getProgramme(d) === programme;
+      return matchCategorie && matchLangue && matchProgramme;
+    });
+  }, [documents, categorie, langue, programme]);
 
   // ✅ Téléchargement réel du document.
   // Important : le lien <a download> ne force PAS le téléchargement pour une URL
@@ -118,12 +145,53 @@ const { t, i18n } = useTranslation();
           </div>
         )}
 
-        <div className="flex flex-wrap gap-2">
-          {categories.map((c) => (
-            <FilterChip key={c} active={categorie === c} onClick={() => setCategorie(c)}>
-              {c === 'toutes' ? t('common.allFem') : t(`enums.documentCategory.${c}`)}
-            </FilterChip>
-          ))}
+        <div className="space-y-3">
+          <div>
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {t('documents.filters.category', { defaultValue: 'Catégorie' })}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((c) => (
+                <FilterChip key={`cat-${c}`} active={categorie === c} onClick={() => setCategorie(c)}>
+                  {c === 'toutes'
+                    ? t('common.allFem', { defaultValue: 'Toutes' })
+                    : t(`enums.documentCategory.${c}`, { defaultValue: c })}
+                </FilterChip>
+              ))}
+            </div>
+          </div>
+
+          {langues.length > 2 && (
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                {t('documents.filters.language', { defaultValue: 'Langue' })}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {langues.map((l) => (
+                  <FilterChip key={`lang-${l}`} active={langue === l} onClick={() => setLangue(l)}>
+                    {l === 'toutes'
+                      ? t('common.allFem', { defaultValue: 'Toutes' })
+                      : LANGUE_LABELS[l] || l.toUpperCase()}
+                  </FilterChip>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {programmes.length > 2 && (
+            <div>
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-400">
+                {t('documents.filters.programme', { defaultValue: 'Programme' })}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {programmes.map((p) => (
+                  <FilterChip key={`prog-${p}`} active={programme === p} onClick={() => setProgramme(p)}>
+                    {p === 'tous' ? t('common.allMasc', { defaultValue: 'Tous' }) : p}
+                  </FilterChip>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {documents === null ? (
@@ -139,13 +207,16 @@ const { t, i18n } = useTranslation();
                     <th className="hidden px-6 py-4 font-semibold sm:table-cell">{t('documents.table.format')}</th>
                     <th className="hidden px-6 py-4 font-semibold sm:table-cell">{t('documents.table.size')}</th>
                     <th className="hidden px-6 py-4 font-semibold md:table-cell">{t('documents.table.updated')}</th>
+                    <th className="hidden px-6 py-4 font-semibold lg:table-cell">
+                      {t('documents.table.language', { defaultValue: 'Langue' })}
+                    </th>
                     <th className="px-6 py-4 text-right font-semibold">{t('documents.table.action')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filtres.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="text-center py-8 text-gray-500 dark:text-slate-400">
+                      <td colSpan="7" className="text-center py-8 text-gray-500 dark:text-slate-400">
                         {t('documents.noResults')}
                       </td>
                     </tr>
@@ -154,7 +225,7 @@ const { t, i18n } = useTranslation();
                       <tr key={d.id} className="border-b border-slate-100 last:border-0 hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-800">
                         <td className="px-6 py-4 font-medium text-navy dark:text-white">{d.titre || d.nom}</td>
                         <td className="px-6 py-4">
-                          <Badge>{t(`enums.documentCategory.${d.categorie}`)}</Badge>
+                          <Badge>{t(`enums.documentCategory.${d.categorie}`, { defaultValue: d.categorie })}</Badge>
                         </td>
                         <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 sm:table-cell">
                           {d.fileFormat || d.format || 'PDF'}
@@ -165,6 +236,9 @@ const { t, i18n } = useTranslation();
                         <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 md:table-cell">
                           {formatDate(d.dateUpload || d.date)}
                         </td>
+                        <td className="hidden px-6 py-4 text-slate-600 dark:text-slate-400 lg:table-cell">
+                          {LANGUE_LABELS[getLangue(d)] || getLangue(d) || '—'}
+                        </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex gap-2 justify-end">
                             <Button
@@ -173,10 +247,20 @@ const { t, i18n } = useTranslation();
                               variant="secondary"
                               disabled={downloading === d.id}
                             >
-                              {downloading === d.id ? `⏳ ${t('documents.downloading')}` : `📥 ${t('documents.download')}`}
+                              <span className="inline-flex items-center gap-1.5">
+                                {downloading === d.id ? (
+                                  <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                  <Download size={16} />
+                                )}
+                                {downloading === d.id ? t('documents.downloading') : t('documents.download')}
+                              </span>
                             </Button>
                             <Button onClick={() => handleOpen(d)} size="sm" variant="outline">
-                              👁️ {t('documents.open')}
+                              <span className="inline-flex items-center gap-1.5">
+                                <Eye size={16} />
+                                {t('documents.open')}
+                              </span>
                             </Button>
                           </div>
                         </td>

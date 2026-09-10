@@ -277,8 +277,12 @@ exports.update = async(id, data) => {
     }
 };
 //creation d un doc
-exports.create = async(data) => {
+// creation d un doc avec ses relations (transaction)
+exports.create = async (data) => {
+    const client = await pool.connect();
     try {
+        await client.query('BEGIN');
+
         const {
             titre,
             description,
@@ -289,7 +293,8 @@ exports.create = async(data) => {
             file_size,
             file_format,
             uploaded_by,
-            categorie_id
+            categorie_id,
+            links // ex: { project: [3, 7], call: [2], agreement: [], mobility: [], programme: [] }
         } = data;
 
         const query = `
@@ -301,22 +306,35 @@ exports.create = async(data) => {
             RETURNING *
         `;
         const values = [
-            titre,
-            description,
-            langage,
-            version,
-            statut_publication,
-            fichier_url,
-            file_size,
-            file_format,
-            uploaded_by,
-            categorie_id
+            titre, description, langage, version, statut_publication,
+            fichier_url, file_size, file_format, uploaded_by, categorie_id
         ];
-        const result = await pool.query(query, values);
-        return result.rows[0];
+        const result = await client.query(query, values);
+        const doc = result.rows[0];
+
+        if (links && typeof links === 'object') {
+            for (const [entityType, entityIds] of Object.entries(links)) {
+                const config = LINK_TABLES[entityType];
+                if (!config || !Array.isArray(entityIds)) continue;
+
+                for (const entityId of entityIds) {
+                    await client.query(
+                        `INSERT INTO ${config.table} (document_id, ${config.fk})
+                         VALUES ($1, $2) ON CONFLICT DO NOTHING`,
+                        [doc.id, entityId]
+                    );
+                }
+            }
+        }
+
+        await client.query('COMMIT');
+        return doc;
     } catch (error) {
+        await client.query('ROLLBACK');
         console.error('Erreur create document:', error);
         throw error;
+    } finally {
+        client.release();
     }
 };
 //creer un lien entre un document et une entite (prgrm,prjt ...)
@@ -477,4 +495,68 @@ exports.restore = async(id) => {
     );
 
     return result.rows[0];
+};
+//restaurer une revision (remet un ancien fichier comme version courante)
+
+exports.restoreRevision = exports.restoreRevision = async(documentId, revisionId, changedBy) =>  {
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        // Récupère la révision à restaurer
+        const revisionResult = await client.query(
+            `
+            SELECT fichier_url, file_size, version
+            FROM document_revisions
+            WHERE id = $1 AND document_id = $2
+            `, [revisionId, documentId]
+        );
+        const revision = revisionResult.rows[0];
+        if (!revision) return null;
+
+        // Archive la version actuelle avant de l'écraser
+        const currentResult = await client.query(
+            `
+            SELECT fichier_url, file_size, version
+            FROM documents
+            WHERE id = $1
+            `, [documentId]
+        );
+        const current = currentResult.rows[0];
+        if (!current) return null;
+
+        await client.query(
+            `
+            INSERT INTO document_revisions
+            (document_id, version, fichier_url, file_size, changed_by, change_note)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            `, [
+                documentId,
+                current.version,
+                current.fichier_url,
+                current.file_size,
+                null, // rempli par le controller si tu veux tracer l'utilisateur ici plutôt
+                `Restauration vers la version ${revision.version}`
+            ]
+        );
+
+        // Applique la version restaurée comme version courante
+        const updated = await client.query(
+            `
+            UPDATE documents
+            SET fichier_url = $1, file_size = $2, version = $3
+            WHERE id = $4
+            RETURNING *
+            `, [revision.fichier_url, revision.file_size, revision.version, documentId]
+        );
+
+        await client.query('COMMIT');
+        return updated.rows[0];
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Erreur restore revision:', error);
+        throw error;
+    } finally {
+        client.release();
+    }
 };
