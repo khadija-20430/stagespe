@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertTriangle, FileText, Star, Lightbulb, Handshake } from 'lucide-react';
 import SectionHeading from '../components/ui/SectionHeading.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import esiLogo from '../assets/logo-esi.png';
@@ -68,7 +69,10 @@ export default function School() {
         {/* La clé "school.error.loading" existe déjà en fr/en/ar : i18next renvoie
             la clé elle-même si elle est absente, jamais une chaîne vide/falsy,
             donc le "|| fallback" précédent n'avait aucun effet. Supprimé. */}
-        <h1 className="text-2xl font-bold text-navy dark:text-white">⚠️ {t('school.error.loading')}</h1>
+        <h1 className="flex items-center justify-center gap-2 text-2xl font-bold text-navy dark:text-white">
+          <AlertTriangle className="h-6 w-6" aria-hidden="true" />
+          {t('school.error.loading')}
+        </h1>
         <p className="mt-2 text-slate-600 dark:text-slate-400">{error}</p>
       </section>
     );
@@ -105,7 +109,8 @@ export default function School() {
               rel="noopener noreferrer"
               className="mt-8 inline-flex items-center gap-2 rounded-lg bg-cobalt px-5 py-3 font-medium text-white transition hover:bg-blue-700"
             >
-              📄 {t('school.download')}
+              <FileText className="h-5 w-5" aria-hidden="true" />
+              {t('school.download')}
               {presentation.fileFormat ? ` (${presentation.fileFormat.toUpperCase()})` : ''}
             </a>
           )}
@@ -134,17 +139,17 @@ export default function School() {
 
         {/* Valeurs additionnelles */}
         <div className="mt-12 grid gap-8 md:grid-cols-3">
-          {['excellence', 'innovation', 'collaboration'].map((value) => (
-            <div key={value} className="rounded-xl border border-slate-200 dark:border-slate-700 p-6 text-center">
-              <span className="text-4xl">
-                {value === 'excellence' && '⭐'}
-                {value === 'innovation' && '💡'}
-                {value === 'collaboration' && '🤝'}
-              </span>
-              <h4 className="mt-3 font-bold text-navy dark:text-white">{t(`school.values.${value}.title`)}</h4>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t(`school.values.${value}.text`)}</p>
-            </div>
-          ))}
+          {['excellence', 'innovation', 'collaboration'].map((value) => {
+            const ValueIcon =
+              value === 'excellence' ? Star : value === 'innovation' ? Lightbulb : Handshake;
+            return (
+              <div key={value} className="rounded-xl border border-slate-200 dark:border-slate-700 p-6 text-center">
+                <ValueIcon className="mx-auto h-9 w-9 text-cobalt" aria-hidden="true" />
+                <h4 className="mt-3 font-bold text-navy dark:text-white">{t(`school.values.${value}.title`)}</h4>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{t(`school.values.${value}.text`)}</p>
+              </div>
+            );
+          })}
         </div>
 
         {!presentation && (
