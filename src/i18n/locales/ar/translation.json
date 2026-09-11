@@ -1034,6 +1034,58 @@
     }
   },
   "languesRequises": "اللغات المطلوبة",
-  "partenaire": "الشريك"
- 
+  "requiredLanguages": {
+  "title": "اللغات المطلوبة — {{titre}}",
+  "minLevelPlaceholder": "المستوى الأدنى (مثال: B2)"
+},
+    "partenaire": "شريك",
+  "documentsSection": "المستندات",
+  "historique": "السجل",
+  "projectsCount_one": "مشروع {{count}}",
+  "projectsCount_other": "{{count}} مشاريع",
+  "partnerContacts": {
+  "title": "جهات الاتصال — {{nom}}",
+  "empty": "لا توجد جهات اتصال لهذا الشريك.",
+  "editTitle": "تعديل جهة الاتصال",
+  "addTitle": "إضافة جهة اتصال",
+  "fullName": "الاسم الكامل",
+  "position": "المنصب",
+  "email": "البريد الإلكتروني",
+  "phone": "الهاتف",
+  "isPrimary": "جهة الاتصال الرئيسية",
+  "isPublic": "مرئي للعموم",
+  "cancelEdit": "إلغاء التعديل",
+  "update": "تحديث",
+  "add": "إضافة",
+  "close": "إغلاق",
+  "deleteConfirm": "هل تريد حذف جهة الاتصال هذه؟"
+},
+"contacts": "جهات الاتصال",
+  "projectPartners": {
+    "title": "الشركاء — {{titre}}",
+    "empty": "لا يوجد شركاء مرتبطون بهذا المشروع.",
+    "addTitle": "إضافة شريك",
+    "selectPlaceholder": "— اختر شريكاً —",
+    "rolePlaceholder": "الدور (مثال: منسق، عضو)",
+    "partnerAndRoleRequired": "الشريك والدور مطلوبان",
+    "deleteConfirm": "هل تريد إزالة هذا الشريك من المشروع؟",
+    "removeTooltip": "إزالة هذا الشريك",
+    "manageTooltip": "إدارة شركاء المشروع",
+    "close": "إغلاق"
+  },
+  "scheduled": "مبرمج",
+  "programmerPublication": "جدولة النشر",
+"programmerPublicationHelp": "اتركه فارغاً للنشر يدوياً.",
+"termesConditions": "الشروط والأحكام",
+"documentRevisions": {
+  "title": "السجل — {{name}}",
+  "version": "الإصدار",
+  "restore": "استعادة",
+  "restoring": "جارٍ الاستعادة...",
+  "close": "إغلاق",
+  "unknownAuthor": "مؤلف غير معروف",
+  "empty": "لا يوجد إصدار سابق محفوظ.",
+  "restoreConfirm": "هل تريد استعادة هذا الإصدار؟ سيتم أرشفة الإصدار الحالي في السجل.",
+  "downloadVersion": "تحميل هذا الإصدار"
 }
+ }

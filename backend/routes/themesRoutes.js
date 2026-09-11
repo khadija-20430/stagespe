@@ -6,7 +6,7 @@ const themesModel = require('../models/themesModel');
 
 const router = express.Router();
 
-// Public — liste des thèmes (avec support de la langue via ?lang=en|ar|fr)
+// Public
 router.get('/', async (req, res) => {
   try {
     const lang = req.query.lang || 'fr';
@@ -17,11 +17,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Admin — CRUD existant
+// Admin 
 router.post('/', verifyToken, checkPermission('reference_data.manage'), themesController.create);
 router.delete('/:id', verifyToken, checkPermission('reference_data.manage'), themesController.remove);
 
-// Admin — récupérer les traductions d'un thème
+// Admin 
 router.get('/:id/translations', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
   try {
     const translations = await themesModel.findTranslations(req.params.id);
@@ -31,7 +31,7 @@ router.get('/:id/translations', verifyToken, checkPermission('reference_data.man
   }
 });
 
-// Admin — sauvegarder les traductions
+// Admin 
 router.put('/:id/translations', verifyToken, checkPermission('reference_data.manage'), async (req, res) => {
   try {
     const updated = await themesModel.upsertTranslations(req.params.id, req.body);

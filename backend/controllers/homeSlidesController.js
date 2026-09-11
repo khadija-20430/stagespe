@@ -1,8 +1,6 @@
 const homeSlidesModel = require('../models/homeSlidesModel');
 
-// ============================================================
-// PUBLIC
-// ============================================================
+// public
 
 exports.getPublic = async (req, res) => {
   const lang = parseInt(req.query.lang, 10) || 1;
@@ -14,10 +12,7 @@ exports.getPublic = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-// ============================================================
-// ADMIN
-// ============================================================
+// admin
 
 exports.getAllAdmin = async (req, res) => {
   const lang = parseInt(req.query.lang, 10) || 1;
@@ -30,9 +25,7 @@ exports.getAllAdmin = async (req, res) => {
   }
 };
 
-// ============================================================
-// CREATE ✅ CORRIGÉ
-// ============================================================
+// Creation
 
 exports.create = async (req, res) => {
   const { badge, iconType, iconValue, displayOrder, translations, scheduledPublishAt } = req.body;
@@ -42,7 +35,7 @@ exports.create = async (req, res) => {
       badge, 
       iconType, 
       iconValue, 
-      displayOrder ?? 0,              // ✅ AJOUT
+      displayOrder ?? 0,              
       scheduledPublishAt || null
     );
     const slideId = result.rows[0].id;
@@ -60,9 +53,7 @@ exports.create = async (req, res) => {
   }
 };
 
-// ============================================================
-// UPDATE ✅ CORRIGÉ
-// ============================================================
+// mise a jour
 
 exports.update = async (req, res) => {
   const { id } = req.params;
@@ -73,7 +64,7 @@ exports.update = async (req, res) => {
       badge, 
       iconType, 
       iconValue, 
-      displayOrder: displayOrder ?? 0,    // ✅ AJOUT
+      displayOrder: displayOrder ?? 0,    
       scheduledPublishAt: scheduledPublishAt || null 
     });
 
@@ -90,10 +81,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// ============================================================
-// REORDER
-// ============================================================
-
+// reordonner
 exports.reorder = async (req, res) => {
   const { slides } = req.body;
   try {
@@ -105,9 +93,7 @@ exports.reorder = async (req, res) => {
   }
 };
 
-// ============================================================
-// UPDATE STATUS
-// ============================================================
+// mise a jour status
 
 exports.updateStatus = async (req, res) => {
   const { id } = req.params;
@@ -121,9 +107,7 @@ exports.updateStatus = async (req, res) => {
   }
 };
 
-// ============================================================
-// DELETE
-// ============================================================
+// supprimer
 
 exports.delete = async (req, res) => {
   const { id } = req.params;
@@ -136,9 +120,7 @@ exports.delete = async (req, res) => {
   }
 };
 
-// ============================================================
-// TRANSLATIONS
-// ============================================================
+// Traduction
 
 exports.getTranslations = async (req, res) => {
   const { id } = req.params;

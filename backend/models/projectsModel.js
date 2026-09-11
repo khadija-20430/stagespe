@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const pool = require('../db');
+const { autoTranslateItems } = require('../lib/i18n');
 
 function deleteOldFile(fileUrl) {
     if (!fileUrl || !fileUrl.startsWith('/uploads/')) return;
@@ -9,30 +10,96 @@ function deleteOldFile(fileUrl) {
 }
 exports.deleteOldFile = deleteOldFile;
 
-async function replaceItems(client, table, projectId, items) {
+async function replaceItems(client, table, translationTable, fkColumn, projectId, items) {
     if (!Array.isArray(items)) return;
+
     await client.query(`DELETE FROM ${table} WHERE project_id = $1`, [projectId]);
-    for (const description of items) {
-        if (description && description.trim() !== '') {
-            await client.query(`INSERT INTO ${table} (project_id, description) VALUES ($1,$2)`, [projectId, description]);
+
+    for (const item of items) {
+        if (!item) continue;
+
+        const description = typeof item === 'string' ? item : item.description;
+        if (!description || !description.trim()) continue;
+
+        const result = await client.query(
+            `INSERT INTO ${table} (project_id, description) VALUES ($1, $2) RETURNING id`,
+            [projectId, description.trim()]
+        );
+
+        const newId = result.rows[0].id;
+
+        if (item.translations && typeof item.translations === 'object') {
+            for (const [langCode, translatedText] of Object.entries(item.translations)) {
+                if (!translatedText || !translatedText.trim()) continue;
+
+                const langRes = await client.query(
+                    'SELECT id FROM languages WHERE code = $1',
+                    [langCode]
+                );
+                if (langRes.rows.length === 0) continue;
+
+                await client.query(
+                    `INSERT INTO ${translationTable} (${fkColumn}, language_id, description)
+                     VALUES ($1, $2, $3)`,
+                    [newId, langRes.rows[0].id, translatedText.trim()]
+                );
+            }
         }
     }
 }
 
-exports.findAllPublished = async(filters) => {
+// published
+exports.findAllPublished = async (filters) => {
     const { status, programme_id, is_featured } = filters;
     let query = `
     SELECT projects.*, programmes.name AS programme_name, partners.name AS coordinator_partner_name,
       COALESCE((
-        SELECT json_agg(description ORDER BY id)
-        FROM project_deliverables
-        WHERE project_id = projects.id
+        SELECT json_agg(
+          json_build_object(
+            'id', pd.id,
+            'description', pd.description,
+            'translations', COALESCE((
+              SELECT json_object_agg(l.code, pdt.description)
+              FROM project_deliverable_translations pdt
+              JOIN languages l ON l.id = pdt.language_id
+              WHERE pdt.deliverable_id = pd.id
+            ), '{}'::json)
+          ) ORDER BY pd.id
+        )
+        FROM project_deliverables pd
+        WHERE pd.project_id = projects.id
       ), '[]') AS deliverables,
       COALESCE((
-        SELECT json_agg(description ORDER BY id)
-        FROM project_results
-        WHERE project_id = projects.id
-      ), '[]') AS results
+        SELECT json_agg(
+          json_build_object(
+            'id', pr.id,
+            'description', pr.description,
+            'translations', COALESCE((
+              SELECT json_object_agg(l.code, prt.description)
+              FROM project_result_translations prt
+              JOIN languages l ON l.id = prt.language_id
+              WHERE prt.result_id = pr.id
+            ), '{}'::json)
+          ) ORDER BY pr.id
+        )
+        FROM project_results pr
+        WHERE pr.project_id = projects.id
+      ), '[]') AS results,
+      COALESCE((
+        SELECT json_agg(
+          json_build_object(
+            'id', d.id,
+            'titre', d.titre,
+            'fichier_url', d.fichier_url,
+            'file_format', d.file_format,
+            'file_size', d.file_size
+          ) ORDER BY d.id
+        )
+        FROM project_documents pdoc
+        JOIN documents d ON d.id = pdoc.document_id
+        WHERE pdoc.project_id = projects.id
+          AND d.statut_publication = 'published'
+      ), '[]') AS documents
     FROM projects
     LEFT JOIN programmes ON projects.programme_id = programmes.id
     LEFT JOIN partners ON projects.coordinator_partner_id = partners.id
@@ -48,26 +115,65 @@ exports.findAllPublished = async(filters) => {
     return result.rows;
 };
 
-exports.findAllAdmin = async() => {
+// admin
+exports.findAllAdmin = async () => {
     const result = await pool.query(`
         SELECT projects.*, programmes.name AS programme_name,
           COALESCE((
-            SELECT json_agg(description ORDER BY id)
-            FROM project_deliverables
-            WHERE project_id = projects.id
+            SELECT json_agg(
+              json_build_object(
+                'id', pd.id,
+                'description', pd.description,
+                'translations', COALESCE((
+                  SELECT json_object_agg(l.code, pdt.description)
+                  FROM project_deliverable_translations pdt
+                  JOIN languages l ON l.id = pdt.language_id
+                  WHERE pdt.deliverable_id = pd.id
+                ), '{}'::json)
+              ) ORDER BY pd.id
+            )
+            FROM project_deliverables pd
+            WHERE pd.project_id = projects.id
           ), '[]') AS deliverables,
           COALESCE((
-            SELECT json_agg(description ORDER BY id)
-            FROM project_results
-            WHERE project_id = projects.id
-          ), '[]') AS results
+            SELECT json_agg(
+              json_build_object(
+                'id', pr.id,
+                'description', pr.description,
+                'translations', COALESCE((
+                  SELECT json_object_agg(l.code, prt.description)
+                  FROM project_result_translations prt
+                  JOIN languages l ON l.id = prt.language_id
+                  WHERE prt.result_id = pr.id
+                ), '{}'::json)
+              ) ORDER BY pr.id
+            )
+            FROM project_results pr
+            WHERE pr.project_id = projects.id
+          ), '[]') AS results,
+          COALESCE((
+            SELECT json_agg(
+              json_build_object(
+                'id', d.id,
+                'titre', d.titre,
+                'fichier_url', d.fichier_url,
+                'file_format', d.file_format,
+                'file_size', d.file_size
+              ) ORDER BY d.id
+            )
+            FROM project_documents pdoc
+            JOIN documents d ON d.id = pdoc.document_id
+            WHERE pdoc.project_id = projects.id
+          ), '[]') AS documents
         FROM projects
         LEFT JOIN programmes ON projects.programme_id = programmes.id
         ORDER BY projects.id DESC
     `);
     return result.rows;
 };
-exports.findById = async(id) => {
+
+// find by id
+exports.findById = async (id) => {
     const result = await pool.query(
         `SELECT projects.*, programmes.name AS programme_name, partners.name AS coordinator_partner_name
      FROM projects
@@ -78,7 +184,8 @@ exports.findById = async(id) => {
     return result.rows[0];
 };
 
-exports.findPartnersByProject = async(projectId) => {
+// Partenaires d un projet
+exports.findPartnersByProject = async (projectId) => {
     const result = await pool.query(
         `SELECT project_partners.*, partners.name AS partner_name FROM project_partners
      JOIN partners ON project_partners.partner_id = partners.id WHERE project_id = $1`, [projectId]
@@ -86,24 +193,81 @@ exports.findPartnersByProject = async(projectId) => {
     return result.rows;
 };
 
-exports.findDeliverablesByProject = async(projectId) => {
-    const result = await pool.query('SELECT id, description FROM project_deliverables WHERE project_id = $1 ORDER BY id', [projectId]);
-    return result.rows;
+// livrables d un projet (avec traductions)
+exports.findDeliverablesByProject = async (projectId) => {
+    const deliverables = await pool.query(
+        'SELECT id, description FROM project_deliverables WHERE project_id = $1 ORDER BY id',
+        [projectId]
+    );
+
+    const enriched = await Promise.all(
+        deliverables.rows.map(async (d) => {
+            const trs = await pool.query(
+                `SELECT l.code, pdt.description
+                 FROM project_deliverable_translations pdt
+                 JOIN languages l ON l.id = pdt.language_id
+                 WHERE pdt.deliverable_id = $1`,
+                [d.id]
+            );
+
+            const translations = {};
+            trs.rows.forEach((t) => {
+                translations[t.code] = t.description;
+            });
+
+            return {
+                id: d.id,
+                description: d.description,
+                translations,
+            };
+        })
+    );
+
+    return enriched;
 };
 
-exports.findResultsByProject = async(projectId) => {
-    const result = await pool.query('SELECT id, description FROM project_results WHERE project_id = $1 ORDER BY id', [projectId]);
-    return result.rows;
+// Resultats d un projet (avec traductions)
+exports.findResultsByProject = async (projectId) => {
+    const results = await pool.query(
+        'SELECT id, description FROM project_results WHERE project_id = $1 ORDER BY id',
+        [projectId]
+    );
+
+    const enriched = await Promise.all(
+        results.rows.map(async (r) => {
+            const trs = await pool.query(
+                `SELECT l.code, prt.description
+                 FROM project_result_translations prt
+                 JOIN languages l ON l.id = prt.language_id
+                 WHERE prt.result_id = $1`,
+                [r.id]
+            );
+
+            const translations = {};
+            trs.rows.forEach((t) => {
+                translations[t.code] = t.description;
+            });
+
+            return {
+                id: r.id,
+                description: r.description,
+                translations,
+            };
+        })
+    );
+
+    return enriched;
 };
 
-exports.findNewsByProject = async(projectId) => {
+
+exports.findNewsByProject = async (projectId) => {
     const result = await pool.query(
-        "SELECT id, title, type, event_date, image_url FROM news_events WHERE project_id = $1 AND statut = 'published'", [projectId]
+        "SELECT id, title, type, event_date, image_url FROM news_events WHERE project_id = $1 AND statut_publication = 'published'", [projectId]
     );
     return result.rows;
 };
 
-exports.findDocumentsByProject = async(projectId) => {
+exports.findDocumentsByProject = async (projectId) => {
     const result = await pool.query(
         `SELECT documents.id, documents.titre, documents.fichier_url FROM documents
      JOIN project_documents ON project_documents.document_id = documents.id
@@ -112,34 +276,24 @@ exports.findDocumentsByProject = async(projectId) => {
     return result.rows;
 };
 
-exports.findLogoUrlById = async(id) => {
+exports.findLogoUrlById = async (id) => {
     const result = await pool.query('SELECT logo_url FROM projects WHERE id = $1', [id]);
     return result.rows[0];
 };
 
-exports.create = async(data, userId) => {
+// creation
+exports.create = async (data, userId) => {
     const {
-        title,
-        acronym,
-        reference_code,
-        description,
-        objectives,
-        target_groups,
-        official_website,
-        status,
-        programme_id,
-        coordinator_partner_id,
-        budget,
-        start_date,
-        end_date,
-        is_featured,
-        logo_url,
-        deliverables,
-        results,
-        scheduled_publish_at
+        title, acronym, reference_code, description, objectives, target_groups,
+        official_website, status, programme_id, coordinator_partner_id,
+        budget, start_date, end_date, is_featured, logo_url,
+        deliverables, results, scheduled_publish_at
     } = data;
 
     const client = await pool.connect();
+    let newDeliverables = [];
+    let newResults = [];
+
     try {
         await client.query('BEGIN');
         const result = await client.query(
@@ -153,15 +307,52 @@ exports.create = async(data, userId) => {
         [title, acronym, reference_code, logo_url, description, objectives, target_groups,
          official_website, status || 'proposed', programme_id, coordinator_partner_id,
          userId, budget, start_date, end_date, is_featured || false,
-         scheduled_publish_at || null,  // ← AJOUT
+         scheduled_publish_at || null,
          userId]
     );
         const project = result.rows[0];
 
-        await replaceItems(client, 'project_deliverables', project.id, deliverables);
-        await replaceItems(client, 'project_results', project.id, results);
+        await replaceItems(
+            client,
+            'project_deliverables',
+            'project_deliverable_translations',
+            'deliverable_id',
+            project.id,
+            deliverables
+        );
+        await replaceItems(
+            client,
+            'project_results',
+            'project_result_translations',
+            'result_id',
+            project.id,
+            results
+        );
+
+        const dRows = await client.query(
+            'SELECT id, description FROM project_deliverables WHERE project_id = $1',
+            [project.id]
+        );
+        const rRows = await client.query(
+            'SELECT id, description FROM project_results WHERE project_id = $1',
+            [project.id]
+        );
+        newDeliverables = dRows.rows;
+        newResults = rRows.rows;
 
         await client.query('COMMIT');
+
+        if (newDeliverables.length > 0) {
+            autoTranslateItems('project_deliverable', newDeliverables).catch((err) =>
+                console.error('[I18N] autoTranslateItems deliverables:', err.message)
+            );
+        }
+        if (newResults.length > 0) {
+            autoTranslateItems('project_result', newResults).catch((err) =>
+                console.error('[I18N] autoTranslateItems results:', err.message)
+            );
+        }
+
         return project;
     } catch (err) {
         await client.query('ROLLBACK');
@@ -171,29 +362,19 @@ exports.create = async(data, userId) => {
     }
 };
 
-exports.update = async(id, data, auditContext) => {
+// Mise a jour
+exports.update = async (id, data, auditContext) => {
     const {
-        title,
-        acronym,
-        reference_code,
-        description,
-        objectives,
-        target_groups,
-        official_website,
-        status,
-        programme_id,
-        coordinator_partner_id,
-        budget,
-        start_date,
-        end_date,
-        is_featured,
-        logo_url,
-        deliverables,
-        results,
-        scheduled_publish_at
+        title, acronym, reference_code, description, objectives, target_groups,
+        official_website, status, programme_id, coordinator_partner_id,
+        budget, start_date, end_date, is_featured, logo_url,
+        deliverables, results, scheduled_publish_at
     } = data;
 
     const client = await pool.connect();
+    let newDeliverables = [];
+    let newResults = [];
+
     try {
         await client.query('BEGIN');
         await client.query(
@@ -216,10 +397,47 @@ exports.update = async(id, data, auditContext) => {
             return null;
         }
 
-        await replaceItems(client, 'project_deliverables', id, deliverables);
-        await replaceItems(client, 'project_results', id, results);
+        await replaceItems(
+            client,
+            'project_deliverables',
+            'project_deliverable_translations',
+            'deliverable_id',
+            id,
+            deliverables
+        );
+        await replaceItems(
+            client,
+            'project_results',
+            'project_result_translations',
+            'result_id',
+            id,
+            results
+        );
+
+        const dRows = await client.query(
+            'SELECT id, description FROM project_deliverables WHERE project_id = $1',
+            [id]
+        );
+        const rRows = await client.query(
+            'SELECT id, description FROM project_results WHERE project_id = $1',
+            [id]
+        );
+        newDeliverables = dRows.rows;
+        newResults = rRows.rows;
 
         await client.query('COMMIT');
+
+        if (newDeliverables.length > 0) {
+            autoTranslateItems('project_deliverable', newDeliverables).catch((err) =>
+                console.error('[I18N] autoTranslateItems deliverables:', err.message)
+            );
+        }
+        if (newResults.length > 0) {
+            autoTranslateItems('project_result', newResults).catch((err) =>
+                console.error('[I18N] autoTranslateItems results:', err.message)
+            );
+        }
+
         return result.rows[0];
     } catch (err) {
         await client.query('ROLLBACK');
@@ -228,7 +446,9 @@ exports.update = async(id, data, auditContext) => {
         client.release();
     }
 };
-exports.publishScheduledDue = async() => {
+
+// publication
+exports.publishScheduledDue = async () => {
     const result = await pool.query(
         `UPDATE projects
          SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
@@ -239,7 +459,8 @@ exports.publishScheduledDue = async() => {
     );
     return result.rows;
 };
-exports.publish = async(id) => {
+
+exports.publish = async (id) => {
     const result = await pool.query(
         `UPDATE projects 
          SET statut_publication='published', 
@@ -252,14 +473,15 @@ exports.publish = async(id) => {
     return result.rows[0];
 };
 
-exports.archive = async(id) => {
+exports.archive = async (id) => {
     const result = await pool.query(
         `UPDATE projects SET statut_publication='archived', archived_at=NOW() WHERE id=$1 RETURNING *`, [id]
     );
     return result.rows[0];
 };
 
-exports.duplicate = async(id, userId) => {
+// duplication
+exports.duplicate = async (id, userId) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
@@ -296,7 +518,60 @@ exports.duplicate = async(id, userId) => {
     }
 };
 
-exports.remove = async(id) => {
+// supprimer
+exports.remove = async (id) => {
     const result = await pool.query('DELETE FROM projects WHERE id=$1 RETURNING *', [id]);
     return result.rows[0];
 };
+
+// modifier traduction livrable
+exports.replaceDeliverableTranslations = async (client, deliverableId, translations) => {
+    await client.query(
+        'DELETE FROM project_deliverable_translations WHERE deliverable_id = $1',
+        [deliverableId]
+    );
+
+    for (const [langCode, description] of Object.entries(translations || {})) {
+        if (!description || !description.trim()) continue;
+
+        const langRes = await client.query(
+            'SELECT id FROM languages WHERE code = $1',
+            [langCode]
+        );
+        if (langRes.rows.length === 0) continue;
+
+        await client.query(
+            `INSERT INTO project_deliverable_translations
+             (deliverable_id, language_id, description)
+             VALUES ($1, $2, $3)`,
+            [deliverableId, langRes.rows[0].id, description.trim()]
+        );
+    }
+};
+
+// modifier traduction resultat
+exports.replaceResultTranslations = async (client, resultId, translations) => {
+    await client.query(
+        'DELETE FROM project_result_translations WHERE result_id = $1',
+        [resultId]
+    );
+
+    for (const [langCode, description] of Object.entries(translations || {})) {
+        if (!description || !description.trim()) continue;
+
+        const langRes = await client.query(
+            'SELECT id FROM languages WHERE code = $1',
+            [langCode]
+        );
+        if (langRes.rows.length === 0) continue;
+
+        await client.query(
+            `INSERT INTO project_result_translations
+             (result_id, language_id, description)
+             VALUES ($1, $2, $3)`,
+            [resultId, langRes.rows[0].id, description.trim()]
+        );
+    }
+};
+
+module.exports = exports;

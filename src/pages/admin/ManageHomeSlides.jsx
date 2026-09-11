@@ -119,7 +119,7 @@ export default function ManageHomeSlides() {
       name: 'scheduledPublishAt',
       label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
       type: 'datetime-local',
-      help: 'Laisser vide pour publier manuellement.',
+  help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
     },
   ];
 

@@ -23,10 +23,10 @@ import { toAgreementPayload } from '../../services/mappers.js';
 import { formatScheduledDate } from '../../lib/utils.js';
 
 const TRANSLATION_FIELDS = [
-  { name: 'title', label: 'Titre' },
-  { name: 'type', label: 'Type' },
-  { name: 'description', label: 'Description' },
-  { name: 'terms_conditions', label: 'Termes et conditions' },
+  { name: 'title', labelKey: 'titre' },
+  { name: 'type', labelKey: 'type' },
+  { name: 'description', labelKey: 'description' },
+  { name: 'terms_conditions', labelKey: 'termesConditions' },
 ];
 
 const emptyTranslationSet = () => ({
@@ -905,7 +905,7 @@ const ManageAgreements = () => {
                                 TRANSLATION_FIELDS.map((f) => (
                                     <div key={f.name}>
                                         <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                                            {f.label}
+                                            {t(f.labelKey, { defaultValue: f.name })}
                                         </label>
                                         <textarea
                                             dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}

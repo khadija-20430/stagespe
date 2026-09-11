@@ -36,8 +36,8 @@ const LANGUAGES = [
 ];
 
 const TRANSLATION_FIELDS = [
-  { name: 'titre', label: 'Titre' },
-  { name: 'description', label: 'Description' },
+  { name: 'titre', labelKey: 'titre' },
+  { name: 'description', labelKey: 'description' },
 ];
 
 const emptyTranslationSet = () => ({
@@ -228,7 +228,7 @@ export default function ManageDocuments() {
   };
 
   const handleRestore = async (revisionId) => {
-    if (!confirm("Restaurer cette version ? La version actuelle sera archivée dans l'historique.")) return;
+    if (!confirm(t('documentRevisions.restoreConfirm', { defaultValue: "Restaurer cette version ? La version actuelle sera archivée dans l'historique." }))) return;
 
     setRestoringId(revisionId);
 
@@ -401,8 +401,8 @@ export default function ManageDocuments() {
           },
           {
             key: 'revisions',
-            label: 'Historique',
-            render: (item) => (
+            label: t('historique', { defaultValue: 'Historique' }),
+             render: (item) => (
               <button
                 type="button"
                 onClick={() => openRevisions(item)}
@@ -470,7 +470,7 @@ export default function ManageDocuments() {
             name: 'scheduledPublishAt',
             label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
             type: 'datetime-local',
-            help: 'Laisser vide pour publier manuellement.',
+  help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
           },
           {
             name: 'projectIds',
@@ -545,7 +545,7 @@ export default function ManageDocuments() {
                 TRANSLATION_FIELDS.map((f) => (
                   <div key={f.name}>
                     <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                      {f.label}
+                      {t(f.labelKey, { defaultValue: f.name })}
                     </label>
                     <textarea
                       dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
@@ -570,7 +570,7 @@ export default function ManageDocuments() {
                 disabled={translationsSaving}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Annuler
+  {t('annuler')}
               </button>
               <button
                 type="button"
@@ -578,7 +578,7 @@ export default function ManageDocuments() {
                 disabled={translationsSaving || translationsLoading}
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
-                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                {translationsSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
               </button>
             </div>
           </div>
@@ -590,8 +590,10 @@ export default function ManageDocuments() {
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="font-bold text-navy dark:text-white">
-                Historique — {revisionsItem.nom || revisionsItem.titre}
-              </h3>
+{t('documentRevisions.title', {
+    name: revisionsItem.nom || revisionsItem.titre,
+    defaultValue: `Historique — ${revisionsItem.nom || revisionsItem.titre}`
+  })}              </h3>
               <button type="button" onClick={closeRevisions} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X size={20} />
               </button>
@@ -604,7 +606,8 @@ export default function ManageDocuments() {
                 </div>
               ) : revisions.length === 0 ? (
                 <p className="text-sm text-slate-500 dark:text-slate-400">
-                  Aucune version antérieure enregistrée.
+                    {t('documentRevisions.empty', { defaultValue: 'Aucune version antérieure enregistrée.' })}
+
                 </p>
               ) : (
                 revisions.map((rev) => (
@@ -613,12 +616,12 @@ export default function ManageDocuments() {
                     className="flex items-center justify-between border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3"
                   >
                     <div>
-                      <p className="font-medium text-slate-800 dark:text-white">
-                        Version {rev.version} — {formatBytes(rev.file_size)}
-                      </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {new Date(rev.created_at).toLocaleString('fr-FR')} · {rev.changed_by_name || 'Auteur inconnu'}
-                      </p>
+                     <p className="font-medium text-slate-800 dark:text-white">
+  {t('documentRevisions.version', { defaultValue: 'Version' })} {rev.version} — {formatBytes(rev.file_size)}
+</p>
+<p className="text-xs text-slate-500 dark:text-slate-400">
+  {new Date(rev.created_at).toLocaleString(i18n.language === 'ar' ? 'ar-DZ' : i18n.language === 'en' ? 'en-US' : 'fr-FR')} · {rev.changed_by_name || t('documentRevisions.unknownAuthor', { defaultValue: 'Auteur inconnu' })}
+</p>
                       {rev.change_note && (
                         <p className="text-xs text-slate-400 dark:text-slate-500 italic mt-1">
                           {rev.change_note}
@@ -631,7 +634,7 @@ export default function ManageDocuments() {
                         type="button"
                         onClick={() => downloadFile(rev.fichier_url, getFileName(rev.fichier_url))}
                         className="text-green-600 hover:text-green-700"
-                        title="Télécharger cette version"
+                        title={t('documentRevisions.downloadVersion', { defaultValue: 'Télécharger cette version' })}
                       >
                         <Download size={16} />
                       </button>
@@ -642,7 +645,9 @@ export default function ManageDocuments() {
                         disabled={restoringId === rev.id}
                         className="text-xs font-medium text-cobalt hover:text-blue-700 disabled:opacity-50"
                       >
-                        {restoringId === rev.id ? '...' : 'Restaurer'}
+                       {restoringId === rev.id
+    ? t('documentRevisions.restoring', { defaultValue: 'Restauration...' })
+    : t('documentRevisions.restore', { defaultValue: 'Restaurer' })}
                       </button>
                     </div>
                   </div>
@@ -657,7 +662,7 @@ export default function ManageDocuments() {
                 disabled={!!restoringId}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Fermer
+                {t('documentRevisions.close', { defaultValue: 'Fermer' })}
               </button>
             </div>
           </div>

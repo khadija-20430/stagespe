@@ -5,8 +5,8 @@ const { translateBatch } = require('./googleTranslate');
 const TRANSLATION_CONFIG = {
   project: { table: 'project_translations', fk: 'project_id', fields: ['title', 'description', 'objectives', 'target_groups'] },
   partner: { table: 'partner_translations', fk: 'partner_id', fields: ['name', 'official_name', 'description', 'cooperation_areas'] },
-  call: { table: 'call_translations', fk: 'call_id', fields: ['title', 'description', 'objectives', 'eligibility', 'beneficiaries'] },
-  mobility: { table: 'mobility_translations', fk: 'mobility_id', fields: ['title', 'description', 'conditions', 'target_audience', 'application_procedure', 'selection_criteria'] },
+  call: { table: 'call_translations', fk: 'call_id', fields: ['title', 'description', 'objectives', 'beneficiaries'] },
+  mobility: { table: 'mobility_translations', fk: 'mobility_id', fields: ['title', 'description', 'conditions', 'target_audience'] },
   news: { table: 'news_translations', fk: 'news_id', fields: ['title', 'summary', 'description', 'quote_text'] },
   project_deliverable: { table: 'project_deliverable_translations', fk: 'deliverable_id', fields: ['description'] },
   project_result: { table: 'project_result_translations', fk: 'result_id', fields: ['description'] },
@@ -136,6 +136,47 @@ async function autoTranslateAndSave(entityType, entityId, frenchData) {
   }
 }
 
+// autotraductions des items (livrables / résultats)
+
+async function autoTranslateItems(entityType, items) {
+  const config = TRANSLATION_CONFIG[entityType]; // 'project_deliverable' ou 'project_result'
+  if (!config || !Array.isArray(items) || items.length === 0) return;
+
+  for (const item of items) {
+    if (!item || !item.id || !item.description) continue;
+
+    for (const targetLang of TARGET_LANGUAGES) {
+      const languageId = await getLanguageId(targetLang);
+      if (!languageId) continue;
+
+      const existing = await pool.query(
+        `SELECT 1 FROM ${config.table}
+         WHERE ${config.fk} = $1 AND language_id = $2`,
+        [item.id, languageId]
+      );
+      if (existing.rows.length > 0) continue;
+
+      let translated;
+      try {
+        const [result] = await translateBatch([item.description], targetLang, 'fr');
+        translated = result;
+      } catch (err) {
+        console.error(`[I18N] Traduction ${targetLang} échouée pour ${entityType}#${item.id}:`, err.message);
+        continue;
+      }
+
+      if (!translated || !translated.trim()) continue;
+
+      await pool.query(
+        `INSERT INTO ${config.table} (${config.fk}, language_id, description)
+         VALUES ($1, $2, $3)
+         ON CONFLICT (${config.fk}, language_id)
+         DO NOTHING`,
+        [item.id, languageId, translated.trim()]
+      );
+    }
+  }
+}
 
 async function getAllTranslations(entityType, entityId) {
   const config = TRANSLATION_CONFIG[entityType];
@@ -167,6 +208,7 @@ module.exports = {
   translateRelatedField,
   upsertTranslations,
   autoTranslateAndSave,
+  autoTranslateItems,
   getAllTranslations,
   deleteTranslations,
 };

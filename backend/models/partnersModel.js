@@ -3,9 +3,7 @@ const path = require('path');
 const pool = require('../db');
 const { withAuditContext } = require('../lib/auditContext');
 
-// ------------------------------------------------------------
-// Selects "simples" (fiche unique) — inchangés, utilisés par findById
-// ------------------------------------------------------------
+
 const PARTNER_JOIN = `
   FROM partners
   LEFT JOIN countries ON partners.country_id = countries.id
@@ -17,21 +15,6 @@ const PARTNER_SELECT = `
          establishment_types.label AS establishment_type_label,
          partnership_types.label AS partnership_type_label
 `;
-
-// ------------------------------------------------------------
-// 🆕 Selects "agrégés" (listes) — ajoutent theme_ids / theme_names
-// via partner_themes -> themes, sur le même principe que
-// callsModel (theme_ids agrégés pour findAllPublished/findAllAdmin).
-// ------------------------------------------------------------
-// ============================================================
-// PATCH — dans src/models/partnersModel.js (backend)
-//
-// Remplacer PARTNER_SELECT_WITH_THEMES et PARTNER_JOIN_WITH_THEMES
-// par ces versions (ajout de agreement_types, nécessaire pour le
-// filtre visiteur "Type d'accord" — cahier des charges 2.3).
-// findAllPublished / findAllAdmin n'ont besoin d'aucune autre
-// modification : ils utilisent déjà ces deux constantes.
-// ============================================================
 
 const PARTNER_SELECT_WITH_THEMES = `
   SELECT partners.*, countries.name AS country_name,
@@ -63,8 +46,6 @@ const PARTNER_JOIN_WITH_THEMES = `
   -- de agreements elles-mêmes ailleurs dans PARTNER_JOIN_WITH_THEMES)
   LEFT JOIN agreements ON agreements.partner_id = partners.id
 `;
-// partners.id détermine fonctionnellement countries.name / establishment_types.label /
-// partnership_types.label (relations many-to-one) -> GROUP BY valide en Postgres.
 const PARTNER_GROUP_BY = `
   GROUP BY partners.id, countries.name, establishment_types.label, partnership_types.label
 `;
@@ -96,7 +77,6 @@ exports.findAllPublished = async(filters) => {
         params.push(partnership_status);
         query += ` AND partners.partnership_status = $${params.length}`;
     }
-    // 🆕 filtre par thème (cahier des charges 2.3 : "Domaine de coopération")
     if (theme_id) {
         params.push(theme_id);
         query += ` AND EXISTS (
@@ -122,8 +102,6 @@ exports.findAllForMap = async() => {
 };
 
 exports.findAllAdmin = async() => {
-    // 🆕 theme_ids / theme_names ajoutés — utilisés pour pré-remplir le select
-    // multiple "Thèmes" à l'édition et pour la colonne "Thèmes" du tableau admin.
     const result = await pool.query(
         `${PARTNER_SELECT_WITH_THEMES} ${PARTNER_JOIN_WITH_THEMES} ${PARTNER_GROUP_BY} ORDER BY partners.id DESC`
     );
@@ -135,8 +113,6 @@ exports.findById = async(id) => {
     return result.rows[0];
 };
 
-// 🆕 thèmes liés à un partenaire — utilisé par getOne (fiche détail publique),
-// même principe que findAgreementsByPartner / findPublicContactsByPartner.
 exports.findThemesByPartner = async(partnerId) => {
     const result = await pool.query(
         `SELECT themes.* FROM themes
@@ -189,7 +165,6 @@ exports.create = async(data, userId) => {
         latitude,
         longitude,
         theme_ids,
-        // 🆕 date de programmation de publication (ISO datetime ou null)
         scheduled_publish_at,
     } = data;
 
@@ -207,7 +182,6 @@ exports.create = async(data, userId) => {
         );
         const partner = result.rows[0];
 
-        // 🆕 insertion des thèmes sélectionnés dans partner_themes
         if (Array.isArray(theme_ids) && theme_ids.length > 0) {
             const values = theme_ids.map((_, i) => `($1, $${i + 2})`).join(', ');
             await client.query(`INSERT INTO partner_themes (partner_id, theme_id) VALUES ${values}`, [partner.id, ...theme_ids]);
@@ -254,7 +228,6 @@ exports.update = async(id, data, auditContext) => {
         );
         if (result.rows.length === 0) return null;
 
-        // 🆕 remplacement des thèmes liés (delete + re-insert, comme call_themes)
         if (Array.isArray(theme_ids)) {
             await client.query('DELETE FROM partner_themes WHERE partner_id = $1', [id]);
             if (theme_ids.length > 0) {
@@ -268,7 +241,6 @@ exports.update = async(id, data, auditContext) => {
 };
 
 exports.publish = async(id) => {
-    // 🆕 on nettoie scheduled_publish_at si on publie manuellement avant l'échéance
     const result = await pool.query(
         `UPDATE partners SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL WHERE id=$1 RETURNING *`, [id]
     );
@@ -282,9 +254,6 @@ exports.archive = async(id) => {
     return result.rows[0];
 };
 
-// 🆕 utilisé par le job planifié (cron) : publie automatiquement tous les
-// partenaires en brouillon dont la date programmée est atteinte.
-// Renvoie la liste des ids publiés (pour logs / notifications éventuelles).
 exports.publishScheduledDue = async() => {
     const result = await pool.query(
         `UPDATE partners

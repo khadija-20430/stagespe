@@ -25,14 +25,27 @@ exports.findAllPublished = async(filters, lang = 'fr') => {
                 ON tt.theme_id = t.id AND tt.language_id = l.id
               WHERE ct.call_id = calls.id),
              '{}'
-           ) AS theme_names
+           ) AS theme_names,
+           COALESCE((
+             SELECT json_agg(
+               json_build_object(
+                 'id', d.id,
+                 'titre', d.titre,
+                 'fichier_url', d.fichier_url,
+                 'file_format', d.file_format,
+                 'file_size', d.file_size
+               ) ORDER BY d.id
+             )
+             FROM call_documents cdoc
+             JOIN documents d ON d.id = cdoc.document_id
+             WHERE cdoc.call_id = calls.id
+               AND d.statut_publication = 'published'
+           ), '[]') AS documents
     FROM calls
     LEFT JOIN programmes ON calls.programme_id = programmes.id
     LEFT JOIN action_types ON calls.action_type_id = action_types.id
     WHERE calls.statut_publication = 'published'`;
 
-    // $1 est réservé à "lang" (utilisé dans les sous-selects thèmes ET pays ci-dessus).
-    // Tous les filtres dynamiques doivent donc démarrer à $2.
     const params = [lang];
 
     if (programme_id) { params.push(programme_id);
@@ -71,7 +84,21 @@ exports.findAllAdmin = async(lang = 'fr') => {
                     ARRAY_AGG(DISTINCT COALESCE(theme_translations.name, themes.name))
                     FILTER (WHERE themes.id IS NOT NULL),
                     '{}'
-                ) AS theme_names
+                ) AS theme_names,
+                COALESCE((
+                    SELECT json_agg(
+                        json_build_object(
+                            'id', d.id,
+                            'titre', d.titre,
+                            'fichier_url', d.fichier_url,
+                            'file_format', d.file_format,
+                            'file_size', d.file_size
+                        ) ORDER BY d.id
+                    )
+                    FROM call_documents cdoc
+                    JOIN documents d ON d.id = cdoc.document_id
+                    WHERE cdoc.call_id = calls.id
+                ), '[]') AS documents
          FROM calls
          LEFT JOIN programmes ON calls.programme_id = programmes.id
          LEFT JOIN action_types ON calls.action_type_id = action_types.id

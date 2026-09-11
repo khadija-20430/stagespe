@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Plane, Languages, Globe2, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
+import DocumentsCell from '../../components/ui/DocumentsCell.jsx';
 import {
   getMobilitesAdmin, getMobilitesAdminPreview, createMobilite, updateMobilite, deleteMobilite,
   publishMobilite, archiveMobilite,
@@ -19,17 +20,15 @@ const mobilityStatusTone = (s) => (s === 'open' ? 'green' : s === 'upcoming' ? '
 const publicationStatusTone = (s) => (s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber');
 
 const TRANSLATION_FIELDS = [
-  { name: 'title', label: 'Titre' },
-  { name: 'description', label: 'Description' },
-  { name: 'conditions', label: 'Conditions' },
-  { name: 'target_audience', label: 'Public cible' },
-  { name: 'application_procedure', label: 'Procédure de candidature' },
-  { name: 'selection_criteria', label: 'Critères de sélection' },
+  { name: 'title', labelKey: 'titre' },
+  { name: 'description', labelKey: 'description' },
+  { name: 'conditions', labelKey: 'conditions' },
+  { name: 'target_audience', labelKey: 'publicCible' },
 ];
 
 const emptyTranslationSet = () => ({
-  en: { title: '', description: '', conditions: '', target_audience: '', application_procedure: '', selection_criteria: '' },
-  ar: { title: '', description: '', conditions: '', target_audience: '', application_procedure: '', selection_criteria: '' },
+  en: { title: '', description: '', conditions: '', target_audience: '' },
+  ar: { title: '', description: '', conditions: '', target_audience: '' },
 });
 
 export default function ManageMobilites() {
@@ -210,6 +209,11 @@ export default function ManageMobilites() {
               );
             },
           },
+          {
+            key: 'documents',
+            label: t('documentsSection', { defaultValue: 'Documents' }),
+            render: (i) => <DocumentsCell documents={i.documents} />,
+          },
           { key: 'translations', label: t('traductions'),
             render: (i) => (
               <button
@@ -262,7 +266,7 @@ export default function ManageMobilites() {
             name: 'scheduledPublishAt',
             label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
             type: 'datetime-local',
-            help: 'Laisser vide pour publier manuellement.',
+  help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
           },
         ]}
       />
@@ -307,7 +311,7 @@ export default function ManageMobilites() {
                 TRANSLATION_FIELDS.map((f) => (
                   <div key={f.name}>
                     <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                      {f.label}
+  {t(f.labelKey, { defaultValue: f.name })}
                     </label>
                     <textarea
                       dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
@@ -332,7 +336,8 @@ export default function ManageMobilites() {
                 disabled={translationsSaving}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Annuler
+                  {t('annuler')}
+
               </button>
               <button
                 type="button"
@@ -340,7 +345,7 @@ export default function ManageMobilites() {
                 disabled={translationsSaving || translationsLoading}
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
-                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                {translationsSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
               </button>
             </div>
           </div>
@@ -352,8 +357,7 @@ export default function ManageMobilites() {
           <div className="w-full max-w-md rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-navy dark:text-white">
-                Langues requises — {langItem.title}
-              </h3>
+{t('requiredLanguages.title', { titre: langItem.title, defaultValue: `Langues requises — ${langItem.title}` })}              </h3>
               <button type="button" onClick={closeLanguages} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X size={20} />
               </button>
@@ -374,7 +378,7 @@ export default function ManageMobilites() {
                       {active && (
                         <input
                           type="text"
-                          placeholder="Niveau min. (ex: B2)"
+  placeholder={t('requiredLanguages.minLevelPlaceholder', { defaultValue: 'Niveau min. (ex: B2)' })}
                           value={active.minLevel}
                           onChange={(e) => setLangLevel(lang.id, e.target.value)}
                           className="w-28 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 px-2 py-1 text-sm"
@@ -393,7 +397,8 @@ export default function ManageMobilites() {
                 disabled={langSaving}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Annuler
+                  {t('annuler')}
+
               </button>
               <button
                 type="button"
@@ -401,7 +406,7 @@ export default function ManageMobilites() {
                 disabled={langSaving || langLoading}
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
-                {langSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                {langSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
               </button>
             </div>
           </div>

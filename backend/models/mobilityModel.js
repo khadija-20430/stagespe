@@ -16,14 +16,12 @@ const MOBILITY_SELECT = `
 const MOBILITY_FIELDS = [
     'title', 'type', 'programme_id', 'project_id', 'agreement_id', 'destination_country_id',
     'destination_partner_id', 'institution_id', 'target_audience', 'description', 'conditions',
-    'places_count', 'duration', 'period', 'funding_details', 'application_procedure',
-    'selection_criteria', 'application_link', 'contact_person', 'contact_email',
+    'places_count', 'duration', 'period', 'funding_details', 'application_link', 'contact_person', 'contact_email',
     'deadline', 'start_date', 'end_date', 'status',
     'scheduled_publish_at' 
 ];
 
 // Remplace toutes les exigences de langue d'une offre par la nouvelle liste envoyée
-// (tableau de { language_id, min_level }).
 async function replaceLanguageRequirements(client, mobilityId, requirements) {
     if (!Array.isArray(requirements)) return;
     await client.query('DELETE FROM mobility_language_requirements WHERE mobility_id = $1', [mobilityId]);
@@ -38,7 +36,23 @@ async function replaceLanguageRequirements(client, mobilityId, requirements) {
 
 exports.findAllPublished = async(filters) => {
     const { type, status, programme_id, destination_country_id } = filters;
-    let query = `${MOBILITY_SELECT} ${MOBILITY_JOIN} WHERE mobility.statut_publication = 'published'`;
+    let query = `${MOBILITY_SELECT},
+        COALESCE((
+            SELECT json_agg(
+                json_build_object(
+                    'id', d.id,
+                    'titre', d.titre,
+                    'fichier_url', d.fichier_url,
+                    'file_format', d.file_format,
+                    'file_size', d.file_size
+                ) ORDER BY d.id
+            )
+            FROM mobility_documents mdoc
+            JOIN documents d ON d.id = mdoc.document_id
+            WHERE mdoc.mobility_id = mobility.id
+              AND d.statut_publication = 'published'
+        ), '[]') AS documents
+      ${MOBILITY_JOIN} WHERE mobility.statut_publication = 'published'`;
     const params = [];
     if (type) { params.push(type);
         query += ` AND mobility.type = $${params.length}`; }
@@ -54,12 +68,44 @@ exports.findAllPublished = async(filters) => {
 };
 
 exports.findAllAdmin = async() => {
-    const result = await pool.query(`${MOBILITY_SELECT} ${MOBILITY_JOIN} ORDER BY mobility.deadline ASC`);
+    const query = `${MOBILITY_SELECT},
+        COALESCE((
+            SELECT json_agg(
+                json_build_object(
+                    'id', d.id,
+                    'titre', d.titre,
+                    'fichier_url', d.fichier_url,
+                    'file_format', d.file_format,
+                    'file_size', d.file_size
+                ) ORDER BY d.id
+            )
+            FROM mobility_documents mdoc
+            JOIN documents d ON d.id = mdoc.document_id
+            WHERE mdoc.mobility_id = mobility.id
+        ), '[]') AS documents
+      ${MOBILITY_JOIN} ORDER BY mobility.deadline ASC`;
+    const result = await pool.query(query);
     return result.rows;
 };
 
 exports.findById = async(id) => {
-    const result = await pool.query(`${MOBILITY_SELECT} ${MOBILITY_JOIN} WHERE mobility.id = $1`, [id]);
+    const query = `${MOBILITY_SELECT},
+        COALESCE((
+            SELECT json_agg(
+                json_build_object(
+                    'id', d.id,
+                    'titre', d.titre,
+                    'fichier_url', d.fichier_url,
+                    'file_format', d.file_format,
+                    'file_size', d.file_size
+                ) ORDER BY d.id
+            )
+            FROM mobility_documents mdoc
+            JOIN documents d ON d.id = mdoc.document_id
+            WHERE mdoc.mobility_id = mobility.id
+        ), '[]') AS documents
+      ${MOBILITY_JOIN} WHERE mobility.id = $1`;
+    const result = await pool.query(query, [id]);
     return result.rows[0];
 };
 
@@ -105,7 +151,6 @@ exports.update = async (id, data) => {
   try {
     await client.query('BEGIN');
     
-    // ✅ CORRECTION : traiter scheduled_publish_at comme status
     const values = MOBILITY_FIELDS.map(f => {
       if (f === 'scheduled_publish_at') return data.scheduled_publish_at ?? null;
       return data[f];

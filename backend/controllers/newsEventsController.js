@@ -70,7 +70,7 @@ exports.create = async(req, res) => {
             author_role,
             quote_text,
             statut_publication,
-            scheduled_publish_at,   // ✅ AJOUT
+            scheduled_publish_at,  
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -96,7 +96,7 @@ exports.create = async(req, res) => {
             author_photo_url,
             quote_text,
             statut_publication,
-            scheduled_publish_at,   // ✅ AJOUT
+            scheduled_publish_at, 
         }, req.user.id);
 
         await logAction(req.user.id, 'create', 'news_event', news.id, null, req);
@@ -121,7 +121,7 @@ exports.update = async(req, res) => {
             author_role,
             quote_text,
             statut_publication,
-            scheduled_publish_at,   // ✅ AJOUT
+            scheduled_publish_at,  
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -158,7 +158,7 @@ exports.update = async(req, res) => {
             author_photo_url,
             quote_text,
             statut_publication,
-            scheduled_publish_at,   // ✅ AJOUT
+            scheduled_publish_at,  
         });
         if (!news) return res.status(404).json({ error: 'Contenu non trouvé' });
 

@@ -1,6 +1,7 @@
 // src/pages/AgreementsList.jsx
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Eye, Download, Paperclip } from 'lucide-react';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import Button from '../components/ui/Button.jsx';
@@ -8,14 +9,8 @@ import SectionHeading from '../components/ui/SectionHeading.jsx';
 import { getAgreements, getFileUrl } from '../services/api.js';
 import { formatDate } from '../lib/utils.js';
 
-// Le statut réel en base (agreements.status) est contraint à ces 4 valeurs
-// (voir agreements_status_check en BDD) : 'active', 'expired', 'pending', 'negotiation'.
-// L'ancienne version utilisait 'en_cours'/'signe'/'expire'/'en_negociation', qui ne
-// correspondent à AUCUNE valeur réelle -> le filtre et le badge ne matchaient jamais.
 const AGREEMENT_STATUS = ['active', 'expired', 'pending', 'negotiation'];
 
-// Tones réellement supportés par Badge.jsx. 'success'/'danger'/'warning'/'neutral'
-// n'existaient pas et retombaient silencieusement sur le style par défaut.
 const AGREEMENT_STATUS_TONE = {
   active: 'green',
   expired: 'red',
@@ -23,20 +18,52 @@ const AGREEMENT_STATUS_TONE = {
   negotiation: 'cobalt',
 };
 
+// Helpers documents
+const getFileName = (path) => {
+  if (!path) return 'document';
+  try {
+    const cleanPath = String(path).split('?')[0];
+    return cleanPath.split('/').pop() || 'document';
+  } catch {
+    return 'document';
+  }
+};
+
+const downloadFile = async (path, fallbackName = 'document') => {
+  try {
+    const url = getFileUrl(path);
+    if (!url) throw new Error('Aucun fichier disponible');
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Impossible de télécharger le fichier (${response.status})`);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fallbackName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Erreur téléchargement fichier:', error);
+    alert(error.message || 'Erreur lors du téléchargement du fichier');
+  }
+};
+
 const AgreementsList = () => {
-const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [agreements, setAgreements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
 
- useEffect(() => {
+  useEffect(() => {
     fetchAgreements();
-}, [i18n.language]);  // ← était [], donc jamais rechargé au changement de langue
+  }, [i18n.language]);
 
-const fetchAgreements = async () => {
+  const fetchAgreements = async () => {
     try {
       setLoading(true);
-      const data = await getAgreements(i18n.language);  // ← passe la langue
+      const data = await getAgreements(i18n.language);
       const published = data.filter((a) => a.statutPublication === 'published');
       setAgreements(published);
     } catch (error) {
@@ -44,7 +71,8 @@ const fetchAgreements = async () => {
     } finally {
       setLoading(false);
     }
-};
+  };
+
   const getStatusBadge = (status) => ({
     label: t(`enums.agreementStatus.${status}`, status),
     tone: AGREEMENT_STATUS_TONE[status] || 'default',
@@ -72,7 +100,7 @@ const fetchAgreements = async () => {
         )}
       />
 
-      {/* Filtres — générés depuis les vraies valeurs de statut en BDD */}
+      {/* Filtres */}
       <div className="mt-8 flex flex-wrap gap-3">
         <Button
           variant={filter === 'all' ? 'primary' : 'secondary'}
@@ -129,16 +157,12 @@ const fetchAgreements = async () => {
                 </p>
 
                 <div className="mt-4 space-y-2 text-sm">
-                  {/* mapAgreement() renvoie "partnerName", pas "partenaire" */}
                   {agreement.partnerName && (
                     <p className="text-slate-600 dark:text-slate-400">
                       <span className="font-medium">{t('agreementsList.partner', 'Partenaire')} :</span>{' '}
                       {agreement.partnerName}
                     </p>
                   )}
-                  {/* "pays" n'existe pas dans agreements (ni dans mapAgreement) : la table
-                      agreements n'a pas de colonne pays, seulement partner_id -> partners.country_id.
-                      Affiché seulement si le backend l'ajoute un jour via partnerCountry. */}
                   {agreement.partnerCountry && (
                     <p className="text-slate-600 dark:text-slate-400">
                       <span className="font-medium">{t('common.pays', 'Pays')} :</span> {agreement.partnerCountry}
@@ -157,51 +181,95 @@ const fetchAgreements = async () => {
                   )}
                 </div>
 
-                {/* Documents attachés */}
-                {(agreement.fichierPdf || (agreement.documents && agreement.documents.length > 0)) && (
+                {/* 📎 DOCUMENTS — PDF principal + docs liés */}
+                {(agreement.fichierPdf || (Array.isArray(agreement.documents) && agreement.documents.length > 0)) && (
                   <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-2">
-                      {t('agreementsList.linkedDocuments', 'Documents liés')} :
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-2 inline-flex items-center gap-1.5">
+                      <Paperclip size={14} className="text-cobalt" />
+                      {t('documentsSection', { defaultValue: 'Documents' })}
                     </p>
                     <div className="space-y-2">
+                      {/* PDF principal */}
                       {agreement.fichierPdf && (
-                        <a
-                          href={getFileUrl(agreement.fichierPdf)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-2 text-sm font-medium text-cobalt hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                          </svg>
-                          {t('agreementsList.viewPdf', 'Consulter le PDF')}
-                        </a>
+                        <div className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 bg-slate-50 dark:bg-slate-800/50">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
+                              {t('agreementsList.viewPdf', 'Consulter le PDF')}
+                            </p>
+                            <p className="text-xs text-slate-400 dark:text-slate-500 uppercase">
+                              PDF
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-3 ml-3 shrink-0">
+                            <a
+                              href={getFileUrl(agreement.fichierPdf)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-cobalt hover:text-blue-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                              title="Voir"
+                            >
+                              <Eye size={14} />
+                              <span>{t('voir', { defaultValue: 'Voir' })}</span>
+                            </a>
+                            <button
+                              type="button"
+                              onClick={() => downloadFile(agreement.fichierPdf, `${agreement.titre || 'accord'}.pdf`)}
+                              className="text-green-600 hover:text-green-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                              title="Télécharger"
+                            >
+                              <Download size={14} />
+                              <span>{t('telecharger', { defaultValue: 'Télécharger' })}</span>
+                            </button>
+                          </div>
+                        </div>
                       )}
-                      {agreement.documents &&
-                        agreement.documents.map((doc) => (
-                          <a
+
+                      {/* Documents liés */}
+                      {Array.isArray(agreement.documents) && agreement.documents.map((doc) => {
+                        const filePath = doc.fichier_url;
+                        if (!filePath) return null;
+                        const fileUrl = getFileUrl(filePath);
+                        const fileName = getFileName(filePath);
+
+                        return (
+                          <div
                             key={doc.id}
-                            href={getFileUrl(doc.fichier_url)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-sm font-medium text-cobalt hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                            className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 bg-slate-50 dark:bg-slate-800/50"
                           >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                              />
-                            </svg>
-                            {doc.titre} {doc.fileFormat && `(${doc.fileFormat})`}
-                          </a>
-                        ))}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
+                                {doc.titre || fileName}
+                              </p>
+                              {doc.file_format && (
+                                <p className="text-xs text-slate-400 dark:text-slate-500 uppercase">
+                                  {doc.file_format}
+                                </p>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3 ml-3 shrink-0">
+                              <a
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-cobalt hover:text-blue-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                                title="Voir"
+                              >
+                                <Eye size={14} />
+                                <span>{t('voir', { defaultValue: 'Voir' })}</span>
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => downloadFile(filePath, fileName)}
+                                className="text-green-600 hover:text-green-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                                title="Télécharger"
+                              >
+                                <Download size={14} />
+                                <span>{t('telecharger', { defaultValue: 'Télécharger' })}</span>
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

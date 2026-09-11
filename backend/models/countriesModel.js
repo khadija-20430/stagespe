@@ -10,11 +10,8 @@ exports.create = async(name, isoCode, region) => {
     return result.rows[0];
 };
 
-// ============================================================
-// TRADUCTIONS
-// ============================================================
+// Traduction
 
-// Récupérer les pays dans une langue donnée (fallback sur countries.name si absent)
 exports.findAllByLanguage = async (langCode = 'fr') => {
     const result = await pool.query(
         `SELECT countries.id,
@@ -29,7 +26,7 @@ exports.findAllByLanguage = async (langCode = 'fr') => {
     return result.rows;
 };
 
-// Récupérer toutes les traductions d'un pays (pour la modale d'édition admin)
+// Récupérer toutes les traductions d'un pays 
 exports.findTranslations = async (countryId) => {
     const result = await pool.query(
         `SELECT languages.code, country_translations.name
@@ -46,7 +43,7 @@ exports.findTranslations = async (countryId) => {
     return out;
 };
 
-// Créer/mettre à jour les traductions (upsert) pour en + ar
+// Créer/mettre à jour les traductions 
 exports.upsertTranslations = async (countryId, translations) => {
     const client = await pool.connect();
     try {

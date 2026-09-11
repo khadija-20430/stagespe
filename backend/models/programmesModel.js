@@ -14,19 +14,6 @@ exports.findAll = async () => {
   return result.rows;
 };
 
-// Admin  tous les programmes avec stats
-exports.findAllAdmin = async () => {
-  const result = await pool.query(`
-    SELECT p.*,
-      COUNT(DISTINCT pd.document_id) as documents_count
-    FROM programmes p
-    LEFT JOIN programme_documents pd ON p.id = pd.programme_id
-    GROUP BY p.id
-    ORDER BY p.name ASC
-  `);
-  return result.rows;
-};
-
 // Preview traductions pour admin
 exports.findAllAdminPreview = async (lang) => {
   const result = await pool.query(`
@@ -53,13 +40,69 @@ exports.findLogoUrlById = async (id) => {
   return result.rows[0];
 };
 
-// Public  avec traduction
+// Admin  tous les programmes avec documents
+exports.findAllAdmin = async () => {
+  const result = await pool.query(`
+    SELECT p.*,
+      COALESCE((
+        SELECT json_agg(
+          json_build_object(
+            'id', d.id,
+            'titre', d.titre,
+            'fichier_url', d.fichier_url,
+            'file_format', d.file_format,
+            'file_size', d.file_size
+          ) ORDER BY d.id
+        )
+        FROM programme_documents pd
+        JOIN documents d ON d.id = pd.document_id
+        WHERE pd.programme_id = p.id
+      ), '[]') AS documents,
+      COALESCE((
+        SELECT COUNT(*)
+        FROM programme_documents pd
+        WHERE pd.programme_id = p.id
+      ), 0)::int AS documents_count,
+      COALESCE((
+        SELECT COUNT(*)
+        FROM projects
+        WHERE projects.programme_id = p.id
+          AND projects.statut_publication = 'published'
+      ), 0)::int AS projects_count
+    FROM programmes p
+    ORDER BY p.name ASC
+  `);
+  return result.rows;
+};
+
+// Public  avec traduction + documents publiés
 exports.findAllPublic = async (lang = 'fr') => {
   const result = await pool.query(`
     SELECT p.*,
       COALESCE(pt.name, p.name) as name,
       COALESCE(pt.description, p.description) as description,
-      COALESCE(pt.organisme_financeur, p.organisme_financeur) as organisme_financeur
+      COALESCE(pt.organisme_financeur, p.organisme_financeur) as organisme_financeur,
+      COALESCE((
+        SELECT json_agg(
+          json_build_object(
+            'id', d.id,
+            'titre', d.titre,
+            'fichier_url', d.fichier_url,
+            'file_format', d.file_format,
+            'file_size', d.file_size
+          ) ORDER BY d.id
+        )
+        FROM programme_documents pd
+        JOIN documents d ON d.id = pd.document_id
+        WHERE pd.programme_id = p.id
+          AND d.statut_publication = 'published'
+      ), '[]') AS documents,
+      COALESCE((
+        SELECT COUNT(*)
+        FROM projects
+        WHERE projects.programme_id = p.id
+          AND projects.statut_publication = 'published'
+      ), 0)::int AS projects_count
     FROM programmes p
     LEFT JOIN programme_translations pt 
       ON pt.programme_id = p.id
@@ -68,7 +111,6 @@ exports.findAllPublic = async (lang = 'fr') => {
   `, [lang]);
   return result.rows;
 };
-
 exports.create = async (data) => {
     const { 
         name, acronym, organisme_financeur, description, 

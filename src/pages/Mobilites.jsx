@@ -1,12 +1,44 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronUp, ExternalLink, Globe2 } from 'lucide-react';
+import { ChevronDown, ChevronUp, ExternalLink, Globe2, Eye, Download, Paperclip } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader.jsx';
 import Card from '../components/ui/Card.jsx';
 import Badge from '../components/ui/Badge.jsx';
 import FilterChip from '../components/ui/FilterChip.jsx';
 import Loader from '../components/ui/Loader.jsx';
-import { getMobilites, getMobiliteById } from '../services/api.js';
+import { getMobilites, getMobiliteById, getFileUrl } from '../services/api.js';
+
+// Helpers documents
+const getFileName = (path) => {
+  if (!path) return 'document';
+  try {
+    const cleanPath = String(path).split('?')[0];
+    return cleanPath.split('/').pop() || 'document';
+  } catch {
+    return 'document';
+  }
+};
+
+const downloadFile = async (path, fallbackName = 'document') => {
+  try {
+    const url = getFileUrl(path);
+    if (!url) throw new Error('Aucun fichier disponible');
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Impossible de télécharger le fichier (${response.status})`);
+    const blob = await response.blob();
+    const blobUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = blobUrl;
+    link.download = fallbackName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(blobUrl);
+  } catch (error) {
+    console.error('Erreur téléchargement fichier:', error);
+    alert(error.message || 'Erreur lors du téléchargement du fichier');
+  }
+};
 
 export default function Mobilites() {
   const { t, i18n } = useTranslation();
@@ -221,6 +253,63 @@ export default function Mobilites() {
                               <p className="text-sm text-slate-600 dark:text-slate-400">
                                 {full.contact} {full.emailContact && `— ${full.emailContact}`}
                               </p>
+                            </div>
+                          )}
+
+                          {/* 📎 DOCUMENTS */}
+                          {Array.isArray(full.documents) && full.documents.length > 0 && (
+                            <div>
+                              <h4 className="flex items-center gap-1.5 text-xs font-semibold uppercase text-slate-400 mb-2">
+                                <Paperclip size={14} className="text-cobalt" />
+                                {t('documentsSection', { defaultValue: 'Documents' })}
+                              </h4>
+                              <div className="space-y-2">
+                                {full.documents.map((doc) => {
+                                  const filePath = doc.fichier_url;
+                                  if (!filePath) return null;
+                                  const fileUrl = getFileUrl(filePath);
+                                  const fileName = getFileName(filePath);
+
+                                  return (
+                                    <div
+                                      key={doc.id}
+                                      className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 bg-slate-50 dark:bg-slate-800/50"
+                                    >
+                                      <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
+                                          {doc.titre || fileName}
+                                        </p>
+                                        {doc.file_format && (
+                                          <p className="text-xs text-slate-400 dark:text-slate-500 uppercase">
+                                            {doc.file_format}
+                                          </p>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-3 ml-3 shrink-0">
+                                        <a
+                                          href={fileUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-cobalt hover:text-blue-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                                          title="Voir"
+                                        >
+                                          <Eye size={14} />
+                                          <span>{t('voir', { defaultValue: 'Voir' })}</span>
+                                        </a>
+                                        <button
+                                          type="button"
+                                          onClick={() => downloadFile(filePath, fileName)}
+                                          className="text-green-600 hover:text-green-700 transition inline-flex items-center gap-1 text-xs font-medium"
+                                          title="Télécharger"
+                                        >
+                                          <Download size={14} />
+                                          <span>{t('telecharger', { defaultValue: 'Télécharger' })}</span>
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
                           )}
 

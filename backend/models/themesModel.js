@@ -14,9 +14,8 @@ exports.remove = async(id) => {
     const result = await pool.query('DELETE FROM themes WHERE id=$1 RETURNING *', [id]);
     return result.rows[0];
 };
-// models/themesModel.js
 
-// Récupérer toutes les traductions d'un thème (pour la modale d'édition admin)
+// Récupérer toutes les traductions d'un thème 
 exports.findTranslations = async (themeId) => {
   const result = await pool.query(
     `SELECT languages.code, theme_translations.name
@@ -26,7 +25,7 @@ exports.findTranslations = async (themeId) => {
     [themeId]
   );
 
-  // Transforme en { en: { name }, ar: { name } }
+ 
   const out = {};
   result.rows.forEach((r) => {
     out[r.code] = { name: r.name };
@@ -34,9 +33,7 @@ exports.findTranslations = async (themeId) => {
   return out;
 };
 
-// Créer/mettre à jour les traductions (upsert) pour en + ar
 exports.upsertTranslations = async (themeId, translations) => {
-  // translations = { en: { name }, ar: { name } }
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
@@ -70,7 +67,7 @@ exports.upsertTranslations = async (themeId, translations) => {
   }
 };
 
-// Récupérer les thèmes dans une langue donnée (fallback sur themes.name si absent)
+// Récupérer les thèmes dans une langue donnée 
 exports.findAllByLanguage = async (langCode = 'fr') => {
   const result = await pool.query(
     `SELECT themes.id,

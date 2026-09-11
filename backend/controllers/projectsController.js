@@ -1,6 +1,8 @@
 const projectsModel = require('../models/projectsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
+const pool = require('../db'); 
+
 const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 function isEndDateBeforeStartDate(start_date, end_date) {
@@ -157,4 +159,34 @@ exports.remove = async(req, res) => {
         await logAction(req.user.id, 'delete', 'project', req.params.id, null, req);
         res.json({ message: 'Projet supprimé', deleted: project });
     } catch (err) { sendError(res, err); }
+};
+
+// mise a jour des traductions delivrables
+
+exports.updateDeliverablesTranslations = async (req, res) => {
+    const { id } = req.params;
+    const { deliverables = [], results = [] } = req.body;
+
+    const client = await pool.connect();
+    try {
+        await client.query('BEGIN');
+
+        for (const d of deliverables) {
+            if (!d.id) continue;
+            await projectsModel.replaceDeliverableTranslations(client, d.id, d.translations);
+        }
+
+        for (const r of results) {
+            if (!r.id) continue;
+            await projectsModel.replaceResultTranslations(client, r.id, r.translations);
+        }
+
+        await client.query('COMMIT');
+        res.json({ message: 'Traductions mises à jour' });
+    } catch (err) {
+        await client.query('ROLLBACK');
+        sendError(res, err);
+    } finally {
+        client.release();
+    }
 };

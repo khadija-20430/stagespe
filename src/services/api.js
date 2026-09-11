@@ -172,6 +172,12 @@ export const publishProjet = (id) =>
 export const archiveProjet = (id) =>
     authRequest(`/projects/${id}/archive`, { method: 'PATCH' });
 
+export const updateProjetDeliverablesTranslations = async (id, payload) => {
+    return authRequest(`/projects/${id}/deliverables-translations`, {
+        method: 'PUT',
+        body: payload,
+    });
+};
 // ============================================================
 // APPELS À PROJETS
 // ============================================================
@@ -899,3 +905,27 @@ export const updateMobilityLanguageRequirements = (id, requirements) =>
         },
     });
     export const getLanguages = () => request('/languages/reference');
+
+// ============================================================
+// PROJECT PARTNERS
+// ============================================================
+
+export const getProjectPartners = async (projectId) => {
+    const data = await request(`/project-partners/project/${projectId}`);
+    return data;
+};
+
+export const createProjectPartner = async (payload) => {
+    const data = await authRequest('/project-partners', {
+        method: 'POST',
+        body: payload,
+    });
+    return data;
+};
+
+export const deleteProjectPartner = async (id) => {
+    const data = await authRequest(`/project-partners/${id}`, {
+        method: 'DELETE',
+    });
+    return data;
+};

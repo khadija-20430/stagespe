@@ -28,7 +28,7 @@ import {
 
 import { toPartnerPayload } from '../../services/mappers.js';
 import { geocodeAddress } from '../../lib/geocode.js';
-import { formatScheduledDate } from '../../lib/utils.js';  // 🆕
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const PARTNERSHIP_STATUS = ['active', 'pending', 'ended'];
 
@@ -41,10 +41,10 @@ const publicationStatusTone = (s) =>
 const publicationStatusLabel = (s, t) => t(s || 'draft', { defaultValue: t('draft') });
 
 const TRANSLATION_FIELDS = [
-  { name: 'name', label: 'Nom' },
-  { name: 'official_name', label: 'Nom officiel' },
-  { name: 'description', label: 'Description' },
-  { name: 'cooperation_areas', label: 'Domaines de coopération' },
+  { name: 'name', labelKey: 'nom' },
+  { name: 'official_name', labelKey: 'nomOfficiel' },
+  { name: 'description', labelKey: 'description' },
+  { name: 'cooperation_areas', labelKey: 'domaines' },
 ];
 
 const emptyTranslationSet = () => ({
@@ -136,7 +136,7 @@ export default function ManagePartenaires() {
         ar: { ...prev.ar, ...(existing.ar || {}) },
       }));
     } catch (err) {
-      setTranslationsError(err.message || 'Erreur de chargement des traductions');
+      setTranslationsError(err.message || t('erreur_chargement_traductions'));
     } finally {
       setTranslationsLoading(false);
     }
@@ -163,7 +163,7 @@ export default function ManagePartenaires() {
       refreshPreview();
       setTranslationsItem(null);
     } catch (err) {
-      setTranslationsError(err.message || "Erreur lors de l'enregistrement");
+      setTranslationsError(err.message || t('erreur_enregistrement_traductions'));
     } finally {
       setTranslationsSaving(false);
     }
@@ -245,7 +245,7 @@ export default function ManagePartenaires() {
   };
 
   const removeContact = async (id) => {
-    if (!window.confirm('Supprimer ce contact ?')) return;
+    if (!window.confirm(t('partnerContacts.deleteConfirm', { defaultValue: 'Supprimer ce contact ?' }))) return;
 
     setContactsSaving(true);
     setContactsError('');
@@ -302,7 +302,6 @@ export default function ManagePartenaires() {
               </Badge>
             ),
           },
-          // ✅ COLONNE STATUT AVEC INDICATEUR "PROGRAMMÉ"
           {
             key: 'statut_publication',
             label: t('statutPublication'),
@@ -330,7 +329,7 @@ export default function ManagePartenaires() {
                 type="button"
                 onClick={() => openTranslations(item)}
                 className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
-                title="Voir / modifier les traductions"
+                title={t('voir_modifier_traductions')}
               >
                 <Languages size={18} />
               </button>
@@ -344,7 +343,7 @@ export default function ManagePartenaires() {
                 type="button"
                 onClick={() => openContacts(item)}
                 className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
-                title="Gérer les contacts"
+                title={t('partnerContacts.title', { nom: item.nom, defaultValue: 'Gérer les contacts' })}
               >
                 <Users size={18} />
               </button>
@@ -386,16 +385,15 @@ export default function ManagePartenaires() {
                 setField('logo_url', uploaded.fichier_url);
               } catch (err) {
                 console.error('Erreur upload logo:', err);
-                alert(err.message || "Erreur lors de l'upload du logo");
+                alert(err.message || t('erreur_upload'));
               }
             },
           },
-          // ✅ CHAMP PROGRAMMER LA PUBLICATION
           {
             name: 'scheduledPublishAt',
             label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
             type: 'datetime-local',
-            help: 'Laisser vide pour publier manuellement. Si une date est définie et que le statut est "Brouillon", la publication sera automatique.',
+  help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
           },
         ]}
       />
@@ -406,7 +404,7 @@ export default function ManagePartenaires() {
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="font-bold text-navy dark:text-white">
-                Traductions — {translationsItem.nom}
+                {t('traductions_titre_modal')} — {translationsItem.nom}
               </h3>
               <button type="button" onClick={closeTranslations} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X size={20} />
@@ -441,7 +439,7 @@ export default function ManagePartenaires() {
                 TRANSLATION_FIELDS.map((f) => (
                   <div key={f.name}>
                     <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                      {f.label}
+                      {t(f.labelKey, { defaultValue: f.name })}
                     </label>
                     <textarea
                       dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}
@@ -466,7 +464,7 @@ export default function ManagePartenaires() {
                 disabled={translationsSaving}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Annuler
+                {t('annuler')}
               </button>
               <button
                 type="button"
@@ -474,7 +472,7 @@ export default function ManagePartenaires() {
                 disabled={translationsSaving || translationsLoading}
                 className="px-6 py-2 bg-cobalt hover:bg-blue-700 text-white rounded-lg transition text-sm font-medium inline-flex items-center gap-1.5"
               >
-                {translationsSaving ? '...' : (<><Save size={16} /> Enregistrer</>)}
+                {translationsSaving ? '...' : (<><Save size={16} /> {t('enregistrer')}</>)}
               </button>
             </div>
           </div>
@@ -487,7 +485,7 @@ export default function ManagePartenaires() {
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="font-bold text-navy dark:text-white">
-                Contacts — {contactsItem.nom}
+                {t('partnerContacts.title', { nom: contactsItem.nom, defaultValue: `Contacts — ${contactsItem.nom}` })}
               </h3>
               <button type="button" onClick={closeContacts} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
                 <X size={20} />
@@ -502,7 +500,9 @@ export default function ManagePartenaires() {
               ) : (
                 <>
                   {contactsList.length === 0 ? (
-                    <p className="text-sm text-slate-500 dark:text-slate-400">Aucun contact pour ce partenaire.</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {t('partnerContacts.empty', { defaultValue: 'Aucun contact pour ce partenaire.' })}
+                    </p>
                   ) : (
                     <div className="space-y-2">
                       {contactsList.map((c) => (
@@ -510,8 +510,8 @@ export default function ManagePartenaires() {
                           <div>
                             <p className="text-sm font-semibold text-navy dark:text-white">
                               {c.full_name}
-                              {c.is_primary && <Badge tone="cobalt" className="ml-2">Principal</Badge>}
-                              {c.is_public && <Badge tone="green" className="ml-2">Public</Badge>}
+                              {c.is_primary && <Badge tone="cobalt" className="ml-2">{t('partnerContacts.isPrimary', { defaultValue: 'Principal' })}</Badge>}
+                              {c.is_public && <Badge tone="green" className="ml-2">{t('partnerContacts.isPublic', { defaultValue: 'Public' })}</Badge>}
                             </p>
                             <p className="text-xs text-slate-500 dark:text-slate-400">
                               {c.position || '—'} · {c.email || '—'} · {c.phone || '—'}
@@ -532,30 +532,36 @@ export default function ManagePartenaires() {
 
                   <div className="border-t border-slate-200 dark:border-slate-700 pt-4 space-y-3">
                     <p className="text-xs font-semibold uppercase text-slate-500 dark:text-slate-400">
-                      {contactDraft.id ? 'Modifier le contact' : 'Ajouter un contact'}
+                      {contactDraft.id
+                        ? t('partnerContacts.editTitle', { defaultValue: 'Modifier le contact' })
+                        : t('partnerContacts.addTitle', { defaultValue: 'Ajouter un contact' })}
                     </p>
 
                     <div className="grid grid-cols-2 gap-3">
                       <input
-                        type="text" placeholder="Nom complet *"
+                        type="text"
+                        placeholder={`${t('partnerContacts.fullName', { defaultValue: 'Nom complet' })} *`}
                         value={contactDraft.full_name}
                         onChange={(e) => setContactDraft((d) => ({ ...d, full_name: e.target.value }))}
                         className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
                       />
                       <input
-                        type="text" placeholder="Fonction"
+                        type="text"
+                        placeholder={t('partnerContacts.position', { defaultValue: 'Fonction' })}
                         value={contactDraft.position}
                         onChange={(e) => setContactDraft((d) => ({ ...d, position: e.target.value }))}
                         className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
                       />
                       <input
-                        type="email" placeholder="Email"
+                        type="email"
+                        placeholder={t('partnerContacts.email', { defaultValue: 'Email' })}
                         value={contactDraft.email}
                         onChange={(e) => setContactDraft((d) => ({ ...d, email: e.target.value }))}
                         className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
                       />
                       <input
-                        type="text" placeholder="Téléphone"
+                        type="text"
+                        placeholder={t('partnerContacts.phone', { defaultValue: 'Téléphone' })}
                         value={contactDraft.phone}
                         onChange={(e) => setContactDraft((d) => ({ ...d, phone: e.target.value }))}
                         className="px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm"
@@ -566,12 +572,12 @@ export default function ManagePartenaires() {
                       <label className="flex items-center gap-1.5">
                         <input type="checkbox" checked={contactDraft.is_primary}
                           onChange={(e) => setContactDraft((d) => ({ ...d, is_primary: e.target.checked }))} />
-                        Contact principal
+                        {t('partnerContacts.isPrimary', { defaultValue: 'Contact principal' })}
                       </label>
                       <label className="flex items-center gap-1.5">
                         <input type="checkbox" checked={contactDraft.is_public}
                           onChange={(e) => setContactDraft((d) => ({ ...d, is_public: e.target.checked }))} />
-                        Visible publiquement
+                        {t('partnerContacts.isPublic', { defaultValue: 'Visible publiquement' })}
                       </label>
                     </div>
 
@@ -581,14 +587,20 @@ export default function ManagePartenaires() {
                       {contactDraft.id && (
                         <button type="button" onClick={() => setContactDraft(emptyContactDraft())}
                           className="px-3 py-1.5 text-sm rounded-lg border border-slate-300 dark:border-slate-600">
-                          Annuler l'édition
+                          {t('partnerContacts.cancelEdit', { defaultValue: "Annuler l'édition" })}
                         </button>
                       )}
                       <button
                         type="button" onClick={saveContact} disabled={contactsSaving}
                         className="px-4 py-1.5 bg-cobalt hover:bg-blue-700 text-white rounded-lg text-sm font-medium inline-flex items-center gap-1.5"
                       >
-                        {contactsSaving ? '...' : (<><Save size={14} /> {contactDraft.id ? 'Mettre à jour' : 'Ajouter'}</>)}
+                        {contactsSaving ? '...' : (
+                          <>
+                            <Save size={14} /> {contactDraft.id
+                              ? t('partnerContacts.update', { defaultValue: 'Mettre à jour' })
+                              : t('partnerContacts.add', { defaultValue: 'Ajouter' })}
+                          </>
+                        )}
                       </button>
                     </div>
                   </div>
@@ -602,7 +614,7 @@ export default function ManagePartenaires() {
                 onClick={closeContacts}
                 className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition text-sm font-medium"
               >
-                Fermer
+                {t('partnerContacts.close', { defaultValue: 'Fermer' })}
               </button>
             </div>
           </div>

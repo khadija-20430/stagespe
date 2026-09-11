@@ -994,5 +994,59 @@
     }
   },
   "languesRequises": "Langues requises",
-  "partenaire": "Partenaire"
+  "requiredLanguages": {
+  "title": "Langues requises — {{titre}}",
+  "minLevelPlaceholder": "Niveau min. (ex: B2)"
+},
+  "partenaire": "Partenaire",
+  "documentsSection": "Documents",
+  "historique": "Historique",
+  "projectsCount_one": "{{count}} projet",
+  "projectsCount_other": "{{count}} projets",
+  "partnerContacts": {
+  "title": "Contacts — {{nom}}",
+  "empty": "Aucun contact pour ce partenaire.",
+  "editTitle": "Modifier le contact",
+  "addTitle": "Ajouter un contact",
+  "fullName": "Nom complet",
+  "position": "Fonction",
+  "email": "Email",
+  "phone": "Téléphone",
+  "isPrimary": "Contact principal",
+  "isPublic": "Visible publiquement",
+  "cancelEdit": "Annuler l'édition",
+  "update": "Mettre à jour",
+  "add": "Ajouter",
+  "close": "Fermer",
+  "deleteConfirm": "Supprimer ce contact ?"
+},
+"contacts": "Contacts",
+"projectPartners": {
+    "title": "Partenaires — {{titre}}",
+    "empty": "Aucun partenaire associé à ce projet.",
+    "addTitle": "Ajouter un partenaire",
+    "selectPlaceholder": "— Choisir un partenaire —",
+    "rolePlaceholder": "Rôle (ex: Coordinateur, Membre)",
+    "partnerAndRoleRequired": "Partenaire et rôle requis",
+    "deleteConfirm": "Supprimer ce partenaire du projet ?",
+    "removeTooltip": "Retirer ce partenaire",
+    "manageTooltip": "Gérer les partenaires du projet",
+    "close": "Fermer"
+  },
+  "scheduled": "Programmé",
+  "programmerPublication": "Programmer la publication",
+"programmerPublicationHelp": "Laisser vide pour publier manuellement.",
+"termesConditions": "Termes et conditions",
+"documentRevisions": {
+  "title": "Historique — {{name}}",
+  "version": "Version",
+  "restore": "Restaurer",
+  "restoring": "Restauration...",
+  "close": "Fermer",
+  "unknownAuthor": "Auteur inconnu",
+  "empty": "Aucune version antérieure enregistrée.",
+  "restoreConfirm": "Restaurer cette version ? La version actuelle sera archivée dans l'historique.",
+  "downloadVersion": "Télécharger cette version"
+}
+
 }

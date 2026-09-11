@@ -118,7 +118,7 @@ exports.create = async (data, userId) => {
         title, type, summary, description, project_id, event_date, end_date,
         location, image_url, is_featured, author_name, author_role,
         author_photo_url, quote_text, statut_publication,
-        scheduled_publish_at  // ← AJOUT
+        scheduled_publish_at  
     } = data;
 
     const result = await pool.query(

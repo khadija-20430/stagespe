@@ -38,8 +38,7 @@ exports.getOne = async(req, res) => {
         const partner = await partnersModel.findById(req.params.id);
         if (!partner) return res.status(404).json({ error: 'Partenaire non trouvé' });
  
-        // 🆕 ajout de themes dans le Promise.all — même principe que
-        // agreements / contacts / projects.
+       
         const [agreements, contacts, projects, themes] = await Promise.all([
             partnersModel.findAgreementsByPartner(req.params.id),
             partnersModel.findPublicContactsByPartner(req.params.id),

@@ -995,6 +995,60 @@
       "daysAgo_other": "{{count}} days ago"
     }
   },
-  "languesRequises": "Required languages",
-  "partenaire": "Partner"
+  "languesRequises": "Languages requises",
+  "requiredLanguages": {
+  "title": "Required languages — {{titre}}",
+  "minLevelPlaceholder": "Min. level (e.g., B2)"
+},
+ "partenaire": "Partner",
+  "documentsSection": "Documents",
+  "historique": "History",
+  "projectsCount_one": "{{count}} project",
+  "projectsCount_other": "{{count}} projects",
+  "partnerContacts": {
+  "title": "Contacts — {{nom}}",
+  "empty": "No contacts for this partner.",
+  "editTitle": "Edit contact",
+  "addTitle": "Add contact",
+  "fullName": "Full name",
+  "position": "Position",
+  "email": "Email",
+  "phone": "Phone",
+  "isPrimary": "Primary contact",
+  "isPublic": "Publicly visible",
+  "cancelEdit": "Cancel edit",
+  "update": "Update",
+  "add": "Add",
+  "close": "Close",
+  "deleteConfirm": "Delete this contact?"
+},
+"contacts": "Contacts",
+  "projectPartners": {
+    "title": "Partners — {{titre}}",
+    "empty": "No partners associated with this project.",
+    "addTitle": "Add a partner",
+    "selectPlaceholder": "— Select a partner —",
+    "rolePlaceholder": "Role (e.g., Coordinator, Member)",
+    "partnerAndRoleRequired": "Partner and role required",
+    "deleteConfirm": "Remove this partner from the project?",
+    "removeTooltip": "Remove this partner",
+    "manageTooltip": "Manage project partners",
+    "close": "Close"
+  },
+  "scheduled": "Scheduled",
+  "programmerPublication": "Schedule publication",
+"programmerPublicationHelp": "Leave empty to publish manually.",
+"termesConditions": "Terms and conditions",
+"documentRevisions": {
+  "title": "History — {{name}}",
+  "version": "Version",
+  "restore": "Restore",
+  "restoring": "Restoring...",
+  "close": "Close",
+  "unknownAuthor": "Unknown author",
+  "empty": "No previous version saved.",
+  "restoreConfirm": "Restore this version? The current version will be archived in the history.",
+  "downloadVersion": "Download this version"
+}
+
 }

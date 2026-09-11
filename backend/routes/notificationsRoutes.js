@@ -1,5 +1,3 @@
-// routes/notificationsRoutes.js
-
 const express = require('express');
 const verifyToken = require('../middleware/verifyToken');
 const { checkRole } = require('../middleware/rbac');

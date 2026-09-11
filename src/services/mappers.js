@@ -37,20 +37,42 @@ export const mapProjet = (row) => ({
     siteWeb: row.official_website,
     resultats: row.results,
     livrables: row.deliverables,
+    deliverables: Array.isArray(row.deliverables) ? row.deliverables : [],
+    results: Array.isArray(row.results) ? row.results : [],
     coordinator_partner_id: row.coordinator_partner_id,
     coordinateurPartenaire: row.coordinator_partner_name || null,
     pays: Array.isArray(row.countries) ? row.countries : [],
     isFeatured: row.is_featured,
     statut_publication: row.statut_publication,
-    scheduledPublishAt: row.scheduled_publish_at,  // ← AJOUT
+    scheduledPublishAt: row.scheduled_publish_at,
     news: row.news,
-    documents: row.documents,
+    documents: Array.isArray(row.documents) ? row.documents : [],
+
 });
 
 export const toProjetPayload = (draft) => {
     if (draft.debut && draft.fin && draft.fin < draft.debut) {
         throw new Error('La date de fin doit être postérieure ou égale à la date de début');
     }
+
+    const normalizeList = (input) => {
+        if (Array.isArray(input)) {
+            return input.map((item) => {
+                if (typeof item === 'string') {
+                    return { description: item, translations: {} };
+                }
+                return item;
+            });
+        }
+        if (typeof input === 'string') {
+            return input
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean)
+                .map((description) => ({ description, translations: {} }));
+        }
+        return [];
+    };
 
     return {
         title: draft.titre,
@@ -68,11 +90,9 @@ export const toProjetPayload = (draft) => {
         start_date: draft.debut || null,
         end_date: draft.fin || null,
         is_featured: draft.misEnAvant === 'true' || draft.misEnAvant === true,
-        deliverables: typeof draft.livrables === 'string' ?
-            draft.livrables.split(',').map((s) => s.trim()).filter(Boolean) : draft.livrables,
-        results: typeof draft.resultats === 'string' ?
-            draft.resultats.split(',').map((s) => s.trim()).filter(Boolean) : draft.resultats,
-        scheduled_publish_at: toISODateOrNull(draft.scheduledPublishAt),  // ← AJOUT
+        deliverables: normalizeList(draft.livrables),
+        results: normalizeList(draft.resultats),
+        scheduled_publish_at: toISODateOrNull(draft.scheduledPublishAt),
     };
 };
 
@@ -188,11 +208,10 @@ export const mapMobilite = (row) => ({
     scheduledPublishAt: row.scheduled_publish_at,  // ← AJOUT
     conditions: row.conditions,
     lien: row.application_link,
-    procedure: row.application_procedure,
-    criteres: row.selection_criteria,
     financement: row.funding_details,
     contact: row.contact_person,
     emailContact: row.contact_email,
+    documents: Array.isArray(row.documents) ? row.documents : [],
     languageRequirements: Array.isArray(row.language_requirements)
         ? row.language_requirements.map((r) => ({
               languageId: r.id,
@@ -554,8 +573,11 @@ export const mapProgramme = (row) => ({
     siteWeb: row.official_website || '',
     logo: row.logo_url || null,
     documentsCount: Number(row.documents_count) || 0,
+    projectsCount: Number(row.projects_count) || 0,  
     statut_publication: row.statut_publication || 'draft',
-    scheduledPublishAt: row.scheduled_publish_at,  // ← AJOUT
+    scheduledPublishAt: row.scheduled_publish_at,  
+    documents: Array.isArray(row.documents) ? row.documents : [],  
+
 });
 
 export const toProgrammePayload = (draft) => ({

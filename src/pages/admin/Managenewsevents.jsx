@@ -42,11 +42,12 @@ const publicationStatusLabel = (status, t) => {
   return t('statut_brouillon');
 };
 
+// ✅ labelKey au lieu de label
 const TRANSLATION_FIELDS = [
-  { name: 'title', label: 'Titre' },
-  { name: 'summary', label: 'Résumé' },
-  { name: 'description', label: 'Description' },
-  { name: 'quote_text', label: 'Citation' },
+  { name: 'title', labelKey: 'titre' },
+  { name: 'summary', labelKey: 'summary' },
+  { name: 'description', labelKey: 'description' },
+  { name: 'quote_text', labelKey: 'quoteText' },
 ];
 
 const emptyTranslationSet = () => ({
@@ -108,7 +109,7 @@ export default function ManageNewsEvents() {
         ar: { ...prev.ar, ...(existing.ar || {}) },
       }));
     } catch (err) {
-      setTranslationsError(err.message || 'Erreur de chargement des traductions');
+      setTranslationsError(err.message || t('erreur_chargement_traductions'));
     } finally {
       setTranslationsLoading(false);
     }
@@ -135,7 +136,7 @@ export default function ManageNewsEvents() {
       refreshPreview();
       setTranslationsItem(null);
     } catch (err) {
-      setTranslationsError(err.message || "Erreur lors de l'enregistrement");
+      setTranslationsError(err.message || t('erreur_enregistrement_traductions'));
     } finally {
       setTranslationsSaving(false);
     }
@@ -204,7 +205,7 @@ export default function ManageNewsEvents() {
                   {status === 'draft' && item.scheduledPublishAt && (
                     <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
                       <CalendarClock size={12} />
-                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
+                      {t('scheduled', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
                     </span>
                   )}
                 </div>
@@ -219,7 +220,7 @@ export default function ManageNewsEvents() {
                 type="button"
                 onClick={() => openTranslations(item)}
                 className="text-slate-500 hover:text-cobalt dark:text-slate-400 dark:hover:text-cobalt transition"
-                title="Voir / modifier les traductions"
+                title={t('voir_modifier_traductions')}
               >
                 <Languages size={18} />
               </button>
@@ -232,7 +233,7 @@ export default function ManageNewsEvents() {
             label: t('title'),
             type: 'text',
             required: true,
-            help: "Titre de l'actualité ou événement",
+            help: t('newsEventsForm.titleHelp', { defaultValue: "Titre de l'actualité ou événement" }),
           },
           {
             name: 'type',
@@ -240,56 +241,56 @@ export default function ManageNewsEvents() {
             type: 'select',
             required: true,
             options: NEWS_EVENT_TYPES.map((type) => ({ value: type, label: t(type) })),
-            help: 'Type de contenu',
+            help: t('newsEventsForm.typeHelp', { defaultValue: 'Type de contenu' }),
           },
           {
             name: 'summary',
             label: t('summary'),
             type: 'textarea',
-            help: "Résumé court de l'actualité",
+            help: t('newsEventsForm.summaryHelp', { defaultValue: "Résumé court de l'actualité" }),
           },
           {
             name: 'description',
             label: t('description'),
             type: 'textarea',
-            help: 'Description complète',
+            help: t('newsEventsForm.descriptionHelp', { defaultValue: 'Description complète' }),
           },
           {
             name: 'projectId',
             label: t('project'),
             type: 'select',
             options: [
-              { value: '', label: 'Aucun projet' },
+              { value: '', label: t('newsEventsForm.noProject', { defaultValue: 'Aucun projet' }) },
               ...projects.map((project) => ({
                 value: project.id,
                 label: project.titre || project.title,
               })),
             ],
-            help: 'Projet associé',
+            help: t('newsEventsForm.projectHelp', { defaultValue: 'Projet associé' }),
           },
           {
             name: 'eventDate',
             label: t('eventDate'),
             type: 'date',
-            help: 'Format : YYYY-MM-DD — Exemple : 2026-05-19',
+            help: t('newsEventsForm.dateHelp', { defaultValue: 'Format : YYYY-MM-DD — Exemple : 2026-05-19' }),
           },
           {
             name: 'endDate',
             label: t('endDate'),
             type: 'date',
-            help: 'Format : YYYY-MM-DD — Exemple : 2026-05-20',
+            help: t('newsEventsForm.dateHelp', { defaultValue: 'Format : YYYY-MM-DD — Exemple : 2026-05-19' }),
           },
           {
             name: 'location',
             label: t('location'),
             type: 'text',
-            help: "Lieu de l'événement",
+            help: t('newsEventsForm.locationHelp', { defaultValue: "Lieu de l'événement" }),
           },
           {
             name: 'imageUrl',
             label: t('imageUrl'),
             type: 'text',
-            help: "URL de l'image",
+            help: t('newsEventsForm.imageHelp', { defaultValue: "URL de l'image" }),
           },
           {
             name: 'isFeatured',
@@ -299,39 +300,39 @@ export default function ManageNewsEvents() {
               { value: 'false', label: t('no') },
               { value: 'true', label: t('yes') },
             ],
-            help: "Mettre en avant sur la page d'accueil",
+            help: t('newsEventsForm.featuredHelp', { defaultValue: "Mettre en avant sur la page d'accueil" }),
           },
           {
             name: 'authorName',
             label: t('authorName'),
             type: 'text',
             required: (values) => values.type === 'testimonial',
-            help: "Nom de l'auteur",
+            help: t('newsEventsForm.authorNameHelp', { defaultValue: "Nom de l'auteur" }),
           },
           {
             name: 'authorRole',
             label: t('authorRole'),
             type: 'text',
             required: (values) => values.type === 'testimonial',
-            help: "Rôle/position de l'auteur",
+            help: t('newsEventsForm.authorRoleHelp', { defaultValue: "Rôle/position de l'auteur" }),
           },
           {
             name: 'authorPhotoUrl',
             label: t('authorPhotoUrl'),
             type: 'text',
-            help: "URL de la photo de l'auteur",
+            help: t('newsEventsForm.authorPhotoHelp', { defaultValue: "URL de la photo de l'auteur" }),
           },
           {
             name: 'quoteText',
             label: t('quoteText'),
             type: 'textarea',
-            help: 'Citation ou témoignage',
+            help: t('newsEventsForm.quoteHelp', { defaultValue: 'Citation ou témoignage' }),
           },
           {
             name: 'scheduledPublishAt',
             label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
             type: 'datetime-local',
-            help: 'Laisser vide pour publier manuellement.',
+            help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
           },
         ]}
       />
@@ -376,7 +377,7 @@ export default function ManageNewsEvents() {
                 TRANSLATION_FIELDS.map((f) => (
                   <div key={f.name}>
                     <label className="block text-xs font-semibold uppercase text-slate-500 dark:text-slate-400 mb-1">
-                      {f.label}
+                      {t(f.labelKey, { defaultValue: f.name })}
                     </label>
                     <textarea
                       dir={translationsTab === 'ar' ? 'rtl' : 'ltr'}

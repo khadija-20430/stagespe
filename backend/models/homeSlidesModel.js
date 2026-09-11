@@ -108,9 +108,7 @@ async function upsertTranslation(slideId, languageId, { title, description }) {
   );
 }
 
-// ============================================================
-// PUBLIER LES SLIDES PROGRAMMÉES
-// ============================================================
+// publier les slides programmé
 
 async function publishScheduledDue() {
   const result = await db.query(

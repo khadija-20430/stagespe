@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Layers, Languages, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
+import DocumentsCell from '../../components/ui/DocumentsCell.jsx';
 import {
   getProgrammesAdmin, getProgrammesAdminPreview,
   createProgramme, updateProgramme, deleteProgramme,
@@ -140,7 +141,11 @@ export default function ManageProgrammes() {
             key: 'organismeFinanceur', label: t('organismeFinanceur'),
             render: (i) => previewData[i.id]?.organismeFinanceur || i.organismeFinanceur || '—',
           },
-          { key: 'documentsCount', label: t('admin.nav.documents'), render: (i) => i.documentsCount ?? 0 },
+          {
+            key: 'documents',
+            label: t('documentsSection', { defaultValue: 'Documents' }),
+            render: (i) => <DocumentsCell documents={i.documents} />,
+          },
           {
             key: 'statut_publication',
             label: t('statut'),
@@ -182,7 +187,7 @@ export default function ManageProgrammes() {
             name: 'scheduledPublishAt',
             label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
             type: 'datetime-local',
-            help: 'Laisser vide pour publier manuellement.',
+  help: t('programmerPublicationHelp', { defaultValue: 'Laisser vide pour publier manuellement.' }),
           },
         ]}
       />
