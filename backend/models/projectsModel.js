@@ -135,22 +135,27 @@ exports.create = async(data, userId) => {
         is_featured,
         logo_url,
         deliverables,
-        results
+        results,
+        scheduled_publish_at
     } = data;
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const result = await client.query(
-            `INSERT INTO projects
-       (title, acronym, reference_code, logo_url, description, objectives, target_groups,
-        official_website, status, programme_id, coordinator_partner_id,
-        coordinator_user_id, budget, start_date, end_date, is_featured, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) RETURNING *`, [title, acronym, reference_code, logo_url, description, objectives, target_groups,
-                official_website, status || 'proposed', programme_id, coordinator_partner_id,
-                userId, budget, start_date, end_date, is_featured || false, userId
-            ]
-        );
+        `INSERT INTO projects
+         (title, acronym, reference_code, logo_url, description, objectives, target_groups,
+          official_website, status, programme_id, coordinator_partner_id,
+          coordinator_user_id, budget, start_date, end_date, is_featured, 
+          scheduled_publish_at, created_by)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18) 
+         RETURNING *`, 
+        [title, acronym, reference_code, logo_url, description, objectives, target_groups,
+         official_website, status || 'proposed', programme_id, coordinator_partner_id,
+         userId, budget, start_date, end_date, is_featured || false,
+         scheduled_publish_at || null,  // ← AJOUT
+         userId]
+    );
         const project = result.rows[0];
 
         await replaceItems(client, 'project_deliverables', project.id, deliverables);
@@ -184,7 +189,8 @@ exports.update = async(id, data, auditContext) => {
         is_featured,
         logo_url,
         deliverables,
-        results
+        results,
+        scheduled_publish_at
     } = data;
 
     const client = await pool.connect();
@@ -194,15 +200,17 @@ exports.update = async(id, data, auditContext) => {
             `SELECT set_config('app.current_user_id', $1, true), set_config('app.client_ip', $2, true)`, [String(auditContext.userId), auditContext.ip || '']
         );
 
-        const result = await client.query(
-            `UPDATE projects SET title=$1, acronym=$2, reference_code=$3, logo_url=$4, description=$5,
-       objectives=$6, target_groups=$7, official_website=$8, status=$9, programme_id=$10,
-       coordinator_partner_id=$11, budget=$12, start_date=$13, end_date=$14, is_featured=$15
-       WHERE id=$16 RETURNING *`, [title, acronym, reference_code, logo_url, description, objectives, target_groups,
-                official_website, status, programme_id, coordinator_partner_id, budget, start_date, end_date,
-                is_featured, id
-            ]
-        );
+       const result = await client.query(
+        `UPDATE projects SET title=$1, acronym=$2, reference_code=$3, logo_url=$4, 
+         description=$5, objectives=$6, target_groups=$7, official_website=$8, 
+         status=$9, programme_id=$10, coordinator_partner_id=$11, budget=$12, 
+         start_date=$13, end_date=$14, is_featured=$15,
+         scheduled_publish_at=$16
+         WHERE id=$17 RETURNING *`, 
+        [title, acronym, reference_code, logo_url, description, objectives, target_groups,
+         official_website, status, programme_id, coordinator_partner_id, budget, start_date, end_date,
+         is_featured, scheduled_publish_at || null, id]
+    );
         if (result.rows.length === 0) {
             await client.query('ROLLBACK');
             return null;
@@ -220,10 +228,26 @@ exports.update = async(id, data, auditContext) => {
         client.release();
     }
 };
-
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE projects
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, title`
+    );
+    return result.rows;
+};
 exports.publish = async(id) => {
     const result = await pool.query(
-        `UPDATE projects SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`, [id]
+        `UPDATE projects 
+         SET statut_publication='published', 
+             published_at=NOW(), 
+             scheduled_publish_at=NULL
+         WHERE id=$1 
+         RETURNING *`, 
+        [id]
     );
     return result.rows[0];
 };

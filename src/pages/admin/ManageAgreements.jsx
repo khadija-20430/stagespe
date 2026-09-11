@@ -4,7 +4,7 @@ import { usePermissions } from '../../context/PermissionsContext.jsx';
 import { useTranslation } from 'react-i18next';
 import {
   FileSpreadsheet, AlertTriangle, CheckCircle2, Eye, Download, Loader2,
-  Pencil, Trash2, FileText, Plus, Languages, X, Save,
+  Pencil, Trash2, FileText, Plus, Languages, X, Save, CalendarClock,
 } from 'lucide-react';
 import {
     getAgreementsAdmin,
@@ -20,6 +20,7 @@ import {
     getFileUrl,
 } from '../../services/api.js';
 import { toAgreementPayload } from '../../services/mappers.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const TRANSLATION_FIELDS = [
   { name: 'title', label: 'Titre' },
@@ -33,6 +34,17 @@ const emptyTranslationSet = () => ({
   ar: { title: '', type: '', description: '', terms_conditions: '' },
 });
 
+const toDateTimeLocalValue = (value) => {
+    if (!value) return '';
+    try {
+        const d = new Date(value);
+        if (Number.isNaN(d.getTime())) return '';
+        const pad = (n) => String(n).padStart(2, '0');
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    } catch {
+        return '';
+    }
+};
 
 const downloadFileSecure = async (path, fallbackName, t) => {
     try {
@@ -62,7 +74,6 @@ const ManageAgreements = () => {
     const previewLang = i18n.language;
     const { hasPermission } = usePermissions();
 
-    //  STATE 
     const [agreements, setAgreements] = useState([]);
     const [partners, setPartners] = useState([]);
     const [expiringAgreements, setExpiringAgreements] = useState([]);
@@ -71,10 +82,8 @@ const ManageAgreements = () => {
     const [success, setSuccess] = useState('');
     const [downloadingFileId, setDownloadingFileId] = useState(null);
 
-    //  APERÇU DE TRADUCTION
     const [previewData, setPreviewData] = useState({});
 
-    // MODALE DE TRADUCTION MANUELLE 
     const [translationsItem, setTranslationsItem] = useState(null);
     const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
     const [translationsTab, setTranslationsTab] = useState('en');
@@ -82,12 +91,10 @@ const ManageAgreements = () => {
     const [translationsSaving, setTranslationsSaving] = useState(false);
     const [translationsError, setTranslationsError] = useState('');
 
-    // Modal states
     const [showModal, setShowModal] = useState(false);
     const [editingId, setEditingId] = useState(null);
     const [uploadedFile, setUploadedFile] = useState(null);
 
-    // Form state
     const [form, setForm] = useState({
         titre: '',
         partnerId: '',
@@ -99,22 +106,20 @@ const ManageAgreements = () => {
         dateFin: '',
         statut: 'active',
         statutPublication: 'draft',
-        fichierPdf: null, 
+        fichierPdf: null,
+        scheduledPublishAt: '',
     });
 
-    // Filters
     const [filters, setFilters] = useState({
         statut: '',
         partnerId: '',
     });
 
-    //  LIFECYCLE
     useEffect(() => {
         fetchData();
         fetchExpiringAgreements();
     }, [filters]);
 
-    // APERÇU DE TRADUCTION 
     const refreshPreview = () => {
         if (previewLang === 'fr') return;
         getAgreementsAdminPreview(previewLang).then((rows) => {
@@ -132,7 +137,6 @@ const ManageAgreements = () => {
         refreshPreview();
     }, [previewLang]);
 
-    // MODALE DE TRADUCTION MANUELLE
     const openTranslations = async (agreement) => {
         setTranslationsItem(agreement);
         setTranslationsTab('en');
@@ -180,7 +184,6 @@ const ManageAgreements = () => {
         }
     };
 
-    //  FETCH EXPIRING AGREEMENTS 
     const fetchExpiringAgreements = async () => {
         try {
             const data = await getAgreementsExpiringSoon();
@@ -190,7 +193,6 @@ const ManageAgreements = () => {
         }
     };
 
-    //  FETCH DATA 
     const fetchData = async () => {
         setLoading(true);
         try {
@@ -219,7 +221,6 @@ const ManageAgreements = () => {
         }
     };
 
-    //  FONCTION TÉLÉCHARGER 
     const handleDownloadPDF = async (agreement) => {
         if (!agreement.fichierPdf) {
             setError(t('admin.agreementsPage.messages.noPdf', { titre: agreement.titre }));
@@ -237,7 +238,6 @@ const ManageAgreements = () => {
         setTimeout(() => setSuccess(''), 3000);
     };
 
-    // EXPORT EXCEL 
     const exportToExcel = () => {
         if (agreements.length === 0) {
             setError(t('admin.agreementsPage.messages.noAgreementsToExport'));
@@ -286,7 +286,6 @@ const ManageAgreements = () => {
         }
     };
 
-    //  STATS (cartes en haut de page) 
     const safeItems = Array.isArray(agreements) ? agreements : [];
 
     const getStatus = (item) => item?.statutPublication || '';
@@ -308,7 +307,6 @@ const ManageAgreements = () => {
 
     const stats = getStats();
 
-    // HANDLERS 
     const handleOpenModal = (agreement = null) => {
         if (agreement) {
             setEditingId(agreement.id);
@@ -324,6 +322,7 @@ const ManageAgreements = () => {
                 statut: agreement.statut || 'active',
                 statutPublication: agreement.statutPublication || 'draft',
                 fichierPdf: agreement.fichierPdf || null,
+                scheduledPublishAt: toDateTimeLocalValue(agreement.scheduledPublishAt),
             });
             setUploadedFile(agreement.fichierPdf || null);
         } else {
@@ -333,6 +332,7 @@ const ManageAgreements = () => {
                 dateSignature: '', dateDebut: '', dateFin: '',
                 statut: 'active', statutPublication: 'draft',
                 fichierPdf: null,
+                scheduledPublishAt: '',
             });
             setUploadedFile(null);
         }
@@ -357,7 +357,6 @@ const ManageAgreements = () => {
         setFilters((prev) => ({ ...prev, [name]: value }));
     };
 
-    //  HANDLER UPLOAD FICHIER 
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -393,7 +392,6 @@ const ManageAgreements = () => {
         return true;
     };
 
-    // HANDLE SAVE (Ne ferme plus la modale trop tôt) 
     const handleSave = async (e) => {
         e.preventDefault();
 
@@ -411,11 +409,9 @@ const ManageAgreements = () => {
                 setSuccess(t('admin.agreementsPage.messages.createSuccess'));
             }
 
-            // On attend que les données soient à jour AVANT de fermer
             await fetchData();
             await fetchExpiringAgreements();
 
-            // Ensuite on ferme proprement
             handleCloseModal();
             setError('');
         } catch (err) {
@@ -443,7 +439,6 @@ const ManageAgreements = () => {
         }
     };
 
-    //  CALCUL DES ALERTES D'EXPIRATION 
     const getExpirationAlert = (endDate) => {
         if (!endDate) return null;
 
@@ -464,22 +459,21 @@ const ManageAgreements = () => {
         return null;
     };
 
-    // RENDER 
     return (
         <div className="manage-agreements">
             <div className="header">
-    <div className="header-left">
-        <h1 className="flex items-center gap-2">
-            <FileText size={26} className="text-cobalt" />
-            {t('admin.agreementsPage.title')}
-        </h1>
-    </div>
-    {hasPermission('agreements.create') && (
-        <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
-            <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
-        </button>
-    )}
-</div>
+                <div className="header-left">
+                    <h1 className="flex items-center gap-2">
+                        <FileText size={26} className="text-cobalt" />
+                        {t('admin.agreementsPage.title')}
+                    </h1>
+                </div>
+                {hasPermission('agreements.create') && (
+                    <button className="btn-primary inline-flex items-center gap-1.5" onClick={() => handleOpenModal()}>
+                        <Plus size={16} /> {t('admin.agreementsPage.newAgreement')}
+                    </button>
+                )}
+            </div>
 
             {/* STATS CARDS */}
             <div className="grid gap-4 md:grid-cols-4">
@@ -501,11 +495,10 @@ const ManageAgreements = () => {
                 </div>
             </div>
 
-            {/* ALERTES D'EXPIRATION GLOBALES */}
             {expiringAgreements.length > 0 && (
                 <div className="alert alert-warning flex items-center gap-2">
                     <AlertTriangle size={16} className="shrink-0" />
-        {t('admin.agreementsPage.expiringAlert', { count: expiringAgreements.length })}
+                    {t('admin.agreementsPage.expiringAlert', { count: expiringAgreements.length })}
                 </div>
             )}
 
@@ -617,12 +610,19 @@ const ManageAgreements = () => {
                                             </span>
                                         </td>
                                         <td>
-                                            <span className={`badge badge-${agreement.statutPublication || 'draft'}`}>
-                                                {t(agreement.statutPublication || 'draft', { defaultValue: t('draft') })}
-                                            </span>
+                                            <div className="flex flex-col gap-0.5">
+                                                <span className={`badge badge-${agreement.statutPublication || 'draft'}`}>
+                                                    {t(agreement.statutPublication || 'draft', { defaultValue: t('draft') })}
+                                                </span>
+                                                {agreement.statutPublication === 'draft' && agreement.scheduledPublishAt && (
+                                                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                                                        <CalendarClock size={12} />
+                                                        {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(agreement.scheduledPublishAt)}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </td>
 
-                                        {/* ===== COLONNE FICHIER (Voir + Télécharger) ===== */}
                                         <td className="file-cell">
                                             {agreement.fichierPdf ? (
                                                 <div className="flex items-center gap-3">
@@ -664,27 +664,27 @@ const ManageAgreements = () => {
                                         </td>
 
                                         <td className="actions">
-    {hasPermission('agreements.edit') && (
-        <button
-            type="button"
-            className="btn-edit"
-            onClick={() => handleOpenModal(agreement)}
-            title={t('admin.crud.edit')}
-        >
-            <Pencil size={16} />
-        </button>
-    )}
-    {hasPermission('agreements.delete') && (
-        <button
-            type="button"
-            className="btn-delete"
-            onClick={() => handleDelete(agreement.id)}
-            title={t('admin.crud.delete')}
-        >
-            <Trash2 size={16} />
-        </button>
-    )}
-</td>
+                                            {hasPermission('agreements.edit') && (
+                                                <button
+                                                    type="button"
+                                                    className="btn-edit"
+                                                    onClick={() => handleOpenModal(agreement)}
+                                                    title={t('admin.crud.edit')}
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                            )}
+                                            {hasPermission('agreements.delete') && (
+                                                <button
+                                                    type="button"
+                                                    className="btn-delete"
+                                                    onClick={() => handleDelete(agreement.id)}
+                                                    title={t('admin.crud.delete')}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
+                                        </td>
                                     </tr>
                                 );
                             })}
@@ -706,7 +706,6 @@ const ManageAgreements = () => {
                         <h2>{editingId ? t('admin.agreementsPage.modal.editTitle') : t('admin.agreementsPage.modal.newTitle')}</h2>
 
                         <form onSubmit={handleSave}>
-                            {/* ROW 1 */}
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{t('admin.agreementsPage.modal.titre')}</label>
@@ -736,7 +735,6 @@ const ManageAgreements = () => {
                                 </div>
                             </div>
 
-                            {/* ROW 2 */}
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{t('type')}</label>
@@ -759,7 +757,6 @@ const ManageAgreements = () => {
                                 </div>
                             </div>
 
-                            {/* ROW 3 - DATES */}
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{t('admin.agreementsPage.modal.dateSignature')}</label>
@@ -790,7 +787,6 @@ const ManageAgreements = () => {
                                 </div>
                             </div>
 
-                            {/* ROW 4 - DESCRIPTION & TERMES */}
                             <div className="form-group full-width">
                                 <label>{t('description')}</label>
                                 <textarea
@@ -811,7 +807,6 @@ const ManageAgreements = () => {
                                 />
                             </div>
 
-                            {/* FILE UPLOAD */}
                             <div className="form-group full-width">
                                 <label>{t('admin.agreementsPage.modal.filePdf')}</label>
                                 <input
@@ -827,7 +822,6 @@ const ManageAgreements = () => {
                                 )}
                             </div>
 
-                            {/* ROW 5 - PUBLICATION */}
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>{t('admin.agreementsPage.modal.publicationStatus')}</label>
@@ -841,9 +835,23 @@ const ManageAgreements = () => {
                                         <option value="archived">{t('archived')}</option>
                                     </select>
                                 </div>
+
+                                <div className="form-group">
+                                    <label>{t('programmerPublication', { defaultValue: 'Programmer la publication' })}</label>
+                                    <input
+                                        type="datetime-local"
+                                        name="scheduledPublishAt"
+                                        value={form.scheduledPublishAt}
+                                        onChange={handleFormChange}
+                                    />
+                                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                                        {t('programmerPublicationHelp', {
+                                            defaultValue: 'Laisser vide pour publier manuellement. Si une date est définie et que le statut est "Brouillon", la publication sera automatique.',
+                                        })}
+                                    </p>
+                                </div>
                             </div>
 
-                            {/* BUTTONS */}
                             <div className="modal-actions">
                                 <button type="button" className="btn-secondary" onClick={handleCloseModal}>
                                     {t('admin.crud.cancel')}
@@ -857,7 +865,6 @@ const ManageAgreements = () => {
                 </div>
             )}
 
-            {/* MODALE — TRADUCTIONS MANUELLES (EN / AR)*/}
             {translationsItem && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
                     <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

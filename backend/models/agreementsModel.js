@@ -83,24 +83,26 @@ exports.create = async(data) => {
     const { 
         partner_id, title, type, description, terms_conditions, 
         fichier_pdf, signature_date, start_date, end_date, 
-        status, statut_publication, created_by, document_ids 
+        status, statut_publication, created_by, document_ids,
+        scheduled_publish_at 
     } = data;
     
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        
-        const result = await client.query(
-            `INSERT INTO agreements 
-                (partner_id, title, type, description, terms_conditions, 
-                 fichier_pdf, signature_date, start_date, end_date, status, 
-                 statut_publication, created_by)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) 
-             RETURNING *`,
-            [partner_id, title, type, description, terms_conditions, 
-             fichier_pdf, signature_date, start_date, end_date, 
-             status || 'active', statut_publication || 'draft', created_by]
-        );
+      const result = await client.query(
+        `INSERT INTO agreements 
+            (partner_id, title, type, description, terms_conditions, 
+             fichier_pdf, signature_date, start_date, end_date, status, 
+             statut_publication, scheduled_publish_at, created_by)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13) 
+         RETURNING *`,
+        [partner_id, title, type, description, terms_conditions, 
+         fichier_pdf, signature_date, start_date, end_date, 
+         status || 'active', statut_publication || 'draft',
+         scheduled_publish_at || null,
+         created_by]
+    );
         
         const agreement = result.rows[0];
         
@@ -128,7 +130,8 @@ exports.update = async(id, data, userId, ip) => {
     const { 
         partner_id, title, type, description, terms_conditions, 
         fichier_pdf, signature_date, start_date, end_date, 
-        status, statut_publication, document_ids 
+        status, statut_publication, document_ids,
+        scheduled_publish_at 
     } = data;
     
     return withAuditContext(userId, ip, async(client) => {
@@ -156,7 +159,12 @@ exports.update = async(id, data, userId, ip) => {
             params.push(statut_publication);
             paramIndex++;
         }
-        
+        if (scheduled_publish_at !== undefined) {
+        query += `, scheduled_publish_at = $${paramIndex}`;
+        params.push(scheduled_publish_at);
+        paramIndex++;
+        }
+
         query += ` WHERE id = $${paramIndex} RETURNING *`;
         params.push(id);
         
@@ -190,4 +198,28 @@ exports.remove = async(id) => {
     return result.rows[0];
 };
 
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE agreements
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, title`
+    );
+    return result.rows;
+};
+
+exports.publish = async(id) => {
+    const result = await pool.query(
+        `UPDATE agreements 
+         SET statut_publication='published', 
+             published_at=NOW(),
+             scheduled_publish_at=NULL
+         WHERE id=$1 
+         RETURNING *`, 
+        [id]
+    );
+    return result.rows[0];
+};
 module.exports = exports;

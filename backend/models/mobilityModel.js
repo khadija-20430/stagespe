@@ -18,7 +18,8 @@ const MOBILITY_FIELDS = [
     'destination_partner_id', 'institution_id', 'target_audience', 'description', 'conditions',
     'places_count', 'duration', 'period', 'funding_details', 'application_procedure',
     'selection_criteria', 'application_link', 'contact_person', 'contact_email',
-    'deadline', 'start_date', 'end_date', 'status'
+    'deadline', 'start_date', 'end_date', 'status',
+    'scheduled_publish_at' 
 ];
 
 // Remplace toutes les exigences de langue d'une offre par la nouvelle liste envoyée
@@ -74,15 +75,19 @@ exports.getLanguageRequirements = async(mobilityId) => {
 
 exports.create = async(data, userId) => {
         const client = await pool.connect();
-        try {
-            await client.query('BEGIN');
-            const values = MOBILITY_FIELDS.map(f => f === 'status' ? (data.status || 'open') : data[f]);
-            const result = await client.query(
-                    `INSERT INTO mobility (${MOBILITY_FIELDS.join(', ')}, created_by)
-       VALUES (${MOBILITY_FIELDS.map((_, i) => `$${i + 1}`).join(',')}, $${MOBILITY_FIELDS.length + 1})
-       RETURNING *`,
-      [...values, userId]
-    );
+    try {
+        await client.query('BEGIN');
+        const values = MOBILITY_FIELDS.map(f => {
+            if (f === 'status') return data.status || 'open';
+            if (f === 'scheduled_publish_at') return data.scheduled_publish_at || null;
+            return data[f];
+        });
+        const result = await client.query(
+            `INSERT INTO mobility (${MOBILITY_FIELDS.join(', ')}, created_by)
+             VALUES (${MOBILITY_FIELDS.map((_, i) => `$${i + 1}`).join(',')}, $${MOBILITY_FIELDS.length + 1})
+             RETURNING *`,
+            [...values, userId]
+        );
     const mobility = result.rows[0];
     await replaceLanguageRequirements(client, mobility.id, data.language_requirements);
     await client.query('COMMIT');
@@ -99,7 +104,13 @@ exports.update = async (id, data) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const values = MOBILITY_FIELDS.map(f => data[f]);
+    
+    // ✅ CORRECTION : traiter scheduled_publish_at comme status
+    const values = MOBILITY_FIELDS.map(f => {
+      if (f === 'scheduled_publish_at') return data.scheduled_publish_at ?? null;
+      return data[f];
+    });
+    
     const setClause = MOBILITY_FIELDS.map((f, i) => `${f}=$${i + 1}`).join(', ');
     const result = await client.query(
       `UPDATE mobility SET ${setClause}, updated_at=NOW() WHERE id=$${MOBILITY_FIELDS.length + 1} RETURNING *`,
@@ -120,12 +131,28 @@ exports.update = async (id, data) => {
   }
 };
 
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE mobility
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, title`
+    );
+    return result.rows;
+};
 exports.publish = async (id) => {
-  const result = await pool.query(
-    `UPDATE mobility SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`,
-    [id]
-  );
-  return result.rows[0];
+    const result = await pool.query(
+        `UPDATE mobility 
+         SET statut_publication='published', 
+             published_at=NOW(),
+             scheduled_publish_at=NULL
+         WHERE id=$1 
+         RETURNING *`,
+        [id]
+    );
+    return result.rows[0];
 };
 
 exports.archive = async (id) => {

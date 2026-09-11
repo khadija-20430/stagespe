@@ -112,89 +112,29 @@ exports.findFilesById = async (id) => {
     return result.rows[0];
 };
 
-
-// creer actualite
+//creation
 exports.create = async (data, userId) => {
     const {
-        title,
-        type,
-        summary,
-        description,
-        project_id,
-        event_date,
-        end_date,
-        location,
-        image_url,
-        is_featured,
-        author_name,
-        author_role,
-        author_photo_url,
-        quote_text,
-        statut_publication
+        title, type, summary, description, project_id, event_date, end_date,
+        location, image_url, is_featured, author_name, author_role,
+        author_photo_url, quote_text, statut_publication,
+        scheduled_publish_at  // ← AJOUT
     } = data;
 
     const result = await pool.query(
-        `
-        INSERT INTO news_events
-        (
-            title,
-            type,
-            summary,
-            description,
-            project_id,
-            event_date,
-            end_date,
-            location,
-            image_url,
-            is_featured,
-            author_name,
-            author_role,
-            author_photo_url,
-            quote_text,
-            statut_publication,
-            created_by
-        )
-        VALUES
-        (
-            $1,
-            $2,
-            $3,
-            $4,
-            $5,
-            $6,
-            $7,
-            $8,
-            $9,
-            $10,
-            $11,
-            $12,
-            $13,
-            $14,
-            $15,
-            $16
-        )
-        RETURNING *
-        `,
-        [
-            title,
-            type || 'news',
-            summary,
-            description,
-            project_id,
-            event_date,
-            end_date,
-            location,
-            image_url,
-            is_featured || false,
-            author_name,
-            author_role,
-            author_photo_url,
-            quote_text,
-            statut_publication || 'draft',
-            userId
-        ]
+        `INSERT INTO news_events
+         (title, type, summary, description, project_id, event_date, end_date,
+          location, image_url, is_featured, author_name, author_role,
+          author_photo_url, quote_text, statut_publication, 
+          scheduled_publish_at, created_by)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
+         RETURNING *`,
+        [title, type || 'news', summary, description, project_id, event_date, end_date,
+         location, image_url, is_featured || false, author_name, author_role,
+         author_photo_url, quote_text, statut_publication || 'draft',
+         scheduled_publish_at || null,  // ← AJOUT
+         userId]
     );
-
     return result.rows[0];
 };
 
@@ -202,77 +142,28 @@ exports.create = async (data, userId) => {
 // modifier actualite
 exports.update = async (id, data) => {
     const {
-        title,
-        type,
-        summary,
-        description,
-        project_id,
-        event_date,
-        end_date,
-        location,
-        image_url,
-        is_featured,
-        author_name,
-        author_role,
-        author_photo_url,
-        quote_text,
-        statut_publication
+        title, type, summary, description, project_id, event_date, end_date,
+        location, image_url, is_featured, author_name, author_role,
+        author_photo_url, quote_text, statut_publication,
+        scheduled_publish_at  // ← AJOUT
     } = data;
 
-    const publishedAtClause =
-        statut_publication === 'published'
-            ? `,
-                published_at = COALESCE(
-                    published_at,
-                    NOW()
-                )
-              `
-            : '';
-
     const result = await pool.query(
-        `
-        UPDATE news_events
-        SET
-            title = $1,
-            type = $2,
-            summary = $3,
-            description = $4,
-            project_id = $5,
-            event_date = $6,
-            end_date = $7,
-            location = $8,
-            image_url = $9,
-            is_featured = $10,
-            author_name = $11,
-            author_role = $12,
-            author_photo_url = $13,
-            quote_text = $14,
-            statut_publication = $15,
-            updated_at = NOW()
-            ${publishedAtClause}
-        WHERE id = $16
-        RETURNING *
-        `,
-        [
-            title,
-            type,
-            summary,
-            description,
-            project_id,
-            event_date,
-            end_date,
-            location,
-            image_url,
-            is_featured,
-            author_name,
-            author_role,
-            author_photo_url,
-            quote_text,
-            statut_publication,
-            id
-        ]
+        `UPDATE news_events
+         SET title = $1, type = $2, summary = $3, description = $4, 
+             project_id = $5, event_date = $6, end_date = $7, location = $8,
+             image_url = $9, is_featured = $10, author_name = $11, 
+             author_role = $12, author_photo_url = $13, quote_text = $14,
+             statut_publication = $15,
+             scheduled_publish_at = $16,
+             updated_at = NOW()
+         WHERE id = $17
+         RETURNING *`,
+        [title, type, summary, description, project_id, event_date, end_date,
+         location, image_url, is_featured, author_name, author_role,
+         author_photo_url, quote_text, statut_publication,
+         scheduled_publish_at || null, id]
     );
-
     return result.rows[0];
 };
 
@@ -290,23 +181,30 @@ exports.remove = async (id) => {
 
     return result.rows[0];
 };
-
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE news_events
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, title`
+    );
+    return result.rows;
+};
 
 // publication
 exports.publish = async (id) => {
     const result = await pool.query(
-        `
-        UPDATE news_events
-        SET
-            statut_publication = 'published',
-            published_at = NOW(),
-            updated_at = NOW()
-        WHERE id = $1
-        RETURNING *
-        `,
+        `UPDATE news_events
+         SET statut_publication = 'published',
+             published_at = NOW(),
+             scheduled_publish_at = NULL,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
         [id]
     );
-
     return result.rows[0];
 };
 

@@ -7,7 +7,7 @@ require('dotenv').config();
 const { globalLimiter, loginLimiter } = require('./middleware/rateLimiter');
 const sanitizeBody = require('./middleware/sanitize');
 const ensureSuperAdmin = require('./lib/bootstrapAdmin');
-const { runAllJobs } = require('./services/notificationScheduler');
+const { runAllJobs } = require('./jobs/notificationScheduler');
 const { startScheduledPublishJob } = require('./jobs/scheduledPublishJob');
 
 const app = express();
@@ -71,7 +71,7 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Une erreur interne est survenue' });
 });
 startScheduledPublishJob();
-
+runAllJobs().catch(err => console.error('[INIT] Erreur jobs notifications:', err));
 // CRON JOB : tout les jours a 1h du matin
 function scheduleDailyJobAt1AM() {
     const now = new Date();

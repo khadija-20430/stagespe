@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Layers, Languages, X, Save, Loader2 } from 'lucide-react';
+import { Layers, Languages, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -10,6 +10,7 @@ import {
   publishProgramme, archiveProgramme,
 } from '../../services/api.js';
 import { toProgrammePayload } from '../../services/mappers.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const getTranslationFields = (t) => [
   { name: 'name', label: t('nom') },
@@ -22,31 +23,15 @@ const emptyTranslationSet = () => ({
   ar: { name: '', description: '', organisme_financeur: '' },
 });
 
-/* ============================================================
-   STATUT PUBLICATION
-   IMPORTANT :
-   statut_publication = published | draft | archived
-   Même logique que ManageDocuments.jsx — couleur + libellé
-   traduits statiquement via les clés i18n racine.
-============================================================ */
-
 const publicationTone = (status) => {
   const value = String(status || 'draft').toLowerCase().trim();
-
-  if (value === 'published' || value === 'publié') {
-    return 'green';
-  }
-
-  if (value === 'archived') {
-    return 'slate';
-  }
-
+  if (value === 'published' || value === 'publié') return 'green';
+  if (value === 'archived') return 'slate';
   return 'amber';
 };
 
 const publicationLabel = (status, t) => {
   const value = String(status || 'draft').toLowerCase().trim();
-
   if (value === 'published' || value === 'publié') return t('published');
   if (value === 'archived') return t('archived');
   return t('draft');
@@ -74,7 +59,6 @@ export default function ManageProgrammes() {
     });
   };
 
-  // ⚡ FIX : déclenche le chargement de l'aperçu quand la langue change
   useEffect(() => {
     if (previewLang === 'fr') {
       setPreviewData({});
@@ -140,40 +124,40 @@ export default function ManageProgrammes() {
         onCreate={createProgramme}
         onUpdate={updateProgramme}
         onDelete={deleteProgramme}
-
-        /* ======================================================
-           PUBLICATION
-           Le bouton ● (rond coloré) est fourni automatiquement
-           par CrudManager dès que onPublish + onArchive existent.
-           Cliquer dessus ouvre le menu Publié / Archivé.
-        ====================================================== */
         onPublish={publishProgramme}
         onArchive={archiveProgramme}
         createPermission="programmes.create"
         updatePermission="programmes.edit"
         deletePermission="programmes.delete"
         publishPermission="programmes.publish"
-
         columns={[
           {
             key: 'name', label: t('nom'),
             render: (i) => previewData[i.id]?.name || i.name,
           },
           { key: 'acronym', label: t('acronyme'), render: (i) => i.acronym || '—' },
-{
-  key: 'organismeFinanceur', label: t('organismeFinanceur'),
-  render: (i) => previewData[i.id]?.organismeFinanceur || i.organismeFinanceur || '—',
-},          { key: 'documentsCount', label: t('admin.nav.documents'), render: (i) => i.documentsCount ?? 0 },
+          {
+            key: 'organismeFinanceur', label: t('organismeFinanceur'),
+            render: (i) => previewData[i.id]?.organismeFinanceur || i.organismeFinanceur || '—',
+          },
+          { key: 'documentsCount', label: t('admin.nav.documents'), render: (i) => i.documentsCount ?? 0 },
           {
             key: 'statut_publication',
             label: t('statut'),
             render: (item) => {
               const status = item.statutPublication || item.statut_publication || 'draft';
-
               return (
-                <Badge tone={publicationTone(status)}>
-                  {publicationLabel(status, t)}
-                </Badge>
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationTone(status)}>
+                    {publicationLabel(status, t)}
+                  </Badge>
+                  {status === 'draft' && item.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
               );
             },
           },
@@ -194,10 +178,15 @@ export default function ManageProgrammes() {
           { name: 'organismeFinanceur', label: t('organismeFinanceur'), type: 'text' },
           { name: 'description', label: t('description'), type: 'textarea' },
           { name: 'siteWeb', label: t('siteWeb'), type: 'text' },
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement.',
+          },
         ]}
       />
 
-      {/* MODALE TRADUCTIONS */}
       {translationsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

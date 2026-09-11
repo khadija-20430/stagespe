@@ -2,6 +2,7 @@ const newsEventsModel = require('../models/newsEventsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+
 function isInvalidTestimonial(type, author_name, quote_text) {
     return type === 'testimonial' && (!author_name || !quote_text);
 }
@@ -29,6 +30,7 @@ exports.getAllAdmin = async(req, res) => {
         res.json(rows);
     } catch (err) { sendError(res, err); }
 };
+
 exports.getAllAdminPreview = async(req, res) => {
     try {
         const rows = await newsEventsModel.findAllAdmin();
@@ -36,11 +38,13 @@ exports.getAllAdminPreview = async(req, res) => {
         res.json(translated);
     } catch (err) { sendError(res, err); }
 };
+
 exports.getTranslations = async(req, res) => {
     try {
         res.json(await getAllTranslations('news', req.params.id));
     } catch (err) { sendError(res, err); }
 };
+
 exports.updateTranslations = async(req, res) => {
     try {
         await upsertTranslations('news', req.params.id, req.body);
@@ -66,6 +70,7 @@ exports.create = async(req, res) => {
             author_role,
             quote_text,
             statut_publication,
+            scheduled_publish_at,   // ✅ AJOUT
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -91,6 +96,7 @@ exports.create = async(req, res) => {
             author_photo_url,
             quote_text,
             statut_publication,
+            scheduled_publish_at,   // ✅ AJOUT
         }, req.user.id);
 
         await logAction(req.user.id, 'create', 'news_event', news.id, null, req);
@@ -115,6 +121,7 @@ exports.update = async(req, res) => {
             author_role,
             quote_text,
             statut_publication,
+            scheduled_publish_at,   // ✅ AJOUT
         } = req.body;
 
         if (isInvalidTestimonial(type, author_name, quote_text)) {
@@ -151,6 +158,7 @@ exports.update = async(req, res) => {
             author_photo_url,
             quote_text,
             statut_publication,
+            scheduled_publish_at,   // ✅ AJOUT
         });
         if (!news) return res.status(404).json({ error: 'Contenu non trouvé' });
 

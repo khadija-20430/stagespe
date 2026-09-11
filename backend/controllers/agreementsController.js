@@ -113,7 +113,7 @@ exports.updateTranslations = async(req, res) => {
 
 exports.create = async(req, res) => {
     try {
-        const { start_date, end_date, partner_id } = req.body;
+        const { start_date, end_date, partner_id,scheduled_publish_at } = req.body;
 
         if (start_date && end_date && new Date(end_date) < new Date(start_date)) {
             return res.status(400).json({ error: 'La date de fin ne peut pas être antérieure à la date de début' });
@@ -127,6 +127,7 @@ exports.create = async(req, res) => {
         const agreement = await agreementsModel.create({
             ...req.body,
             fichier_pdf,
+            scheduled_publish_at,  
             created_by: req.user.id
         });
 

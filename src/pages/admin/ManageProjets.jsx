@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FlaskConical, Languages, X, Save, Loader2 } from 'lucide-react';
+import { FlaskConical, Languages, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -10,6 +10,7 @@ import {
 } from '../../services/api.js';
 import { toProjetPayload } from '../../services/mappers.js';
 import { PROJECT_STATUS, projectStatusTone } from '../../lib/enums.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const publicationStatusTone = (s) => (s === 'published' ? 'green' : s === 'archived' ? 'slate' : 'amber');
 
@@ -32,8 +33,7 @@ export default function ManageProjets() {
   const [partenaires, setPartenaires] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
-  // ---- Modale de traduction manuelle ----
-  const [translationsItem, setTranslationsItem] = useState(null); // le projet en cours d'édition, ou null
+  const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
   const [translationsLoading, setTranslationsLoading] = useState(false);
@@ -60,7 +60,6 @@ export default function ManageProjets() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const partnerName = (id) => {
@@ -69,16 +68,14 @@ export default function ManageProjets() {
     return partner ? partner.nom : '—';
   };
 
-  // ---- Ouvrir la modale de traduction ----
   const openTranslations = async (item) => {
     setTranslationsItem(item);
     setTranslationsTab('en');
     setTranslationsError('');
     setTranslationsLoading(true);
     setTranslationsDraft(emptyTranslationSet());
-
     try {
-      const existing = await getProjetTranslations(item.id); // { en: {...}, ar: {...} } (langues absentes si jamais traduites)
+      const existing = await getProjetTranslations(item.id);
       setTranslationsDraft((prev) => ({
         en: { ...prev.en, ...(existing.en || {}) },
         ar: { ...prev.ar, ...(existing.ar || {}) },
@@ -105,10 +102,9 @@ export default function ManageProjets() {
   const saveTranslations = async () => {
     setTranslationsSaving(true);
     setTranslationsError('');
-
     try {
       await updateProjetTranslations(translationsItem.id, translationsDraft);
-      refreshPreview(); // met à jour l'aperçu du tableau si on est en train de le regarder
+      refreshPreview();
       setTranslationsItem(null);
     } catch (err) {
       setTranslationsError(err.message || "Erreur lors de l'enregistrement");
@@ -131,7 +127,7 @@ export default function ManageProjets() {
         onPublish={publishProjet}
         onArchive={archiveProjet}
         createPermission="projects.create"
-        updatePermission="projects.edit"       
+        updatePermission="projects.edit"
         deletePermission="projects.delete"
         publishPermission="projects.publish"
         columns={[
@@ -144,10 +140,27 @@ export default function ManageProjets() {
             render: (i) => i.budget != null ? new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(i.budget) : '—' },
           { key: 'coordinator_partner_id', label: t('coordinateur'),
             render: (i) => partnerName(i.coordinator_partner_id) },
-         { key: 'statut_publication', label: t('statutPublication'),
-  render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
-         { key: 'translations', label: t('traductions'),
-              render: (i) => (
+          // ✅ COLONNE STATUT AVEC INDICATEUR
+          {
+            key: 'statut_publication',
+            label: t('statutPublication'),
+            render: (i) => {
+              const status = i.statut_publication || 'draft';
+              return (
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationStatusTone(status)}>{t(`${status}`)}</Badge>
+                  {status === 'draft' && i.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(i.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
+              );
+            },
+          },
+          { key: 'translations', label: t('traductions'),
+            render: (i) => (
               <button
                 type="button"
                 onClick={() => openTranslations(i)}
@@ -179,13 +192,16 @@ export default function ManageProjets() {
           { name: 'livrables', label: t('livrables'), type: 'list' },
           { name: 'misEnAvant', label: t('misEnAvant'), type: 'select',
             options: [{ value: 'true', label: t('yes') }, { value: 'false', label: t('no') }] },
+          // ✅ Champ programmation
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement.',
+          },
         ]}
       />
 
-      {/* =========================================================
-          MODALE — TRADUCTIONS MANUELLES (EN / AR)
-          Indépendante de la modale d'édition de CrudManager.
-      ========================================================== */}
       {translationsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

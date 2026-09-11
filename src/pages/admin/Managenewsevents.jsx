@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Newspaper, Languages, X, Save, Loader2 } from 'lucide-react';
+import { Newspaper, Languages, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 
@@ -17,13 +17,8 @@ import {
   updateActualiteTranslations,
 } from '../../services/api.js';
 
-import {
-  toActualitePayload,
-} from '../../services/mappers.js';
-
-/* ============================================================
-   TYPES
-============================================================ */
+import { toActualitePayload } from '../../services/mappers.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const NEWS_EVENT_TYPES = [
   'news',
@@ -32,10 +27,6 @@ const NEWS_EVENT_TYPES = [
   'meeting',
   'testimonial',
 ];
-
-/* ============================================================
-   STATUT PUBLICATION - AVEC TRADUCTION
-============================================================ */
 
 const publicationStatusTone = (status) => {
   const value = String(status || 'draft').toLowerCase().trim();
@@ -51,10 +42,6 @@ const publicationStatusLabel = (status, t) => {
   return t('statut_brouillon');
 };
 
-/* ============================================================
-   TRADUCTION
-============================================================ */
-
 const TRANSLATION_FIELDS = [
   { name: 'title', label: 'Titre' },
   { name: 'summary', label: 'Résumé' },
@@ -67,10 +54,6 @@ const emptyTranslationSet = () => ({
   ar: { title: '', summary: '', description: '', quote_text: '' },
 });
 
-/* ============================================================
-   COMPOSANT
-============================================================ */
-
 export default function ManageNewsEvents() {
   const { t, i18n } = useTranslation();
   const previewLang = i18n.language;
@@ -78,7 +61,6 @@ export default function ManageNewsEvents() {
   const [projects, setProjects] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
-  // ---- Modale de traduction manuelle ----
   const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
@@ -215,9 +197,17 @@ export default function ManageNewsEvents() {
             render: (item) => {
               const status = item.statut_publication || 'draft';
               return (
-                <Badge tone={publicationStatusTone(status)}>
-                  {publicationStatusLabel(status, t)}
-                </Badge>
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationStatusTone(status)}>
+                    {publicationStatusLabel(status, t)}
+                  </Badge>
+                  {status === 'draft' && item.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
               );
             },
           },
@@ -336,6 +326,12 @@ export default function ManageNewsEvents() {
             label: t('quoteText'),
             type: 'textarea',
             help: 'Citation ou témoignage',
+          },
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement.',
           },
         ]}
       />

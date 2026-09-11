@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Handshake, Languages, Users, X, Save, Loader2, Trash2, Pencil } from 'lucide-react';
+import { Handshake, Languages, Users, X, Save, Loader2, Trash2, Pencil, CalendarClock } from 'lucide-react';
 
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
@@ -20,7 +20,6 @@ import {
   archivePartner,
   getPartenaireTranslations,
   updatePartenaireTranslations,
-  // 🆕 contacts — voir api-partnerContacts-patch.js
   getPartnerContactsAdmin,
   createPartnerContact,
   updatePartnerContact,
@@ -29,6 +28,7 @@ import {
 
 import { toPartnerPayload } from '../../services/mappers.js';
 import { geocodeAddress } from '../../lib/geocode.js';
+import { formatScheduledDate } from '../../lib/utils.js';  // 🆕
 
 const PARTNERSHIP_STATUS = ['active', 'pending', 'ended'];
 
@@ -52,7 +52,6 @@ const emptyTranslationSet = () => ({
   ar: { name: '', official_name: '', description: '', cooperation_areas: '' },
 });
 
-// 🆕 brouillon vide pour le formulaire "Contacts"
 const emptyContactDraft = () => ({
   id: null,
   full_name: '',
@@ -70,11 +69,9 @@ export default function ManagePartenaires() {
   const [countries, setCountries] = useState([]);
   const [establishmentTypes, setEstablishmentTypes] = useState([]);
   const [partnershipTypes, setPartnershipTypes] = useState([]);
-  // 🆕 liste des thèmes existants (table `themes`, partagée avec les calls)
   const [themes, setThemes] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
-  // ---- Modale de traduction manuelle ----
   const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
@@ -82,7 +79,6 @@ export default function ManagePartenaires() {
   const [translationsSaving, setTranslationsSaving] = useState(false);
   const [translationsError, setTranslationsError] = useState('');
 
-  // 🆕 ---- Modale de gestion des contacts (jamais traitée côté front avant) ----
   const [contactsItem, setContactsItem] = useState(null);
   const [contactsList, setContactsList] = useState([]);
   const [contactsLoading, setContactsLoading] = useState(false);
@@ -103,7 +99,6 @@ export default function ManagePartenaires() {
       .then(setPartnershipTypes)
       .catch((err) => console.error('Erreur récupération types partenariats:', err));
 
-    // 🆕 chargement des thèmes (même table que pour les calls)
     getThemes()
       .then(setThemes)
       .catch((err) => console.error('Erreur récupération thèmes:', err));
@@ -174,7 +169,6 @@ export default function ManagePartenaires() {
     }
   };
 
-  // 🆕 ---- Gestion des contacts ----
   const openContacts = async (item) => {
     setContactsItem(item);
     setContactsError('');
@@ -280,10 +274,10 @@ export default function ManagePartenaires() {
         onDelete={deletePartenaire}
         onPublish={publishPartner}
         onArchive={archivePartner}
-         createPermission="partners.create"
-  updatePermission="partners.edit"
-  deletePermission="partners.delete"
-  publishPermission="partners.publish"
+        createPermission="partners.create"
+        updatePermission="partners.edit"
+        deletePermission="partners.delete"
+        publishPermission="partners.publish"
         columns={[
           {
             key: 'nom',
@@ -291,10 +285,7 @@ export default function ManagePartenaires() {
             render: (item) => previewData[item.id]?.nom || item.nom,
           },
           { key: 'pays', label: t('pays') },
-          { key: 'ville', label: t('ville') },
           { key: 'adresse', label: t('adresse') },
-          // 🆕 colonne "Thèmes" — auparavant seul le champ texte libre `domaines`
-          // existait et n'avait pas de colonne dédiée.
           {
             key: 'themes',
             label: t('themes'),
@@ -311,26 +302,27 @@ export default function ManagePartenaires() {
               </Badge>
             ),
           },
+          // ✅ COLONNE STATUT AVEC INDICATEUR "PROGRAMMÉ"
           {
-  key: 'statut_publication',
-  label: t('statutPublication'),
-  render: (item) => {
-    const status = item.statut_publication || item.statutPublication || 'draft';
-    return (
-      <div className="flex flex-col gap-0.5">
-        <Badge tone={publicationStatusTone(status)}>
-          {publicationStatusLabel(status, t)}
-        </Badge>
-        {/* 🆕 indication visuelle si une publication est programmée */}
-        {status === 'draft' && item.scheduledPublishAt && (
-          <span className="text-[11px] text-slate-400 dark:text-slate-500">
-            Programmé : {new Date(item.scheduledPublishAt).toLocaleString('fr-FR')}
-          </span>
-        )}
-      </div>
-    );
-  },
-},
+            key: 'statut_publication',
+            label: t('statutPublication'),
+            render: (item) => {
+              const status = item.statut_publication || item.statutPublication || 'draft';
+              return (
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationStatusTone(status)}>
+                    {publicationStatusLabel(status, t)}
+                  </Badge>
+                  {status === 'draft' && item.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
+              );
+            },
+          },
           {
             key: 'translations', label: t('traductions'),
             render: (item) => (
@@ -344,7 +336,6 @@ export default function ManagePartenaires() {
               </button>
             ),
           },
-          // 🆕 colonne "Contacts" — ouvre la modale de gestion des contacts
           {
             key: 'contacts',
             label: t('contacts', { defaultValue: 'Contacts' }),
@@ -377,14 +368,12 @@ export default function ManagePartenaires() {
           { name: 'statutPartenariat', label: t('statutPartenariat'), type: 'select',
             options: PARTNERSHIP_STATUS.map((code) => ({ value: code, label: t(`${code}`) })) },
           { name: 'siteWeb', label: t('siteWeb'), type: 'text' },
-          // 🆕 remplace l'ancien champ texte libre "domaines" par un select
-          // multiple sur la table `themes` partagée avec les calls.
-         {
-  name: 'themeIds',
-  label: t('themes'),
-  type: 'multiselect',   // 🆕 checkboxes, comme dans ManageAppels
-  options: themes.map((th) => ({ value: th.id, label: th.name })),
-},
+          {
+            name: 'themeIds',
+            label: t('themes'),
+            type: 'multiselect',
+            options: themes.map((th) => ({ value: th.id, label: th.name })),
+          },
           { name: 'description', label: t('description'), type: 'textarea' },
           {
             name: 'logo_url',
@@ -401,15 +390,17 @@ export default function ManagePartenaires() {
               }
             },
           },
-          // 🆕 programmation de la publication (cahier des charges 4.3).
-          // ⚠️ Si CrudManager ne connaît pas encore le type 'datetime-local',
-          // il faut l'ajouter (même logique que le type 'date' déjà supporté
-          // pour dateLimite dans ManageAppels) — un simple <input type="datetime-local">.
-          { name: 'scheduledPublishAt', label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
-            type: 'datetime-local' },
+          // ✅ CHAMP PROGRAMMER LA PUBLICATION
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement. Si une date est définie et que le statut est "Brouillon", la publication sera automatique.',
+          },
         ]}
       />
 
+      {/* MODALE TRADUCTIONS */}
       {translationsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
@@ -490,7 +481,7 @@ export default function ManagePartenaires() {
         </div>
       )}
 
-      {/* 🆕 Modale de gestion des contacts — n'existait pas du tout côté front */}
+      {/* MODALE CONTACTS */}
       {contactsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plane, Languages, Globe2, X, Save, Loader2 } from 'lucide-react';
+import { Plane, Languages, Globe2, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 import {
@@ -12,6 +12,7 @@ import {
 } from '../../services/api.js';
 import { toMobilitePayload } from '../../services/mappers.js';
 import { MOBILITY_TYPE } from '../../lib/enums.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const MOBILITY_STATUS = ['open', 'closed', 'upcoming'];
 const mobilityStatusTone = (s) => (s === 'open' ? 'green' : s === 'upcoming' ? 'amber' : 'slate');
@@ -35,7 +36,6 @@ export default function ManageMobilites() {
   const { t, i18n } = useTranslation();
   const previewLang = i18n.language;
 
-  // ---- Données de référence ----
   const [programmes, setProgrammes] = useState([]);
   const [countries, setCountries] = useState([]);
   const [partenaires, setPartenaires] = useState([]);
@@ -43,7 +43,6 @@ export default function ManageMobilites() {
   const [languages, setLanguages] = useState([]);
   const [previewData, setPreviewData] = useState({});
 
-  // ---- Modale de traduction manuelle ----
   const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
@@ -51,13 +50,11 @@ export default function ManageMobilites() {
   const [translationsSaving, setTranslationsSaving] = useState(false);
   const [translationsError, setTranslationsError] = useState('');
 
-  // ---- Modale langues requises ----
   const [langItem, setLangItem] = useState(null);
-  const [langDraft, setLangDraft] = useState([]); // [{ languageId, minLevel }]
+  const [langDraft, setLangDraft] = useState([]);
   const [langLoading, setLangLoading] = useState(false);
   const [langSaving, setLangSaving] = useState(false);
 
-  // ---- Chargement initial des référentiels (un seul effet) ----
   useEffect(() => {
     getProgrammes().then(setProgrammes);
     getCountries().then(setCountries);
@@ -84,7 +81,6 @@ export default function ManageMobilites() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
-  // ---- Traductions ----
   const openTranslations = async (item) => {
     setTranslationsItem(item);
     setTranslationsTab('en');
@@ -132,7 +128,6 @@ export default function ManageMobilites() {
     }
   };
 
-  // ---- Langues requises ----
   const openLanguages = async (item) => {
     setLangItem(item);
     setLangLoading(true);
@@ -197,8 +192,24 @@ export default function ManageMobilites() {
           { key: 'status', label: t('status'),
             render: (i) => <Badge tone={mobilityStatusTone(i.status)}>{t(`${i.status}`)}</Badge> },
           { key: 'places', label: t('places') },
-          { key: 'statut_publication', label: t('statutPublication'),
-            render: (i) => <Badge tone={publicationStatusTone(i.statut_publication)}>{t(`${i.statut_publication}`)}</Badge> },
+          {
+            key: 'statut_publication',
+            label: t('statutPublication'),
+            render: (i) => {
+              const status = i.statut_publication || 'draft';
+              return (
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationStatusTone(status)}>{t(`${status}`)}</Badge>
+                  {status === 'draft' && i.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(i.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
+              );
+            },
+          },
           { key: 'translations', label: t('traductions'),
             render: (i) => (
               <button
@@ -247,6 +258,12 @@ export default function ManageMobilites() {
           { name: 'personneContact', label: t('personneContact'), type: 'text' },
           { name: 'emailContact', label: t('emailContact'), type: 'text' },
           { name: 'description', label: t('description'), type: 'textarea' },
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement.',
+          },
         ]}
       />
 

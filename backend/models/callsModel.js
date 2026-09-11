@@ -124,39 +124,30 @@ exports.findById = async(id) => {
 
 exports.create = async(data, userId) => {
     const {
-        title,
-        programme_id,
-        funding_body,
-        description,
-        objectives,
-        eligibility,
-        beneficiaries,
-        action_type_id,
-        budget_available,
-        funding_rate,
-        target_audience,
-        publication_date,
-        deadline,
-        official_link,
-        contact_person,
-        theme_ids,
-        country_ids
+        title, programme_id, funding_body, description, objectives,
+        eligibility, beneficiaries, action_type_id, budget_available,
+        funding_rate, target_audience, publication_date, deadline,
+        official_link, contact_person, theme_ids, country_ids,
+        scheduled_publish_at  
     } = data;
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
         const result = await client.query(
-            `INSERT INTO calls
-       (title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-        action_type_id, budget_available, funding_rate, target_audience,
-        publication_date, deadline, official_link, contact_person, created_by)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16) RETURNING *`, [
-                title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-                action_type_id, budget_available, funding_rate, target_audience,
-                publication_date, deadline, official_link, contact_person, userId
-            ]
-        );
+        `INSERT INTO calls
+         (title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
+          action_type_id, budget_available, funding_rate, target_audience,
+          publication_date, deadline, official_link, contact_person, 
+          scheduled_publish_at, created_by)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17) 
+         RETURNING *`, 
+        [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
+         action_type_id, budget_available, funding_rate, target_audience,
+         publication_date, deadline, official_link, contact_person,
+         scheduled_publish_at || null,  // ← AJOUT
+         userId]
+    );
         const call = result.rows[0];
 
         if (Array.isArray(theme_ids) && theme_ids.length > 0) {
@@ -197,7 +188,8 @@ exports.update = async(id, data, userId, ip) => {
         official_link,
         contact_person,
         theme_ids,
-        country_ids
+        country_ids,
+        scheduled_publish_at
     } = data;
 
     const client = await pool.connect();
@@ -207,16 +199,20 @@ exports.update = async(id, data, userId, ip) => {
             `SELECT set_config('app.current_user_id', $1, true), set_config('app.client_ip', $2, true)`, [String(userId), ip || '']
         );
 
-        const result = await client.query(
-            `UPDATE calls SET title=$1, programme_id=$2, funding_body=$3, description=$4, objectives=$5,
-       eligibility=$6, beneficiaries=$7, action_type_id=$8, budget_available=$9,
-       funding_rate=$10, target_audience=$11, publication_date=$12, deadline=$13, official_link=$14,
-       contact_person=$15, updated_at=NOW() WHERE id=$16 RETURNING *`, [
-                title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
-                action_type_id, budget_available, funding_rate, target_audience,
-                publication_date, deadline, official_link, contact_person, id
-            ]
-        );
+       const result = await client.query(
+        `UPDATE calls 
+         SET title=$1, programme_id=$2, funding_body=$3, description=$4, objectives=$5,
+             eligibility=$6, beneficiaries=$7, action_type_id=$8, budget_available=$9,
+             funding_rate=$10, target_audience=$11, publication_date=$12, deadline=$13, 
+             official_link=$14, contact_person=$15,
+             scheduled_publish_at=$16,
+             updated_at=NOW() 
+         WHERE id=$17 RETURNING *`, 
+        [title, programme_id, funding_body, description, objectives, eligibility, beneficiaries,
+         action_type_id, budget_available, funding_rate, target_audience,
+         publication_date, deadline, official_link, contact_person,
+         scheduled_publish_at || null, id]
+    );
         if (result.rows.length === 0) {
             await client.query('ROLLBACK');
             return null;
@@ -247,9 +243,27 @@ exports.update = async(id, data, userId, ip) => {
         client.release();
     }
 };
-
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE calls
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, title`
+    );
+    return result.rows;
+};
 exports.publish = async(id) => {
-    const result = await pool.query(`UPDATE calls SET statut_publication='published', published_at=NOW() WHERE id=$1 RETURNING *`, [id]);
+    const result = await pool.query(
+        `UPDATE calls 
+         SET statut_publication='published', 
+             published_at=NOW(),
+             scheduled_publish_at=NULL
+         WHERE id=$1 
+         RETURNING *`, 
+        [id]
+    );
     return result.rows[0];
 };
 

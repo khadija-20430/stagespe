@@ -231,44 +231,34 @@ exports.findRevisions = async(id) => {
 exports.update = async(id, data) => {
     try {
         const {
-            titre,
-            description,
-            langage,
-            version,
-            statut_publication = 'draft',
-            fichier_url,
-            file_size,
-            file_format,
-            uploaded_by
-        } = data;
+        titre, description, langage, version,
+        statut_publication = 'draft', fichier_url, file_size, file_format,
+        uploaded_by, scheduled_publish_at  // ← AJOUT
+    } = data;
 
         const query = `
-            UPDATE documents 
-            SET 
-                titre = COALESCE($1, titre),
-                description = COALESCE($2, description),
-                langage = COALESCE($3, langage),
-                version = COALESCE($4, version),
-                statut_publication = COALESCE($5, statut_publication, 'draft'),
-                fichier_url = COALESCE($6, fichier_url),
-                file_size = COALESCE($7, file_size),
-                file_format = COALESCE($8, file_format),
-                uploaded_by = COALESCE($9, uploaded_by)
-            WHERE id = $10
-            RETURNING *
-        `;
+        UPDATE documents 
+        SET 
+            titre = COALESCE($1, titre),
+            description = COALESCE($2, description),
+            langage = COALESCE($3, langage),
+            version = COALESCE($4, version),
+            statut_publication = COALESCE($5, statut_publication, 'draft'),
+            fichier_url = COALESCE($6, fichier_url),
+            file_size = COALESCE($7, file_size),
+            file_format = COALESCE($8, file_format),
+            uploaded_by = COALESCE($9, uploaded_by),
+            scheduled_publish_at = $10,
+            updated_at = NOW()
+        WHERE id = $11
+        RETURNING *
+    `;
         const values = [
-            titre,
-            description,
-            langage,
-            version,
-            statut_publication,
-            fichier_url,
-            file_size,
-            file_format,
-            uploaded_by,
-            id
-        ];
+        titre, description, langage, version,
+        statut_publication, fichier_url, file_size, file_format,
+        uploaded_by, scheduled_publish_at || null,
+        id
+    ];
         const result = await pool.query(query, values);
         return result.rows[0];
     } catch (error) {
@@ -294,21 +284,23 @@ exports.create = async (data) => {
             file_format,
             uploaded_by,
             categorie_id,
-            links // ex: { project: [3, 7], call: [2], agreement: [], mobility: [], programme: [] }
+            links,
+            scheduled_publish_at  
         } = data;
 
         const query = `
-            INSERT INTO documents (
-                titre, description, langage, version, statut_publication,
-                fichier_url, file_size, file_format, uploaded_by, categorie_id,
-                created_at, updated_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
-            RETURNING *
-        `;
-        const values = [
+        INSERT INTO documents (
             titre, description, langage, version, statut_publication,
-            fichier_url, file_size, file_format, uploaded_by, categorie_id
-        ];
+            fichier_url, file_size, file_format, uploaded_by, categorie_id,
+            scheduled_publish_at, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+        RETURNING *
+    `;
+    const values = [
+        titre, description, langage, version, statut_publication,
+        fichier_url, file_size, file_format, uploaded_by, categorie_id,
+        scheduled_publish_at || null  // ← AJOUT
+    ];
         const result = await client.query(query, values);
         const doc = result.rows[0];
 
@@ -457,17 +449,29 @@ exports.remove = async(id) => {
     return result.rows[0];
 };
 
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE documents
+         SET statut_publication='published', published_at=NOW(), scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, titre`
+    );
+    return result.rows;
+};
+
 //publication status
 exports.publish = async(id) => {
     const result = await pool.query(
-        `
-        UPDATE documents
-        SET statut_publication = 'published'
-        WHERE id = $1
-        RETURNING *
-        `, [id]
+        `UPDATE documents
+         SET statut_publication = 'published',
+             published_at = NOW(),
+             scheduled_publish_at = NULL
+         WHERE id = $1
+         RETURNING *`,
+        [id]
     );
-
     return result.rows[0];
 };
 
@@ -496,6 +500,7 @@ exports.restore = async(id) => {
 
     return result.rows[0];
 };
+
 //restaurer une revision (remet un ancien fichier comme version courante)
 
 exports.restoreRevision = exports.restoreRevision = async(documentId, revisionId, changedBy) =>  {

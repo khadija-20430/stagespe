@@ -70,23 +70,40 @@ exports.findAllPublic = async (lang = 'fr') => {
 };
 
 exports.create = async (data) => {
-  const { name, acronym, organisme_financeur, description, official_website, logo_url } = data;
-  const result = await pool.query(
-    `INSERT INTO programmes (name, acronym, organisme_financeur, description, official_website, logo_url)
-     VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-    [name, acronym, organisme_financeur, description, official_website, logo_url]
-  );
-  return result.rows[0];
+    const { 
+        name, acronym, organisme_financeur, description, 
+        official_website, logo_url, 
+        scheduled_publish_at  
+    } = data;
+    
+    const result = await pool.query(
+        `INSERT INTO programmes (name, acronym, organisme_financeur, description, 
+                                  official_website, logo_url, scheduled_publish_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+        [name, acronym, organisme_financeur, description, 
+         official_website, logo_url, scheduled_publish_at || null]
+    );
+    return result.rows[0];
 };
 
 exports.update = async (id, data) => {
-  const { name, acronym, organisme_financeur, description, official_website, logo_url } = data;
-  const result = await pool.query(
-    `UPDATE programmes SET name=$1, acronym=$2, organisme_financeur=$3, description=$4,
-     official_website=$5, logo_url=$6, updated_at=now() WHERE id=$7 RETURNING *`,
-    [name, acronym, organisme_financeur, description, official_website, logo_url, id]
-  );
-  return result.rows[0];
+    const { 
+        name, acronym, organisme_financeur, description, 
+        official_website, logo_url, 
+        scheduled_publish_at  
+    } = data;
+    
+    const result = await pool.query(
+        `UPDATE programmes 
+         SET name=$1, acronym=$2, organisme_financeur=$3, description=$4,
+             official_website=$5, logo_url=$6, 
+             scheduled_publish_at=$7,
+             updated_at=now() 
+         WHERE id=$8 RETURNING *`,
+        [name, acronym, organisme_financeur, description, 
+         official_website, logo_url, scheduled_publish_at || null, id]
+    );
+    return result.rows[0];
 };
 
 exports.remove = async (id) => {
@@ -118,14 +135,26 @@ exports.upsertTranslation = async (programmeId, languageId, data) => {
   `, [programmeId, languageId, data.name || '', data.description || null, data.organisme_financeur || null]);
   return result.rows[0];
 };
-
+exports.publishScheduledDue = async() => {
+    const result = await pool.query(
+        `UPDATE programmes
+         SET statut_publication='published', scheduled_publish_at=NULL
+         WHERE statut_publication='draft'
+           AND scheduled_publish_at IS NOT NULL
+           AND scheduled_publish_at <= NOW()
+         RETURNING id, name`
+    );
+    return result.rows;
+};
 exports.updateStatutPublication = async (id, statut) => {
-  const result = await pool.query(
-    `UPDATE programmes
-     SET statut_publication = $1, updated_at = now()
-     WHERE id = $2
-     RETURNING *`,
-    [statut, id]
-  );
-  return result.rows[0];
+    const result = await pool.query(
+        `UPDATE programmes
+         SET statut_publication = $1, 
+             scheduled_publish_at = CASE WHEN $1 = 'published' THEN NULL ELSE scheduled_publish_at END,
+             updated_at = now()
+         WHERE id = $2
+         RETURNING *`,
+        [statut, id]
+    );
+    return result.rows[0];
 };

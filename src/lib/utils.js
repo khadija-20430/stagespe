@@ -21,3 +21,10 @@ export function formatFileSize(bytes) {
   if (ko < 1024) return `${ko.toFixed(0)} Ko`;
   return `${(ko / 1024).toFixed(1)} Mo`;
 }
+export function formatScheduledDate(isoString) {
+    if (!isoString) return '';
+    const d = new Date(isoString);
+    if (Number.isNaN(d.getTime())) return '';
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}

@@ -3,7 +3,7 @@ const notificationsModel = require('../models/notificationsModel');
 
 
 async function processMilestones({
-    entityType,       // agreement call mobility
+    entityType,       // agreement, call, mobilility...
     query,            
     viewerIds,
     soonDaysBefore,   

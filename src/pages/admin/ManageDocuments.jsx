@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Eye, Download, Languages, History, X, Save, Loader2 } from 'lucide-react';
+import { FolderOpen, Eye, Download, Languages, History, X, Save, Loader2, CalendarClock } from 'lucide-react';
 import CrudManager from './CrudManager.jsx';
 import Badge from '../../components/ui/Badge.jsx';
 
@@ -27,6 +27,7 @@ import {
   syncDocumentLinks,
 } from '../../services/api.js';
 import { toDocumentPayload } from '../../services/mappers.js';
+import { formatScheduledDate } from '../../lib/utils.js';
 
 const LANGUAGES = [
   { value: 'fr', label: 'Français' },
@@ -34,7 +35,6 @@ const LANGUAGES = [
   { value: 'ar', label: 'العربية' },
 ];
 
-// Champs traduisibles — noms de colonnes réels de document_translations
 const TRANSLATION_FIELDS = [
   { name: 'titre', label: 'Titre' },
   { name: 'description', label: 'Description' },
@@ -47,22 +47,18 @@ const emptyTranslationSet = () => ({
 
 const formatBytes = (bytes) => {
   if (!bytes) return '—';
-
   const units = ['o', 'Ko', 'Mo', 'Go'];
   let i = 0;
   let n = Number(bytes);
-
   while (n >= 1024 && i < units.length - 1) {
     n /= 1024;
     i += 1;
   }
-
   return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
 };
 
 const getFileName = (path) => {
   if (!path) return 'document';
-
   try {
     const cleanPath = String(path).split('?')[0];
     return cleanPath.split('/').pop() || 'document';
@@ -74,28 +70,17 @@ const getFileName = (path) => {
 const downloadFile = async (path, fallbackName = 'document') => {
   try {
     const url = getFileUrl(path);
-
-    if (!url) {
-      throw new Error('Aucun fichier disponible');
-    }
-
+    if (!url) throw new Error('Aucun fichier disponible');
     const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`Impossible de télécharger le fichier (${response.status})`);
-    }
-
+    if (!response.ok) throw new Error(`Impossible de télécharger le fichier (${response.status})`);
     const blob = await response.blob();
     const blobUrl = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
-
     link.href = blobUrl;
     link.download = fallbackName;
-
     document.body.appendChild(link);
     link.click();
     link.remove();
-
     window.URL.revokeObjectURL(blobUrl);
   } catch (error) {
     console.error('Erreur téléchargement fichier:', error);
@@ -105,7 +90,6 @@ const downloadFile = async (path, fallbackName = 'document') => {
 
 const publicationTone = (status) => {
   const value = String(status || 'draft').toLowerCase().trim();
-
   if (value === 'published' || value === 'publié') return 'green';
   if (value === 'archived') return 'slate';
   return 'amber';
@@ -113,7 +97,6 @@ const publicationTone = (status) => {
 
 const publicationLabel = (status, t) => {
   const value = String(status || 'draft').toLowerCase().trim();
-
   if (value === 'published' || value === 'publié') return t('published');
   if (value === 'archived') return t('archived');
   return t('draft');
@@ -124,18 +107,13 @@ export default function ManageDocuments() {
   const previewLang = i18n.language;
 
   const [categories, setCategories] = useState([]);
-
-  // Entités liables (projets, appels, conventions, mobilités, programmes)
   const [projects, setProjects] = useState([]);
   const [calls, setCalls] = useState([]);
   const [agreements, setAgreements] = useState([]);
   const [mobilities, setMobilities] = useState([]);
   const [programmes, setProgrammes] = useState([]);
-
-  //  Aperçu de traduction (lecture seule, suit la langue globale du site)
   const [previewData, setPreviewData] = useState({});
 
-  // Modale de traduction manuelle
   const [translationsItem, setTranslationsItem] = useState(null);
   const [translationsDraft, setTranslationsDraft] = useState(emptyTranslationSet());
   const [translationsTab, setTranslationsTab] = useState('en');
@@ -143,7 +121,6 @@ export default function ManageDocuments() {
   const [translationsSaving, setTranslationsSaving] = useState(false);
   const [translationsError, setTranslationsError] = useState('');
 
-  // Modale d'historique des versions
   const [revisionsItem, setRevisionsItem] = useState(null);
   const [revisions, setRevisions] = useState([]);
   const [revisionsLoading, setRevisionsLoading] = useState(false);
@@ -180,10 +157,6 @@ export default function ManageDocuments() {
     refreshPreview();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
-
-  // ------------------------------------------------------------
-  // TRADUCTIONS
-  // ------------------------------------------------------------
 
   const openTranslations = async (item) => {
     setTranslationsItem(item);
@@ -232,10 +205,6 @@ export default function ManageDocuments() {
     }
   };
 
-  // ------------------------------------------------------------
-  // HISTORIQUE DES VERSIONS
-  // ------------------------------------------------------------
-
   const openRevisions = async (item) => {
     setRevisionsItem(item);
     setRevisionsLoading(true);
@@ -275,14 +244,6 @@ export default function ManageDocuments() {
     }
   };
 
-  // ------------------------------------------------------------
-  // CRUD DOCUMENTS
-  // ------------------------------------------------------------
-
-  // Édition d'un document : met à jour les champs classiques puis
-  // synchronise les liens (project/call/agreement/mobility/programme)
-  // en comparant l'état précédent (déjà présent sur l'item grâce à
-  // mapDocument) et la nouvelle sélection du formulaire.
   const onUpdateDocument = async (id, payload) => {
     const { links: newLinks, ...rest } = payload;
     const previous = documentsRef.current.find((d) => d.id === id);
@@ -294,8 +255,6 @@ export default function ManageDocuments() {
     }
   };
 
-  // Garde une référence à la dernière liste chargée pour retrouver
-  // les liens précédents d'un document au moment de l'édition.
   const documentsRef = { current: [] };
   const fetchDocuments = async () => {
     const rows = await getDocumentsAdmin();
@@ -303,10 +262,6 @@ export default function ManageDocuments() {
     return rows;
   };
 
-  // Permet de forcer un rechargement de la liste après une restauration.
-  // Si CrudManager expose un ref/callback de refresh, remplace cet appel
-  // par celui-ci ; en attendant, on relit simplement les documents pour
-  // garder documentsRef à jour (utile pour les prochaines synchro de liens).
   const refreshDocuments = () => {
     fetchDocuments().catch(console.error);
   };
@@ -345,7 +300,6 @@ export default function ManageDocuments() {
             render: (item) => {
               const code = item.categorie;
               const label = item.categorieLabel || item.categorie || '—';
-
               return (
                 <Badge tone="cobalt">
                   {t(`enums.documentCategory.${code}`, { defaultValue: label })}
@@ -382,7 +336,17 @@ export default function ManageDocuments() {
             label: t('statut'),
             render: (item) => {
               const status = item.statutPublication || item.statut_publication || 'draft';
-              return <Badge tone={publicationTone(status)}>{publicationLabel(status, t)}</Badge>;
+              return (
+                <div className="flex flex-col gap-0.5">
+                  <Badge tone={publicationTone(status)}>{publicationLabel(status, t)}</Badge>
+                  {status === 'draft' && item.scheduledPublishAt && (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 inline-flex items-center gap-1">
+                      <CalendarClock size={12} />
+                      {t('programme', { defaultValue: 'Programmé' })} : {formatScheduledDate(item.scheduledPublishAt)}
+                    </span>
+                  )}
+                </div>
+              );
             },
           },
           {
@@ -390,11 +354,9 @@ export default function ManageDocuments() {
             label: t('fichier'),
             render: (item) => {
               const filePath = item.fichier_url || item.fichier || item.lien;
-
               if (!filePath) {
                 return <span className="text-slate-400">Aucun fichier</span>;
               }
-
               const fileUrl = getFileUrl(filePath);
               const fileName = getFileName(filePath);
 
@@ -410,7 +372,6 @@ export default function ManageDocuments() {
                     <Eye size={16} />
                     <span>{t('voir')}</span>
                   </a>
-
                   <button
                     type="button"
                     onClick={() => downloadFile(filePath, fileName)}
@@ -465,7 +426,6 @@ export default function ManageDocuments() {
             onFile: async (file, setField) => {
               try {
                 const uploaded = await uploadFile(file);
-
                 setField('fichier_url', uploaded.fichier_url);
                 setField('fileFormat', uploaded.file_format?.toUpperCase());
                 setField('fileSize', uploaded.file_size);
@@ -505,6 +465,13 @@ export default function ManageDocuments() {
             type: 'date',
             help: 'Format : JJ/MM/AAAA — Exemple : 31/12/2027',
           },
+          // ✅ Champ programmation (DOIT être dans fields, pas dans columns)
+          {
+            name: 'scheduledPublishAt',
+            label: t('programmerPublication', { defaultValue: 'Programmer la publication' }),
+            type: 'datetime-local',
+            help: 'Laisser vide pour publier manuellement.',
+          },
           {
             name: 'projectIds',
             label: 'Projets liés',
@@ -538,7 +505,6 @@ export default function ManageDocuments() {
         ]}
       />
 
-      {/* TRADUCTIONS MANUELLES (EN / AR) */}
       {translationsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
@@ -619,7 +585,6 @@ export default function ManageDocuments() {
         </div>
       )}
 
-      {/* HISTORIQUE DES VERSIONS */}
       {revisionsItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-2xl rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-xl">
