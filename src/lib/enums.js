@@ -1,6 +1,4 @@
-// Mapping des enums stockés en BDD vers les clés de traduction i18n.
-// Les données (mock ou API) contiennent toujours le CODE (ex. 'ongoing'),
-// jamais le libellé traduit — l'affichage se charge de la traduction.
+
 
 export const PROJECT_STATUS = ['proposed', 'ongoing', 'completed', 'suspended'];
 export const CALL_STATUS = ['open', 'closed', 'upcoming', 'closing_soon'];
@@ -15,7 +13,6 @@ export const DOCUMENT_CATEGORIES = [
   'horizon_msca', 'national', 'guide_faq', 'rapport', 'brochure', 'convention',
 ];
 
-// Tonalité des badges par statut (indépendant de la langue)
 export function projectStatusTone(status) {
   return { proposed: 'slate', ongoing: 'cobalt', completed: 'green', suspended: 'amber' }[status] ?? 'slate';
 }

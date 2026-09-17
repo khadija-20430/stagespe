@@ -161,7 +161,6 @@ export default function PartnerDetail() {
         </section>
       )}
 
-      {/* --- Contact institutionnel (public uniquement, jamais les privés) --- */}
       {Array.isArray(partner.contacts) && partner.contacts.length > 0 && (
         <section className="mt-10">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">

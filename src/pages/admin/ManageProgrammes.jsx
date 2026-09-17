@@ -66,7 +66,6 @@ export default function ManageProgrammes() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const openTranslations = async (item) => {

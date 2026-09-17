@@ -1,4 +1,3 @@
-// controllers/callsController.js
 const pool = require('../db'); 
 const callsModel = require('../models/callsModel');
 const sendError = require('../middleware/errorResponse');

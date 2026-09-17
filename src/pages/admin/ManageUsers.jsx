@@ -16,14 +16,7 @@ import {
 } from '../../services/api.js';
 import { mapUser, toUserPayload } from '../../services/mappers.js';
 
-/*
- * IMPORTANT : on n'utilise PAS t('admin') / t('super_admin') / t('utilisateur')
- * pour ces labels. Le namespace i18next a déjà une clé "admin" qui pointe
- * vers un objet (t('admin.title'), t('admin.logout')...), donc t('admin')
- * tout seul renvoie cet objet au lieu d'une chaîne -> erreur affichée en dur
- * dans le badge ("key 'admin (fr)' returned an object instead of string").
- * On utilise donc un mapping dédié, indépendant du système de traduction.
- */
+
 const roleLabel = (role, t) => t(`enums.userRole.${role}`, { defaultValue: role });
 
 const roleTone = (role) =>
@@ -33,28 +26,13 @@ const roleTone = (role) =>
       ? 'navy'
       : 'slate';
 
-/*
- * Sentinelle pour représenter un utilisateur sans rôle RBAC détaillé.
- * Utilisée dans le select fusionné quand on choisit "Utilisateur (aucun rôle spécifique)".
- */
+
 const PLAIN_USER_ROLE_ID = null;
 
-// getUsers() renvoie des lignes brutes de la table users (jointes à roles) ;
-// on les passe par mapUser pour matcher les noms de champs du formulaire.
+
 const fetchUsers = () => getUsers().then((rows) => rows.map(mapUser));
 
-/*
- * Le backend n'expose pas de PUT générique /auth/users/:id.
- * La modification passe par jusqu'à 4 endpoints séparés :
- *   1. /profile      -> nom + email
- *   2. /role         -> rôle simple (réinitialise role_id à NULL côté serveur)
- *   3. /assign-role  -> rôle détaillé RBAC (uniquement si le rôle est "admin")
- *   4. /activate ou /deactivate -> statut actif/inactif
- *
- * Le rôle doit être mis à jour AVANT d'assigner un role_id, sinon le
- * serveur refuse (il exige que l'utilisateur soit déjà "admin" au
- * moment de l'appel assign-role).
- */
+
 const updateUserFull = async (id, payload) => {
   const { full_name, email, role, role_id, is_active } = payload;
 

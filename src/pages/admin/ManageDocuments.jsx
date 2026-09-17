@@ -155,7 +155,6 @@ export default function ManageDocuments() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const openTranslations = async (item) => {

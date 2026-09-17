@@ -42,7 +42,6 @@ const publicationStatusLabel = (status, t) => {
   return t('statut_brouillon');
 };
 
-// ✅ labelKey au lieu de label
 const TRANSLATION_FIELDS = [
   { name: 'title', labelKey: 'titre' },
   { name: 'summary', labelKey: 'summary' },
@@ -92,7 +91,6 @@ export default function ManageNewsEvents() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const openTranslations = async (item) => {

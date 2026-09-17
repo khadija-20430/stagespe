@@ -22,10 +22,7 @@ const formatBytes = (bytes) => {
   return `${n.toFixed(i === 0 ? 0 : 1).replace('.', ',')} ${units[i]}`;
 };
 
-// Le cahier des charges (2.7) liste "langue" et "programme associé" comme
-// attributs à part entière du document, au même titre que la catégorie.
-// On les extrait donc avec les mêmes alias défensifs que le reste du fichier
-// (le nom exact renvoyé par l'API peut varier selon le mapping backend).
+
 const getLangue = (d) => d.langue || d.langage || d.lang || null;
 const getProgramme = (d) => d.programme || d.programmeNom || d.programme_nom || null;
 
@@ -74,11 +71,7 @@ const { t, i18n } = useTranslation();
     });
   }, [documents, categorie, langue, programme]);
 
-  // ✅ Téléchargement réel du document.
-  // Important : le lien <a download> ne force PAS le téléchargement pour une URL
-  // cross-origin (frontend sur un port, backend sur un autre) — le navigateur
-  // l'ignore et ouvre juste le fichier. On récupère donc le fichier en mémoire
-  // (blob) puis on crée une URL locale blob:, que le navigateur télécharge toujours.
+ 
   const handleDownload = async (doc) => {
     setError(null);
     const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);
@@ -96,7 +89,6 @@ const { t, i18n } = useTranslation();
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
 
-      // Nom de fichier : titre du document + extension d'origine (si trouvable dans l'URL)
       const extMatch = url.match(/\.[a-zA-Z0-9]+$/);
       const ext = extMatch ? extMatch[0] : '';
       const baseName = (doc.titre || doc.nom || 'document').replace(/[/\\?%*:|"<>]/g, '-');
@@ -117,7 +109,6 @@ const { t, i18n } = useTranslation();
     }
   };
 
-  // ✅ Ouvrir le document dans un nouvel onglet
   const handleOpen = (doc) => {
     setError(null);
     const url = getFileUrl(doc.fichier || doc.lien || doc.fichier_url);

@@ -262,7 +262,6 @@ export default function ManageSchool() {
                 ))}
             </div>
 
-            {/* Pas encore de présentation du tout */}
             {!presentation && (
                 <Card className="max-w-xl p-6">
                     <p className="mb-4 text-slate-500">
@@ -288,7 +287,6 @@ export default function ManageSchool() {
                 </Card>
             )}
 
-            {/* Présentation existante mais langue pas encore traduite */}
             {presentation && !currentTranslation && (
                 <Card className="max-w-xl p-6">
                     <p className="mb-4 text-slate-500">
@@ -314,7 +312,6 @@ export default function ManageSchool() {
                 </Card>
             )}
 
-            {/* Traduction existante : édition */}
             {presentation && currentTranslation && (
                 <div className="max-w-2xl space-y-6">
                     <Card className="p-6">

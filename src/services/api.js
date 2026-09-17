@@ -1,8 +1,4 @@
-// ============================================================
-// API SERVICES
-// Point d'accès unique aux données
-// Express + PostgreSQL
-// ============================================================
+
 import {
     mapPartner,
     mapPartnerDetail,
@@ -33,7 +29,7 @@ import {
 const API = import.meta.env.VITE_API_URL;
 
 // Base pour les fichiers statiques
-// Exemple: VITE_API_URL = http://localhost:5000/api -> FILES_BASE_URL = http://localhost:5000
+
 export const FILES_BASE_URL = API.replace(/\/api\/?$/, '');
 
 // ============================================================
@@ -312,7 +308,6 @@ export const publishPartner = (id) =>
 export const archivePartner = (id) =>
     authRequest(`/partners/${id}/archive`, { method: 'PATCH' });
 
-// Alias avec ancien nommage éventuel
 export const publishPARTNER = publishPartner;
 export const archivePARTNER = archivePartner;
 
@@ -442,9 +437,7 @@ export const unlinkDocument = (documentId, entityType, entityId) =>
         body: { entity_type: entityType, entity_id: entityId },
     });
 
-// Synchronise les liens d'un document après édition, en comparant
-// l'état précédent (previousLinks, ex: item.links) et le nouvel état
-// sélectionné dans le formulaire (newLinksBySelection, ex: payload.links).
+// Synchronise les liens d'un document après édition
 export const syncDocumentLinks = async (documentId, previousLinks = {}, newLinksBySelection = {}) => {
     const entityTypes = ['project', 'call', 'agreement', 'mobility', 'programme'];
 

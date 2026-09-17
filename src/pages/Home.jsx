@@ -11,13 +11,10 @@ import { callStatusTone, projectStatusTone } from '../lib/enums.js';
 import esiLogo from '../assets/logo-esi.png';
 import { Megaphone, Globe, GraduationCap, FlaskConical, Users, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 
-// Map string -> composant icône Lucide
 const ICON_MAP = { GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen };
 
-// FR=1, EN=2, AR=3 (correspond à la table `languages`)
 const LANG_ID_MAP = { fr: 1, en: 2, ar: 3 };
 
-// Locale pour le formatage de la monnaie
 const NUMBER_LOCALE = { fr: 'fr-FR', en: 'en-US', ar: 'ar-DZ' };
 
 function Hero({ slides, loading }) {
@@ -77,7 +74,6 @@ function Hero({ slides, loading }) {
           <h2 className="text-4xl font-bold text-white">{t('home.hero.brandTitle')}</h2>
         </div>
 
-        {/* --- Carte réduite en hauteur, sans flèches --- */}
         <div
           className="relative max-w-4xl mx-auto mb-8"
           onMouseEnter={() => setPaused(true)}

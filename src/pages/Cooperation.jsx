@@ -19,7 +19,6 @@ const navigate = useNavigate();
   const [pays, setPays] = useState('Tous');
   const [typeEtab, setTypeEtab] = useState('Tous');
   const [domaine, setDomaine] = useState('Tous');
-  // 🆕 filtre "Type d'accord" (cahier des charges 2.3, manquait entièrement)
   const [typeAccord, setTypeAccord] = useState('Tous');
   const [statut, setStatut] = useState('Tous');
 
@@ -45,7 +44,6 @@ const navigate = useNavigate();
     }[key],
   }));
 
-  // --- Animation d'apparition au scroll ---
   const axesRef = useRef(null);
   const [axesVisible, setAxesVisible] = useState(false);
 
@@ -65,7 +63,6 @@ const navigate = useNavigate();
     return () => observer.disconnect();
   }, []);
 
-  // --- Options de filtres construites depuis les données réelles ---
   const listePays = useMemo(
     () => ['Tous', ...new Set((partenaires ?? []).map((p) => p.pays).filter(Boolean))],
     [partenaires]
@@ -74,22 +71,16 @@ const navigate = useNavigate();
     () => ['Tous', ...new Set((partenaires ?? []).map((p) => p.typeEtablissement).filter(Boolean))],
     [partenaires]
   );
-  // 🔧 CORRIGÉ : utilisait p.domaines (ancien champ texte libre
-  // cooperation_areas), qui n'est plus rempli par le formulaire admin
-  // depuis qu'on est passés aux thèmes (partner_themes). On utilise
-  // maintenant p.themeNames, comme pour le filtre thèmes des calls.
+  
   const listeDomaines = useMemo(
     () => ['Tous', ...new Set((partenaires ?? []).flatMap((p) => p.themeNames ?? []))],
     [partenaires]
   );
-  // 🆕 types de convention disponibles (cahier des charges 2.3 : "Type d'accord")
   const listeTypesAccord = useMemo(
     () => ['Tous', ...new Set((partenaires ?? []).flatMap((p) => p.agreementTypes ?? []))],
     [partenaires]
   );
-  // mapPartner() renvoie "partnershipStatus" : 'active' | 'pending' | 'ended'
-  // (voir partners_partnership_status_check). Clés déjà présentes à la racine
-  // des fichiers de langue (t('active'), t('pending'), t('ended')).
+ 
   const listeStatuts = useMemo(
     () => ['Tous', ...new Set((partenaires ?? []).map((p) => p.partnershipStatus).filter(Boolean))],
     [partenaires]
@@ -102,7 +93,6 @@ const navigate = useNavigate();
         (pays === 'Tous' || p.pays === pays) &&
         (typeEtab === 'Tous' || p.typeEtablissement === typeEtab) &&
         (domaine === 'Tous' || (p.themeNames ?? []).includes(domaine)) &&
-        // 🆕 filtre par type d'accord
         (typeAccord === 'Tous' || (p.agreementTypes ?? []).includes(typeAccord)) &&
         (statut === 'Tous' || p.partnershipStatus === statut)
     );
@@ -166,15 +156,12 @@ const navigate = useNavigate();
             description={t('cooperation.partnersSection.description')}
           />
 
-          {/* --- Filtres partenaires --- */}
           {partenaires && partenaires.length > 0 && (
             <div className="mt-8 space-y-4">
               <Groupe label={t('common.pays')} options={listePays} value={pays} onChange={setPays} />
               <Groupe label={t('typeEtablissement')} options={listeTypesEtab} value={typeEtab} onChange={setTypeEtab} />
               <Groupe label={t('domaines')} options={listeDomaines} value={domaine} onChange={setDomaine} />
-              {/* 🆕 groupe de filtre "Type d'accord" — ajouter la clé i18n
-                  "typeAccord" dans les fichiers de langue si elle n'existe
-                  pas déjà (fallback "Type d'accord" en attendant). */}
+            
               {listeTypesAccord.length > 1 && (
                 <Groupe
                   label={t('typeAccord', { defaultValue: "Type d'accord" })}
@@ -240,8 +227,7 @@ const navigate = useNavigate();
                       </>
                     ) : null}
                   </dl>
-                  {/* 🔧 CORRIGÉ : affichait p.domaines (texte libre obsolète),
-                      affiche maintenant les thèmes réels du partenaire. */}
+                  
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {(p.themeNames ?? []).map((d) => (
                       <span key={d} className="rounded-full bg-slate-100 dark:bg-slate-700 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:text-slate-300">

@@ -16,10 +16,8 @@ import { formatScheduledDate } from '../../lib/utils.js'; // 🆕
 const LUCIDE_ICONS = ['GraduationCap', 'Megaphone', 'Globe', 'FlaskConical', 'Users', 'BookOpen'];
 const ICON_COMPONENTS = { GraduationCap, Megaphone, Globe, FlaskConical, Users, BookOpen };
 
-// Liste fixe des badges
 const HOME_SLIDE_BADGES = ['PROJETS', 'DOCS', 'PARTENARIATS', 'MOBILITE'];
 
-// Langue i18n -> id numérique
 const LANG_ID_BY_CODE = { fr: 1, en: 2, ar: 3 };
 const getLangId = (code) => LANG_ID_BY_CODE[String(code || '').slice(0, 2)] || 1;
 
@@ -62,7 +60,6 @@ export default function ManageHomeSlides() {
         return IconComponent ? <IconComponent size={20} /> : <span>-</span>;
       },
     },
-    // ✅ Colonne statut AVEC indicateur "Programmé"
     {
       key: 'statut_publication',
       label: t('admin.homeSlides.status'),

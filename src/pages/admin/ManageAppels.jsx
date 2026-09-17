@@ -66,7 +66,6 @@ export default function ManageAppels() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const openTranslations = async (item) => {

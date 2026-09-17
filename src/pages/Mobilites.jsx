@@ -8,7 +8,6 @@ import FilterChip from '../components/ui/FilterChip.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { getMobilites, getMobiliteById, getFileUrl } from '../services/api.js';
 
-// Helpers documents
 const getFileName = (path) => {
   if (!path) return 'document';
   try {

@@ -6,7 +6,6 @@ import Card from '../components/ui/Card.jsx';
 import Loader from '../components/ui/Loader.jsx';
 import { getProgrammesPublic, getFileUrl } from '../services/api.js';
 
-// Helpers documents
 const getFileName = (path) => {
   if (!path) return 'document';
   try {
@@ -77,7 +76,6 @@ export default function Programmes() {
   />
 
       <section className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
-        {/* Barre de recherche */}
         <div className="mb-8">
           <input
             type="text"

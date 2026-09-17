@@ -61,7 +61,7 @@ export default function Dashboard() {
 
   return (
     <div>
-      {/* HEADER - SANS LE BOUTON RETOUR */}
+      {/* HEADER */}
       <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-navy dark:text-white flex items-center gap-3">
@@ -72,7 +72,6 @@ export default function Dashboard() {
             {t('admin.dashboard.description')}
           </p>
         </div>
-        {/* ❌ BOUTON "VOIR LE SITE" SUPPRIMÉ */}
       </div>
 
       {/* STATS */}

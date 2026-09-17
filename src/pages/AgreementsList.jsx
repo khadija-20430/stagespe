@@ -1,4 +1,3 @@
-// src/pages/AgreementsList.jsx
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Eye, Download, Paperclip } from 'lucide-react';
@@ -18,7 +17,6 @@ const AGREEMENT_STATUS_TONE = {
   negotiation: 'cobalt',
 };
 
-// Helpers documents
 const getFileName = (path) => {
   if (!path) return 'document';
   try {
@@ -181,7 +179,6 @@ const AgreementsList = () => {
                   )}
                 </div>
 
-                {/* 📎 DOCUMENTS — PDF principal + docs liés */}
                 {(agreement.fichierPdf || (Array.isArray(agreement.documents) && agreement.documents.length > 0)) && (
                   <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
                     <p className="text-xs font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500 mb-2 inline-flex items-center gap-1.5">
@@ -189,7 +186,6 @@ const AgreementsList = () => {
                       {t('documentsSection', { defaultValue: 'Documents' })}
                     </p>
                     <div className="space-y-2">
-                      {/* PDF principal */}
                       {agreement.fichierPdf && (
                         <div className="flex items-center justify-between rounded-lg border border-slate-200 dark:border-slate-700 px-3 py-2 bg-slate-50 dark:bg-slate-800/50">
                           <div className="min-w-0 flex-1">
@@ -224,7 +220,6 @@ const AgreementsList = () => {
                         </div>
                       )}
 
-                      {/* Documents liés */}
                       {Array.isArray(agreement.documents) && agreement.documents.map((doc) => {
                         const filePath = doc.fichier_url;
                         if (!filePath) return null;

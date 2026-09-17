@@ -55,17 +55,13 @@ const { t, i18n } = useTranslation();
           <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filtres.map((a) => (
               <Card key={a.id} hover className="flex flex-col overflow-hidden p-0">
-                {/* mapActualite() renvoie "imageUrl", pas "image" */}
                 {a.imageUrl && <img src={a.imageUrl} alt="" className="h-44 w-full object-cover" />}
                 <div className="flex flex-1 flex-col p-6">
                   <div className="flex items-center gap-3">
                     <Badge tone="cobalt">{t(`enums.newsType.${a.type}`)}</Badge>
-                    {/* mapActualite() renvoie "eventDate", pas "date" */}
                     <span className="text-xs text-slate-400 dark:text-slate-500">{formatDate(a.eventDate)}</span>
                   </div>
-                  {/* mapActualite() renvoie "title", pas "titre" */}
                   <h3 className="mt-3 text-lg font-bold text-navy dark:text-white">{a.title}</h3>
-                  {/* mapActualite() renvoie "summary", pas "extrait" */}
                   <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{a.summary}</p>
                   <Link
                     to={`/actualites/${a.id}`}

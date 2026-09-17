@@ -30,7 +30,6 @@ const emptyTranslationSet = () => ({
   ar: { title: '', description: '', objectives: '', target_groups: '' },
 });
 
-// ✅ Helper : affiche toujours une string, même si description est un objet
 const asText = (v) => {
   if (v == null) return '';
   if (typeof v === 'string') return v;
@@ -85,7 +84,6 @@ export default function ManageProjets() {
       return;
     }
     refreshPreview();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [previewLang]);
 
   const partnerName = (id) => {

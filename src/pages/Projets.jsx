@@ -12,7 +12,6 @@ import { PROJECT_STATUS, projectStatusTone } from '../lib/enums.js';
 
 const NUMBER_LOCALE = { fr: 'fr-FR', en: 'en-US', ar: 'ar-DZ' };
 
-// Helpers documents
 const getFileName = (path) => {
   if (!path) return 'document';
   try {

@@ -7,7 +7,6 @@ import { usePermissions } from '../../context/PermissionsContext.jsx';
 import { useDarkMode } from '../../hooks/useDarkMode.js';
 import NotificationBell from '../../components/ui/NotificationBell.jsx';
 
-// Import des icônes professionnelles
 import { 
   LayoutDashboard, School, Handshake, FlaskConical, Megaphone, Plane, 
   Newspaper, FileText, FolderOpen, Users, KeyRound, FlaskConical as TestTube,
@@ -30,7 +29,6 @@ export default function AdminLayout() {
 
   const [isDark, setIsDark] = useDarkMode();
 
-  //menue admin
   const links = [
     {
       to: '/admin',
@@ -210,14 +208,12 @@ export default function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white transition-colors">
 
-      {/*SIDEBAR DESKTOP (RÉDUCTIBLE)*/}
 
       <aside
         className={`hidden lg:flex shrink-0 flex-col bg-navy p-4 fixed left-0 top-0 bottom-0 z-40 transition-all duration-300 ${
           isMini ? 'w-20' : 'w-64'
         }`}
       >
-        {/* Logo CLICKABLE - SANS FLÈCHE */}
         <button
           onClick={() => setIsMini(!isMini)}
           className="group mb-6 flex items-center gap-2.5 px-2 focus:outline-none w-full"
@@ -230,7 +226,6 @@ export default function AdminLayout() {
             ESI
           </span>
 
-          {/* Texte (disparaît en mini) */}
           {!isMini && (
             <div className="flex flex-1 items-center overflow-hidden">
               <div className="text-left">
