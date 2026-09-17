@@ -1,1427 +1,734 @@
-bdd
-create table public.action_types (
-  id serial not null,
-  label character varying(100) not null,
-  constraint action_types_pkey primary key (id),
-  constraint action_types_label_key unique (label)
-) TABLESPACE pg_default;
-create table public.agreement_documents (
-  agreement_id integer not null,
-  document_id integer not null,
-  constraint agreement_documents_pkey primary key (agreement_id, document_id),
-  constraint agreement_documents_agreement_id_fkey foreign KEY (agreement_id) references agreements (id) on delete CASCADE,
-  constraint agreement_documents_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_agreement_documents_document on public.agreement_documents using btree (document_id) TABLESPACE pg_default;
-create table public.agreements (
-  id serial not null,
-  partner_id integer not null,
-  title character varying(255) not null,
-  type character varying(100) null,
-  description text null,
-  terms_conditions text null,
-  fichier_pdf character varying(255) null,
-  signature_date date null,
-  start_date date null,
-  end_date date null,
-  status character varying(50) null default 'active'::character varying,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  statut_publication character varying null default 'draft'::character varying,
-  constraint agreements_pkey primary key (id),
-  constraint agreements_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint agreements_partner_id_fkey foreign KEY (partner_id) references partners (id) on delete CASCADE,
-  constraint agreements_check check (
-    (
-      (end_date is null)
-      or (start_date is null)
-      or (end_date >= start_date)
-    )
-  ),
-  constraint agreements_status_check check (
-    (
-      (status)::text = any (
-        (
-          array[
-            'active'::character varying,
-            'expired'::character varying,
-            'pending'::character varying,
-            'negotiation'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_agreements_partner on public.agreements using btree (partner_id) TABLESPACE pg_default;
-
-create index IF not exists idx_agreements_status on public.agreements using btree (status) TABLESPACE pg_default;
-
-create index IF not exists idx_agreements_dates on public.agreements using btree (start_date, end_date) TABLESPACE pg_default;
-
-create trigger log_agreements_changes
-after
-update on agreements for EACH row
-execute FUNCTION log_audit_changes ();
-
-create trigger update_agreements_updated_at BEFORE
-update on agreements for EACH row
-execute FUNCTION update_updated_at_column ();
-create view public.agreements_expiring_soon as
-select
-  a.id,
-  a.partner_id,
-  a.title,
-  a.type,
-  a.description,
-  a.terms_conditions,
-  a.fichier_pdf,
-  a.signature_date,
-  a.start_date,
-  a.end_date,
-  a.status,
-  a.created_by,
-  a.created_at,
-  a.updated_at,
-  a.statut_publication,
-  p.name as partner_name,
-  a.end_date - CURRENT_DATE as days_remaining,
-  case
-    when (a.end_date - CURRENT_DATE) <= 0 then 'expired'::text
-    when (a.end_date - CURRENT_DATE) <= 30 then 'urgent'::text
-    when (a.end_date - CURRENT_DATE) <= 60 then 'warning'::text
-    else 'ok'::text
-  end as urgency_level,
-  case
-    when (a.end_date - CURRENT_DATE) <= 0 then '🔴 Expiré'::text
-    when (a.end_date - CURRENT_DATE) <= 30 then '🟡 Expire bientôt'::text
-    when (a.end_date - CURRENT_DATE) <= 60 then '🔵 Bientôt expiré'::text
-    else '✅ OK'::text
-  end as alert_message
-from
-  agreements a
-  join partners p on a.partner_id = p.id
-where
-  a.status::text = 'active'::text
-  and a.end_date is not null
-  and a.end_date <= (CURRENT_DATE + '60 days'::interval)
-order by
-  a.end_date;create table public.app_settings (
-  key character varying(100) not null,
-  value text not null,
-  updated_at timestamp without time zone null default now(),
-  constraint app_settings_pkey primary key (key)
-) TABLESPACE pg_default;
-create table public.audit_logs (
-  id serial not null,
-  user_id integer null,
-  action character varying(100) not null,
-  details text null,
-  ip_address character varying(45) null,
-  user_agent text null,
-  table_name character varying(100) null,
-  record_id integer null,
-  old_values jsonb null,
-  new_values jsonb null,
-  entity_type character varying(50) null,
-  entity_id integer null,
-  created_at timestamp without time zone null default now(),
-  constraint audit_logs_pkey primary key (id),
-  constraint audit_logs_user_id_fkey foreign KEY (user_id) references users (id) on delete set null
-) TABLESPACE pg_default;
-
-create index IF not exists idx_audit_logs_user on public.audit_logs using btree (user_id) TABLESPACE pg_default;
-
-create index IF not exists idx_audit_logs_action on public.audit_logs using btree (action) TABLESPACE pg_default;
-
-create index IF not exists idx_audit_logs_table on public.audit_logs using btree (table_name) TABLESPACE pg_default;
-
-create index IF not exists idx_audit_logs_entity on public.audit_logs using btree (entity_type, entity_id) TABLESPACE pg_default;
-
-create index IF not exists idx_audit_logs_created on public.audit_logs using btree (created_at) TABLESPACE pg_default;
-create table public.call_countries (
-  call_id integer not null,
-  country_id integer not null,
-  constraint call_countries_pkey primary key (call_id, country_id),
-  constraint call_countries_call_id_fkey foreign KEY (call_id) references calls (id) on delete CASCADE,
-  constraint call_countries_country_id_fkey foreign KEY (country_id) references countries (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_call_countries_country on public.call_countries using btree (country_id) TABLESPACE pg_default;
-create table public.call_documents (
-  call_id integer not null,
-  document_id integer not null,
-  constraint call_documents_pkey primary key (call_id, document_id),
-  constraint call_documents_call_id_fkey foreign KEY (call_id) references calls (id) on delete CASCADE,
-  constraint call_documents_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_call_documents_document on public.call_documents using btree (document_id) TABLESPACE pg_default;
-create table public.call_themes (
-  call_id integer not null,
-  theme_id integer not null,
-  constraint call_themes_pkey primary key (call_id, theme_id),
-  constraint call_themes_call_id_fkey foreign KEY (call_id) references calls (id) on delete CASCADE,
-  constraint call_themes_theme_id_fkey foreign KEY (theme_id) references themes (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.call_translations (
-  id serial not null,
-  call_id integer not null,
-  language_id integer not null,
-  title character varying(255) not null,
-  description text null,
-  objectives text null,
-  eligibility text null,
-  beneficiaries text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint call_translations_pkey primary key (id),
-  constraint call_translations_call_id_language_id_key unique (call_id, language_id),
-  constraint call_translations_call_id_fkey foreign KEY (call_id) references calls (id) on delete CASCADE,
-  constraint call_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.calls (
-  id serial not null,
-  title character varying(255) not null,
-  programme_id integer null,
-  funding_body character varying(255) null,
-  description text null,
-  objectives text null,
-  eligibility text null,
-  beneficiaries text null,
-  action_type_id integer null,
-  budget_available numeric(12, 2) null,
-  funding_rate numeric(5, 2) null,
-  target_audience character varying(150) null,
-  publication_date date null,
-  deadline date null,
-  official_link character varying(255) null,
-  contact_person character varying(150) null,
-  status character varying(50) not null default 'open'::character varying,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  published_at timestamp without time zone null,
-  archived_at timestamp without time zone null,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint calls_pkey primary key (id),
-  constraint calls_programme_id_fkey foreign KEY (programme_id) references programmes (id) on delete set null,
-  constraint calls_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint calls_action_type_id_fkey foreign KEY (action_type_id) references action_types (id) on delete set null,
-  constraint calls_status_check check (
-    (
-      (status)::text = any (
-        (
-          array[
-            'open'::character varying,
-            'closed'::character varying,
-            'upcoming'::character varying,
-            'closing_soon'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint calls_statut_publication_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint calls_budget_available_check check (
-    (
-      (budget_available is null)
-      or (budget_available >= (0)::numeric)
-    )
-  ),
-  constraint calls_check check (
-    (
-      (publication_date is null)
-      or (deadline is null)
-      or (deadline >= publication_date)
-    )
-  ),
-  constraint calls_funding_rate_check check (
-    (
-      (funding_rate is null)
-      or (
-        (funding_rate >= (0)::numeric)
-        and (funding_rate <= (100)::numeric)
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_calls_programme on public.calls using btree (programme_id) TABLESPACE pg_default;
-
-create index IF not exists idx_calls_status on public.calls using btree (status) TABLESPACE pg_default;
-
-create index IF not exists idx_calls_deadline on public.calls using btree (deadline) TABLESPACE pg_default;
-
-create index IF not exists idx_calls_statut_pub on public.calls using btree (statut_publication) TABLESPACE pg_default;
-
-create index IF not exists idx_calls_title_trgm on public.calls using gin (title extensions.gin_trgm_ops) TABLESPACE pg_default;
-
-create trigger log_calls_changes
-after
-update on calls for EACH row
-execute FUNCTION log_audit_changes ();
-
-create trigger update_calls_updated_at BEFORE
-update on calls for EACH row
-execute FUNCTION update_updated_at_column ();
-create view public.calls_closing_soon as
-select
-  id,
-  title,
-  programme_id,
-  funding_body,
-  description,
-  objectives,
-  eligibility,
-  beneficiaries,
-  action_type_id,
-  budget_available,
-  funding_rate,
-  target_audience,
-  publication_date,
-  deadline,
-  official_link,
-  contact_person,
-  status,
-  statut_publication,
-  published_at,
-  archived_at,
-  created_by,
-  created_at,
-  updated_at
-from
-  calls
-where
-  status::text = 'open'::text
-  and deadline >= CURRENT_DATE
-  and deadline <= (CURRENT_DATE + '15 days'::interval)
-order by
-  deadline;create table public.cities (
-  id serial not null,
-  name character varying(150) not null,
-  country_id integer null,
-  constraint cities_pkey primary key (id),
-  constraint cities_name_country_id_key unique (name, country_id),
-  constraint cities_country_id_fkey foreign KEY (country_id) references countries (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.countries (
-  id serial not null,
-  name character varying(100) not null,
-  iso_code character(2) null,
-  region character varying(100) null,
-  constraint countries_pkey primary key (id),
-  constraint countries_iso_code_key unique (iso_code),
-  constraint countries_name_key unique (name)
-) TABLESPACE pg_default;
-create view public.dashboard_stats as
-select
-  (
-    select count(*) 
-    from partners
-    where partners.partnership_status::text = 'active'::text
-      and partners.statut_publication::text = 'published'::text
-  ) as total_active_partners,
-
-  (
-    select count(distinct partners.country_id)
-    from partners
-    where partners.country_id is not null
-      and partners.statut_publication::text = 'published'::text
-  ) as total_countries,
-
-  (
-    select count(*)
-    from agreements
-    where agreements.status::text = 'active'::text
-      and agreements.statut_publication::text = 'published'::text
-  ) as active_agreements,
-
-  (
-    select count(*)
-    from agreements
-    where agreements.status::text = 'expired'::text
-      and agreements.statut_publication::text = 'published'::text
-  ) as expired_agreements,
-
-  (
-    select count(*)
-    from agreements
-    where agreements.end_date >= CURRENT_DATE
-      and agreements.end_date <= (CURRENT_DATE + '30 days'::interval)
-      and agreements.statut_publication::text = 'published'::text
-  ) as expiring_soon,
-
-  (
-    select count(*)
-    from projects
-    where projects.status::text = 'ongoing'::text
-      and projects.statut_publication::text = 'published'::text
-  ) as ongoing_projects,
-
-  (
-    select count(*)
-    from projects
-    where projects.status::text = 'proposed'::text
-      and projects.statut_publication::text = 'published'::text
-  ) as proposed_projects,
-
-  (
-    select count(*)
-    from projects
-    where projects.status::text = 'completed'::text
-      and projects.statut_publication::text = 'published'::text
-  ) as completed_projects,
-
-  (
-    select count(*)
-    from calls
-    where calls.status::text = 'open'::text
-      and calls.statut_publication::text = 'published'::text
-  ) as open_calls,
-
-  (
-    select count(*)
-    from calls
-    where calls.status::text = 'closing_soon'::text
-      and calls.statut_publication::text = 'published'::text
-  ) as closing_soon_calls,
-
-  (
-    select count(*)
-    from mobility
-    where mobility.status::text = 'open'::text
-      and mobility.statut_publication::text = 'published'::text
-  ) as open_mobility,
-
-  (
-    select count(*)
-    from documents
-    where documents.statut_publication::text = 'published'::text
-  ) as total_documents,
-
-  (
-    select count(*)
-    from news_events
-    where news_events.statut_publication::text = 'published'::text
-  ) as published_news;
-create table public.document_access_logs (
-  id serial not null,
-  document_id integer not null,
-  user_id integer null,
-  ip_address character varying(45) null,
-  user_agent text null,
-  action character varying(20) not null,
-  created_at timestamp without time zone null default now(),
-  constraint document_access_logs_pkey primary key (id),
-  constraint document_access_logs_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE,
-  constraint document_access_logs_user_id_fkey foreign KEY (user_id) references users (id) on delete set null,
-  constraint document_access_logs_action_check check (
-    (
-      (action)::text = any (
-        (
-          array[
-            'view'::character varying,
-            'download'::character varying,
-            'preview'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_doc_access_document on public.document_access_logs using btree (document_id) TABLESPACE pg_default;
-
-create index IF not exists idx_doc_access_user on public.document_access_logs using btree (user_id) TABLESPACE pg_default;
-
-create index IF not exists idx_doc_access_created on public.document_access_logs using btree (created_at) TABLESPACE pg_default;
-create table public.document_categories (
-  id serial not null,
-  code character varying(30) not null,
-  label character varying(100) not null,
-  constraint document_categories_pkey primary key (id),
-  constraint document_categories_code_key unique (code)
-) TABLESPACE pg_default;
-create table public.document_revisions (
-  id serial not null,
-  document_id integer not null,
-  version character varying(20) not null,
-  fichier_url character varying(255) not null,
-  file_size bigint null,
-  changed_by integer null,
-  change_note text null,
-  created_at timestamp without time zone null default now(),
-  constraint document_revisions_pkey primary key (id),
-  constraint document_revisions_changed_by_fkey foreign KEY (changed_by) references users (id) on delete set null,
-  constraint document_revisions_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.documents (
-  id serial not null,
-  titre character varying(255) not null,
-  description text null,
-  fichier_url character varying(255) not null,
-  categorie_id integer not null,
-  langage character varying(10) null default 'fr'::character varying,
-  version character varying(20) null default '1.0'::character varying,
-  file_size bigint null,
-  file_format character varying(20) null,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  is_featured boolean not null default false,
-  date_expiration date null,
-  date_upload timestamp without time zone null default now(),
-  uploaded_by integer null,
-  constraint documents_pkey primary key (id),
-  constraint documents_categorie_id_fkey foreign KEY (categorie_id) references document_categories (id) on delete RESTRICT,
-  constraint documents_uploaded_by_fkey foreign KEY (uploaded_by) references users (id) on delete set null,
-  constraint documents_langage_check check (
-    (
-      (langage)::text = any (
-        (
-          array[
-            'fr'::character varying,
-            'en'::character varying,
-            'ar'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint documents_statut_publication_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_documents_featured on public.documents using btree (is_featured) TABLESPACE pg_default
-where
-  (is_featured = true);
-
-create index IF not exists idx_documents_categorie on public.documents using btree (categorie_id) TABLESPACE pg_default;
-
-create index IF not exists idx_documents_visibilite on public.documents using btree (statut_publication) TABLESPACE pg_default;
-
-create index IF not exists idx_documents_langage on public.documents using btree (langage) TABLESPACE pg_default;
-
-create index IF not exists idx_documents_expiration on public.documents using btree (date_expiration) TABLESPACE pg_default;
-
-create index IF not exists idx_documents_uploaded on public.documents using btree (date_upload) TABLESPACE pg_default;
-create view public.documents_expired as
-select
-  id,
-  titre,
-  description,
-  fichier_url,
-  categorie_id,
-  langage,
-  version,
-  file_size,
-  file_format,
-  statut_publication as visibilite,
-  is_featured,
-  date_expiration,
-  date_upload,
-  uploaded_by
-from
-  documents
-where
-  date_expiration is not null
-  and date_expiration < CURRENT_DATE;
-create table public.establishment_types (
-  id serial not null,
-  label character varying(100) not null,
-  constraint establishment_types_pkey primary key (id),
-  constraint establishment_types_label_key unique (label)
-) TABLESPACE pg_default;
-create table public.institutions (
-  id serial not null,
-  name character varying(255) not null,
-  city_id integer null,
-  partner_id integer null,
-  created_at timestamp without time zone null default now(),
-  constraint institutions_pkey primary key (id),
-  constraint institutions_city_id_fkey foreign KEY (city_id) references cities (id) on delete set null,
-  constraint institutions_partner_id_fkey foreign KEY (partner_id) references partners (id) on delete set null
-) TABLESPACE pg_default;
-create table public.languages (
-  id serial not null,
-  code character varying(5) not null,
-  name character varying(50) not null,
-  is_default boolean null default false,
-  is_active boolean null default true,
-  created_at timestamp without time zone null default now(),
-  constraint languages_pkey primary key (id),
-  constraint languages_code_key unique (code)
-) TABLESPACE pg_default;
-create table public.login_history (
-  id serial not null,
-  user_id integer null,
-  email_attempted character varying(150) null,
-  success boolean not null,
-  ip_address character varying(45) null,
-  user_agent text null,
-  created_at timestamp without time zone null default now(),
-  constraint login_history_pkey primary key (id),
-  constraint login_history_user_id_fkey foreign KEY (user_id) references users (id) on delete set null
-) TABLESPACE pg_default;
-
-create index IF not exists idx_login_history_user on public.login_history using btree (user_id) TABLESPACE pg_default;
-
-create index IF not exists idx_login_history_created on public.login_history using btree (created_at) TABLESPACE pg_default;
-create table public.mobility (
-  id serial not null,
-  title character varying(255) not null,
-  type character varying(50) not null,
-  programme_id integer null,
-  project_id integer null,
-  agreement_id integer null,
-  destination_country_id integer null,
-  destination_partner_id integer null,
-  institution_id integer null,
-  target_audience text null,
-  description text null,
-  conditions text null,
-  places_count integer null,
-  duration character varying(100) null,
-  period character varying(100) null,
-  funding_details text null,
-  application_procedure text null,
-  selection_criteria text null,
-  application_link character varying(255) null,
-  contact_person character varying(150) null,
-  contact_email character varying(150) null,
-  deadline date null,
-  start_date date null,
-  end_date date null,
-  status character varying(50) not null default 'open'::character varying,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  published_at timestamp without time zone null,
-  archived_at timestamp without time zone null,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint mobility_pkey primary key (id),
-  constraint mobility_destination_country_id_fkey foreign KEY (destination_country_id) references countries (id) on delete set null,
-  constraint mobility_destination_partner_id_fkey foreign KEY (destination_partner_id) references partners (id) on delete set null,
-  constraint mobility_agreement_id_fkey foreign KEY (agreement_id) references agreements (id) on delete set null,
-  constraint mobility_institution_id_fkey foreign KEY (institution_id) references institutions (id) on delete set null,
-  constraint mobility_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint mobility_project_id_fkey foreign KEY (project_id) references projects (id) on delete set null,
-  constraint mobility_programme_id_fkey foreign KEY (programme_id) references programmes (id) on delete set null,
-  constraint mobility_type_check check (
-    (
-      (type)::text = any (
-        (
-          array[
-            'student_outgoing'::character varying,
-            'student_incoming'::character varying,
-            'teaching'::character varying,
-            'research'::character varying,
-            'staff'::character varying,
-            'internship'::character varying,
-            'summer_school'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint mobility_places_count_check check (
-    (
-      (places_count is null)
-      or (places_count >= 0)
-    )
-  ),
-  constraint mobility_status_check check (
-    (
-      (status)::text = any (
-        (
-          array[
-            'open'::character varying,
-            'closed'::character varying,
-            'upcoming'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint mobility_statut_publication_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_status on public.mobility using btree (status) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_country on public.mobility using btree (destination_country_id) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_partner on public.mobility using btree (destination_partner_id) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_agreement on public.mobility using btree (agreement_id) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_statut_pub on public.mobility using btree (statut_publication) TABLESPACE pg_default;
-
-create trigger log_mobility_changes
-after
-update on mobility for EACH row
-execute FUNCTION log_audit_changes ();
-
-create trigger update_mobility_updated_at BEFORE
-update on mobility for EACH row
-execute FUNCTION update_updated_at_column ();
-create table public.mobility_documents (
-  mobility_id integer not null,
-  document_id integer not null,
-  constraint mobility_documents_pkey primary key (mobility_id, document_id),
-  constraint mobility_documents_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE,
-  constraint mobility_documents_mobility_id_fkey foreign KEY (mobility_id) references mobility (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_mobility_documents_document on public.mobility_documents using btree (document_id) TABLESPACE pg_default;
-create table public.mobility_language_requirements (
-  id serial not null,
-  mobility_id integer not null,
-  language_id integer not null,
-  min_level character varying(10) null,
-  constraint mobility_language_requirements_pkey primary key (id),
-  constraint mobility_language_requirements_mobility_id_language_id_key unique (mobility_id, language_id),
-  constraint mobility_language_requirements_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint mobility_language_requirements_mobility_id_fkey foreign KEY (mobility_id) references mobility (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.mobility_translations (
-  id serial not null,
-  mobility_id integer not null,
-  language_id integer not null,
-  title character varying(255) not null,
-  description text null,
-  conditions text null,
-  target_audience text null,
-  application_procedure text null,
-  selection_criteria text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint mobility_translations_pkey primary key (id),
-  constraint mobility_translations_mobility_id_language_id_key unique (mobility_id, language_id),
-  constraint mobility_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint mobility_translations_mobility_id_fkey foreign KEY (mobility_id) references mobility (id) on delete CASCADE
-) TABLESPACE pg_default;create view public.mobility_with_partners as
-select
-  m.id,
-  m.title,
-  m.type,
-  m.programme_id,
-  m.project_id,
-  m.agreement_id,
-  m.destination_country_id,
-  m.destination_partner_id,
-  m.institution_id,
-  m.target_audience,
-  m.description,
-  m.conditions,
-  m.places_count,
-  m.duration,
-  m.period,
-  m.funding_details,
-  m.application_procedure,
-  m.selection_criteria,
-  m.application_link,
-  m.contact_person,
-  m.contact_email,
-  m.deadline,
-  m.start_date,
-  m.end_date,
-  m.status,
-  m.statut_publication,
-  m.published_at,
-  m.archived_at,
-  m.created_by,
-  m.created_at,
-  m.updated_at,
-  p.name as partner_name,
-  c.name as country_name
-from
-  mobility m
-  left join partners p on m.destination_partner_id = p.id
-  left join countries c on m.destination_country_id = c.id
-where
-  m.status::text = 'open'::text
-  and m.statut_publication::text = 'published'::text;
-create table public.news_events (
-  id serial not null,
-  title character varying(255) not null,
-  type character varying(50) not null,
-  summary text null,
-  description text null,
-  project_id integer null,
-  event_date date null,
-  end_date date null,
-  location character varying(255) null,
-  image_url character varying(255) null,
-  is_featured boolean not null default false,
-  author_name character varying(150) null,
-  author_role character varying(150) null,
-  author_photo_url character varying(255) null,
-  quote_text text null,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  published_at timestamp without time zone null,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint news_events_pkey primary key (id),
-  constraint news_events_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint news_events_project_id_fkey foreign KEY (project_id) references projects (id) on delete set null,
-  constraint chk_news_events_testimonial_fields check (
-    (
-      ((type)::text <> 'testimonial'::text)
-      or (
-        (author_name is not null)
-        and (quote_text is not null)
-      )
-    )
-  ),
-  constraint news_events_statut_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint news_events_type_check check (
-    (
-      (type)::text = any (
-        (
-          array[
-            'news'::character varying,
-            'event'::character varying,
-            'workshop'::character varying,
-            'meeting'::character varying,
-            'testimonial'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_news_events_featured on public.news_events using btree (is_featured) TABLESPACE pg_default
-where
-  (is_featured = true);
-
-create index IF not exists idx_news_statut on public.news_events using btree (statut_publication) TABLESPACE pg_default;
-
-create index IF not exists idx_news_project on public.news_events using btree (project_id) TABLESPACE pg_default;
-
-create index IF not exists idx_news_dates on public.news_events using btree (event_date, end_date) TABLESPACE pg_default;
-
-create trigger update_news_events_updated_at BEFORE
-update on news_events for EACH row
-execute FUNCTION update_updated_at_column ();
-create table public.news_translations (
-  id serial not null,
-  news_id integer not null,
-  language_id integer not null,
-  title character varying(255) not null,
-  summary text null,
-  description text null,
-  quote_text text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint news_translations_pkey primary key (id),
-  constraint news_translations_news_id_language_id_key unique (news_id, language_id),
-  constraint news_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint news_translations_news_id_fkey foreign KEY (news_id) references news_events (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.notifications (
-  id serial not null,
-  user_id integer not null,
-  title character varying(255) not null,
-  message text null,
-  type character varying(50) null,
-  link character varying(255) null,
-  is_read boolean not null default false,
-  created_at timestamp without time zone null default now(),
-  constraint notifications_pkey primary key (id),
-  constraint notifications_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE,
-  constraint notifications_type_check check (
-    (
-      (type)::text = any (
-        (
-          array[
-            'info'::character varying,
-            'warning'::character varying,
-            'success'::character varying,
-            'error'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_notifications_user on public.notifications using btree (user_id, is_read) TABLESPACE pg_default;
-
-create index IF not exists idx_notifications_created on public.notifications using btree (created_at) TABLESPACE pg_default;
-create table public.partner_contacts (
-  id serial not null,
-  partner_id integer not null,
-  full_name character varying(150) not null,
-  position character varying(150) null,
-  email character varying(150) null,
-  phone character varying(50) null,
-  is_primary boolean null default false,
-  is_public boolean null default false,
-  user_id integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint partner_contacts_pkey primary key (id),
-  constraint partner_contacts_partner_id_fkey foreign KEY (partner_id) references partners (id) on delete CASCADE,
-  constraint partner_contacts_user_id_fkey foreign KEY (user_id) references users (id) on delete set null
-) TABLESPACE pg_default;
-
-create index IF not exists idx_partner_contacts_partner on public.partner_contacts using btree (partner_id) TABLESPACE pg_default;
-
-create trigger update_partner_contacts_updated_at BEFORE
-update on partner_contacts for EACH row
-execute FUNCTION update_updated_at_column ();
-create table public.partner_translations (
-  id serial not null,
-  partner_id integer not null,
-  language_id integer not null,
-  name character varying(255) not null,
-  official_name character varying(255) null,
-  description text null,
-  cooperation_areas text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint partner_translations_pkey primary key (id),
-  constraint partner_translations_partner_id_language_id_key unique (partner_id, language_id),
-  constraint partner_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint partner_translations_partner_id_fkey foreign KEY (partner_id) references partners (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.partners (
-  id serial not null,
-  name character varying(255) not null,
-  official_name character varying(255) null,
-  country_id integer null,
-  city character varying(150) null,
-  establishment_type_id integer null,
-  partnership_type_id integer null,
-  partnership_status character varying(50) not null default 'active'::character varying,
-  website character varying(255) null,
-  cooperation_areas text null,
-  description text null,
-  logo_url character varying(255) null,
-  latitude numeric(9, 6) null,
-  longitude numeric(9, 6) null,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  published_at timestamp without time zone null,
-  archived_at timestamp without time zone null,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  address text null,
-  constraint partners_pkey primary key (id),
-  constraint partners_country_id_fkey foreign KEY (country_id) references countries (id) on delete set null,
-  constraint partners_partnership_type_id_fkey foreign KEY (partnership_type_id) references partnership_types (id) on delete set null,
-  constraint partners_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint partners_establishment_type_id_fkey foreign KEY (establishment_type_id) references establishment_types (id) on delete set null,
-  constraint partners_statut_publication_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint chk_partners_longitude check (
-    (
-      (longitude is null)
-      or (
-        (longitude >= ('-180'::integer)::numeric)
-        and (longitude <= (180)::numeric)
-      )
-    )
-  ),
-  constraint partners_partnership_status_check check (
-    (
-      (partnership_status)::text = any (
-        (
-          array[
-            'active'::character varying,
-            'pending'::character varying,
-            'ended'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint chk_partners_latitude check (
-    (
-      (latitude is null)
-      or (
-        (latitude >= ('-90'::integer)::numeric)
-        and (latitude <= (90)::numeric)
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_partners_geo on public.partners using btree (latitude, longitude) TABLESPACE pg_default;
-
-create index IF not exists idx_partners_country on public.partners using btree (country_id) TABLESPACE pg_default;
-
-create index IF not exists idx_partners_statut_pub on public.partners using btree (statut_publication) TABLESPACE pg_default;
-
-create index IF not exists idx_partners_name_trgm on public.partners using gin (name extensions.gin_trgm_ops) TABLESPACE pg_default;
-
-create trigger log_partners_changes
-after
-update on partners for EACH row
-execute FUNCTION log_audit_changes ();
-
-create trigger update_partners_updated_at BEFORE
-update on partners for EACH row
-execute FUNCTION update_updated_at_column ();
-create view public.partners_by_country as
-select
-  c.name as country_name,
-  c.iso_code,
-  count(p.id) as partner_count
-from
-  countries c
-  left join partners p on p.country_id = c.id
-group by
-  c.id,
-  c.name,
-  c.iso_code
-order by
-  (count(p.id)) desc;create table public.partnership_types (
-  id serial not null,
-  label character varying(100) not null,
-  constraint partnership_types_pkey primary key (id),
-  constraint partnership_types_label_key unique (label)
-) TABLESPACE pg_default;create table public.password_reset_tokens (
-  id serial not null,
-  user_id integer not null,
-  token character varying(255) not null,
-  expires_at timestamp without time zone not null,
-  used boolean not null default false,
-  created_at timestamp without time zone null default now(),
-  attempts integer not null default 0,
-  constraint password_reset_tokens_pkey primary key (id),
-  constraint password_reset_tokens_token_key unique (token),
-  constraint password_reset_tokens_user_id_fkey foreign KEY (user_id) references users (id) on delete CASCADE
-) TABLESPACE pg_default;
-create table public.permissions (
-  id serial not null,
-  code character varying(100) not null,
-  module character varying(50) not null,
-  action character varying(50) not null,
-  label character varying(150) not null,
-  constraint permissions_pkey primary key (id),
-  constraint permissions_code_key unique (code)
-) TABLESPACE pg_default;
-
-create index IF not exists idx_permissions_module on public.permissions using btree (module) TABLESPACE pg_default;
-
-create trigger trg_grant_new_permission_to_super_admin
-after INSERT on permissions for EACH row
-execute FUNCTION grant_new_permission_to_super_admin ();
-create table public.programme_documents (
-  programme_id integer not null,
-  document_id integer not null,
-  constraint programme_documents_pkey primary key (programme_id, document_id),
-  constraint programme_documents_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE,
-  constraint programme_documents_programme_id_fkey foreign KEY (programme_id) references programmes (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_programme_documents_document on public.programme_documents using btree (document_id) TABLESPACE pg_default;
-create table public.programmes (
-  id serial not null,
-  name character varying(150) not null,
-  acronym character varying(20) null,
-  organisme_financeur character varying(150) null,
-  description text null,
-  official_website character varying(255) null,
-  logo_url character varying(255) null,
-  constraint programmes_pkey primary key (id),
-  constraint programmes_name_key unique (name)
-) TABLESPACE pg_default;create table public.project_deliverable_translations (
-  id serial not null,
-  deliverable_id integer not null,
-  language_id integer not null,
-  description text not null,
-  constraint project_deliverable_translations_pkey primary key (id),
-  constraint project_deliverable_translations_deliverable_id_language_id_key unique (deliverable_id, language_id),
-  constraint project_deliverable_translations_deliverable_id_fkey foreign KEY (deliverable_id) references project_deliverables (id) on delete CASCADE,
-  constraint project_deliverable_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.project_deliverables (
-  id serial not null,
-  project_id integer not null,
-  description text not null,
-  created_at timestamp without time zone null default now(),
-  constraint project_deliverables_pkey primary key (id),
-  constraint project_deliverables_project_id_fkey foreign KEY (project_id) references projects (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.project_documents (
-  project_id integer not null,
-  document_id integer not null,
-  constraint project_documents_pkey primary key (project_id, document_id),
-  constraint project_documents_document_id_fkey foreign KEY (document_id) references documents (id) on delete CASCADE,
-  constraint project_documents_project_id_fkey foreign KEY (project_id) references projects (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_project_documents_document on public.project_documents using btree (document_id) TABLESPACE pg_default;create table public.project_partners (
-  id serial not null,
-  project_id integer not null,
-  partner_id integer not null,
-  role character varying(100) not null,
-  joined_date date null default now(),
-  constraint project_partners_pkey primary key (id),
-  constraint project_partners_project_id_partner_id_key unique (project_id, partner_id),
-  constraint project_partners_partner_id_fkey foreign KEY (partner_id) references partners (id) on delete CASCADE,
-  constraint project_partners_project_id_fkey foreign KEY (project_id) references projects (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.project_result_translations (
-  id serial not null,
-  result_id integer not null,
-  language_id integer not null,
-  description text not null,
-  constraint project_result_translations_pkey primary key (id),
-  constraint project_result_translations_result_id_language_id_key unique (result_id, language_id),
-  constraint project_result_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint project_result_translations_result_id_fkey foreign KEY (result_id) references project_results (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.project_results (
-  id serial not null,
-  project_id integer not null,
-  description text not null,
-  created_at timestamp without time zone null default now(),
-  constraint project_results_pkey primary key (id),
-  constraint project_results_project_id_fkey foreign KEY (project_id) references projects (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.project_translations (
-  id serial not null,
-  project_id integer not null,
-  language_id integer not null,
-  title character varying(255) not null,
-  description text null,
-  objectives text null,
-  target_groups text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint project_translations_pkey primary key (id),
-  constraint project_translations_project_id_language_id_key unique (project_id, language_id),
-  constraint project_translations_language_id_fkey foreign KEY (language_id) references languages (id) on delete CASCADE,
-  constraint project_translations_project_id_fkey foreign KEY (project_id) references projects (id) on delete CASCADE
-) TABLESPACE pg_default;create table public.projects (
-  id serial not null,
-  title character varying(255) not null,
-  acronym character varying(50) null,
-  reference_code character varying(100) null,
-  logo_url character varying(255) null,
-  description text null,
-  objectives text null,
-  target_groups text null,
-  official_website character varying(255) null,
-  status character varying(50) not null default 'proposed'::character varying,
-  programme_id integer null,
-  coordinator_partner_id integer null,
-  coordinator_user_id integer null,
-  budget numeric(12, 2) null,
-  start_date date null,
-  end_date date null,
-  is_featured boolean not null default false,
-  statut_publication character varying(20) not null default 'draft'::character varying,
-  published_at timestamp without time zone null,
-  archived_at timestamp without time zone null,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint projects_pkey primary key (id),
-  constraint projects_programme_id_fkey foreign KEY (programme_id) references programmes (id) on delete set null,
-  constraint projects_coordinator_partner_id_fkey foreign KEY (coordinator_partner_id) references partners (id) on delete set null,
-  constraint projects_coordinator_user_id_fkey foreign KEY (coordinator_user_id) references users (id) on delete set null,
-  constraint projects_created_by_fkey foreign KEY (created_by) references users (id) on delete set null,
-  constraint projects_statut_publication_check check (
-    (
-      (statut_publication)::text = any (
-        (
-          array[
-            'draft'::character varying,
-            'published'::character varying,
-            'archived'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint projects_check check (
-    (
-      (end_date is null)
-      or (start_date is null)
-      or (end_date >= start_date)
-    )
-  ),
-  constraint projects_status_check check (
-    (
-      (status)::text = any (
-        (
-          array[
-            'proposed'::character varying,
-            'ongoing'::character varying,
-            'completed'::character varying,
-            'suspended'::character varying
-          ]
-        )::text[]
-      )
-    )
-  ),
-  constraint projects_budget_check check (
-    (
-      (budget is null)
-      or (budget >= (0)::numeric)
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_projects_featured on public.projects using btree (is_featured) TABLESPACE pg_default
-where
-  (is_featured = true);
-
-create index IF not exists idx_projects_status on public.projects using btree (status) TABLESPACE pg_default;
-
-create index IF not exists idx_projects_programme on public.projects using btree (programme_id) TABLESPACE pg_default;
-
-create index IF not exists idx_projects_statut_pub on public.projects using btree (statut_publication) TABLESPACE pg_default;
-
-create index IF not exists idx_projects_dates on public.projects using btree (start_date, end_date) TABLESPACE pg_default;
-
-create index IF not exists idx_projects_title_trgm on public.projects using gin (title extensions.gin_trgm_ops) TABLESPACE pg_default;
-
-create trigger log_projects_changes
-after
-update on projects for EACH row
-execute FUNCTION log_audit_changes ();
-
-create trigger update_projects_updated_at BEFORE
-update on projects for EACH row
-execute FUNCTION update_updated_at_column ();create view public.projects_by_programme as
-select
-  pg.name as programme_name,
-  pr.status,
-  count(*) as count,
-  sum(pr.budget) as total_budget
-from
-  projects pr
-  left join programmes pg on pr.programme_id = pg.id
-group by
-  pg.name,
-  pr.status
-order by
-  pg.name,
-  pr.status;create table public.role_permissions (
-  role_id integer not null,
-  permission_id integer not null,
-  constraint role_permissions_pkey primary key (role_id, permission_id),
-  constraint role_permissions_permission_id_fkey foreign KEY (permission_id) references permissions (id) on delete CASCADE,
-  constraint role_permissions_role_id_fkey foreign KEY (role_id) references roles (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_role_permissions_role on public.role_permissions using btree (role_id) TABLESPACE pg_default;create table public.roles (
-  id serial not null,
-  name character varying(100) not null,
-  description character varying(255) null,
-  is_system boolean not null default false,
-  created_by integer null,
-  created_at timestamp without time zone null default now(),
-  constraint roles_pkey primary key (id),
-  constraint roles_name_key unique (name),
-  constraint roles_created_by_fkey foreign KEY (created_by) references users (id) on delete set null
-) TABLESPACE pg_default;create table public.school_presentation (
-  id serial not null,
-  visibilite character varying(20) not null default 'public'::character varying,
-  created_by integer null,
-  created_at timestamp without time zone not null default now(),
-  updated_at timestamp without time zone not null default now(),
-  constraint school_presentation_pkey primary key (id),
-  constraint school_presentation_created_by_fkey foreign KEY (created_by) references users (id)
-) TABLESPACE pg_default;
-
-create trigger trg_school_presentation_updated_at BEFORE
-update on school_presentation for EACH row
-execute FUNCTION set_updated_at ();create table public.school_presentation_revisions (
-  id serial not null,
-  translation_id integer not null,
-  fichier_url text not null,
-  file_format character varying(10) null,
-  file_size integer null,
-  replaced_by integer null,
-  replaced_at timestamp without time zone not null default now(),
-  constraint school_presentation_revisions_pkey primary key (id),
-  constraint school_presentation_revisions_replaced_by_fkey foreign KEY (replaced_by) references users (id),
-  constraint school_presentation_revisions_translation_id_fkey foreign KEY (translation_id) references school_presentation_translation (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_school_presentation_revisions_translation on public.school_presentation_revisions using btree (translation_id) TABLESPACE pg_default;create table public.school_presentation_translation (
-  id serial not null,
-  school_presentation_id integer not null,
-  language_id integer not null,
-  titre character varying(255) not null,
-  description text null,
-  fichier_url text not null,
-  file_format character varying(10) null,
-  file_size integer null,
-  created_at timestamp without time zone not null default now(),
-  updated_at timestamp without time zone not null default now(),
-  constraint school_presentation_translation_pkey primary key (id),
-  constraint school_presentation_translati_school_presentation_id_langua_key unique (school_presentation_id, language_id),
-  constraint school_presentation_translation_language_id_fkey foreign KEY (language_id) references languages (id),
-  constraint school_presentation_translation_school_presentation_id_fkey foreign KEY (school_presentation_id) references school_presentation (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_school_presentation_translation_lang on public.school_presentation_translation using btree (language_id) TABLESPACE pg_default;
-
-create trigger trg_school_presentation_translation_updated_at BEFORE
-update on school_presentation_translation for EACH row
-execute FUNCTION set_updated_at ();create table public.themes (
-  id serial not null,
-  name character varying(150) not null,
-  constraint themes_pkey primary key (id),
-  constraint themes_name_key unique (name)
-) TABLESPACE pg_default;create table public.users (
-  id serial not null,
-  full_name character varying(150) not null,
-  email character varying(150) not null,
-  password_hash character varying(255) not null,
-  role character varying(20) not null default 'utilisateur'::character varying,
-  is_active boolean not null default true,
-  last_login timestamp without time zone null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  role_id integer null,
-  constraint users_pkey primary key (id),
-  constraint users_email_key unique (email),
-  constraint users_role_id_fkey foreign KEY (role_id) references roles (id) on delete set null,
-  constraint users_role_check check (
-    (
-      (role)::text = any (
-        (
-          array[
-            'super_admin'::character varying,
-            'admin'::character varying,
-            'utilisateur'::character varying
-          ]
-        )::text[]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_users_role_id on public.users using btree (role_id) TABLESPACE pg_default;
--- ============================================================
--- Tables de traduction manquantes : agreements & documents
--- À exécuter sur la base existante (ne modifie aucune table actuelle)
--- Suit exactement le même schéma que call_translations / partner_translations / etc.
--- ============================================================
-
--- ------------------------------------------------------------
--- agreement_translations
--- Contenu traduisible d'un accord : title, description, terms_conditions.
--- Les autres colonnes (partner_id, dates, status, fichier_pdf...) restent
--- uniquement sur `agreements` : ce ne sont pas des champs de contenu.
--- ------------------------------------------------------------
-create table public.agreement_translations (
-  id serial not null,
-  agreement_id integer not null,
-  language_id integer not null,
-  title character varying(255) not null,
-  type VARCHAR(100) not null,
-  description text null,
-  terms_conditions text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint agreement_translations_pkey primary key (id),
-  constraint agreement_translations_agreement_id_language_id_key unique (agreement_id, language_id),
-  constraint agreement_translations_agreement_id_fkey foreign key (agreement_id) references agreements (id) on delete cascade,
-  constraint agreement_translations_language_id_fkey foreign key (language_id) references languages (id) on delete cascade
-) tablespace pg_default;
-
-create index if not exists idx_agreement_translations_agreement
-  on public.agreement_translations using btree (agreement_id) tablespace pg_default;
-
--- ------------------------------------------------------------
--- document_translations
--- ATTENTION : `documents` a déjà une colonne `langage` (fr/en/ar) — c'est-à-dire
--- qu'un document = un fichier = une langue (un PDF FR et un PDF EN sont deux
--- lignes distinctes dans `documents`). C'est un choix d'architecture valable
--- pour des fichiers (on ne "traduit" pas un PDF automatiquement).
---
--- Cette table `document_translations` ne sert donc PAS à traduire le fichier,
--- mais uniquement les champs texte de la fiche (titre, description) quand tu
--- veux qu'un même document (même fichier) affiche un titre/résumé traduit
--- sans dupliquer toute la ligne `documents`. Si dans ta logique un document
--- = un fichier = une langue est suffisant, tu n'as pas besoin de cette table.
--- ------------------------------------------------------------
-create table public.document_translations (
-  id serial not null,
-  document_id integer not null,
-  language_id integer not null,
-  titre character varying(255) not null,
-  description text null,
-  created_at timestamp without time zone null default now(),
-  updated_at timestamp without time zone null default now(),
-  constraint document_translations_pkey primary key (id),
-  constraint document_translations_document_id_language_id_key unique (document_id, language_id),
-  constraint document_translations_document_id_fkey foreign key (document_id) references documents (id) on delete cascade,
-  constraint document_translations_language_id_fkey foreign key (language_id) references languages (id) on delete cascade
-) tablespace pg_default;
-
-create index if not exists idx_document_translations_document
-  on public.document_translations using btree (document_id) tablespace pg_default;
-
-  CREATE TABLE notification_milestones (
-    id serial PRIMARY KEY,
-    entity_type varchar(30) NOT NULL,
-    entity_id integer NOT NULL,
-    milestone varchar(20) NOT NULL,
-    sent_at timestamp without time zone DEFAULT now(),
-    UNIQUE (entity_type, entity_id, milestone)
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
+
+CREATE TABLE public.countries (
+  id integer NOT NULL DEFAULT nextval('countries_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  iso_code character UNIQUE,
+  region character varying,
+  CONSTRAINT countries_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.languages (
+  id integer NOT NULL DEFAULT nextval('languages_id_seq'::regclass),
+  code character varying NOT NULL UNIQUE,
+  name character varying NOT NULL,
+  is_default boolean DEFAULT false,
+  is_active boolean DEFAULT true,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT languages_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.users (
+  id integer NOT NULL DEFAULT nextval('users_id_seq'::regclass),
+  full_name character varying NOT NULL,
+  email character varying NOT NULL UNIQUE,
+  password_hash character varying NOT NULL,
+  role character varying NOT NULL DEFAULT 'utilisateur'::character varying CHECK (role::text = ANY (ARRAY['super_admin'::character varying, 'admin'::character varying, 'utilisateur'::character varying]::text[])),
+  is_active boolean NOT NULL DEFAULT true,
+  last_login timestamp without time zone,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  role_id integer,
+  CONSTRAINT users_pkey PRIMARY KEY (id),
+  CONSTRAINT users_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id)
+);
+CREATE TABLE public.login_history (
+  id integer NOT NULL DEFAULT nextval('login_history_id_seq'::regclass),
+  user_id integer,
+  email_attempted character varying,
+  success boolean NOT NULL,
+  ip_address character varying,
+  user_agent text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT login_history_pkey PRIMARY KEY (id),
+  CONSTRAINT login_history_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.password_reset_tokens (
+  id integer NOT NULL DEFAULT nextval('password_reset_tokens_id_seq'::regclass),
+  user_id integer NOT NULL,
+  token character varying NOT NULL UNIQUE,
+  expires_at timestamp without time zone NOT NULL,
+  used boolean NOT NULL DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  attempts integer NOT NULL DEFAULT 0,
+  CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id),
+  CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.programmes (
+  id integer NOT NULL DEFAULT nextval('programmes_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  acronym character varying,
+  organisme_financeur character varying,
+  description text,
+  official_website character varying,
+  logo_url character varying,
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  published_at timestamp without time zone,
+  CONSTRAINT programmes_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.themes (
+  id integer NOT NULL DEFAULT nextval('themes_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  CONSTRAINT themes_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.partnership_types (
+  id integer NOT NULL DEFAULT nextval('partnership_types_id_seq'::regclass),
+  label character varying NOT NULL UNIQUE,
+  CONSTRAINT partnership_types_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.establishment_types (
+  id integer NOT NULL DEFAULT nextval('establishment_types_id_seq'::regclass),
+  label character varying NOT NULL UNIQUE,
+  CONSTRAINT establishment_types_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.action_types (
+  id integer NOT NULL DEFAULT nextval('action_types_id_seq'::regclass),
+  label character varying NOT NULL UNIQUE,
+  CONSTRAINT action_types_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.cities (
+  id integer NOT NULL DEFAULT nextval('cities_id_seq'::regclass),
+  name character varying NOT NULL,
+  country_id integer,
+  CONSTRAINT cities_pkey PRIMARY KEY (id),
+  CONSTRAINT cities_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id)
+);
+CREATE TABLE public.partners (
+  id integer NOT NULL DEFAULT nextval('partners_id_seq'::regclass),
+  name character varying NOT NULL,
+  official_name character varying,
+  country_id integer,
+  city character varying,
+  establishment_type_id integer,
+  partnership_type_id integer,
+  partnership_status character varying NOT NULL DEFAULT 'active'::character varying CHECK (partnership_status::text = ANY (ARRAY['active'::character varying, 'pending'::character varying, 'ended'::character varying]::text[])),
+  website character varying,
+  cooperation_areas text,
+  description text,
+  logo_url character varying,
+  latitude numeric CHECK (latitude IS NULL OR latitude >= '-90'::integer::numeric AND latitude <= 90::numeric),
+  longitude numeric CHECK (longitude IS NULL OR longitude >= '-180'::integer::numeric AND longitude <= 180::numeric),
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  published_at timestamp without time zone,
+  archived_at timestamp without time zone,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  address text,
+  scheduled_publish_at timestamp with time zone,
+  CONSTRAINT partners_pkey PRIMARY KEY (id),
+  CONSTRAINT partners_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id),
+  CONSTRAINT partners_establishment_type_id_fkey FOREIGN KEY (establishment_type_id) REFERENCES public.establishment_types(id),
+  CONSTRAINT partners_partnership_type_id_fkey FOREIGN KEY (partnership_type_id) REFERENCES public.partnership_types(id),
+  CONSTRAINT partners_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.institutions (
+  id integer NOT NULL DEFAULT nextval('institutions_id_seq'::regclass),
+  name character varying NOT NULL,
+  city_id integer,
+  partner_id integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT institutions_pkey PRIMARY KEY (id),
+  CONSTRAINT institutions_city_id_fkey FOREIGN KEY (city_id) REFERENCES public.cities(id),
+  CONSTRAINT institutions_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id)
+);
+CREATE TABLE public.partner_contacts (
+  id integer NOT NULL DEFAULT nextval('partner_contacts_id_seq'::regclass),
+  partner_id integer NOT NULL,
+  full_name character varying NOT NULL,
+  position character varying,
+  email character varying,
+  phone character varying,
+  is_primary boolean DEFAULT false,
+  is_public boolean DEFAULT false,
+  user_id integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT partner_contacts_pkey PRIMARY KEY (id),
+  CONSTRAINT partner_contacts_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id),
+  CONSTRAINT partner_contacts_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.agreements (
+  id integer NOT NULL DEFAULT nextval('agreements_id_seq'::regclass),
+  partner_id integer NOT NULL,
+  title character varying NOT NULL,
+  type character varying,
+  description text,
+  terms_conditions text,
+  fichier_pdf character varying,
+  signature_date date,
+  start_date date,
+  end_date date,
+  status character varying DEFAULT 'active'::character varying CHECK (status::text = ANY (ARRAY['active'::character varying, 'expired'::character varying, 'pending'::character varying, 'negotiation'::character varying]::text[])),
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  statut_publication character varying DEFAULT 'draft'::character varying,
+  scheduled_publish_at timestamp with time zone,
+  published_at timestamp without time zone,
+  CONSTRAINT agreements_pkey PRIMARY KEY (id),
+  CONSTRAINT agreements_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id),
+  CONSTRAINT agreements_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.projects (
+  id integer NOT NULL DEFAULT nextval('projects_id_seq'::regclass),
+  title character varying NOT NULL,
+  acronym character varying,
+  reference_code character varying,
+  logo_url character varying,
+  description text,
+  objectives text,
+  target_groups text,
+  official_website character varying,
+  status character varying NOT NULL DEFAULT 'proposed'::character varying CHECK (status::text = ANY (ARRAY['proposed'::character varying, 'ongoing'::character varying, 'completed'::character varying, 'suspended'::character varying]::text[])),
+  programme_id integer,
+  coordinator_partner_id integer,
+  coordinator_user_id integer,
+  budget numeric CHECK (budget IS NULL OR budget >= 0::numeric),
+  start_date date,
+  end_date date,
+  is_featured boolean NOT NULL DEFAULT false,
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  published_at timestamp without time zone,
+  archived_at timestamp without time zone,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  CONSTRAINT projects_pkey PRIMARY KEY (id),
+  CONSTRAINT projects_programme_id_fkey FOREIGN KEY (programme_id) REFERENCES public.programmes(id),
+  CONSTRAINT projects_coordinator_partner_id_fkey FOREIGN KEY (coordinator_partner_id) REFERENCES public.partners(id),
+  CONSTRAINT projects_coordinator_user_id_fkey FOREIGN KEY (coordinator_user_id) REFERENCES public.users(id),
+  CONSTRAINT projects_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.project_deliverables (
+  id integer NOT NULL DEFAULT nextval('project_deliverables_id_seq'::regclass),
+  project_id integer NOT NULL,
+  description text NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT project_deliverables_pkey PRIMARY KEY (id),
+  CONSTRAINT project_deliverables_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id)
+);
+CREATE TABLE public.project_results (
+  id integer NOT NULL DEFAULT nextval('project_results_id_seq'::regclass),
+  project_id integer NOT NULL,
+  description text NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT project_results_pkey PRIMARY KEY (id),
+  CONSTRAINT project_results_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id)
+);
+CREATE TABLE public.project_partners (
+  id integer NOT NULL DEFAULT nextval('project_partners_id_seq'::regclass),
+  project_id integer NOT NULL,
+  partner_id integer NOT NULL,
+  role character varying NOT NULL,
+  joined_date date DEFAULT now(),
+  CONSTRAINT project_partners_pkey PRIMARY KEY (id),
+  CONSTRAINT project_partners_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+  CONSTRAINT project_partners_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id)
+);
+CREATE TABLE public.calls (
+  id integer NOT NULL DEFAULT nextval('calls_id_seq'::regclass),
+  title character varying NOT NULL,
+  programme_id integer,
+  funding_body character varying,
+  description text,
+  objectives text,
+  eligibility text,
+  beneficiaries text,
+  action_type_id integer,
+  budget_available numeric CHECK (budget_available IS NULL OR budget_available >= 0::numeric),
+  funding_rate numeric CHECK (funding_rate IS NULL OR funding_rate >= 0::numeric AND funding_rate <= 100::numeric),
+  target_audience character varying,
+  publication_date date,
+  deadline date,
+  official_link character varying,
+  contact_person character varying,
+  status character varying NOT NULL DEFAULT 'open'::character varying CHECK (status::text = ANY (ARRAY['upcoming'::text, 'open'::text, 'closing_soon'::text, 'closed'::text])),
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  published_at timestamp without time zone,
+  archived_at timestamp without time zone,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  CONSTRAINT calls_pkey PRIMARY KEY (id),
+  CONSTRAINT calls_programme_id_fkey FOREIGN KEY (programme_id) REFERENCES public.programmes(id),
+  CONSTRAINT calls_action_type_id_fkey FOREIGN KEY (action_type_id) REFERENCES public.action_types(id),
+  CONSTRAINT calls_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.call_themes (
+  call_id integer NOT NULL,
+  theme_id integer NOT NULL,
+  CONSTRAINT call_themes_pkey PRIMARY KEY (call_id, theme_id),
+  CONSTRAINT call_themes_call_id_fkey FOREIGN KEY (call_id) REFERENCES public.calls(id),
+  CONSTRAINT call_themes_theme_id_fkey FOREIGN KEY (theme_id) REFERENCES public.themes(id)
+);
+CREATE TABLE public.call_countries (
+  call_id integer NOT NULL,
+  country_id integer NOT NULL,
+  CONSTRAINT call_countries_pkey PRIMARY KEY (call_id, country_id),
+  CONSTRAINT call_countries_call_id_fkey FOREIGN KEY (call_id) REFERENCES public.calls(id),
+  CONSTRAINT call_countries_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id)
+);
+CREATE TABLE public.mobility (
+  id integer NOT NULL DEFAULT nextval('mobility_id_seq'::regclass),
+  title character varying NOT NULL,
+  type character varying NOT NULL CHECK (type::text = ANY (ARRAY['student_outgoing'::character varying, 'student_incoming'::character varying, 'teaching'::character varying, 'research'::character varying, 'staff'::character varying, 'internship'::character varying, 'summer_school'::character varying]::text[])),
+  programme_id integer,
+  project_id integer,
+  agreement_id integer,
+  destination_country_id integer,
+  destination_partner_id integer,
+  institution_id integer,
+  target_audience text,
+  description text,
+  conditions text,
+  places_count integer CHECK (places_count IS NULL OR places_count >= 0),
+  duration character varying,
+  period character varying,
+  funding_details text,
+  application_procedure text,
+  selection_criteria text,
+  application_link character varying,
+  contact_person character varying,
+  contact_email character varying,
+  deadline date,
+  start_date date,
+  end_date date,
+  status character varying NOT NULL DEFAULT 'open'::character varying CHECK (status::text = ANY (ARRAY['open'::character varying, 'closed'::character varying, 'upcoming'::character varying]::text[])),
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  published_at timestamp without time zone,
+  archived_at timestamp without time zone,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  CONSTRAINT mobility_pkey PRIMARY KEY (id),
+  CONSTRAINT mobility_programme_id_fkey FOREIGN KEY (programme_id) REFERENCES public.programmes(id),
+  CONSTRAINT mobility_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+  CONSTRAINT mobility_agreement_id_fkey FOREIGN KEY (agreement_id) REFERENCES public.agreements(id),
+  CONSTRAINT mobility_destination_country_id_fkey FOREIGN KEY (destination_country_id) REFERENCES public.countries(id),
+  CONSTRAINT mobility_destination_partner_id_fkey FOREIGN KEY (destination_partner_id) REFERENCES public.partners(id),
+  CONSTRAINT mobility_institution_id_fkey FOREIGN KEY (institution_id) REFERENCES public.institutions(id),
+  CONSTRAINT mobility_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.mobility_language_requirements (
+  id integer NOT NULL DEFAULT nextval('mobility_language_requirements_id_seq'::regclass),
+  mobility_id integer NOT NULL,
+  language_id integer NOT NULL,
+  min_level character varying,
+  CONSTRAINT mobility_language_requirements_pkey PRIMARY KEY (id),
+  CONSTRAINT mobility_language_requirements_mobility_id_fkey FOREIGN KEY (mobility_id) REFERENCES public.mobility(id),
+  CONSTRAINT mobility_language_requirements_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.news_events (
+  id integer NOT NULL DEFAULT nextval('news_events_id_seq'::regclass),
+  title character varying NOT NULL,
+  type character varying NOT NULL CHECK (type::text = ANY (ARRAY['news'::character varying, 'event'::character varying, 'workshop'::character varying, 'meeting'::character varying, 'testimonial'::character varying]::text[])),
+  summary text,
+  description text,
+  project_id integer,
+  event_date date,
+  end_date date,
+  location character varying,
+  image_url character varying,
+  is_featured boolean NOT NULL DEFAULT false,
+  author_name character varying,
+  author_role character varying,
+  author_photo_url character varying,
+  quote_text text,
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  published_at timestamp without time zone,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  CONSTRAINT news_events_pkey PRIMARY KEY (id),
+  CONSTRAINT news_events_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+  CONSTRAINT news_events_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.document_categories (
+  id integer NOT NULL DEFAULT nextval('document_categories_id_seq'::regclass),
+  code character varying NOT NULL UNIQUE,
+  label character varying NOT NULL,
+  CONSTRAINT document_categories_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.documents (
+  id integer NOT NULL DEFAULT nextval('documents_id_seq'::regclass),
+  titre character varying NOT NULL,
+  description text,
+  fichier_url character varying NOT NULL,
+  categorie_id integer NOT NULL,
+  langage character varying DEFAULT 'fr'::character varying CHECK (langage::text = ANY (ARRAY['fr'::character varying, 'en'::character varying, 'ar'::character varying]::text[])),
+  version character varying DEFAULT '1.0'::character varying,
+  file_size bigint,
+  file_format character varying,
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying CHECK (statut_publication::text = ANY (ARRAY['draft'::character varying, 'published'::character varying, 'archived'::character varying]::text[])),
+  is_featured boolean NOT NULL DEFAULT false,
+  date_expiration date,
+  date_upload timestamp without time zone DEFAULT now(),
+  uploaded_by integer,
+  created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+  date_publication timestamp without time zone,
+  updated_by integer,
+  deleted_at timestamp without time zone,
+  is_lien_externe boolean NOT NULL DEFAULT false,
+  scheduled_publish_at timestamp with time zone,
+  published_at timestamp without time zone,
+  CONSTRAINT documents_pkey PRIMARY KEY (id),
+  CONSTRAINT documents_categorie_id_fkey FOREIGN KEY (categorie_id) REFERENCES public.document_categories(id),
+  CONSTRAINT documents_uploaded_by_fkey FOREIGN KEY (uploaded_by) REFERENCES public.users(id),
+  CONSTRAINT documents_updated_by_fkey FOREIGN KEY (updated_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.programme_documents (
+  programme_id integer NOT NULL,
+  document_id integer NOT NULL,
+  CONSTRAINT programme_documents_pkey PRIMARY KEY (programme_id, document_id),
+  CONSTRAINT programme_documents_programme_id_fkey FOREIGN KEY (programme_id) REFERENCES public.programmes(id),
+  CONSTRAINT programme_documents_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.project_documents (
+  project_id integer NOT NULL,
+  document_id integer NOT NULL,
+  CONSTRAINT project_documents_pkey PRIMARY KEY (project_id, document_id),
+  CONSTRAINT project_documents_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+  CONSTRAINT project_documents_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.call_documents (
+  call_id integer NOT NULL,
+  document_id integer NOT NULL,
+  CONSTRAINT call_documents_pkey PRIMARY KEY (call_id, document_id),
+  CONSTRAINT call_documents_call_id_fkey FOREIGN KEY (call_id) REFERENCES public.calls(id),
+  CONSTRAINT call_documents_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.agreement_documents (
+  agreement_id integer NOT NULL,
+  document_id integer NOT NULL,
+  CONSTRAINT agreement_documents_pkey PRIMARY KEY (agreement_id, document_id),
+  CONSTRAINT agreement_documents_agreement_id_fkey FOREIGN KEY (agreement_id) REFERENCES public.agreements(id),
+  CONSTRAINT agreement_documents_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.mobility_documents (
+  mobility_id integer NOT NULL,
+  document_id integer NOT NULL,
+  CONSTRAINT mobility_documents_pkey PRIMARY KEY (mobility_id, document_id),
+  CONSTRAINT mobility_documents_mobility_id_fkey FOREIGN KEY (mobility_id) REFERENCES public.mobility(id),
+  CONSTRAINT mobility_documents_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.document_revisions (
+  id integer NOT NULL DEFAULT nextval('document_revisions_id_seq'::regclass),
+  document_id integer NOT NULL,
+  version character varying NOT NULL,
+  fichier_url character varying NOT NULL,
+  file_size bigint,
+  changed_by integer,
+  change_note text,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT document_revisions_pkey PRIMARY KEY (id),
+  CONSTRAINT document_revisions_changed_by_fkey FOREIGN KEY (changed_by) REFERENCES public.users(id),
+  CONSTRAINT document_revisions_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.document_access_logs (
+  id integer NOT NULL DEFAULT nextval('document_access_logs_id_seq'::regclass),
+  document_id integer NOT NULL,
+  user_id integer,
+  ip_address character varying,
+  user_agent text,
+  action character varying NOT NULL CHECK (action::text = ANY (ARRAY['view'::character varying, 'download'::character varying, 'preview'::character varying]::text[])),
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT document_access_logs_pkey PRIMARY KEY (id),
+  CONSTRAINT document_access_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id),
+  CONSTRAINT document_access_logs_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id)
+);
+CREATE TABLE public.notifications (
+  id integer NOT NULL DEFAULT nextval('notifications_id_seq'::regclass),
+  user_id integer NOT NULL,
+  title character varying NOT NULL,
+  message text,
+  type character varying CHECK (type::text = ANY (ARRAY['info'::character varying, 'warning'::character varying, 'success'::character varying, 'error'::character varying]::text[])),
+  link character varying,
+  is_read boolean NOT NULL DEFAULT false,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT notifications_pkey PRIMARY KEY (id),
+  CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.audit_logs (
+  id integer NOT NULL DEFAULT nextval('audit_logs_id_seq'::regclass),
+  user_id integer,
+  action character varying NOT NULL,
+  details text,
+  ip_address character varying,
+  user_agent text,
+  table_name character varying,
+  record_id integer,
+  old_values jsonb,
+  new_values jsonb,
+  entity_type character varying,
+  entity_id integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT audit_logs_pkey PRIMARY KEY (id),
+  CONSTRAINT audit_logs_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id)
+);
+CREATE TABLE public.project_translations (
+  id integer NOT NULL DEFAULT nextval('project_translations_id_seq'::regclass),
+  project_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  objectives text,
+  target_groups text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT project_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT project_translations_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id),
+  CONSTRAINT project_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.project_deliverable_translations (
+  id integer NOT NULL DEFAULT nextval('project_deliverable_translations_id_seq'::regclass),
+  deliverable_id integer NOT NULL,
+  language_id integer NOT NULL,
+  description text NOT NULL,
+  CONSTRAINT project_deliverable_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT project_deliverable_translations_deliverable_id_fkey FOREIGN KEY (deliverable_id) REFERENCES public.project_deliverables(id),
+  CONSTRAINT project_deliverable_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.project_result_translations (
+  id integer NOT NULL DEFAULT nextval('project_result_translations_id_seq'::regclass),
+  result_id integer NOT NULL,
+  language_id integer NOT NULL,
+  description text NOT NULL,
+  CONSTRAINT project_result_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT project_result_translations_result_id_fkey FOREIGN KEY (result_id) REFERENCES public.project_results(id),
+  CONSTRAINT project_result_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.partner_translations (
+  id integer NOT NULL DEFAULT nextval('partner_translations_id_seq'::regclass),
+  partner_id integer NOT NULL,
+  language_id integer NOT NULL,
+  name character varying NOT NULL,
+  official_name character varying,
+  description text,
+  cooperation_areas text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT partner_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT partner_translations_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id),
+  CONSTRAINT partner_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.call_translations (
+  id integer NOT NULL DEFAULT nextval('call_translations_id_seq'::regclass),
+  call_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  objectives text,
+  eligibility text,
+  beneficiaries text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT call_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT call_translations_call_id_fkey FOREIGN KEY (call_id) REFERENCES public.calls(id),
+  CONSTRAINT call_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.mobility_translations (
+  id integer NOT NULL DEFAULT nextval('mobility_translations_id_seq'::regclass),
+  mobility_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  conditions text,
+  target_audience text,
+  application_procedure text,
+  selection_criteria text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT mobility_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT mobility_translations_mobility_id_fkey FOREIGN KEY (mobility_id) REFERENCES public.mobility(id),
+  CONSTRAINT mobility_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.news_translations (
+  id integer NOT NULL DEFAULT nextval('news_translations_id_seq'::regclass),
+  news_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  summary text,
+  description text,
+  quote_text text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT news_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT news_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id),
+  CONSTRAINT news_translations_news_id_fkey FOREIGN KEY (news_id) REFERENCES public.news_events(id)
+);
+CREATE TABLE public.permissions (
+  id integer NOT NULL DEFAULT nextval('permissions_id_seq'::regclass),
+  code character varying NOT NULL UNIQUE,
+  module character varying NOT NULL,
+  action character varying NOT NULL,
+  label character varying NOT NULL,
+  CONSTRAINT permissions_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.roles (
+  id integer NOT NULL DEFAULT nextval('roles_id_seq'::regclass),
+  name character varying NOT NULL UNIQUE,
+  description character varying,
+  is_system boolean NOT NULL DEFAULT false,
+  created_by integer,
+  created_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT roles_pkey PRIMARY KEY (id),
+  CONSTRAINT roles_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.role_permissions (
+  role_id integer NOT NULL,
+  permission_id integer NOT NULL,
+  CONSTRAINT role_permissions_pkey PRIMARY KEY (role_id, permission_id),
+  CONSTRAINT role_permissions_role_id_fkey FOREIGN KEY (role_id) REFERENCES public.roles(id),
+  CONSTRAINT role_permissions_permission_id_fkey FOREIGN KEY (permission_id) REFERENCES public.permissions(id)
+);
+CREATE TABLE public.app_settings (
+  key character varying NOT NULL,
+  value text NOT NULL,
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT app_settings_pkey PRIMARY KEY (key)
+);
+CREATE TABLE public.school_presentation (
+  id integer NOT NULL DEFAULT nextval('school_presentation_id_seq'::regclass),
+  visibilite character varying NOT NULL DEFAULT 'public'::character varying,
+  created_by integer,
+  created_at timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT school_presentation_pkey PRIMARY KEY (id),
+  CONSTRAINT school_presentation_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.school_presentation_translation (
+  id integer NOT NULL DEFAULT nextval('school_presentation_translation_id_seq'::regclass),
+  school_presentation_id integer NOT NULL,
+  language_id integer NOT NULL,
+  titre character varying NOT NULL,
+  description text,
+  fichier_url text NOT NULL,
+  file_format character varying,
+  file_size integer,
+  created_at timestamp without time zone NOT NULL DEFAULT now(),
+  updated_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT school_presentation_translation_pkey PRIMARY KEY (id),
+  CONSTRAINT school_presentation_translation_school_presentation_id_fkey FOREIGN KEY (school_presentation_id) REFERENCES public.school_presentation(id),
+  CONSTRAINT school_presentation_translation_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.school_presentation_revisions (
+  id integer NOT NULL DEFAULT nextval('school_presentation_revisions_id_seq'::regclass),
+  translation_id integer NOT NULL,
+  fichier_url text NOT NULL,
+  file_format character varying,
+  file_size integer,
+  replaced_by integer,
+  replaced_at timestamp without time zone NOT NULL DEFAULT now(),
+  CONSTRAINT school_presentation_revisions_pkey PRIMARY KEY (id),
+  CONSTRAINT school_presentation_revisions_translation_id_fkey FOREIGN KEY (translation_id) REFERENCES public.school_presentation_translation(id),
+  CONSTRAINT school_presentation_revisions_replaced_by_fkey FOREIGN KEY (replaced_by) REFERENCES public.users(id)
+);
+CREATE TABLE public.agreement_translations (
+  id integer NOT NULL DEFAULT nextval('agreement_translations_id_seq'::regclass),
+  agreement_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  terms_conditions text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  type character varying,
+  CONSTRAINT agreement_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT agreement_translations_agreement_id_fkey FOREIGN KEY (agreement_id) REFERENCES public.agreements(id),
+  CONSTRAINT agreement_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.document_translations (
+  id integer NOT NULL DEFAULT nextval('document_translations_id_seq'::regclass),
+  document_id integer NOT NULL,
+  language_id integer NOT NULL,
+  titre character varying NOT NULL,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT document_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT document_translations_document_id_fkey FOREIGN KEY (document_id) REFERENCES public.documents(id),
+  CONSTRAINT document_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.notification_milestones (
+  id integer NOT NULL DEFAULT nextval('notification_milestones_id_seq'::regclass),
+  entity_type character varying NOT NULL,
+  entity_id integer NOT NULL,
+  milestone character varying NOT NULL,
+  sent_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT notification_milestones_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.programme_translations (
+  id integer NOT NULL DEFAULT nextval('programme_translations_id_seq'::regclass),
+  programme_id integer NOT NULL,
+  language_id integer NOT NULL,
+  name character varying NOT NULL,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  organisme_financeur character varying,
+  CONSTRAINT programme_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT programme_translations_programme_id_fkey FOREIGN KEY (programme_id) REFERENCES public.programmes(id),
+  CONSTRAINT programme_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.home_slides (
+  id integer NOT NULL DEFAULT nextval('home_slides_id_seq'::regclass),
+  badge character varying,
+  icon_type character varying NOT NULL DEFAULT 'lucide'::character varying,
+  icon_value character varying,
+  display_order integer NOT NULL DEFAULT 0,
+  statut_publication character varying NOT NULL DEFAULT 'draft'::character varying,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  scheduled_publish_at timestamp with time zone,
+  published_at timestamp without time zone,
+  CONSTRAINT home_slides_pkey PRIMARY KEY (id)
+);
+CREATE TABLE public.home_slides_translations (
+  id integer NOT NULL DEFAULT nextval('home_slides_translations_id_seq'::regclass),
+  slide_id integer NOT NULL,
+  language_id integer NOT NULL,
+  title character varying NOT NULL,
+  description text,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT home_slides_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT home_slides_translations_slide_id_fkey FOREIGN KEY (slide_id) REFERENCES public.home_slides(id),
+  CONSTRAINT home_slides_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.theme_translations (
+  id integer NOT NULL DEFAULT nextval('theme_translations_id_seq'::regclass),
+  theme_id integer NOT NULL,
+  language_id integer NOT NULL,
+  name character varying NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT theme_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT theme_translations_theme_id_fkey FOREIGN KEY (theme_id) REFERENCES public.themes(id),
+  CONSTRAINT theme_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.country_translations (
+  id integer NOT NULL DEFAULT nextval('country_translations_id_seq'::regclass),
+  country_id integer NOT NULL,
+  language_id integer NOT NULL,
+  name character varying NOT NULL,
+  created_at timestamp without time zone DEFAULT now(),
+  updated_at timestamp without time zone DEFAULT now(),
+  CONSTRAINT country_translations_pkey PRIMARY KEY (id),
+  CONSTRAINT country_translations_country_id_fkey FOREIGN KEY (country_id) REFERENCES public.countries(id),
+  CONSTRAINT country_translations_language_id_fkey FOREIGN KEY (language_id) REFERENCES public.languages(id)
+);
+CREATE TABLE public.partner_themes (
+  partner_id integer NOT NULL,
+  theme_id integer NOT NULL,
+  CONSTRAINT partner_themes_pkey PRIMARY KEY (partner_id, theme_id),
+  CONSTRAINT partner_themes_partner_id_fkey FOREIGN KEY (partner_id) REFERENCES public.partners(id),
+  CONSTRAINT partner_themes_theme_id_fkey FOREIGN KEY (theme_id) REFERENCES public.themes(id)
 );
