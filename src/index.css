@@ -27,15 +27,12 @@ body {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* 🆕 FIX — variante sombre du body, jusqu'ici totalement absente du fichier. */
 .dark body {
-    background-color: #0f172a; /* même bleu nuit que le reste du dark mode (navy / slate-900) */
+    background-color: #0f172a; 
     color: #e2e8f0;
 }
 
-/* 🆕 Filet de sécurité : si le body ne couvre pas 100% de la hauteur
-   (ex. contenu très court), on évite que le <html> laisse voir un fond
-   blanc résiduel derrière/au-dessus du body en dark mode. */
+
 .dark html {
     background-color: #0f172a;
 }
@@ -44,7 +41,6 @@ body {
     box-sizing: border-box;
 }
 
-/* Minimum accessible tap target for interactive controls */
 button,
 a,
 input,
@@ -578,7 +574,7 @@ textarea {
 }
 
 /* ============================================================
-   MODALE (UNIFIÉE & CORRIGÉE)
+   MODALE 
    ============================================================ */
 
 .modal-overlay {
@@ -1025,7 +1021,6 @@ textarea {
     border-color: #78350f;
     color: #fcd34d;
 }
-/* Animation rotation flèche sidebar */
 aside button svg {
     transition: transform 0.3s ease;
 }
@@ -1034,11 +1029,9 @@ aside button svg {
   50% { transform: translateY(-3px); }
 }
 
-/* Classe pour animer la flèche du logo */
 .animate-gentle-bounce {
   animation: gentle-bounce 2s ease-in-out infinite;
 }
-/* Animation de rebond pour la flèche du menu */
 @keyframes soft-bounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
@@ -1049,5 +1042,5 @@ aside button svg {
 }
 
 .animate-soft-bounce:hover {
-  animation: none; /* Stoppe l'animation quand on survole */
+  animation: none; 
 }

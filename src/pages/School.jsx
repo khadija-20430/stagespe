@@ -20,7 +20,6 @@ export default function School() {
 
     const loadPresentation = async () => {
       try {
-        // On tente d'abord la langue courante
         let data = await getSchoolPresentationByLanguage(i18n.language);
         if (!cancelled) {
           setPresentation(data);
@@ -28,7 +27,6 @@ export default function School() {
       } catch (err) {
         console.warn(`Pas de traduction en ${i18n.language}, fallback sur fr`, err);
         try {
-          // Fallback sur français
           const fallbackData = await getSchoolPresentationByLanguage('fr');
           if (!cancelled) {
             setPresentation(fallbackData);
@@ -66,9 +64,7 @@ export default function School() {
   if (error) {
     return (
       <section className="mx-auto max-w-6xl px-4 py-24 text-center sm:px-6">
-        {/* La clé "school.error.loading" existe déjà en fr/en/ar : i18next renvoie
-            la clé elle-même si elle est absente, jamais une chaîne vide/falsy,
-            donc le "|| fallback" précédent n'avait aucun effet. Supprimé. */}
+        
         <h1 className="flex items-center justify-center gap-2 text-2xl font-bold text-navy dark:text-white">
           <AlertTriangle className="h-6 w-6" aria-hidden="true" />
           {t('school.error.loading')}
