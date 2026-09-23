@@ -1,6 +1,7 @@
 const programmesModel = require('../models/programmesModel');
 const pool = require('../db');
 const sendError = require('../middleware/errorResponse');
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
 
 // Recupere tous les programmes publics
 exports.getAll = async (req, res) => {
@@ -36,8 +37,7 @@ exports.getOne = async (req, res) => {
 //creation d un programme
 exports.create = async (req, res) => {
   try {
-    const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
-    const programme = await programmesModel.create({ ...req.body, logo_url });
+const logo_url = req.file ? await uploadToSupabase(req.file) : null;    const programme = await programmesModel.create({ ...req.body, logo_url });
     res.status(201).json(programme);
   } catch (err) { sendError(res, err); }
 };
@@ -48,7 +48,7 @@ exports.update = async (req, res) => {
     if (req.file) {
       const existing = await programmesModel.findLogoUrlById(req.params.id);
       if (existing) programmesModel.deleteOldLogoFile(existing.logo_url);
-      logo_url = `/uploads/${req.file.filename}`;
+    logo_url = await uploadToSupabase(req.file);
     }
     const programme = await programmesModel.update(req.params.id, { ...req.body, logo_url });
     if (!programme) return res.status(404).json({ error: 'Programme non trouvé' });

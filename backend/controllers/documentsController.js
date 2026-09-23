@@ -4,13 +4,14 @@ const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { upload } = require('../middleware/upload');
 const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
 
 exports.uploadFile = (req, res) => {
-    upload.single('file')(req, res, (err) => {
+    upload.single('file')(req, res, async (err) => {
         if (err) return res.status(400).json({ error: err.message });
         if (!req.file) return res.status(400).json({ error: 'Aucun fichier reçu' });
         res.json({
-            fichier_url: `/uploads/${req.file.filename}`,
+            fichier_url: await uploadToSupabase(req.file),
             file_size: req.file.size,
             file_format: path.extname(req.file.originalname).replace('.', ''),
         });

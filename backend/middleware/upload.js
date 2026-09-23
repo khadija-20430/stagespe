@@ -5,13 +5,7 @@ const path = require('path');
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.jpg', '.jpeg', '.png'];
 const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, path.join(__dirname, '..', 'uploads')),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `${crypto.randomUUID()}${ext}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 function fileFilter(req, file, cb) {
   const ext = path.extname(file.originalname).toLowerCase();

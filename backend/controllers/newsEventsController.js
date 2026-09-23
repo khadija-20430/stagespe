@@ -1,6 +1,7 @@
 const newsEventsModel = require('../models/newsEventsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
 const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 function isInvalidTestimonial(type, author_name, quote_text) {
@@ -77,9 +78,8 @@ exports.create = async(req, res) => {
             return res.status(400).json({ error: 'Un témoignage nécessite un auteur et une citation' });
         }
 
-        const image_url = req.files?.image ? `/uploads/${req.files.image[0].filename}` : null;
-        const author_photo_url = req.files?.author_photo ? `/uploads/${req.files.author_photo[0].filename}` : null;
-
+       const image_url = req.files?.image ? await uploadToSupabase(req.files.image[0]) : null;
+       const author_photo_url = req.files?.author_photo ? await uploadToSupabase(req.files.author_photo[0]) : null;
         const news = await newsEventsModel.create({
             title,
             type,
@@ -132,15 +132,15 @@ exports.update = async(req, res) => {
 
         let image_url = req.body.image_url || null;
         if (req.files?.image) {
-            if (existing) newsEventsModel.deleteOldFile(existing.image_url);
-            image_url = `/uploads/${req.files.image[0].filename}`;
-        }
+    if (existing) newsEventsModel.deleteOldFile(existing.image_url);
+    image_url = await uploadToSupabase(req.files.image[0]);
+}
 
         let author_photo_url = req.body.author_photo_url || null;
-        if (req.files?.author_photo) {
-            if (existing) newsEventsModel.deleteOldFile(existing.author_photo_url);
-            author_photo_url = `/uploads/${req.files.author_photo[0].filename}`;
-        }
+       if (req.files?.author_photo) {
+    if (existing) newsEventsModel.deleteOldFile(existing.author_photo_url);
+    author_photo_url = await uploadToSupabase(req.files.author_photo[0]);
+}
 
         const news = await newsEventsModel.update(req.params.id, {
             title,

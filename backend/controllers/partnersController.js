@@ -1,6 +1,7 @@
 const partnersModel = require('../models/partnersModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
 const { translateList, translateOne, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
 // public liste partenaire et carte partenaires
@@ -72,8 +73,8 @@ exports.updateTranslations = async(req, res) => {
 // creation d un partenaire 
 exports.create = async(req, res) => {
     try {
-        const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
-        const partner = await partnersModel.create({...req.body, logo_url }, req.user.id);
+const logo_url = req.file ? await uploadToSupabase(req.file) : null;       
+ const partner = await partnersModel.create({...req.body, logo_url }, req.user.id);
         await logAction(req.user.id, 'create', 'partner', partner.id, null, req);
         await autoTranslateAndSave('partner', partner.id, req.body);
         res.status(201).json(partner);
@@ -88,7 +89,7 @@ exports.update = async(req, res) => {
         if (req.file) {
             const existing = await partnersModel.findLogoUrlById(req.params.id);
             if (existing) partnersModel.deleteOldLogoFile(existing.logo_url);
-            logo_url = `/uploads/${req.file.filename}`;
+    logo_url = await uploadToSupabase(req.file);
         }
 
         const partner = await partnersModel.update(

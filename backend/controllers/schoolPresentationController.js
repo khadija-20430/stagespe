@@ -3,13 +3,13 @@ const schoolPresentationModel = require('../models/schoolPresentationModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const { upload } = require('../middleware/upload');
-
-exports.uploadFile = (req, res) => {
-    upload.single('file')(req, res, (err) => {
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
+exports.uploadFile = async (req, res) => {
+    upload.single('file')(req, res, async (err) => {
         if (err) return res.status(400).json({ error: err.message });
         if (!req.file) return res.status(400).json({ error: 'Aucun fichier reçu' });
         res.json({
-            fichier_url: `/uploads/${req.file.filename}`,
+            fichier_url: await uploadToSupabase(req.file),
             file_size: req.file.size,
             file_format: path.extname(req.file.originalname).replace('.', ''),
         });
@@ -55,8 +55,7 @@ exports.create = async(req, res) => {
 
         // Accepter soit un fichier uploadé, soit une URL déjà uploadée
         const file = req.file ? {
-            fichier_url: `/uploads/${req.file.filename}`,
-            file_format: path.extname(req.file.originalname).replace('.', ''),
+            fichier_url: await uploadToSupabase(req.file),            file_format: path.extname(req.file.originalname).replace('.', ''),
             file_size: req.file.size,
         } : null;
 
@@ -87,7 +86,7 @@ exports.addTranslation = async(req, res) => {
         const { language_id, titre, description, fichier_url } = req.body;
 
         const file = req.file ? {
-            fichier_url: `/uploads/${req.file.filename}`,
+            fichier_url: await uploadToSupabase(req.file),
             file_format: path.extname(req.file.originalname).replace('.', ''),
             file_size: req.file.size,
         } : null;
@@ -129,7 +128,7 @@ exports.updateTranslation = async(req, res) => {
 exports.replaceFile = async(req, res) => {
     try {
         const file = req.file ? {
-            fichier_url: `/uploads/${req.file.filename}`,
+            fichier_url: await uploadToSupabase(req.file),
             file_format: path.extname(req.file.originalname).replace('.', ''),
             file_size: req.file.size,
         } : null;

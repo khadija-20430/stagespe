@@ -4,6 +4,7 @@ const agreementsModel = require('../models/agreementsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const pool = require('../db');
+const { uploadToSupabase } = require('../utils/storage');
 const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 function deleteOldFile(fileUrl) {
     if (!fileUrl || !fileUrl.startsWith('/uploads/')) return;
@@ -123,7 +124,7 @@ exports.create = async(req, res) => {
             return res.status(400).json({ error: 'Le champ partner_id est obligatoire' });
         }
 
-        const fichier_pdf = req.file ? `/uploads/${req.file.filename}` : null;
+const fichier_pdf = req.file ? await uploadToSupabase(req.file) : null;
         const agreement = await agreementsModel.create({
             ...req.body,
             fichier_pdf,
@@ -151,7 +152,7 @@ exports.update = async(req, res) => {
         if (req.file) {
             const existing = await agreementsModel.getFichierPdf(req.params.id);
             if (existing) deleteOldFile(existing.fichier_pdf);
-            fichier_pdf = `/uploads/${req.file.filename}`;
+            fichier_pdf = await uploadToSupabase(req.file);
         }
 
         const agreement = await agreementsModel.update(

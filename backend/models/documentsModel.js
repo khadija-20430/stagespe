@@ -267,7 +267,6 @@ exports.update = async(id, data) => {
     }
 };
 //creation d un doc
-// creation d un doc avec ses relations (transaction)
 exports.create = async (data) => {
     const client = await pool.connect();
     try {
@@ -540,7 +539,7 @@ exports.restoreRevision = exports.restoreRevision = async(documentId, revisionId
                 current.version,
                 current.fichier_url,
                 current.file_size,
-                null, // rempli par le controller si tu veux tracer l'utilisateur ici plutôt
+                null, 
                 `Restauration vers la version ${revision.version}`
             ]
         );

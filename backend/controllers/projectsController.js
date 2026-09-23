@@ -2,6 +2,7 @@ const projectsModel = require('../models/projectsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 const pool = require('../db'); 
+const { uploadToSupabase } = require('../utils/storage'); // en haut du fichier
 
 const { translateList, translateOne, translateRelatedField, autoTranslateAndSave, upsertTranslations, getAllTranslations, deleteTranslations } = require('../lib/i18n');
 
@@ -89,7 +90,7 @@ exports.create = async(req, res) => {
             return res.status(400).json({ error: 'La date de fin ne peut pas être antérieure à la date de début' });
         }
 
-        const logo_url = req.file ? `/uploads/${req.file.filename}` : null;
+const logo_url = req.file ? await uploadToSupabase(req.file) : null;       
         const project = await projectsModel.create({...req.body, logo_url }, req.user.id);
 
         await logAction(req.user.id, 'create', 'project', project.id, null, req);
@@ -109,8 +110,7 @@ exports.update = async(req, res) => {
         if (req.file) {
             const existing = await projectsModel.findLogoUrlById(req.params.id);
             if (existing) projectsModel.deleteOldFile(existing.logo_url);
-            logo_url = `/uploads/${req.file.filename}`;
-        }
+logo_url = await uploadToSupabase(req.file);        }
 
         const project = await projectsModel.update(
             req.params.id, {...req.body, logo_url }, { userId: req.user.id, ip: req.ip }
