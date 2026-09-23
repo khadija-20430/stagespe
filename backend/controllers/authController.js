@@ -8,7 +8,7 @@ const notificationsModel = require('../models/notificationsModel');
 const sendError = require('../middleware/errorResponse');
 const logAction = require('../middleware/auditLog');
 
-const mailer = require('../lib/mailer');
+const mailer = require('../lib/Mailer');
 
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_WINDOW_MINUTES = 15;
